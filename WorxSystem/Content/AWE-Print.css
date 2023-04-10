@@ -1,0 +1,37 @@
+﻿@media print {
+    @page {
+    size: A3;
+    }
+    body {
+        margin: 0;
+        padding: 0 !important;
+        width: 1000px;
+        font-size:16px;
+    }
+
+    .container {
+        width: auto;
+        min-width: 980px;
+    }
+
+    a[href]:after {
+        content: none;
+    }
+
+    .pages {
+        position: relative;
+    }
+    .page {
+        page-break-after: always;
+        position: relative;
+    }
+
+ }
+
+.no-history {
+    color: #777;
+    font-style: italic;
+    font-weight: bold;
+    margin: 10px;
+    text-align: center;
+}

@@ -1,0 +1,64 @@
+﻿
+@model dynamic
+@{
+    bool showCounts = bool.Parse(SiteClient.Settings["ShowCategoryCounts"]);
+    bool isEventDetailView = ViewContext.RouteData.Values["controller"].ToString().Equals(MVC.EventController, StringComparison.OrdinalIgnoreCase) &&
+        ViewContext.RouteData.Values["action"].ToString().Equals(MVC.DetailsAction, StringComparison.OrdinalIgnoreCase);
+    bool showZeroCountCategories = bool.Parse(SiteClient.Settings["ShowZeroCountCategories"]) && !isEventDetailView;
+
+    List<Category> categories;
+
+    categories = CommonClient.GetChildCategories(CategoryRoots.ListingCats, includeRelatedCustomFields: false);
+
+
+    Dictionary<int, int> counts;
+    
+        string statuses = ListingStatuses.Active + "," + ListingStatuses.Preview;
+        counts = CommonClient.GetCategoryCounts(new List<string>(0), statuses, string.Empty);
+    
+}
+@foreach (Category c in categories)
+{
+    if (showZeroCountCategories || !((bool)(ViewData["ValidCategoryCounts"] ?? false)) || counts.ContainsKey(c.ID))
+    {
+        string breadcrumbs = "C" + c.ID;
+
+        string extra = Html.LocalizedCategoryName(c.Name).SimplifyForURL("-");
+
+
+        RouteValueDictionary routes = new RouteValueDictionary();
+        
+        routes.Add("breadcrumbs", breadcrumbs);
+        routes.Add("extra", extra);
+
+        string categoryUrl;
+        if (isEventDetailView)
+        {
+            categoryUrl = Html.GetActionUrl(MVC.DetailsAction, MVC.EventController, routes);
+        }
+        else
+        {
+            categoryUrl = Html.GetActionUrl(MVC.BrowseAction, MVC.ListingController, routes);
+        }
+
+        <li>
+            <a href="@categoryUrl">
+                @Html.LocalizedCategoryName(c.Name)
+                @if (showCounts)
+                {
+                    <span class="badge pull-right">
+                        @if (counts.ContainsKey(c.ID))
+                        {
+                            @counts[c.ID]
+                        }
+                        else
+                        {
+                            @:0
+                    }
+                    </span>
+                }
+            </a>
+        </li>
+    }
+}
+

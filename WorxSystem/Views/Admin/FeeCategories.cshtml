@@ -1,0 +1,153 @@
+﻿@model List<Category>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_FeeCategories");
+
+    string feeName = (string)ViewData["FeeName"];
+    string feeCategoryMode = (string)ViewData["FeeCategoryMode"];
+    string feeCatIds = (string)ViewData["FeeCategories"];
+
+    string tabClass;
+    MvcHtmlString tabText;
+}
+<ul class="nav nav-tabs">
+    @foreach (var applicableFeeName in SiteClient.TextSetting(SiteProperties.CategoryFeeNames).Split(','))
+    {
+        if (feeName == applicableFeeName)
+        {
+            tabClass = "active";
+            tabText = Html.ActionLink(Html.AdminResource(applicableFeeName), MVC.FeeCategoriesAction, new { @FeeName = applicableFeeName });
+        }
+        else
+        {
+            tabClass = "";
+            tabText = Html.ActionLink(Html.AdminResource(applicableFeeName), MVC.FeeCategoriesAction, new { @FeeName = applicableFeeName });
+        }
+        <li class="@tabClass">@tabText</li>
+    }
+</ul>
+<div class="user-details panel panel-default">
+    <div class="panel-body">
+        @using (Html.BeginForm(MVC.FeeCategoriesAction, MVC.AdminController, FormMethod.Post, new { @id = "FeeCategoriesForm" }))
+        {
+            <input type="hidden" id="SaveChanges" name="SaveChanges" />
+            @Html.Hidden("FeeName")
+            @Html.Hidden("FeeCategories")
+            <div class="group" id="FeeOptionContainer">
+
+                <p><strong>@Html.AdminResource("FeeStatus")</strong></p>
+
+                <p>
+                    <input type="radio" name="FeeCategoryMode" id="FeeCategoryMode_Exclude" value="ExcludeSelected" @(feeCategoryMode != "IncludeSelected" ? " checked=\"checked\"" : string.Empty) />
+                    <label for="FeeCategoryMode_Exclude">@Html.AdminResource("DisableThisFeeForSelectedCategories")</label>
+                </p>
+                <p>
+                    <input type="radio" name="FeeCategoryMode" id="FeeCategoryMode_Include" value="IncludeSelected" @(feeCategoryMode == "IncludeSelected" ? " checked=\"checked\"" : string.Empty) />
+                    <label for="FeeCategoryMode_Include">@Html.AdminResource("EnableThisFeeForSelectedCategories")</label>
+                </p>
+            </div>
+            <div class="group clearfix" id="SelectedCategoriesContainer">
+                <p>
+                    <strong>Selected Categories</strong>
+                    @if (Model.Count == 0)
+                    {
+                        <small id="NoCatsSelectedLabel" class="no-history">@Html.AdminResource("NoCategoriesCurrentlySelected")</small>
+                    }
+                    else
+                    {
+                        <small id="NoCatsSelectedLabel" class="no-history" style="display: none;">@Html.AdminResource("NoCategoriesCurrentlySelected")</small>
+
+                    }
+                </p>
+
+                    <div id="SelectedCategoriesList" class="clearfix">
+                        @if (Model.Count > 0) { 
+                        foreach (var category in Model.OrderBy(c => c.ParentCategoryID).ThenBy(c => c.DisplayOrder))
+                        {
+                <div class="fee-category-item clearfix" data-catid="@category.ID">
+                        <a href="#RemoveCategory_@category.ID" class="pull-right remove-category btn text-danger">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    @Html.LocalizedCategoryName(category.Name)
+                </div>
+                
+                             }
+                        }
+                    </div>
+                </div>
+           
+
+        }
+        <div class="group">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <select id="CategoryDropdown" class="form-control">
+                        @foreach (var category in CommonClient.GetChildCategories(9))
+                        {
+                            <option value="@category.ID">@Html.LocalizedCategoryName(category.Name)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <button class="btn btn-default" id="AddCategory">@Html.AdminResource("AddCategory")</button>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-success Save confirm-before-leaving">@Html.AdminResource("SaveConfiguration")</button>
+        <button type="button" class="btn btn-link" onClick="window.location.reload()">@Html.AdminResource("CancelChanges")</button>
+    </div>
+</div>
+
+@section head {
+    <script>
+        $(document).ready(function () {
+
+            function UpdateCatList() {
+                var catIds = "";
+                var sep = "";
+                $("#SelectedCategoriesList div[id!=NoCatsSelectedLabel]").each(function () {
+                    catIds += sep + $(this).data("catid");
+                    sep = ",";
+                });
+                $("#FeeCategories").val(catIds);
+                if (catIds == "") {
+                    $("#NoCatsSelectedLabel").show();
+                } else {
+                    $("#NoCatsSelectedLabel").hide();
+                }
+            }
+
+            $(document).on("click", ".remove-category", function () {
+                $(this).parent("div").remove();
+                UpdateCatList();
+                return false;
+            });
+
+            $("#AddCategory").on("click", function () {
+                var catIdToAdd = $("#CategoryDropdown option:selected").attr("value");
+                var catNameToAdd = $("#CategoryDropdown option:selected").html();
+                var alreadyExists = $("#SelectedCategoriesList div[data-catid=" + catIdToAdd + "]");
+                if (alreadyExists.length == 0) {
+                    $("#SelectedCategoriesList").append(
+                        '<div class="fee-category-item clearfix" data-catid="' + catIdToAdd + '">' +
+                        '<a href="#RemoveCategory_' + catIdToAdd + '" class="pull-right remove-category btn text-danger">' +
+                        '<span class="glyphicon glyphicon-remove"></span>' +
+                        '</a>' +
+                        catNameToAdd +
+                        '</div>');
+                    UpdateCatList();
+                } else {
+                    //alert('already selected!');
+                    $(alreadyExists).addClass("existing-field", 100, function () { $(this).removeClass("existing-field", 300); });
+
+                }
+            });
+
+            $(".Save").on("click", function () {
+                UpdateCatList();
+                $("#SaveChanges").val("true");
+                $("#FeeCategoriesForm").submit();
+            });
+        });
+    </script>
+}

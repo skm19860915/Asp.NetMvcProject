@@ -1,0 +1,126 @@
+﻿@model RainWorx.FrameWorx.DTO.CreditCard
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    List<Address> addresses = UserClient.GetAddresses(User.Identity.Name, Html.FBOUserName());
+    string publishableApiKey = (string)ViewData["PublishableApiKey"];
+    int? billingAddressId = (int?)ViewData["PayerBillingAddressId"];
+    Address billingAddress = addresses.FirstOrDefault(a => a.ID == (billingAddressId ?? 0));
+    string returnUrl = (string)ViewData["returnUrl"];
+
+    var fboUser = UserClient.GetUserByUserName(User.Identity.Name, Html.FBOUserName());
+    int? primaryAddrId = fboUser.PrimaryAddressID;
+}
+
+@using (Html.BeginForm(MVC.AddCardAction, MVC.StripeController, FormMethod.Post, new { @id = "AddCardForm" }))
+{
+    @Html.Hidden("SellerID")
+    <div id="card-errors" class="payment-errors stripeError alert alert-danger" role="alert"></div>
+    @Html.LocalizedValidationSummary()
+
+    <div class="well well-sm section-title">
+        @Html.GlobalResource("CreditCardInformation")
+    </div>
+    <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="allfieldsrequired">@Html.GlobalResource("allfieldsrequired")</div>
+                @* v3 implementation *@
+
+                <div id="card-element">
+                    <!-- a Stripe Element will be inserted here. -->
+                </div>
+
+            </div>
+            <div class="panel-footer">
+                <input type="submit" class="btn btn-success" id="Save" name="Save" value="@Html.GlobalResource("Save")" />
+                <a href="@returnUrl" class="btn btn-link">@Html.GlobalResource("Cancel")</a>
+            </div>
+        </div>
+    </div>
+    @Html.Hidden("returnUrl", returnUrl)
+    @*
+        <p class="text-center">
+            &nbsp;<br />
+            @Html.ButtonLink(Html.GlobalResource("ManageExistingCC"), "CreditCards", "Account", null, new { @class = "btn btn-link" })
+        </p>
+    *@
+}
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    $(document).ready(function () {
+
+        @* v3 implementation *@
+        var stripe = Stripe('@publishableApiKey.ToJavascriptSafeString()');
+        var elements = stripe.elements();
+
+        // Create an instance of the card UI component
+        //var card = elements.create('card');
+        var card = elements.create('card', {
+            'style': {
+                'base': {
+                    'fontFamily': '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                    'fontSize': '16px',
+                    'color': '#555',
+                }
+            }
+        });
+
+        // Add an instance of the card UI component into the `card-element` <div>
+        card.mount('#card-element');
+
+        function stripeTokenHandler(token) {
+            // Insert the token ID into the form so it gets submitted to the server
+            var form = document.getElementById('AddCardForm');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            //hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('name', '@Fields.StripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            // Submit the form
+            form.submit();
+        }
+
+        function createToken() {
+            stripe.createToken(card).then(function (result) {
+                if (result.error) {
+                    // Inform the user if there was an error
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    // Send the token to your server
+                    stripeTokenHandler(result.token);
+                }
+            });
+        };
+
+        // Create a token when the form is submitted.
+        var form = document.getElementById('AddCardForm');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            createToken();
+        });
+
+        card.addEventListener('change', function (event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+    });
+
+    $(document).on("click tap keypress mousemove", function () {
+        if ($.trim($("#card-errors").text()).length) {
+            $("#card-errors").show();
+        }
+        else {
+            $("#card-errors").hide();
+        }
+    });
+</script>

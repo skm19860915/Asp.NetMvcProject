@@ -1,0 +1,17 @@
+﻿@model Listing
+
+@{
+    int result;
+    bool checkQuantity = int.TryParse(ViewData["Quantity"].ToString(), System.Globalization.NumberStyles.Integer, Html.GetCurrentCultureInfo(), out result);
+
+    if (!checkQuantity)
+    {
+        TempData[RainWorx.FrameWorx.Strings.MVC.ErrorMessage] = "QuantityNaN";
+        Response.Redirect(Html.GetActionUrl("Details", new { id = Model.ID, extra = Model.Title.SimplifyForURL("-") }), false);
+    }
+}
+
+@Html.Hidden("Quantity", ViewData["Quantity"])
+@Html.Resource("FixedPriceListing, ConfirmPurchase", Html.LocalInteger(int.Parse(ViewData["Quantity"].ToString())), Html.LocalCurrency(Model.CurrentPrice.Value, Model.Currency.Code))
+
+

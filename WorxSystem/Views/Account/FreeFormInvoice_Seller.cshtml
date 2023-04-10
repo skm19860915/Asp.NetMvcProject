@@ -1,0 +1,9 @@
+﻿@model RainWorx.FrameWorx.DTO.PaymentProviderResponse
+
+@using (Html.BeginForm("ConfirmInvoicePayment", "Account"))
+{
+    @Html.Hidden(MVC.Field_Provider, Model.ProviderIdentifier)
+    @Html.Hidden(Fields.Id, Model.InvoiceNumber)
+    @:The buyer paid some other way:@Html.TextArea(Fields.Description)<input type="submit" class="btn btn-default" value="Submit" />
+}
+

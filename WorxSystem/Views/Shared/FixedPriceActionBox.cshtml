@@ -1,0 +1,156 @@
+﻿@model Listing
+
+<script>
+    function checkValues() {
+        if ($("#Quantity").val() == "") {
+            console.log("missing QTY: aborting...");
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+
+<div class="detail__submit-wrapper">
+    <div class="detail__price">
+        <strong>@Html.Resource("FixedPriceListing, Price")</strong>
+        <span class="detail__price--current awe-rt-CurrentPrice">
+            @* do not remove this span, it gets populated via ajax *@
+            @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+        </span>
+        @if (Model.CurrentQuantity > 1)
+        {
+            <span class="detail__each">
+                @Html.Resource("FixedPriceListing, PerItem")
+            </span>
+        }
+        <span id="convertedprice" class="awe-hidden">
+            (<span class="Bidding_Local_Price" data-currency="@Model.Currency.Code">
+                @* do not remove this span, it gets populated via AJAX *@
+                @if (Model.Currency.Code != Html.GetCookie("currency"))
+                {
+                    @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value.ConvertAmount(Model.Currency.Code, Html.GetCookie("currency")), Html.GetCookie("currency"))
+                }
+            </span>)
+        </span>
+    </div>
+
+    <div class="row">
+            <div class="col-xs-12 col-sm-6 watching__wrapper">
+                @Html.Partial("ListingDetail_AddWatch")
+            </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+                @if (Model.CurrentQuantity > 99)
+                {
+                    <div class="input-group">
+                        <span class="input-group-addon">@Html.Resource("FixedPriceListing, Quantity")</span>
+                        @Html.TextBox("Quantity", 1, new { @class = "form-control", min = "1" })
+                    </div>
+                }
+                else
+                {
+                    @Html.DropDownList("Quantity", Enumerable.Range(1, Model.CurrentQuantity).Select(i =>
+                        new SelectListItem {
+                            Text = Html.Resource("FixedPriceListing, Quantity") + " : " + i.ToString(),
+                            Value = i.ToString()
+                        }),
+                        new { @class = "form-control", id = "Quantity", name = "Quantity" })
+                }
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-success btn-block" onclick="return checkValues()" value="@Html.Resource("FixedPriceListing, BuyNow")" />
+            </div>
+            @{ 
+                bool makeOfferAvailable = false;
+            }
+            @if (Model.Properties.Any(lp => lp.Field.Name == Fields.MakeOfferAvailable && bool.TryParse(lp.Value, out makeOfferAvailable) && makeOfferAvailable))
+            {
+                <div class="form-group">
+                    <div class="text-or"><span>@Html.GlobalResource("Or")</span></div>
+                    <button type="submit" class="btn btn-default btn-block" name="MakeOffer" id="MakeOffer">@Html.Resource("FixedPriceListing, MakeOffer")</button>
+                </div>
+            }
+            <div class="detail__disclaimer">@Html.Resource("FixedPriceListing, FixedPriceDisclaimer")</div>
+
+            @*   <div class="detail__qty-total">
+                    @Html.Resource("FixedPriceListing, QuantityAvailable")
+                    <span class="awe-rt-Quantity detail__qty-num">@Html.LocalInteger(Model.CurrentQuantity)</span>
+
+                </div>
+            *@
+
+
+            @{
+                if (Model.Status.Equals(ListingStatuses.Active) && !Model.IsGoodTilCanceled())
+                {
+                    <div class="detail__show-time awe-rt-Hide">
+
+                        <strong>
+                            @Html.GlobalResource("RemainingTime")
+                        </strong>
+                        <span class="detail__time" data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-Hide" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)">
+                            @Html.RemainingTime(Model.EndDTTM.Value)
+                        </span>
+
+                    </div>
+                }
+                else if (Model.Status.Equals(ListingStatuses.Pending) || Model.Status.Equals(ListingStatuses.Preview))
+                {
+                    if (!Model.IsGoodTilCanceled())
+                    {
+                        <div class="detail__show-time awe-rt-Remaining">
+
+                            <strong>
+                                @Html.GlobalResource("RemainingTime"):
+                            </strong>
+                            <span class="detail__time" data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-Remaining" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)">
+                                @Html.RemainingTime(Model.EndDTTM.Value)
+                            </span>
+                        </div>
+                    }
+                }
+            }
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+            <div class="detail__properties">
+                
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (Model.AcceptedListingActionCount() > 0)
+                    {
+                        <a href="@Url.Action(MVC.HistoryAction, new { id = Model.ID, currency = Model.Currency.Code })" class="detail__action-link"><span class="glyphicon glyphicon-tag"></span> @Html.Resource("FixedPriceListing, PurchaseHistory")</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action(MVC.HistoryAction, new { id = Model.ID, currency = Model.Currency.Code })" class="detail__action-link awe-hidden PurchaseHistoryButton"><span class="glyphicon glyphicon-tag"></span> @Html.Resource("FixedPriceListing, PurchaseHistory")</a>
+
+                    }
+                }
+                
+                <div class="fee">
+
+                    @{
+                        decimal buyersPremiumPct = 0;
+                        if (Model.Owner.Properties.Any(p => p.Field.Name == StdUserProps.BuyersPremiumPercent))
+                        {
+                            decimal.TryParse(Model.Owner.Properties.First(p => p.Field.Name == StdUserProps.BuyersPremiumPercent).Value,
+                                             out buyersPremiumPct);
+                        }
+                        if (buyersPremiumPct > 0)
+                        {
+                            <div class="detail__fee-heading">
+                                @Html.GlobalResource("BuyersPremium")
+                            </div>
+                            <div class="detail__buyer-premium">@Html.GlobalResource("Plus_Xpct_BuyersPremium", (buyersPremiumPct / 100).ToString("P"))</div>
+                        }
+                    }
+
+                    @Html.Partial("BuyerFee")
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

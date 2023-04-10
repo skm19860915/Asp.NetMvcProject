@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " + Html.GlobalResource("MyAccount");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    @RenderSection("head", required: false)
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            @Html.GlobalResource("MyAccount")
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-md-2 categories">
+        @if (ViewContext.RouteData.Values["action"].Equals(MVC.SummaryAction))
+            {
+            <div class="well well-sm summary hidden-xs hidden-sm active">@Html.ActionLink(Html.GlobalResource("Summary"), MVC.SummaryAction)</div>
+        }
+        else
+        {
+            <div class="well well-sm summary hidden-xs hidden-sm">@Html.ActionLink(Html.GlobalResource("Summary"), MVC.SummaryAction)</div>
+        }
+        @Html.Partial("CategoryListRoot", CommonClient.GetCategoryHierarchy(7).ChildHierarchies)
+    </div>
+    <div class="col-xs-12 col-md-10 myaccount">
+        @RenderBody()
+    </div>
+</div>
+@section scripts{
+    @RenderSection("scripts", required: false)
+}

@@ -1,0 +1,13 @@
+﻿@model Listing
+
+<div class="detail__payment-options">
+    @if (Model.PaymentInstructions() != null)
+    {
+        <span class="bb">
+            <strong>@Html.GlobalResource("PaymentInstructions")</strong>
+        </span>
+            <p>
+                @Model.PaymentInstructions()
+            </p>
+    }
+</div>

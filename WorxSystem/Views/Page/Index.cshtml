@@ -1,0 +1,10 @@
+﻿@model Content
+
+@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " + Model.PageTitle;
+}
+<div class="row">
+    <div class="col-xs-12">
+        @Model.Text.ToMvcHtmlString()
+    </div>
+</div>

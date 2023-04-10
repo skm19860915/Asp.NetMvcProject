@@ -1,0 +1,73 @@
+﻿@model List<CustomProperty>
+@{
+    List<int> securedFields = new List<int>();
+    foreach (var property in Model)
+    {
+        if (property.Field.Encrypted)
+        {
+            securedFields.Add(property.Field.ID);
+        }
+    }
+}
+@foreach (CustomProperty property in Model.OrderBy(cp => cp.Field.DisplayOrder))
+{
+    if (SiteClient.BoolSetting(SiteProperties.AutoGenerateInvoices) && property.Field.Name == StdUserProps.AllowInstantCheckout)
+    {
+        <input type="hidden" id="@StdUserProps.AllowInstantCheckout" name="@StdUserProps.AllowInstantCheckout" value="@MVC.FalseValue" />
+        continue;
+    }
+    bool securedField = securedFields.Contains(property.Field.ID);
+    <div class="form-group">
+
+        @if (property.Field.Name == StdUserProps.StripeConnect_SellerAccountConnected)
+        {
+            <label class="col-sm-3 control-label">
+                @Html.CustomFieldResource(property.Field.Name)
+            </label>
+        }
+        else if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+        {
+            <label class="required col-sm-3 control-label">
+                @Html.CustomFieldResource(property.Field.Name)
+            </label>
+        }
+        else if (property.Field.Type != CustomFieldType.Boolean)
+        {
+            <label class="col-sm-3 control-label">
+                @Html.CustomFieldResource(property.Field.Name)
+            </label>
+        }
+        else if (property.Field.Type == CustomFieldType.Boolean)
+        {
+            <div class="col-sm-3"></div>
+        }
+
+        <div class="col-sm-8">
+            @if (property.Field.Name.Equals(StdUserProps.StripeConnect_SellerAccountConnected))
+            {
+                @Html.Partial("StripeConnectionLinks", property)
+            }
+            else if (securedField && !string.IsNullOrEmpty(property.Value))
+            {
+                <input type="text" id="@property.Field.Name" name="@property.Field.Name" value="@Fields.MaskedFieldValue" class="form-control" />
+            }
+            else
+            {
+                Html.RenderCustomField(property.Field, new { @class = "form-control" });
+            }
+            @{
+                MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+                if (helpText != null)
+                {
+                    @Html.ToolTipContent(property.Field.Name + "_Help", helpText)
+                }
+            }
+        </div>
+        @if (helpText != null)
+        {
+            <div class="pull-left hidden-xs">
+                @Html.ToolTipButton(property.Field.Name + "_Help")
+            </div>
+        }
+    </div>
+}

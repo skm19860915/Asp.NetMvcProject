@@ -1,0 +1,48 @@
+﻿@model LineItem
+<div class="won-list clearfix">
+    <div class="row">
+        <div class="col-sm-1">
+            <input type="checkbox" name="LineItemIDs" value="@Model.ID" class="row-selection-checkbox" />
+        </div>
+        <div class="col-sm-2">
+            @Model.Listing.BeginDetailLink()
+            @if (Model.PrimaryMedia != null && Model.PrimaryMedia.Variations.ContainsKey("ThumbCrop"))
+            {
+                @Html.Partial(Model.PrimaryMedia.Type + "_ThumbCrop", Model.PrimaryMedia)
+            }
+            else
+            {
+                @Html.Partial("NoPhotoThumbnail")
+            }
+            @Model.Listing.EndDetailLink()
+        </div>
+        <div class="col-sm-5">
+            <p>
+                <strong>
+                    @Model.Listing.BeginDetailLink()
+                    @if (!string.IsNullOrEmpty(Model.LotNumber))
+                    {
+                        <span>@string.Format("{0} {1}", Html.GlobalResourceString("Lot"), Model.LotNumber) -&nbsp;</span>
+                    }
+                    @Model.Description
+                    @if (string.IsNullOrEmpty(Model.LotNumber))
+                    {
+                       <em>(@Model.ListingID)</em>
+                    }
+                    @Model.Listing.EndDetailLink()
+                </strong>
+                <br />
+                @Html.LocalDTTM(Model.DateStamp, "G") (@Model.Owner.UserName)
+            </p>
+            <div class="row">
+                <div class="col-sm-4">@Model.Quantity</div>
+                <div class="col-sm-4">@Html.LocalCurrency(Model.PerUnitAmount, Model.Currency)</div>
+                <div class="col-sm-4">@Html.LocalCurrency(Model.TotalAmount, Model.Currency)</div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            @Html.Partial("Action_BuyerBought")
+        </div>
+    </div>
+
+</div>

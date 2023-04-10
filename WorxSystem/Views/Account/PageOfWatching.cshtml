@@ -1,0 +1,33 @@
+﻿@model Page<Listing>
+
+@if (Model.TotalItemCount > 0)
+{
+    using (Html.BeginForm(MVC.BiddingWatchingAction, MVC.AccountController, new { page = Request["page"], SortFilterOptions = Request["SortFilterOptions"] }, FormMethod.Post, new { id = "biddingWatching" }))
+    {
+        <div class="row">
+            @foreach (Listing listing in Model.List)
+            {
+                <div class="col-xs-12">
+                    <div data-listingid="@listing.ID" class="watchlist-section">
+                        @Html.Partial("Watching_" + listing.Type.Name + "Row", listing)
+                    </div>
+                </div>
+            }
+            <div class="col-xs-12">
+                <button class="btn btn-default" name="removeMultiple" id="removeMultiple">
+                    @Html.GlobalResource("RemoveMultipleWatches")
+                </button>
+            </div>
+        </div>
+    }
+    if (Model.TotalItemCount == 0)
+    {
+        <p class="no-history">
+            @Html.GlobalResource("EmptyWatchList")
+        </p>
+    }
+    if (Model.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(Model);
+    }
+}

@@ -1,0 +1,763 @@
+﻿@model Page<Listing>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    Event auctionEvent = (Event)ViewData["Event"];
+    string returnUrl = Request.Url.PathAndQuery;
+    string publishUrl = (User.IsInRole("Admin") || !SiteClient.BoolSetting(SiteProperties.RequireAdminToPublishEvent))
+        ? Html.GetActionUrl(MVC.PublishEventAction, MVC.EventController, new { id = auctionEvent.ID })
+        : Html.GetActionUrl(MVC.RequestPublishEventAction, MVC.EventController, new { id = auctionEvent.ID });
+    bool showProcessPaymentsLink = Html.SellerTakesCreditCardPayments(Html.FBOUserName());
+}
+
+<script>
+    $(document).ready(function () {
+        $(".awe-end-lot-early-link").click(function () {
+            var jsEndEarlyConfirmMsg = //"Really end this lot early?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("EndEarlyLotWarning_Really").ToJavascriptSafeString()' + '\n' +
+                '@Html.GlobalResourceString("EndEarlyWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("EndEarlyConfirmationTitle").ToJavascriptSafeString()',
+                message: jsEndEarlyConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("EndEarly").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+        $(".awe-delete-lot-link").click(function () {
+            var jsDeleteConfirmMsg = //"Really delete this lot?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("DeleteLotWarning_Really").ToJavascriptSafeString()' + '\n' +
+                '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                message: jsDeleteConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $(".awe-end-early-link").click(function () {
+            var jsEndEarlyConfirmMsg = //"Really end this event early?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("EndEarlyEventWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("EndEarlyWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("EndEarlyConfirmationTitle").ToJavascriptSafeString()',
+                message: jsEndEarlyConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("EndEarly").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $(".awe-delete-link").click(function () {
+            var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("DeleteEventWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                message: jsDeleteConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $(".awe-confirm-publish").on("click", function () {
+            var jsPublishEventMessage = //"Really publish his event?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("PublishEvent_Really").ToJavascriptSafeString()' + '\n'
+                + '@Html.GlobalResourceString("PublishEvent_CantBeUndone").ToJavascriptSafeString()';
+            var jsPublishConfTitle = //
+                '@Html.GlobalResourceString("PublishEvent_ConfirmationTitle").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-primary',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; ' + jsPublishConfTitle,
+                message: jsPublishEventMessage,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("PublishEvent").ToJavascriptSafeString()',
+                        cssClass: 'btn-primary',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $(".awe-cant-publish").click(function () {
+            var targetHref = $(this).attr("href");
+            $.post('RealTime/GetDraftLotCount', { eventId: @auctionEvent.ID }).done(function (data) {
+                if (data.DraftLotCount > 0) {
+                    var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                        '@MvcHtmlString.Create(Html.GlobalResourceString("CantPublishEventsWithDraftLotsMessage")).ToJavascriptSafeString()';
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("CantPublishEventsWithDraftLotsTitle").ToJavascriptSafeString()',
+                        message: jsDeleteConfirmMsg,
+                        buttons: [
+                            {
+                                label: '@Html.GlobalResourceString("ViewDraftLots").ToJavascriptSafeString()',
+                                cssClass: 'btn-info',
+                                action: function () {
+                                    window.location = $.htmlDecode(targetHref);
+                                }
+                            }, {
+                                label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                } else {
+                    //publish the event
+                    var publishUrl = "@publishUrl.ToJavascriptSafeString()";
+                    window.location = $.htmlDecode(publishUrl);
+                }
+            });
+            return false;
+        });
+
+        $(".awe-reset-lot-nums-link").click(function () {
+            var jsEndEarlyConfirmMsg = //"Really reset the lot numbers?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("ResetLotNumbersWarning_Really").ToJavascriptSafeString().ToMvcHtmlString()' + '\n' +
+                '@Html.GlobalResourceString("ResetLotNumbersWarning_CantBeUndone").ToJavascriptSafeString().ToMvcHtmlString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-warning',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("ResetLotNumbersConfirmationTitle").ToJavascriptSafeString().ToMvcHtmlString()',
+                message: jsEndEarlyConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("ResetLotNumbers").ToJavascriptSafeString().ToMvcHtmlString()',
+                        cssClass: 'btn-warning',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString().ToMvcHtmlString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        //[Print All Invoices] - click
+        $(".PrintAllInvoices").click(function (event) {
+            event.preventDefault();
+            window.open($(this).attr("href"), '_blank', 'width=600,height=600,scrollbars=yes');
+            return false;
+        });
+
+        //[Process Payments]
+        $(".ProcessPayments").on("click", function (event) {
+            event.preventDefault();
+            var targetUrl = $.htmlDecode($(this).attr("href"));
+            $(this).attr('disabled', 'disabled');
+            $(this).fadeTo(0, 0.5);
+            window.location.assign(targetUrl);
+        });
+
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+        $("select#ViewFilterOption").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+        $('.checkall').click(function () {
+            $(".row-selection-checkbox").prop("checked", this.checked);
+        });
+
+        $(".ValidateAllDraftsLink").click(function (event) {
+            event.preventDefault();
+            var linkEl = $(this);
+            var targetUrl = "@Url.Action(MVC.ValidateAllDraftsAction, MVC.EventController, new { eventid=auctionEvent.ID }).ToJavascriptSafeString()";
+            linkEl.prop("disabled", true);
+            $(".awe-rt-ValidationCompletedMessage").hide();
+            $.ajax({
+                type: "POST",
+                url: targetUrl,
+                success: function () {
+                    //success
+                    $(".awe-rt-ValidationIndicator").show();
+                },
+                error: function (jqxhr, settings, thrownError) {
+                    //error
+                    linkEl.prop("disabled", false);
+                    systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + thrownError + "</div>";
+                    $(".awe-rt-SystemMessage").fadeOut(200, function () {
+                        $(this).html(systemMessage);
+                        $(this).fadeIn(200);
+                    });
+                }
+            });
+        });
+
+        @*$("#SetArchived").click(function () {
+            if ($(".row-selection-checkbox:checked").length == 0) {
+                //alert('@Html.GlobalResourceString("YouMustSelectAtLeastOneSaleToProceed")');
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                    message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneSaleToProceed").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+            $(this).parents("form").first().submit();
+            return false;
+        });*@
+
+        //[Filter] - click
+        $("#ToggleFilterOptions").click(function (event) {
+            event.preventDefault();
+            if ($("#ToggleIcon").hasClass("glyphicon-plus-sign")) {
+                //show filter opts
+                $("#ToggleIcon").addClass("glyphicon-minus-sign").removeClass("glyphicon-plus-sign");
+            } else {
+                //clear out input values
+                $("#SearchTerm").val("");
+
+                //hide filter opts
+                $("#ToggleIcon").addClass("glyphicon-plus-sign ").removeClass("glyphicon-minus-sign");
+            }
+        });
+        //[Clear Filter] click
+        $("#ClearFilter").click(function (event) {
+            event.preventDefault();
+            $("#SearchTerm").val("");
+            if (filtersApplied) {
+                $(this).parents("form").first().submit();
+            }
+        });
+        //if any keywords have already been specified...
+        var filtersApplied = $("#SearchTerm").val() != "";
+        if (filtersApplied) {
+            //show filter opts
+            $("#ToggleFilterOptions").addClass("awe-hidden");
+            $("#ClearFilter").removeClass("awe-hidden");
+        }
+        else {
+            $("#ToggleFilterOptions").removeClass("awe-hidden");
+            $("#ClearFilter").addClass("awe-hidden");
+        }
+
+        var abortPublishSlowResponseRedirect = false;
+        @if(auctionEvent.Status == AuctionEventStatuses.Publishing)
+        {
+            <text>
+            var failsafe_delay_ms = 10000;
+            //just in case publishing finished before this page finished loading
+            setTimeout(function(){
+                Proxy.invoke("GetEventStatus", { eventId: @auctionEvent.ID },
+                    function(result) {
+                        if (result == null || abortPublishSlowResponseRedirect) return;
+                        if ($(".awe-rt-PublishIndicator:visible").length > 0 && result.Status != '@AuctionEventStatuses.Publishing') {
+                            write_log({
+                                title: "Event publish response too slow",
+                                message: "manage lots page reloaded"
+                                , "Event ID": "@auctionEvent.ID"
+                                , "URL": document.location.href
+                                , "Timeout MS": failsafe_delay_ms
+                                , "UserAgent": navigator.userAgent
+                            });
+                            window.location.reload();
+                        }
+                    },
+                    function(error) { window.alert(error); });
+            }, failsafe_delay_ms);
+            </text>
+        }
+
+        $(document).on("SignalR_UpdateEventStatus", function (event, data) {
+            if ($.inArray(data.EventID, interestingEvents) < 0) return;
+
+            if (data.Source == "EVENT_PUBLICATION_FINISHED_ORIGIN") {
+                if (data.EventID == "@auctionEvent.ID" && data.Status == "AwaitingPayment") {
+                    //alert('redirecting to fees page for checkout...');
+                    window.location = "@Url.Action(MVC.FeesAction, MVC.AccountController)";
+                }
+            } else if (data.Source == "EVENT_PUBLICATION_FAILED_ORIGIN") {
+                if (data.EventID == "@auctionEvent.ID") {
+                    abortPublishSlowResponseRedirect = true;
+                    $(".awe-rt-PublishIndicator").hide();
+                    $("#ResultMessageArea").prepend(
+                        $('<div class="alert alert-danger" />')
+                            .html('<a class="close" onclick="$(this).parents(\'div\').first().slideUp();">×</a>@Html.GlobalResourceString("PublishEventFailure").ToJavascriptSafeString().ToMvcHtmlString()')
+                    ).focus();
+                }
+            }
+        });
+
+        $("#ExportCSV").show().click(function () {
+            document.location = $.htmlDecode("@Html.GetActionUrl(MVC.LotsByEventCSVAction, new { @id = auctionEvent.ID })"
+                + "?" + "@HttpContext.Current.Request.QueryString");
+            return false;
+        });
+
+        //because this is the perspective of the seller/admin, show "Successful" not "Ended" if the status updates dynamically
+        //execute with a slight delay to ensure it runs after initial setup defined in the footer
+        setTimeout(function () {
+            statusDictionary["Successful"] = "@Html.GlobalResource("Successful").ToJavascriptSafeString()";
+            lotStatusHtmlDictionary["@ListingStatuses.Successful"] = '<span class="label label-success">@Html.GlobalResource(ListingStatuses.Successful).ToJavascriptSafeString()</span>';
+        }, 250);
+
+    });
+    </script>
+@section scripts {
+    @if (auctionEvent.Status.Equals(AuctionEventStatuses.Draft) ||
+         auctionEvent.Status.Equals(AuctionEventStatuses.Preview) ||
+         auctionEvent.Status.Equals(AuctionEventStatuses.Scheduled) ||
+         auctionEvent.Status.Equals(AuctionEventStatuses.Active) ||
+         auctionEvent.Status.Equals(AuctionEventStatuses.Closing))
+    {
+        <script>
+            $(document).ready(function () {
+                if (new String(window.location).indexOf("startvalidation=true") > -1) {
+                    setTimeout(function () { $(".ValidateAllDraftsLink").first().click(); }, 1000);
+                }
+            });
+        </script>
+    }
+}
+    <div id="ResultMessageArea" data-eventid="@auctionEvent.ID">
+        @if (auctionEvent.Status == AuctionEventStatuses.Publishing)
+        {
+            <div class="alert alert-warning awe-rt-PublishIndicator">
+                <a class="close" onclick="$(this).parents('div').first().slideUp();">×</a>
+                @Html.GlobalResource("PublishEventStarted") <img src='Content/images/General/refresh-animated.gif' />
+            </div>
+            <div class="alert alert-success awe-rt-PublishCompletedMessage awe-hidden">
+                <a class="close" onclick="$(this).parents('div').first().slideUp();">×</a>
+                @Html.GlobalResource("PublishEventCompleted")
+            </div>
+        }
+        <div class="alert alert-warning awe-rt-ValidationIndicator awe-hidden">
+            <a class="close" onclick="$(this).parents('div').first().slideUp();">×</a>
+            @Html.GlobalResource("ValidateAllDraftsStarted") <img src='Content/images/General/refresh-animated.gif' />
+        </div>
+        <div class="alert alert-success awe-rt-ValidationCompletedMessage awe-hidden">
+            <a class="close" onclick="$(this).parents('div').first().slideUp();">×</a>
+            @Html.GlobalResource("ValidateAllDraftsCompleted_CheckEmail")
+        </div>
+        <div class="well well-sm section-title">
+            <button class="btn btn-default btn-xs pull-right" id="ExportCSV">@Html.GlobalResource("ExportCSV")</button>
+            <a href="@Url.Action((string)ViewData["SelectedNavAction"])" class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-chevron-left"></span> @Html.GlobalResource("Back")</a>
+            @Html.GlobalResource("LineageString_LotsByEvent", (string)ViewData["EventsSubsectionTitle"], auctionEvent.Title, auctionEvent.ID)
+        
+        </div>
+        @Html.LocalizedValidationSummary()
+    </div>
+    <div class="panel panel-default">
+        <div class="row" data-eventid="@auctionEvent.ID">
+            <div class="col-xs-12">
+                <h1 class="event-title">
+                    @auctionEvent.BeginDetailLink()
+                    @auctionEvent.Title
+                    @auctionEvent.EndDetailLink()
+                    <span class="pull-right"><span class="awe-rt-ColoredStatus">@Html.Partial("Event_StatusLabel", auctionEvent)</span></span>
+                </h1>
+                @if (auctionEvent.StartDTTM.HasValue)
+                {
+                    <span>@Html.LocalDTTM(auctionEvent.StartDTTM.Value, auctionEvent.TimeZone, "G") -</span>
+                }
+                else
+                {
+                    <span>@Html.GlobalResource("FirstLotCloses"):</span>
+                }
+                @Html.LocalDTTM(auctionEvent.EndDTTM, auctionEvent.TimeZone, "G")
+                
+                @*<small>(@Html.TimeZoneName(auctionEvent.TimeZone))</small>*@
+
+                <hr />
+                @Html.Partial("Action_Events_Quick", auctionEvent)
+                <hr />
+            </div>
+        </div>
+        <div class="row" data-eventid="@auctionEvent.ID">
+            @using (Html.BeginForm(MVC.LotsByEventAction, MVC.AccountController, new { id = auctionEvent.ID, page = 0 }, FormMethod.Get))
+            {
+                <div class="col-sm-3 col-lg-2">
+                    <div class="form-group dropdown">
+                        <button type="button" class="btn btn-default dropdown-toggle" id="EventLotsOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @Html.GlobalResource("EventOptions") <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="EventLotsOptions">
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("Summary"), MVC.EventSummaryAction, MVC.AccountController,
+                                    new { id = auctionEvent.ID }, null)
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            @if (auctionEvent.Status == AuctionEventStatuses.AwaitingPayment)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("PayFees"), MVC.FeesAction, MVC.AccountController)
+                                </li>
+                                <li role="separator" class="divider"></li>
+                            }
+                            @if (auctionEvent.Status == AuctionEventStatuses.Draft ||
+                                    auctionEvent.Status == AuctionEventStatuses.Preview ||
+                                    auctionEvent.Status == AuctionEventStatuses.Scheduled ||
+                                    auctionEvent.Status == AuctionEventStatuses.Active ||
+                                    auctionEvent.Status == AuctionEventStatuses.Closing)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController,
+                                        new { EventID = auctionEvent.ID, returnUrl }, new { @class = "" })
+                                </li>
+                                <li role="separator" class="divider"></li>
+                            }
+                            @if (auctionEvent.Status == AuctionEventStatuses.Draft ||
+                                    auctionEvent.Status == AuctionEventStatuses.Preview ||
+                                    auctionEvent.Status == AuctionEventStatuses.Scheduled ||
+                                    auctionEvent.Status == AuctionEventStatuses.Active)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("ManageLotOrder"), MVC.ClosingGroupsAction, MVC.AccountController,
+                                        new { id = auctionEvent.ID }, new { @class = "" })
+                                </li>
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("ManageSoftClosingGroups"), MVC.SoftClosingGroupsAction, MVC.AccountController,
+                                        new { id = auctionEvent.ID }, new { @class = "" })
+                                </li>
+                                <li role="separator" class="divider"></li>
+                            }
+                            @if (auctionEvent.Status == AuctionEventStatuses.Draft ||
+                                    auctionEvent.Status == AuctionEventStatuses.Preview ||
+                                    auctionEvent.Status == AuctionEventStatuses.Scheduled ||
+                                    auctionEvent.Status == AuctionEventStatuses.Active ||
+                                    auctionEvent.Status == AuctionEventStatuses.Closing)
+                            {
+                                <li>
+                                    <a href="#ValidateAllDrafts" class="ValidateAllDraftsLink">@Html.GlobalResource("ValidateAllDrafts")</a>
+                                </li>
+                            }
+                            @if (auctionEvent.Status.Equals(AuctionEventStatuses.Draft))
+                            {
+                                if (User.IsInRole("Admin"))
+                                {
+                                    if (EventClient.GetLotCountByListingStatus(User.Identity.Name, auctionEvent.ID, ListingStatuses.Draft) > 0)
+                                    {
+                                        <li>
+                                            @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.LotsByEventAction, MVC.AccountController,
+                                                new { id = auctionEvent.ID, ViewFilterOption = "Draft" }, new { @class = "awe-cant-publish" })
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.PublishEventAction, MVC.EventController,
+                                                new { id = auctionEvent.ID }, new { @class = "awe-confirm-publish" })
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    if (EventClient.GetLotCountByListingStatus(User.Identity.Name, auctionEvent.ID, ListingStatuses.Draft) > 0)
+                                    {
+                                        <li>
+                                            @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.LotsByEventAction, MVC.AccountController,
+                                                new { id = auctionEvent.ID, ViewFilterOption = "Draft" }, new { @class = "awe-cant-publish" })
+                                        </li>
+                                    }
+                                    else if (SiteClient.BoolSetting(SiteProperties.RequireAdminToPublishEvent))
+                                    {
+                                        <li>
+                                            @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.RequestPublishEventAction, MVC.EventController,
+                                                new { id = auctionEvent.ID }, null)
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.PublishEventAction, MVC.EventController,
+                                                new { id = auctionEvent.ID }, new { @class = "awe-confirm-publish" })
+                                        </li>
+                                    }
+                                }
+                                <li role="separator" class="divider"></li>
+                            }
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("View"), MVC.DetailsAction, MVC.EventController,
+                                    new { id = auctionEvent.ID }, null)
+                            </li>
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditAction, MVC.EventController,
+                                    new { id = auctionEvent.ID, returnUrl }, null)
+                            </li>
+
+                            @if (auctionEvent.Status == AuctionEventStatuses.Preview ||
+                                     auctionEvent.Status == AuctionEventStatuses.Scheduled)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("StartEarly"), MVC.StartEventEarlyAction, MVC.EventController,
+                                        new { id = auctionEvent.ID, returnUrl }, null)
+                                </li>
+                            }
+
+                            @if (auctionEvent.Status == AuctionEventStatuses.Preview ||
+                                    auctionEvent.Status == AuctionEventStatuses.Scheduled ||
+                                    auctionEvent.Status == AuctionEventStatuses.Active ||
+                                    auctionEvent.Status == AuctionEventStatuses.Closing)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("EndEarly"), MVC.EndEventEarlyAction, MVC.EventController,
+                                        new { id = auctionEvent.ID, returnUrl }, new { @class = "awe-end-early-link" })
+                                </li>
+                            }
+
+                            @if (auctionEvent.Status == AuctionEventStatuses.Closed)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("Archive"), MVC.SetEventsArchivedAction, MVC.AccountController,
+                                        new { EventIDs = auctionEvent.ID, archived = true, returnUrl }, null)
+                                </li>
+                            }
+
+                            @if (auctionEvent.Status == AuctionEventStatuses.Archived)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("UnArchive"), MVC.SetEventsArchivedAction, MVC.AccountController,
+                                        new { EventIDs = auctionEvent.ID, archived = false, returnUrl }, null)
+                                </li>
+                            }
+
+                            @if ((auctionEvent.Status == AuctionEventStatuses.Draft ||
+                                    auctionEvent.Status == AuctionEventStatuses.Closed ||
+                                    auctionEvent.Status == AuctionEventStatuses.Archived)
+                                || Context.User.IsInRole("Admin"))
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteEventAction, MVC.EventController,
+                                        new { id = auctionEvent.ID, returnUrl }, new { @class = "awe-delete-link" })
+                                </li>
+                            }
+
+                            @if (auctionEvent.Status == AuctionEventStatuses.Active ||
+                                auctionEvent.Status == AuctionEventStatuses.Closing ||
+                                auctionEvent.Status == AuctionEventStatuses.Closed ||
+                                auctionEvent.Status == AuctionEventStatuses.Archived)
+                            {
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("SalesReport"), MVC.EventSalesTransactionReportAction, MVC.AccountController,
+                                        new { eventID = auctionEvent.ID }, null)
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("ViewInvoices"), MVC.InvoiceEventSalesAction, MVC.AccountController,
+                                        new { EventID = auctionEvent.ID }, null)
+                                </li>
+                            }
+
+                            @if (auctionEvent.Status == AuctionEventStatuses.Closed)
+                            {
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("CreateAllInvoices"), MVC.CreateAllInvoicesAction, MVC.AccountController,
+                                        new { eventID = auctionEvent.ID, returnUrl }, null)
+                                </li>
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("EmailAllInvoices"), MVC.EmailAllEventInvoicesAction, MVC.AccountController,
+                                        new { @id = auctionEvent.ID }, null)
+                                </li>
+                                <li>
+                                    @Html.ActionLink(Html.GlobalResource("PrintAllInvoices"), MVC.PrintMultipleInvoicesAction, MVC.AccountController,
+                                        new { @EventID = auctionEvent.ID }, new { @class = "PrintAllInvoices" })
+                                </li>
+                                if (showProcessPaymentsLink)
+                                {
+                                    <li role="separator" class="divider"></li>
+                                    <li>
+                                        @Html.ActionLink(Html.GlobalResource("ProcessPayments"), MVC.PayAllInvoicesAction, MVC.AccountController,
+                                            new { @EventID = auctionEvent.ID, returnUrl }, new { @class = "ProcessPayments" })
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-lg-4">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">@Html.GlobalResource("View")</div>
+                            @Html.DropDownList(MVC.ViewFilterOption, null, new { @class = "form-control SubmitOnChange" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">@Html.GlobalResource("Sort")</div>
+                            @Html.DropDownList(MVC.SortFilterOptions, null, new { @class = "form-control SubmitOnChange" })
+                        </div>
+                    </div>
+                    <input type="submit" id="submitDropDown" class="awe-hidden" />
+                </div>
+                <div class="col-sm-2">
+                    <a id="ToggleFilterOptions" href="#FilterOptions" class="btn btn-default pull-right" data-toggle="collapse">
+                        <span id="ToggleIcon" class="glyphicon text-default glyphicon-plus-sign"></span>
+                        &nbsp;@(Html.GlobalResource("Filter"))
+                    </a>
+                    <button id="ClearFilter" class="btn btn-default pull-right awe-hidden">
+                        <span id="ToggleIcon" class="glyphicon text-default glyphicon-remove"></span>
+                        &nbsp;@(Html.GlobalResource("ClearFilter"))
+                    </button>
+                </div>
+                <div id="FilterOptions" class="col-xs-12 collapse">
+                    <div class="form-inline filter">
+                        <label>@Html.GlobalResource("FilterBy")</label>
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButton(Fields.SearchType, "ListingTitle", true, new { @id = "SearchType_ListingTitle" })
+                            </label>
+                        </div>
+                        <label for="SearchType_ListingTitle">@Html.GlobalResource("Title")</label>
+                        &nbsp;&nbsp;
+                        @*
+                        <div class="radio">
+                            <label>
+                        @Html.RadioButton(Fields.SearchType, "LotNumber", false, new { @id = "SearchType_LotNumber" })
+                             </label>
+                        </div>
+                        <label for="SearchType_LotNumber">@Html.GlobalResource("LotNumber")</label>
+                        *@
+
+                        @Html.TextBox(Fields.SearchTerm, null, new { @class = "form-control", @placeholder = Html.GlobalResourceString("EnterKeywords") })
+                        <button class="btn btn-info" id="ApplyFilter">@Html.GlobalResource("ApplyFilter")</button>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+
+
+        @using (Html.BeginForm(MVC.SetLineItemsArchivedAction, MVC.AccountController, FormMethod.Post))
+        {
+            <table class="table">
+                <tr class="active">
+                    <th>
+                            <!-- Lot order -->
+                        </th>
+                    <th>
+                        @Html.GlobalResource("Status")
+                        <div class="visible-xs">@Html.GlobalResource("CurrentPrice")</div>
+                    </th>
+                    <th class="hidden-xs">
+                        <!-- photo icon -->
+                        <span class="glyphicon glyphicon-picture" title="@Html.GlobalResource("LotImageStatus")"></span>
+
+                    </th>
+                    <th>
+                        @Html.GlobalResource("Title") <em>(@Html.GlobalResource("LotNumber"))</em>
+                        <div class="visible-xs">@Html.GlobalResource("EndDTTM")</div>
+                    </th>
+                    <th class="hidden-xs">@Html.GlobalResource("EndDTTM")</th>
+                    <th class="hidden-xs">@Html.GlobalResource("CurrentPrice")</th>
+                    <th></th>
+                </tr>
+                @foreach (Listing lot in Model.List)
+                {
+                    @Html.Partial("Lot_Row", lot)
+                }
+            </table>
+
+            @*<div class="hidden-xs">
+                @{
+                    string viewFilterOption = (string) ((SelectList) ViewData[MVC.ViewFilterOption]).SelectedValue;
+                    if (viewFilterOption != "Archived")
+                    {
+                        @Html.Hidden("archived", true.ToString())
+                        @((Model.PageIndex > 0) ? Html.Hidden("page", Model.PageIndex) : MvcHtmlString.Empty)
+                        <button class="btn btn-default" id="SetArchived">@Html.GlobalResource("ArchiveSales")</button>
+                    }
+                    else
+                    {
+                        @Html.Hidden("archived", false.ToString())
+                        @((Model.PageIndex > 0) ? Html.Hidden("page", Model.PageIndex) : MvcHtmlString.Empty)
+                        <button class="btn btn-default" id="SetArchived">@Html.GlobalResource("RestoreSales")</button>
+                    }
+                }
+            </div>*@
+        }
+    </div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

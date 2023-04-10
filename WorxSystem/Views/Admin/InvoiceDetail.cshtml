@@ -1,0 +1,47 @@
+﻿@model Invoice
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+@if (Model == null)
+{
+    @Html.LocalizedValidationSummary()
+}
+else if (Model.Type == "Fee")
+{
+    ViewBag.PageName = Html.AdminResource("SiteFeeInvoice");
+    @section PageName {&nbsp;#&nbsp;@Model.ID &nbsp;<div class="pull-right">&nbsp;<strong>@Html.AdminResource("Username"): </strong>@Model.Payer.UserName</div>}
+
+    if (Model.Status == "Paid")
+    {
+        @Html.Partial("PaidFeeInvoice", Model)
+    }
+    else if (Model.Status == "Pending")
+    {
+        @Html.Partial("PendingFeeInvoice", Model)
+    }
+    else
+    {
+        @Html.Partial("UnpaidFeeInvoice", Model)
+
+    }
+}
+else
+{
+    ViewBag.PageName = Html.AdminResource("SaleInvoice");
+    @section PageName {&nbsp;#&nbsp;@Model.ID &nbsp;}
+
+    if (Model.Status == "Paid")
+    {
+        @Html.Partial("PaidListingInvoice", Model)
+    }
+    else if (Model.Status == "Pending")
+    {
+        @Html.Partial("PendingListingInvoice", Model)
+    }
+    else
+    {
+        @Html.Partial("UnpaidListingInvoice", Model)
+    }
+}

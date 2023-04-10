@@ -1,0 +1,170 @@
+﻿@model Event
+
+<div class="panel panel-default event-hp" data-eventid="@Model.ID">
+    <div class="panel-body event-row">
+        <div class="event-row__img">
+            @{string uri = string.Format(Model.PrimaryImageURI, "ThumbFit".ToLower()); }
+            @Model.BeginDetailLink()
+            @if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+            {
+                @Html.Partial("NoPhotoThumbnail")
+            }
+            else
+            {
+                <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+            }
+            @Model.EndDetailLink()
+        </div>
+        <div class="event-row__title">
+            @Model.BeginDetailLink()
+            @Model.Title
+            @Model.EndDetailLink()
+        </div>
+        <div class="event-row__summary">
+            @Model.Subtitle
+        </div>
+        <div class="event-row__thumbnails">
+            @{
+                List<Listing> eventlots = (List<Listing>)SiteClient.GetCacheData("samplelots_" + Model.ID.ToString());
+                if (eventlots == null)
+                {
+                    bool validCategoryCounts;
+                    string effectiveStatuses = ListingStatuses.Active + "," +
+                                                    ListingStatuses.Ended + "," +
+                                                    ListingStatuses.Successful + "," +
+                                                    ListingStatuses.Unsuccessful + "," +
+                                                    ListingStatuses.Preview;
+                    UserInput input = new UserInput(User.Identity.Name, Html.FBOUserName(), Html.GetCookie(MVC.CultureCookie),
+                                      Html.GetCookie(MVC.CultureCookie));
+                    input.Items[Fields.Statuses] = effectiveStatuses;
+                    input.Items.Add(Fields.EventCategoryID, Model.CategoryID.ToString());
+
+                    ListingPageQuery currentQuery = RainWorx.FrameWorx.MVC.Models.QuerySortDefinitions.MergeEventDetailOptions(0,
+                                                                                                        input,
+                                                                                                        out validCategoryCounts);
+                    string fillLevel = ListingFillLevels.LotEvent;
+                    Dictionary<int, int> notUsed = null;
+                    Page<Listing> results = ListingClient.SearchListingsWithFillLevel("", currentQuery, 0, 10, fillLevel, false, out notUsed);
+
+                    eventlots = results.List;
+                    SiteClient.SetCacheData("samplelots_" + Model.ID.ToString(), eventlots, 1);
+
+                }
+                foreach (var listing in eventlots)
+                {
+                    string thumburi = string.Format(listing.PrimaryImageURI, "ThumbCrop".ToLower());
+                    if (thumburi == "") { thumburi = "Content/Images/placeholder-thumbnail.gif"; }
+
+                    var lotID = listing.ID;
+
+                    <a href="@Url.Action(MVC.DetailsAction, MVC.ListingController,new { id = listing.ID }, null)">
+                        <img src="@thumburi" alt="@Html.GlobalResource("LotImage")" class="event-row__thumb-single" />
+                    </a>
+                }
+            }
+        </div>
+        <div class="event-row__details">
+            <div class="event-row__status awe-rt-eventbidstatuslabel">
+                @if (Model.Status == AuctionEventStatuses.Preview)
+                {
+                    <div class="awe-rt-HideOnStart event-row__status--preview">
+                        @Html.GlobalResource("EventBiddingPreview")
+                    </div>
+                    <div class="awe-rt-ShowOnStart awe-hidden awe-rt-HideOnEnd event-row__status--active">
+                        @Html.GlobalResource("EventBiddingOpen")
+                    </div>
+                }
+                else if (Model.Status == AuctionEventStatuses.Closing)
+                {
+                    <div class="awe-rt-ShowOnStart awe-rt-HideOnEnd event-row__status--active">
+                        @Html.GlobalResource("EventBiddingClosing")
+                    </div>
+                    <div class="awe-hidden event-row__status--closed">
+                        @Html.GlobalResource("EventBiddingEnded")
+                    </div>
+                }
+                else if (Model.Status == AuctionEventStatuses.Closed)
+                {
+                    <div class="event-row__status--closed">
+                        @Html.GlobalResource("EventBiddingEnded")
+                    </div>
+                }
+                else
+                {
+                    <div class="awe-rt-ShowOnStart awe-rt-HideOnEnd event-row__status--active">
+                        @Html.GlobalResource("EventBiddingOpen")
+                    </div>
+                }
+            </div>
+            <div class="event-row__time-label awe-rt-eventtimelabel">
+                @if (Model.Status == AuctionEventStatuses.Preview)
+                {
+                    <div class="awe-rt-HideOnStart">
+                        @Html.GlobalResource("StartsIn")
+                    </div>
+                    <div class="awe-rt-ShowOnStart awe-hidden awe-rt-HideOnEnd">
+                        @Html.GlobalResource("StartsclosingIn")
+                    </div>
+                }
+                else if (Model.Status == AuctionEventStatuses.Closing)
+                {
+                    <div class="awe-rt-ShowOnStart awe-rt-HideOnEnd">
+                        @Html.GlobalResource("Closing")
+                    </div>
+                    <div class="awe-hidden">
+                        @Html.GlobalResource("Ended")
+                    </div>
+                }
+                else if (Model.Status == AuctionEventStatuses.Closed)
+                {
+                    <div>
+                        @Html.GlobalResource("Ended")
+                    </div>
+                }
+                else
+                {
+                    <div class="awe-rt-HideOnEnd">
+                        @Html.GlobalResource("StartsclosingIn")
+                    </div>
+                    <div class="awe-hidden">
+                        @Html.GlobalResource("Ended")
+                    </div>
+                }
+            </div>
+            <div class="event-row__countdown awe-rt-eventtimecountdown">
+                @if (Model.Status == AuctionEventStatuses.Preview)
+                {
+                    <span class="awe-rt-HideOnStart">
+                        <span data-epoch="starting" data-end-hide-selector="[data-eventid='@Model.ID'] .awe-rt-HideOnStart" data-end-show-selector="[data-eventid='@Model.ID'] .awe-rt-ShowOnStart" data-action-time="@Html.CultureInvariantLocalDTTM(Model.StartDTTM.Value)">@*Leave Empty, autofilled by SignalR*@</span>
+                    </span>
+                    <span class="awe-rt-ShowOnStart awe-hidden">
+                        <span data-epoch="ending" data-end-hide-selector="[data-eventid='@Model.ID'] .awe-rt-HideOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM)" data-end-value="@Html.LocalDTTM(Model.EndDTTM)">@*Leave Empty, autofilled by SignalR*@</span>
+                    </span>
+                }
+                else if (Model.Status == AuctionEventStatuses.Closing)
+                {
+                    <span class="awe-hidden event-row__countdown--ended">
+                        <span class="awe-short-date" data-initial-dttm="@Html.CultureInvariantLocalDTTM(Model.EndDTTM)"></span>
+                    </span>
+                }
+                else if (Model.Status == AuctionEventStatuses.Closed)
+                {
+                    <span class="event-row__countdown--ended">
+                        <span class="awe-short-date" data-initial-dttm="@Html.CultureInvariantLocalDTTM(Model.EndDTTM)"></span>
+                    </span>
+                }
+                else
+                {
+                    <span class="awe-rt-ShowOnStart">
+                        <span data-epoch="ending" data-end-hide-selector="[data-eventid='@Model.ID'] .awe-rt-HideOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM)" data-end-value="@Html.LocalDTTM(Model.EndDTTM)">@*Leave Empty, autofilled by SignalR*@</span>
+                    </span>
+                }
+            </div>
+        </div>
+        <div class="view-all-lots">
+            <a href="@Url.Action(MVC.DetailsAction, MVC.EventController,new { id = Model.ID , extra2 = Model.Title.SimplifyForURL("-")})" class="btn btn-default btn-block">
+                @Html.GlobalResource("ViewAllLots")
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+﻿@model Media
+
+@{
+    string htmlValue = string.Empty;
+    if (Model.ID > 0)
+    {
+        IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(Model.Loader);
+        Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, Model.Context);
+        htmlValue = mediaLoader.Load(loaderProviderSettings, Model, Model.DefaultVariationName);
+    }
+
+    if (SiteClient.DemoEnabled)
+    {
+        <div class="row">
+            <div class="col-xs-11">
+                @Html.TextArea(Fields.BannerHtml, htmlValue, new { @disabled = "disabled", @rows = 5, @class = "form-control" })
+            </div>
+            <div class="col-xs-1">
+                <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+            </div>
+        </div>
+    }
+    else
+    {
+        @Html.TextArea(Fields.BannerHtml, htmlValue, new { @rows = 5, @class = "form-control" })
+    }
+}
+

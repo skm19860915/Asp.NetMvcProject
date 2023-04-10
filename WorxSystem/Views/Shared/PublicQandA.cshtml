@@ -1,0 +1,359 @@
+﻿@model Listing
+@if (SiteClient.BoolSetting(SiteProperties.EnablePublicQandA))
+{
+    string returnUrl = Request.Url.LocalPath; //Request.Url.PathAndQuery;
+    string resumeUrl = returnUrl + (returnUrl.Contains("?") ? "&" : "?") + "resumeQuestion=1";
+    string resumeAnswerUrl = returnUrl + (returnUrl.Contains("?") ? "&" : "?") + "resumeAnswer=";
+    bool sellerOrAdmin = User.Identity.IsAuthenticated && (Html.FBOUserName() == Model.OwnerUserName || User.IsInRole("Admin"));
+    bool isSeller = User.Identity.IsAuthenticated && (Html.FBOUserName() == Model.OwnerUserName);
+    var questions = ListingClient.GetQuestionsByListingId(User.Identity.IsAuthenticated ? User.Identity.Name : "Anonymous", Model.ID);
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @Html.GlobalResource("QuestionsAndAnswers")
+            @if (Model.Status == ListingStatuses.Active || Model.Status == ListingStatuses.Preview)
+            {
+                if (Model.Type.Name == "Classified" && !isSeller)
+                {
+                    if (Model.Status == ListingStatuses.Preview)
+                    {
+                        <span class="pull-right awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview">
+                        @Html.Resource("ClassifiedListing, LISTING_NOT_STARTED_QA", Html.LocalDTTM(Model.StartDTTM.Value))
+                        </span>
+                    }
+                    else if (SiteClient.UserMessagingEnabled)
+                    {
+                        <span class="pull-right awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview">
+                            <a href="javascript:;" onClick="goToMessageBody()">@Html.GlobalResource("PostAQuestion")</a>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="pull-right awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview">
+                            <a id="PostQuestion" href="#PostQuestion">@Html.GlobalResource("PostAQuestion")</a>
+                        </span>
+                    }
+                }
+                else if (User.Identity.IsAuthenticated && !isSeller)
+                {
+                    <span class="pull-right awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview">
+                        <a id="PostQuestion" href="#PostQuestion">@Html.GlobalResource("PostAQuestion")</a>
+                    </span>
+                }
+                else if (!User.Identity.IsAuthenticated)
+                {
+                    <span class="pull-right awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview hidden-xs">
+                        @Html.ActionLink(Html.GlobalResource("SignInToPostAQuestion"), MVC.LogOnAction, MVC.AccountController,
+                                 new { returnUrl = resumeUrl }, null)
+                    </span>
+                    <span class="pull-right awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview visible-xs">
+                        @Html.ActionLink(Html.GlobalResource("Logon"), MVC.LogOnAction, MVC.AccountController,
+                                 new { returnUrl = resumeUrl }, null)
+                    </span>
+                }
+            }
+        </div>
+        <div class="panel-body ListingQA">
+            @if (questions.Count > 0)
+            {
+                foreach (var question in questions)
+                {
+                    <div class="question-answer clearfix" data-questionid="@question.ID">
+                        <div class="listing-question">
+                            <span class="question-label">@Html.GlobalResource("Question_short"):</span>
+                            <span class="question-text">@question.Question</span>
+                            <span class="question-username-label">@Html.GlobalResource("PostedBy"):</span>
+                            <span class="question-username">@question.UserName</span>
+                            <span class="question-datetime">@Html.LocalDTTM(question.CreatedOn, "g")</span>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(question.Answer))
+                        {
+                            <div class="listing-answer">
+                                <span class="answer-label">@Html.GlobalResource("Answer_short"):</span>
+                                <span class="answer-text">@question.Answer</span>
+                            </div>
+                        }
+                        else if (sellerOrAdmin)
+                        {
+                            <a class="btn btn-primary btn-sm post-answer-button" href="#AnswerQuestion">@Html.GlobalResource("AnswerThisQuestion")</a>
+                        }
+                        @if (sellerOrAdmin)
+                        {
+                            @Html.ActionLink(Html.GlobalResource("DeleteThisQuestionAnswer"), MVC.DeleteQuestionAction, MVC.ListingController,
+                                new { QuestionId = question.ID, returnUrl }, new { @class = "btn btn-danger btn-sm pull-right delete-question" })
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="no-history">
+                    @Html.GlobalResource("ThereAreNoQuestionsForThisListing")
+                </p>
+            }
+        </div>
+    </div>
+    <script>
+        var questionDialog;
+        var answerDialog;
+        var answeringQuestionId = null;
+        $(document).ready(function () {
+
+            //prepare "post a question" dialog modal
+            questionDialog = new BootstrapDialog({
+                title: '@Html.GlobalResourceString("EnterYourQuestion").ToJavascriptSafeString()',
+                message: '<textarea id="ListingQuestionInput" />' +
+                    '<div class="small">' +
+                      '@Html.GlobalResourceString("ListingQuestionHelpText").ToJavascriptSafeString()' +
+                      '<span class="length-count">' +
+                        '@Html.GlobalResource("xCharsRemaining", "<span id=\"ListingQuestionInput_LenCount\"></span>").ToJavascriptSafeString()' +
+                      '</span>' +
+                    '</div>',
+                buttons:
+                    [{
+                        id: 'btn-post',
+                        label: '@Html.GlobalResourceString("Post").ToJavascriptSafeString()',
+                        cssClass: 'btn-primary',
+                        action: function (dialog) {
+                            var thisButton = dialog.getButton('btn-post');
+                            thisButton.disable();
+                            thisButton.spin();
+                            $.ajax({
+                                url: '@Html.GetActionUrl(MVC.PostListingQuestionAction, MVC.ListingController, null)',
+                                type: "post",
+                                cache: false,
+                                data: { "ListingID": "@Model.ID", "Question": $("#ListingQuestionInput").val() },
+                                success: function (data) {
+                                    if (data.error) {
+                                        //an error occurred, display error message
+                                        var modalBody = questionDialog.getModalBody();
+                                        modalBody.prepend($('<div class="validation-summary-errors" />').html(data.error));
+                                        thisButton.enable();
+                                        thisButton.stopSpin();
+                                    } else if (data.result == "LOGON_NEEDED") {
+                                        $.cookie('savedQuestion', $("#ListingQuestionInput").val(), { path: '/', expires: 1 });
+                                        window.location.replace("@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController, new { returnUrl = resumeUrl })");
+                                    } else {
+                                        //reload page to show posted question
+                                        window.location.replace('@returnUrl.ToJavascriptSafeString()');
+                                    }
+                                }
+                            });
+                        }
+                    }, {
+                        id: 'btn-cancel',
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        cssClass: 'btn-link',
+                        action: function (dialog) {
+                            dialog.close();
+                        }
+                    }],
+                autodestroy: false,
+                closable: true
+            });
+            questionDialog.realize();
+
+            $(document).on("keyup", "#ListingQuestionInput", function () {
+                var charsRemaining = 250 - $("#ListingQuestionInput").val().length;
+                $("#ListingQuestionInput_LenCount").html(charsRemaining);
+                if (charsRemaining < 0) {
+                    $("span.length-count").addClass("validation-summary-errors");
+                } else {
+                    $("span.length-count").removeClass("validation-summary-errors");
+                }
+            });
+
+            //open the dialog when the "Post a question to the seller" link is clicked
+            $(document).on("click", "#PostQuestion", function (event) {
+                event.preventDefault();
+                var savedQuestion = "";
+                if (!($.cookie('savedQuestion') == null || $.cookie('savedQuestion') == "")) {
+                    savedQuestion = $.cookie('savedQuestion');
+                    $.cookie('savedQuestion', "", { path: '/', expires: 0 });
+                }
+                var postButton = questionDialog.getButton('btn-post');
+                postButton.enable();
+                postButton.stopSpin();
+                questionDialog.open();
+
+                var modalBody = questionDialog.getModalBody();
+                modalBody.find("#ListingQuestionInput").val(savedQuestion).focus().keyup();
+                modalBody.find("div.validation-summary-errors").remove();
+            });
+
+            //prepare "answer question" dialog modal
+            answerDialog = new BootstrapDialog({
+                title: '@Html.GlobalResourceString("EnterYourAnswer").ToJavascriptSafeString()',
+                message:
+                    '<div>' +
+                      '<span>' + '@Html.GlobalResourceString("Regarding_short").ToJavascriptSafeString()' + '</span>&nbsp;' +
+                      '<span id="QuestionTextToAnswer"></span>' +
+                    '</div>' +
+                    '<textarea id="ListingAnswerInput" />' +
+                    '<div class="small">' +
+                      '@Html.GlobalResourceString("ListingAnswerHelpText").ToJavascriptSafeString()' +
+                      '<span class="length-count">' +
+                        '@Html.GlobalResource("xCharsRemaining", "<span id=\"ListingAnswerInput_LenCount\"></span>").ToJavascriptSafeString()' +
+                      '</span>' +
+                    '</div>',
+                buttons:
+                    [{
+                        id: 'btn-post',
+                        label: '@Html.GlobalResourceString("Post").ToJavascriptSafeString()',
+                        cssClass: 'btn-primary',
+                        action: function (dialog) {
+                            var thisButton = dialog.getButton('btn-post');
+                            thisButton.disable();
+                            thisButton.spin();
+                            $.ajax({
+                                url: '@Html.GetActionUrl(MVC.AnswerQuestionAction, MVC.ListingController, null)',
+                                type: "post",
+                                cache: false,
+                                data: { "QuestionID": answeringQuestionId, "Answer": $("#ListingAnswerInput").val() },
+                                success: function (data) {
+                                    if (data.error) {
+                                        //an error occurred, display error message
+                                        var modalBody = answerDialog.getModalBody();
+                                        modalBody.prepend($('<div class="validation-summary-errors" />').html(data.error));
+                                        thisButton.enable();
+                                        thisButton.stopSpin();
+                                    } else if (data.result == "LOGON_NEEDED") {
+                                        $.cookie('savedAnswer', $("#ListingAnswerInput").val(), { path: '/', expires: 1 });
+                                        window.location.replace("@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController, new { returnUrl = resumeAnswerUrl })" + answeringQuestionId);
+                                    } else {
+                                        //reload page to show posted question
+                                        window.location.replace('@returnUrl.ToJavascriptSafeString()');
+                                    }
+                                }
+                            });
+                        }
+                    }, {
+                        id: 'btn-cancel',
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        cssClass: 'btn-link',
+                        action: function (dialog) {
+                            dialog.close();
+                        }
+                    }],
+                autodestroy: false,
+                closable: true
+            });
+            answerDialog.realize();
+
+            $(document).on("keyup", "#ListingAnswerInput", function () {
+                var charsRemaining = 250 - $("#ListingAnswerInput").val().length;
+                $("#ListingAnswerInput_LenCount").html(charsRemaining);
+                if (charsRemaining < 0) {
+                    $("span.length-count").addClass("validation-summary-errors");
+                } else {
+                    $("span.length-count").removeClass("validation-summary-errors");
+                }
+            });
+
+            //open the dialog when the "answer question" link/button is clicked
+            $(document).on("click", ".post-answer-button", function (event) {
+                event.preventDefault();
+                answeringQuestionId = $(this).parents(".question-answer").data("questionid") + '';
+                BeginAnsweringQuestion()
+            });
+
+            function BeginAnsweringQuestion() {
+                var savedAnswer = "";
+                if (!($.cookie('savedAnswer') == null || $.cookie('savedAnswer') == "")) {
+                    savedAnswer = $.cookie('savedAnswer');
+                    $.cookie('savedAnswer', "", { path: '/', expires: 0 });
+                }
+                var postButton = answerDialog.getButton('btn-post');
+                postButton.enable();
+                postButton.stopSpin();
+                answerDialog.open();
+                var questionText = $("[data-questionid='" + answeringQuestionId + "'] .question-text").html();
+                var modalBody = answerDialog.getModalBody();
+                modalBody.find("#QuestionTextToAnswer").html(questionText);
+                modalBody.find("#ListingAnswerInput").val(savedAnswer).focus().keyup();
+                modalBody.find("div.validation-summary-errors").remove();
+            }
+
+            //automatically close the question dialog if the listing ends
+            $(document).on("SignalR_UpdateListingStatus", function (event, data) {
+                if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+                if (data.Status != "Active" && data.Status != "Preview") {
+                    questionDialog.close();
+                }
+            });
+
+            //resume posting question or answer if returning from a login
+            var queryStringItems = getQueryStrings(); // get all query string kvp's in order to pre-fill generated inputs with previously specified values from the query string
+            if (queryStringItems["resumeQuestion"]) {
+                $("#PostQuestion").click();
+            } else if (queryStringItems["resumeAnswer"]) {
+                answeringQuestionId = queryStringItems["resumeAnswer"];
+                BeginAnsweringQuestion();
+            }
+
+            //modal warning when deleting a question
+            $(".delete-question").click(function () {
+                var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                    '@Html.GlobalResourceString("DeleteQuestionWarning_Really").ToJavascriptSafeString()' + '\n'
+                        + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+                var targetHref = $(this).attr("href");
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                    message: jsDeleteConfirmMsg,
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                            cssClass: 'btn-danger',
+                            action: function () {
+                                window.location = $.htmlDecode(targetHref);
+                            }
+                        }, {
+                            label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            });
+
+        });
+    </script>
+
+    if (Model.Type.Name == "Classified")
+    {
+        <script>
+            function classifiedQASubmit() {
+                $('#SubmitPublicQA').addClass('disabled');
+ 
+                $.ajax({
+                    url: '@Html.GetActionUrl(MVC.PostListingQuestionAction, MVC.ListingController, null)',
+                    type: "post",
+                    cache: false,
+                    data: { "ListingID": "@Model.ID", "Question": $(".classified__msg-input").val() },
+                    success: function (data) {
+                        if (data.error) {
+                            //an error occurred, display error message
+                            $('.classified__msg-input').after($('<div class="validation-summary-errors" />').html(data.error));
+                            $('#SubmitPublicQA').removeClass('disabled');
+                        } else if (data.result == "LOGON_NEEDED") {
+                            $.cookie('savedQuestion', $(".classified__msg-input").val(), { path: '/', expires: 1 });
+                            window.location.replace("@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController, new { returnUrl = resumeUrl })");
+                        } else {
+                            //reload page to show posted question
+                            window.location.replace('@returnUrl.ToJavascriptSafeString()');
+                        }
+                    }
+                });
+            }
+
+            function goToMessageBody() {
+            
+                $('html, body').animate({ scrollTop: $('#MessageBody').offset().top - 50 }, 'fast');
+                document.getElementById("MessageBody").focus();
+            };
+        </script>
+    }
+}

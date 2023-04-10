@@ -1,0 +1,39 @@
+﻿@model Listing
+@{
+    string returnUrl = (string)ViewData[Fields.ReturnUrl] ?? Request.Url.PathAndQuery;
+}
+<div class="btn-group">
+    <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="glyphicon glyphicon-cog"></span></a>
+    <ul class="dropdown-menu dropdown-menu-right">
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ActivateListing"), MVC.ActivateListingsAction, MVC.AccountController, new
+            {
+                ListingIDs = Model.ID,
+                page = ViewData[MVC.PageIndex],
+                SearchTerm = ViewData[Fields.SearchTerm],
+                SearchType = ViewData[Fields.SearchType],
+                SortFilterOptions = ViewData[MVC.SortFilterOptions],
+                returnUrl
+            }, null)
+        </li>
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ViewListing"), MVC.DetailsAction, MVC.ListingController,
+            new { id = Model.ID }, null)
+        </li>
+        @if (Html.IsEditable(Model))
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditAction, MVC.ListingController,
+                new { id = Model.ID, returnUrl }, null)
+            </li>
+        }
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateListingPage1Action, MVC.ListingController,
+            new { SimilarListingID = Model.ID, returnUrl }, null)
+        </li>
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteAction, MVC.ListingController,
+            new { id = Model.ID, returnUrl }, new { @class = "awe-delete-listing-link" })
+        </li>
+    </ul>
+</div>

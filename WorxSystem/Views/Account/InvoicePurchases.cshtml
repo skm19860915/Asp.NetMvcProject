@@ -1,0 +1,148 @@
+﻿@model Page<Invoice>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+}
+@section head {
+    <script>
+        $(document).ready(function () {
+            //when any filter input is changed, submit the form
+            $(".SubmitOnChange").change(function () {
+                //submit container form
+                $(this).parents("form").first().submit();
+                return true;
+            });
+
+            //clicking anywhere on a sort column will be the same as clicking the sort link
+            $("th.SortableColumn").click(function () {
+                var targetUrl = $(this).find("a").first().attr("href");
+                document.location = $.htmlDecode(targetUrl);
+            });
+
+        });
+    </script>
+}
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Bidding_Invoices")
+</div>
+@{
+    using (Html.BeginForm("InvoicePurchases", "Account", new { page = 0, sort = ViewData["sort"], descending = ViewData["descending"] }, FormMethod.Get))
+    {
+        string baseReSortUrl = Html.GetActionUrl("InvoicePurchases", "Account");
+        if (!baseReSortUrl.Contains("?"))
+        {
+            baseReSortUrl += "?";
+        }
+        else
+        {
+            baseReSortUrl += "&";
+        }
+        <div class="panel panel-default">
+            <div class="heading">
+                <div class="row">
+                    <div class="col-sm-3">
+                        @{
+        string reSortUrl = baseReSortUrl + "sort=CreatedDTTM&descending=";
+        reSortUrl += (string)ViewData["sort"] == "CreatedDTTM" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+        string columnHeaderClass = (((string)ViewData["sort"] ?? "") == "CreatedDTTM") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        }
+                        &nbsp;<a href="@reSortUrl">@Html.GlobalResource("CreatedDTTM")</a>
+                    </div>
+                    <div class="col-sm-2">
+                        @{
+        reSortUrl = baseReSortUrl + "sort=id&descending=";
+        reSortUrl += (string)ViewData["sort"] == "id" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "id") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        }
+                        <a href="@reSortUrl">@Html.GlobalResource("InvoiceID")</a>
+                    </div>
+                    <div class="col-sm-2">
+                        @{
+        reSortUrl = baseReSortUrl + "sort=Owner.UserName&descending=";
+        reSortUrl += (string)ViewData["sort"] == "Owner.UserName" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Owner.UserName") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        }
+                        <a href="@reSortUrl">@Html.GlobalResource("Seller")</a>
+                    </div>
+                    <div class="col-sm-2">
+                        @{
+        reSortUrl = baseReSortUrl + "sort=Status&descending=";
+        reSortUrl += (string)ViewData["sort"] == "Status" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Status") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        }
+                        <a href="@reSortUrl">@Html.GlobalResource("Status")</a> :
+
+                        @{
+        reSortUrl = baseReSortUrl + "sort=Total&descending=";
+        reSortUrl += (string)ViewData["sort"] == "Total" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Total") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        }
+                        <a href="@reSortUrl">@Html.GlobalResource("Total")</a>
+                    </div>
+                </div>
+            </div>
+            @foreach (Invoice invoice in Model.List)
+            {
+                <div class="list clearfix">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            @Html.LocalDTTM(invoice.CreatedDTTM, "g")
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.ActionLink(invoice.ID.ToString(), "InvoiceDetail", new { id = invoice.ID, returnUrl })
+                        </div>
+                        <div class="col-sm-2">
+                            @invoice.Owner.UserName
+                        </div>
+                        <div class="col-sm-3">
+                            @{
+                string spanClass = string.Empty;
+                switch (invoice.Status)
+                {
+                    case InvoiceStatuses.New:
+                        spanClass = "label label-danger";
+                        break;
+                    case InvoiceStatuses.Pending:
+                        spanClass = "label label-warning";
+                        break;
+                    case InvoiceStatuses.Paid:
+                        spanClass = "label label-success";
+                        break;
+                }
+                <span class="@spanClass">
+                    @if (invoice.Shipped)
+                    {
+                        @Html.GlobalResource("Shipped")
+                    }
+                    else if (invoice.Status == InvoiceStatuses.Pending)
+                    {
+                        @Html.GlobalResource("PaymentPending")
+                    }
+                    else
+                    {
+                        @Html.GlobalResource(invoice.Status)
+                    }
+                </span>
+                            }
+                            &nbsp; &nbsp;
+                            @Html.LocalCurrency(invoice.Total, invoice.Currency)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.ButtonLink(Html.GlobalResource("ViewInvoice"), "InvoiceDetail", new { id = invoice.ID, returnUrl }, new { @class = "btn btn-default btn-xs invoice" })
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.TotalItemCount == 0)
+            {
+            <p class="no-history">
+                @Html.GlobalResource("NoPurchaseInvoices")
+            </p>
+            }
+        </div>
+    }
+    if (Model.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(Model);
+    }
+}

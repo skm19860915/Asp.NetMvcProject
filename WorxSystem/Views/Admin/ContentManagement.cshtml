@@ -1,0 +1,196 @@
+﻿@using System.Globalization
+@model List<Content>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_ContentGeneral");
+
+    var allNeutralCultures =
+        new List<CultureInfo>(
+            CultureInfo.GetCultures(CultureTypes.NeutralCultures).Where(c => c.Name != string.Empty).OrderBy(
+                c => c.EnglishName));
+    var enabledBaseCultures = new List<CultureInfo>(allNeutralCultures
+            .Where(c => SiteClient.SupportedLanguageCultures.ContainsKey(c.Name))
+            .OrderBy(c => c.EnglishName));
+
+}
+
+@if (SiteClient.BoolSetting(SiteProperties.EnableMultipleCultures))
+{
+    <div class="panel panel-default">
+        <table class="table table-condensed">
+            <tr>
+                <th>@Html.AdminResource("ContentArea")</th>
+                <th>@Html.AdminResource("SelectCultureToEdit") @Html.AdminResource("Content")</th>
+            </tr>
+            @foreach (Content content in Model.Where(c => c.Culture == "en"))
+            {
+                <tr>
+                    @if (content.UserDefined)
+                    {
+                        <td><a href="@SiteClient.Settings["URL"]/page/@content.Name" target="_new">/page/@content.Name</a></td>
+                    }
+                    else
+                    {
+                        <td><strong>@Html.AdminResource(content.Name)</strong></td>
+                    }
+                    <td>
+                        @foreach (CultureInfo enabledLanguage in enabledBaseCultures)
+                        {
+                            string baseCultureCode = enabledLanguage.Name;
+                            Content baseLangContent = Model.Where(c => c.Name == content.Name && c.Culture == baseCultureCode).FirstOrDefault();
+                            @Html.ButtonLink(
+(enabledBaseCultures.Count > 1 || SiteClient.BoolSetting(SiteProperties.ShowLanguageRegionOptions))
+? enabledLanguage.NativeName
+: Html.AdminResourceString("Edit"),
+MVC.ContentEditorAction, new { id = baseLangContent.ID }, new { @class = "btn btn-default btn-xs btn-sq" })
+                            if (SiteClient.BoolSetting(SiteProperties.ShowLanguageRegionOptions))
+                            {
+                                foreach (Content regionalContent in Model
+                                    .Where(c => c.Name == content.Name && c.ID != baseLangContent.ID && c.Culture.Left(baseLangContent.Culture.Length) == baseLangContent.Culture)
+                                    .OrderBy(c => c.Culture))
+                                {
+                                    CultureInfo regionalLanguage = SiteClient.SupportedCultures[regionalContent.Culture];
+                                    @Html.ButtonLink(regionalLanguage.NativeName,
+MVC.ContentEditorAction, new { id = regionalContent.ID }, new { @class = "btn btn-default btn-xs btn-sq" })
+                                }
+                            }
+                        }
+                    </td>
+                    @if (content.UserDefined)
+                    {
+                        <td>@Html.ButtonLink(Html.AdminResource("Delete"), MVC.DeleteUserContentAction, new { name = content.Name }, new { @class = "btn btn-danger btn-sm" })</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+
+    if (SiteClient.BoolSetting(SiteProperties.ShowLanguageRegionOptions))
+    {
+        <div class="sub-header">
+            @Html.AdminResource("AddRegionalLanguageOption")
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+
+                    @{
+                        var regionalOptsToAdd = Html.Cultures()
+                        .Where(si => !Model.Any(c => c.Culture == si.Value));
+                        if (regionalOptsToAdd.Count() > 0)
+                        {
+                            using (Html.BeginForm(MVC.AddContentLanguageAction, MVC.AdminController))
+                            {
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="input-group">
+                                        <select id="addlang" name="lang" class="form-control input-sm">
+                                            <option value="" selected>@Html.AdminResource("SelectRegionalLanguage")</option>
+                                            @foreach (SelectListItem selectOption in regionalOptsToAdd)
+                                            {
+                                                <option value="@selectOption.Value">@selectOption.Text</option>
+                                            }
+                                        </select>
+                                        <span class="input-group-btn">
+                                            <input class="btn btn-success btn-sm" type="submit" value="@Html.AdminResource("AddRegionalLanguageOption")" />
+                                        </span>
+                                    </div>
+                                </div>
+
+                            }
+                        }
+                        var regionalOptsToRemove = Html.Cultures()
+                        .Where(si => Model.Any(c => c.Culture == si.Value) && !enabledBaseCultures.Any(ci => ci.Name == si.Value));
+                        if (regionalOptsToRemove.Count() > 0)
+                        {
+                            using (Html.BeginForm(MVC.RemoveContentLanguageAction, MVC.AdminController))
+                            {
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="input-group">
+                                        <select id="remlang" name="lang" class="form-control input-sm">
+                                            <option value="" selected>@Html.AdminResource("SelectRegionalLanguage")</option>
+                                            @foreach (SelectListItem selectOption in regionalOptsToRemove)
+                                            {
+                                                <option value="@selectOption.Value">@selectOption.Text</option>
+                                            }
+                                        </select>
+                                        <span class="input-group-btn">
+                                            <input class="btn btn-warning btn-sm" type="submit" value="@Html.AdminResource("RemoveRegionalLanguageOption")" />
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+                            }
+                        }
+                        else
+                        {
+
+                            List<Content>
+                                contents = Model.Where(c => c.Culture.Left(2) == SiteClient.TextSetting(SiteProperties.SiteCulture).Left(2) && !c.Culture.Contains("-")).ToList();
+                            if (contents.Count == 0)
+                            {
+                                contents = Model.Where(c => c.Culture == "en").ToList();
+                            }
+                            <div class="panel panel-default">
+                                <table class="table table-condensed">
+                                    @foreach (Content content in contents)
+                                    {
+                                        if (content.UserDefined)
+                                        {
+                                            <tr>
+                                                <td><a href="@SiteClient.Settings["URL"]/page/@content.Name" target="_new">/page/@content.Name</a></td>
+                                                <td>@Html.ButtonLink(Html.AdminResource("Edit"), MVC.ContentEditorAction, new { id = content.ID }, new { @class = "btn btn-default btn-sm" })</td>
+                                                <td>@Html.ButtonLink(Html.AdminResource("Delete"), MVC.DeleteUserContentAction, new { name = content.Name }, new { @class = "btn btn-default btn-sm" })</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>@Html.AdminResource(content.Name)</td>
+                                                <td>@Html.ButtonLink(Html.AdminResource("Edit"), MVC.ContentEditorAction, new { id = content.ID }, new { @class = "btn btn-default btn-sm" })</td>
+                                                <td></td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                                </div>
+                                }
+
+                                <div class="sub-header">@Html.AdminResource("AddNewContent")</div>
+                                <div class="panel panel-default">
+
+                                    @using (Html.BeginForm(MVC.AddUserContentAction, MVC.AdminController, FormMethod.Post, new { @class = "form-horizontal" }))
+                                    {
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("PageName")</label>
+                                                <div class="col-xs-12 col-sm-8">
+                                                    @(Html.TextBox("name", null, new { @class = "form-control input-sm" }))
+                                                    <small class="help-block">@Html.AdminResource("PageName_Help")</small>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("UseHTMLEditor")</label>
+                                                <div class="col-xs-12 col-sm-8">
+                                                    @Html.CheckBox("useHTMLEditor")
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer text-right">
+                                            <input type="submit" class="btn btn-success btn-sm" value="@Html.AdminResource("AddNewContent")" />
+                                        </div>
+                                    }
+
+                                </div>
+
+                                <div class="alert alert-info">@Html.AdminResource("CMS_Variable_Width_Help")</div>

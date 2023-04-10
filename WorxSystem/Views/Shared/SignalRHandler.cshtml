@@ -1,0 +1,168 @@
+﻿@using System.Configuration
+@{ 
+    bool rwx_ForceMobileBrowserRefreshOnVisibilityChange = true;
+    bool.TryParse(ConfigurationManager.AppSettings["ForceMobileBrowserRefreshOnVisibilityChange"], out rwx_ForceMobileBrowserRefreshOnVisibilityChange);
+    int RealtimeDisconnectAlertDelayMS = 10000;
+    int.TryParse(ConfigurationManager.AppSettings["RealtimeDisconnectAlertDelayMS"], out RealtimeDisconnectAlertDelayMS);
+
+    bool rwx_SingleSigRListingCh = false;
+    bool tempBool2;
+    if (bool.TryParse(ConfigurationManager.AppSettings["SignalR_SingleListingChannel"], out tempBool2))
+    {
+        rwx_SingleSigRListingCh = tempBool2;
+    }
+
+    bool rwx_AutoRefreshOnCountdownError = false;
+    bool tempBool3;
+    if (bool.TryParse(ConfigurationManager.AppSettings["AutoRefreshOnCountdownError"], out tempBool3))
+    {
+        rwx_AutoRefreshOnCountdownError = tempBool3;
+    }
+
+}
+<div id="SignalRStatus"></div>
+
+<div id="SignalRAlert" class="alert alert-danger awe-hidden awe-alert-signalr">
+    <a class="close" onclick="HideSignalRAlert();return false;">×</a>
+    <p>@Html.GlobalResource("LiveUpdatesAppearToBeDisconnected")</p>
+    <p>
+        <a href="#Reload" onclick="window.location.reload();return false;">@Html.GlobalResource("ClickToRefreshNow")</a>
+    </p>
+</div>
+
+<script>
+    function ShowSignalRAlert() {
+        console.log("signalr alert displayed.");
+        $("#SignalRAlert").show().animate({width: 300}, 500);
+    }
+    function HideSignalRAlert() {
+        if (!$("#SignalRAlert").is(":hidden")) {
+            console.log("signalr alert hidden.");
+            $("#SignalRAlert").animate({ width: 0 }, 500, 'swing', function () { $(this).hide() });
+        }
+    }
+
+    function PriceToUSD(amount, fromCurrency) {
+        switch (fromCurrency) {
+            @foreach (var c in SiteClient.GetCurrencies())
+                    {
+                        <text>case '</text>@c.Code<text>':</text>
+                        <text>return amount / </text>@c.ConversionToUSD<text>;</text>
+                        <text>break;</text>
+                    }
+        }
+    }
+
+    function PriceFromUSD(amount, toCurrency) {
+        switch (toCurrency) {
+            @foreach (var c in SiteClient.GetCurrencies())
+                    {
+                        <text>case '</text>@c.Code<text>':</text>
+                        <text>return amount * </text>@c.ConversionToUSD<text>;</text>
+                        <text>break;</text>
+                    }
+        }
+    }
+
+    var aweTimeRemainingStyle = '@SiteClient.Settings[SiteProperties.TimeRemainingStyle]';
+    var rwx_ForceMobileBrowserRefreshOnVisibilityChange = @rwx_ForceMobileBrowserRefreshOnVisibilityChange.ToString().ToLower();
+    var rwx_SingleSigRListingCh = @rwx_SingleSigRListingCh.ToString().ToLower();
+    var rwx_AutoRefreshOnCountdownError = @rwx_AutoRefreshOnCountdownError.ToString().ToLower();
+
+    // If SignalR becomes disconnected a disconnect alert will be displayed, but to prevent normal navigational clicks from triggering it a small delay is required.
+    var rwx_DisconnectAlertDelayMS = @RealtimeDisconnectAlertDelayMS; // default: 10000 MS (10 seconds)
+
+    $(document).ready(function() {
+        //localize time difference dictionary
+        timeDifferenceDictionary["Days"] = "@Html.GlobalResource("Days").ToJavascriptSafeString()";
+        timeDifferenceDictionary["Day"] = "@Html.GlobalResource("Day").ToJavascriptSafeString()";
+        timeDifferenceDictionary["Hours"] = "@Html.GlobalResource("Hours").ToJavascriptSafeString()";
+        timeDifferenceDictionary["Hour"] = "@Html.GlobalResource("Hour").ToJavascriptSafeString()";
+        timeDifferenceDictionary["Minutes"] = "@Html.GlobalResource("Minutes").ToJavascriptSafeString()";
+        timeDifferenceDictionary["Minute"] = "@Html.GlobalResource("Minute").ToJavascriptSafeString()";
+        timeDifferenceDictionary["Seconds"] = "@Html.GlobalResource("Seconds").ToJavascriptSafeString()";
+        timeDifferenceDictionary["Second"] = "@Html.GlobalResource("Second").ToJavascriptSafeString()";
+
+        //localize status dictionary
+        statusDictionary["AwaitingPayment"] = "@Html.GlobalResource("AwaitingPayment").ToJavascriptSafeString()";
+        statusDictionary["Pending"] = "@Html.GlobalResource("Pending").ToJavascriptSafeString()";
+        statusDictionary["Active"] = "@Html.GlobalResource("Active").ToJavascriptSafeString()";
+        statusDictionary["New"] = "@Html.GlobalResource("New").ToJavascriptSafeString()";
+        statusDictionary["Unsuccessful"] = "@Html.GlobalResource("Ended").ToJavascriptSafeString()";
+        statusDictionary["Successful"] = "@Html.GlobalResource("Ended").ToJavascriptSafeString()";
+        statusDictionary["Ending"] = "@Html.GlobalResource("Ending").ToJavascriptSafeString()";
+        statusDictionary["Ended"] = "@Html.GlobalResource("Ended").ToJavascriptSafeString()";
+        statusDictionary["Closing"] = "@Html.GlobalResource("Closing").ToJavascriptSafeString()";
+        statusDictionary["Closed"] = "@Html.GlobalResource("Closed").ToJavascriptSafeString()";
+        statusDictionary["Deleted"] = "@Html.GlobalResource("Deleted").ToJavascriptSafeString()";
+        statusDictionary["Error_Closing"] = "@Html.GlobalResource("Error_Closing").ToJavascriptSafeString()";
+        statusDictionary["Updated"] = "@Html.GlobalResource("Updated").ToJavascriptSafeString()";
+        statusDictionary["Draft"] = "@Html.GlobalResource("Draft").ToJavascriptSafeString()";
+        statusDictionary["Validated"] = "@Html.GlobalResource("Validated").ToJavascriptSafeString()";
+        statusDictionary["Scheduled"] = "@Html.GlobalResource("Scheduled").ToJavascriptSafeString()";
+        statusDictionary["FailedValidation"] = "@Html.GlobalResource("FailedValidation").ToJavascriptSafeString()";
+
+        //localize lot status HTML dictionary
+        lotStatusHtmlDictionary["@ListingStatuses.Draft"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Draft).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Validated"] = '<span class="label label-success">@Html.GlobalResource(ListingStatuses.Validated).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Preview"] = '<span class="label label-primary">@Html.GlobalResource(ListingStatuses.Preview).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Pending"] = '<span class="label label-primary">@Html.GlobalResource(ListingStatuses.Pending).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Active"] = '<span class="label label-info">@Html.GlobalResource(ListingStatuses.Active).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Successful"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Ended).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Unsuccessful"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Ended).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.AwaitingPayment"] = '<span class="label label-warning">@Html.GlobalResource(ListingStatuses.AwaitingPayment).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Ended"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Ended).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Closed"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Closed).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Closing"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Closing).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Deleted"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Deleted).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Ending"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Ending).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Error_Closing"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Error_Closing).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.New"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.New).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.Updated"] = '<span class="label label-default">@Html.GlobalResource(ListingStatuses.Updated).ToJavascriptSafeString()</span>';
+        lotStatusHtmlDictionary["@ListingStatuses.FailedValidation"] = '<span class="label label-danger">@Html.GlobalResource(ListingStatuses.FailedValidation).ToJavascriptSafeString()</span>';
+
+        //localize event status HTML dictionary
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Draft"] = '<span class="label label-default">@Html.GlobalResource(AuctionEventStatuses.Draft).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Publishing"] = '<span class="label label-warning">@Html.GlobalResource(AuctionEventStatuses.Publishing).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Preview"] = '<span class="label label-info">@Html.GlobalResource(AuctionEventStatuses.Preview).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Scheduled"] = '<span class="label label-primary">@Html.GlobalResource(AuctionEventStatuses.Scheduled).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Active"] = '<span class="label label-success">@Html.GlobalResource(AuctionEventStatuses.Active).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Closing"] = '<span class="label label-warning">@Html.GlobalResource(AuctionEventStatuses.Closing).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Closed"] = '<span class="label label-danger">@Html.GlobalResource(AuctionEventStatuses.Closed).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.Archived"] = '<span class="label label-default">@Html.GlobalResource(AuctionEventStatuses.Archived).ToJavascriptSafeString()</span>';
+        eventStatusHtmlDictionary["@AuctionEventStatuses.AwaitingPayment"] = '<span class="label label-danger">@Html.GlobalResource(AuctionEventStatuses.AwaitingPayment).ToJavascriptSafeString()</span>';
+
+        //localize event homepage status HTML dictionary
+        eventHomepageStatusHtmlDictionary["@AuctionEventStatuses.Preview"] = '<div class="event-row__status--preview">@Html.GlobalResource("EventBiddingPreview").ToJavascriptSafeString()</div>';
+        eventHomepageStatusHtmlDictionary["@AuctionEventStatuses.Active"] = '<div class="event-row__status--active">@Html.GlobalResource("EventBiddingOpen").ToJavascriptSafeString()</div>';
+        eventHomepageStatusHtmlDictionary["@AuctionEventStatuses.Closing"] = '<div class="event-row__status--active">@Html.GlobalResource("EventBiddingClosing").ToJavascriptSafeString()</div>';
+        eventHomepageStatusHtmlDictionary["@AuctionEventStatuses.Closed"] = '<div class="event-row__status--closed">@Html.GlobalResource("EventBiddingEnded").ToJavascriptSafeString()</div>';
+
+        eventHomepageTimeLabelHtmlDictionary["@AuctionEventStatuses.Preview"] = '<div>@Html.GlobalResource("StartsIn").ToJavascriptSafeString()</div>';
+        eventHomepageTimeLabelHtmlDictionary["@AuctionEventStatuses.Active"] = '<div>@Html.GlobalResource("StartsclosingIn").ToJavascriptSafeString()</div>';
+        eventHomepageTimeLabelHtmlDictionary["@AuctionEventStatuses.Closing"] = '<div>@Html.GlobalResource("Closing").ToJavascriptSafeString()</div>';
+        eventHomepageTimeLabelHtmlDictionary["@AuctionEventStatuses.Closed"] = '<div>@Html.GlobalResource("Ended").ToJavascriptSafeString()</div>';
+
+        eventHomepageTimeHtmlDictionary["@AuctionEventStatuses.Preview"] = '';
+        eventHomepageTimeHtmlDictionary["@AuctionEventStatuses.Active"] = '';
+        eventHomepageTimeHtmlDictionary["@AuctionEventStatuses.Closing"] = '';
+        eventHomepageTimeHtmlDictionary["@AuctionEventStatuses.Closed"] = '';
+
+
+        //initialize browser time before signalR updates
+        SyncServerTime(function (syncedServerTime) {
+            jslog("Browser Time Set (initial, via AJAX): " + syncedServerTime);
+            //initial update all countdowns
+            UpdateAllCountdowns();
+        });
+
+        //initialize SignalR status titles
+        signalrIndicatorTitlesDictionary["Started"] = "@Html.GlobalResource("Started").ToJavascriptSafeString()";
+        signalrIndicatorTitlesDictionary["ConnectionSlow"] = "@Html.GlobalResource("ConnectionSlow").ToJavascriptSafeString()";
+        signalrIndicatorTitlesDictionary["Reconnecting"] = "@Html.GlobalResource("Reconnecting").ToJavascriptSafeString()";
+        signalrIndicatorTitlesDictionary["Reconnected"] = "@Html.GlobalResource("Reconnected").ToJavascriptSafeString()";
+        signalrIndicatorTitlesDictionary["Disconnected"] = "@Html.GlobalResource("Disconnected").ToJavascriptSafeString()";
+
+        CompleteSignalRHandling();
+    });
+</script>

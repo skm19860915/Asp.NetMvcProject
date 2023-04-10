@@ -1,0 +1,24 @@
+﻿@model List<SiteMapNode>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                @{
+                    @(ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle])
+                }
+                - @Html.GlobalResource("SiteMap")
+            </div>
+            <div class="panel-body">
+
+                @{
+                    foreach (SiteMapNode columnRootNode in Model)
+                    {
+                        <div class="col-sm-3">
+                            @Html.SiteMap(columnRootNode, "sitemap").ToMvcHtmlString()
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

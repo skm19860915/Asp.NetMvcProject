@@ -1,0 +1,34 @@
+﻿
+@{ 
+    string backButtonUrl = (string)ViewData["returnUrl"];
+    if (string.IsNullOrWhiteSpace(backButtonUrl))
+    {
+        backButtonUrl = Html.Base();
+    }
+    string createEventUrl = Url.Action(MVC.CreateEventAction, MVC.EventController,
+        new { returnUrl = (ViewData[Fields.ReturnUrl] ?? Html.GetActionUrl(MVC.CreateLotPage1Action)) });
+}
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+        <div class="alert alert-danger">
+            @Html.GlobalResource("EventRequiredModalHeading")
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.GlobalResource("EventRequiredModalMessage")
+            </div>
+            <div class="panel-footer text-right">
+                <a href="@backButtonUrl" class="btn btn-link">
+                    @Html.GlobalResource("Cancel")
+                </a>
+                <a href="@createEventUrl" class="btn btn-large btn-primary">
+                    @Html.GlobalResource("CreateNewEvent")
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
+        </div>
+        <p>
+            &nbsp;
+        </p>
+    </div>
+</div>

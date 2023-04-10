@@ -1,0 +1,42 @@
+﻿@{
+    string returnUrl = (string)ViewData[Fields.ReturnUrl];
+}
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                @Html.GlobalResource("Logon")
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm(MVC.LogOnAction, MVC.AccountController, FormMethod.Post))
+                {
+                    @Html.LocalizedValidationSummary()
+                    @Html.Partial("LogOnBox")
+                    @Html.Hidden("returnUrl", returnUrl)
+                }
+            </div>
+        </div>
+        <div class="visible-xs">
+            @Html.ActionLink(Html.GlobalResource("RegisterNow"), MVC.RegisterAction, MVC.AccountController, null, new { @class = "btn btn-primary btn-block" })
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        @if (!SiteClient.BoolSetting(SiteProperties.ActiveDirectoryEnabled))
+        {
+            @Html.GetSiteContent("SignInCopy")
+        }
+        @if (SiteClient.DemoEnabled)
+        {
+            @Html.Partial("DemoLoginCallout")
+        }
+    </div>
+</div>
+@if (SiteClient.DemoEnabled)
+{
+    <script>
+        $(document).ready(function () {
+            if ($("#username").attr("value") != "") $("#password").attr("value", "demo");
+        });
+    </script>
+}

@@ -1,0 +1,214 @@
+﻿@model Listing
+@{
+    decimal currentMinBidAmount = (Model.CurrentPrice ?? 0) + (Model.CurrentListingAction != null ? (Model.Increment ?? 0) : 0);
+
+    string contextMessage;
+    ContextDispositionType contextDisposition;
+    Html.GetConciseBiddingContext(Model, out contextMessage, out contextDisposition);
+}
+<div class="col-sm-12">
+    <div class="watch-item clearfix">
+        
+        @Html.ButtonLink(Html.GlobalResource("Delete_small"), MVC.RemoveWatchAction,
+        new { id = Model.ID, page = Request["page"], SortFilterOptions = Request["SortFilterOptions"] },
+        new { @class = "close" })
+        <div class="row clearfix">
+            <div class="col-xs-12 col-md-9">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-3">
+                        <label class="pull-left">
+                            <input class="row-selection-checkbox" type="checkbox" name="selectedObjects" value="@Model.ID" />
+                        </label>
+                        <div class="img-container">
+                            @if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                            {
+                                @Html.Partial("NoPhotoThumbnail")
+                            }
+                            else
+                            {
+                                string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                                @Model.BeginDetailLink()
+                                <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                                @Model.EndDetailLink()
+                            }
+                        </div>
+                    </div>
+                    <div class="col-xs-12  col-sm-8 col-md-9">
+                        @Model.BeginDetailLink()
+                        @if (Model.Lot != null)
+                        {
+                            <span>@string.Format("{0} {1}", Html.GlobalResourceString("Lot"), Model.Lot.LotNumber) -&nbsp;</span>
+                        }
+                        @Model.Title
+                        @Model.EndDetailLink()
+                        @if (!SiteClient.EnableEvents)
+                        {
+                            <em>(@Model.ID)</em>
+                        }
+                        @if (SiteClient.EnableEvents)
+                        {
+                            <span class="awe-rt-ColoredStatus">@Html.Partial("Listing_StatusLabel")</span>
+                        }
+                        else if (SiteClient.DisplayListingType)
+                        {
+                            <span class="label label-primary">@Html.GlobalResource("AuctionBanner")</span>
+                        }
+
+                    </div>
+                    <div class="col-xs-12 col-sm-8 col-md-3">
+                        <div class="watch-item__label">
+                            @if (Model.Status.Equals(ListingStatuses.Preview))
+                            {
+                                <span class="awe-rt-HideOnStart">@Html.Resource("AuctionListing , StartingBid")</span>
+                                <span class="awe-hidden awe-rt-ShowOnStart">@Html.Resource("AuctionListing , CurrentBid")</span>
+                            }
+                            else if (Model.Status.Equals(ListingStatuses.Active))
+                            {
+                                <span class="awe-rt-HideOnEnd">@Html.Resource("AuctionListing , CurrentBid")</span>
+                                <span class="awe-hidden awe-rt-ShowOnEnd">@Html.Resource("AuctionListing , FinalBid")</span>
+                            }
+                            else if ((Model.Status.Equals(ListingStatuses.Successful)) || (Model.Status.Equals(ListingStatuses.Unsuccessful)))
+                            {
+                                @Html.Resource("AuctionListing , FinalBid")
+                            }
+                            else
+                            {
+                                @Html.Resource("AuctionListing , CurrentBid")
+                            }
+                        </div>
+                        <strong>
+                            <span class="awe-rt-CurrentPrice price">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                        </strong>
+                    </div>
+                    <div class="col-xs-12 col-sm-8 col-md-6">
+                        <div class="watch-item__label">
+                            @if (Model.Status.Equals(ListingStatuses.Successful) || Model.Status.Equals(ListingStatuses.Unsuccessful))
+                            {
+                                <span>
+                                    @Html.GlobalResource("EndDateTime")
+                                </span>
+                            }
+                            else if (Model.Status.Equals(ListingStatuses.Preview))
+                            {
+                                <span class="awe-rt-HideOnStart">
+                                    @Html.GlobalResource("StartsIn")
+                                </span>
+                                <span class="awe-hidden awe-rt-ShowOnStart awe-rt-HideOnEnd">
+                                    @Html.GlobalResource("EndsIn")
+                                </span>
+                                <span class="awe-hidden awe-rt-ShowOnEnd">
+                                    @Html.GlobalResource("EndDateTime")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="awe-rt-HideOnEnd">
+                                    @Html.GlobalResource("EndsIn")
+                                </span>
+                                <span class="awe-hidden awe-rt-ShowOnEnd">
+                                    @Html.GlobalResource("EndDateTime")
+                                </span>
+                            }
+                            &nbsp;
+                        </div>
+                        @if (Model.Status.Equals(ListingStatuses.Preview))
+                        {
+                            <div class="watch-item__time--preview awe-rt-HideOnStart">
+                                <span data-epoch="starting" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnStart" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnStart" data-action-time="@Html.CultureInvariantLocalDTTM(Model.StartDTTM.Value)">@*Leave Empty, autofilled by SignalR*@</span>
+                                &nbsp;
+                            </div>
+                            <div class="watch-item__time awe-hidden awe-rt-ShowOnStart awe-rt-HideOnEnd">
+                                <span data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)" data-end-value="">@*Leave Empty, autofilled by SignalR*@</span>
+                                &nbsp;
+                            </div>
+                            <div class="watch-item__date awe-hidden awe-rt-ShowOnEnd">
+                                <span class="awe-rt-endingDTTM awe-short-date" data-initial-dttm="@(Model.EndDTTM.HasValue ? Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value) : MvcHtmlString.Empty)"></span>
+                            </div>
+                        }
+                        else if (Model.Status.Equals(ListingStatuses.Active))
+                        {
+                            <div class="watch-item__time awe-rt-HideOnEnd">
+                                <span data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)" data-end-value="">@*Leave Empty, autofilled by SignalR*@</span>
+                                &nbsp;
+                            </div>
+                            <div class="watch-item__date awe-hidden awe-rt-ShowOnEnd">
+                                <span class="awe-rt-endingDTTM awe-short-date" data-initial-dttm="@(Model.EndDTTM.HasValue ? Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value) : MvcHtmlString.Empty)"></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="watch-item__date">
+                                <span class="awe-rt-endingDTTM awe-short-date" data-initial-dttm="@(Model.EndDTTM.HasValue ? Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value) : MvcHtmlString.Empty)"></span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-12 col-sm-8 col-sm-offset-4 col-md-offset-0 col-md-3 watch-item__cta">
+                @if (Model.Status.Equals(ListingStatuses.Preview))
+                {
+                    <p class="awe-hidden awe-rt-ShowOnStart awe-rt-HideOnEnd">
+                        <span class="awe-hidden bid-conf-title">@Model.Title &nbsp;<em>(@(Model.Lot != null ? Model.Lot.ID : Model.ID))</em></span>
+                        <span class="awe-hidden Bidding_Listing_MinPrice awe-rt-MinimumBid">
+                            @* do not remove this span, it gets populated via AJAX *@
+                            @Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code)
+                        </span>
+                        <a class="btn btn-danger awe-rt-MinimumBid InlineQuickBid">
+                            @Html.Resource("AuctionListing, QuickBid", Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code))
+                        </a>
+                    </p>
+                }
+                else if (Model.Status.Equals(ListingStatuses.Active))
+                {
+                    if (contextDisposition == ContextDispositionType.Positive && !string.IsNullOrWhiteSpace(contextMessage))
+                    {
+                        <div class="awe-rt-HideOnEnd alert alert-success  InlineContextualStatus">@contextMessage</div>
+                    }
+                    else if (contextDisposition == ContextDispositionType.Negative && !string.IsNullOrWhiteSpace(contextMessage))
+                    {
+                        <div class="awe-rt-HideOnEnd alert alert-danger  InlineContextualStatus">@contextMessage</div>
+                    }
+                    else
+                    {
+                        <div class="awe-hidden awe-rt-HideOnEnd alert alert-default  InlineContextualStatus">@contextMessage</div>
+                    }
+                    <div class="awe-rt-HideOnEnd">
+                        <span class="awe-hidden bid-conf-title">@Model.Title &nbsp;<em>(@(Model.Lot != null ? Model.Lot.ID : Model.ID))</em></span>
+                        <span class="awe-hidden Bidding_Listing_MinPrice awe-rt-MinimumBid">
+                            @* do not remove this span, it gets populated via AJAX *@
+                            @Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code)
+                        </span>
+                        <a class="btn btn-danger btn-block awe-rt-MinimumBid InlineQuickBid">
+                            @Html.Resource("AuctionListing, QuickBid", Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code))
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    if (contextDisposition == ContextDispositionType.Positive && !string.IsNullOrWhiteSpace(contextMessage))
+                    {
+                        <div class="awe-rt-HideOnEnd alert alert-success  InlineContextualStatus">@contextMessage</div>
+                    }
+                    else if (contextDisposition == ContextDispositionType.Negative && !string.IsNullOrWhiteSpace(contextMessage))
+                    {
+                        <div class="awe-rt-HideOnEnd alert alert-danger  InlineContextualStatus">@contextMessage</div>
+                    }
+                    else
+                    {
+                        <div class="awe-hidden awe-rt-HideOnEnd alert alert-default  InlineContextualStatus">@contextMessage</div>
+                    }
+                }
+
+
+                <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="btn btn-default btn-block">
+                    @Html.GlobalResource("ViewItem")
+                </a>
+                <a href="Browse?Seller=@Model.OwnerUserName">
+                    @Html.GlobalResource("ViewSELLERUSERNAMEListings", Model.OwnerUserName)
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

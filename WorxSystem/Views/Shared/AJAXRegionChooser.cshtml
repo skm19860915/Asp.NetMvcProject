@@ -1,0 +1,96 @@
+﻿
+<script>
+    var regionChildSpanName = null;
+
+    function GetRegions(parentRegionID) {
+        var retVal = null;
+        var indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("div#" + regionChildSpanName);
+        $("#reset").css("margin-left", "0px");
+        Proxy.invoke("GetChildRegions", { parentRegionID: parentRegionID },
+        function (result) {
+            indicator.remove();
+            $("#reset").css("margin-left", "16px");
+            //draw select box
+            if (result.length > 0) {
+                $("div#" + regionChildSpanName).append("<div class='form-group'><select class='form-control col-md-4' name='selectForRegion" + parentRegionID + "' id='selectForRegion" + parentRegionID + "'></select></div>");
+                //render any child divs
+                $("div#" + regionChildSpanName).append("<div class='awe-category-group' id='spanForRegion" + parentRegionID + "'></div>");
+                regionChildSpanName = "spanForRegion" + parentRegionID;
+
+                $("select#selectForRegion" + parentRegionID).attr("size", 6);
+                $("select#selectForRegion" + parentRegionID).append("<option disabled value='' class='visible-xs visible-sm'> &nbsp;</option>");
+                //fill select box
+                for (category in result) {
+                    $("select#selectForRegion" + parentRegionID).append("<option value='" + result[category].ID + "'>" + result[category].Name + "</option>");
+                }
+
+                //attach change handler for select box
+                AttachRegionChangeHandler(parentRegionID);
+            }
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function AttachRegionChangeHandler(parentRegID) {
+        $("select#selectForRegion" + parentRegID).change(function () {
+            if ($(this).find(':selected').length > 0) {
+                var regID = $(this).attr("id");
+                regID = regID.substring(15);
+                $("input#RegionID").val($(this).val()).change();
+                $("div#spanForRegion" + regID).fadeOut("fast");
+                $("div#spanForRegion" + regID).remove();
+                $("select#selectForRegion" + regID).parent("div").after("<div class='awe-category-group' id='spanForRegion" + regID + "'></div>");
+                regionChildSpanName = "spanForRegion" + regID;
+                GetRegions($("select#selectForRegion" + regID).val());
+            }
+        });
+    }
+
+    function AttachParentRegionChangeHandlers(regID) {
+        var parentSpanID = $("option[value='" + regID + "']").parent("select").parent("div").next().attr("id");
+        regionChildSpanName = parentSpanID;
+        while (parentSpanID != "reglistboxes") {
+            var parentRegID = parentSpanID.substring(13);
+            AttachRegionChangeHandler(parentRegID);
+            parentSpanID = $("div#spanForRegion" + parentRegID).parent().attr("id");
+        }
+    }
+
+    function ResetRegionBoxes() {
+        $("div#reglistboxes").html("");
+        regionChildSpanName = "reglistboxes";
+        $("input#RegionID").val('');
+        GetRegions(27);
+    }
+
+    $(document).ready(function () {
+        var regionID = $("#RegionID").val();
+        if (regionID == "") {
+            //if there's no selected region...
+            regionChildSpanName = "reglistboxes";
+            GetRegions(27);
+        } else {
+            AttachParentRegionChangeHandlers(regionID);
+            GetRegions(regionID);
+        }
+
+        $("#reset").click(function () {
+            ResetRegionBoxes();
+            return false;
+        });
+    });
+
+</script>
+
+@Html.Hidden("RegionID")
+
+<div id="reglistboxes" class="form-inline">
+    @if (ViewData["RegionID"] != null)
+    {
+        @Html.RegionSelectsWithParents((int)ViewData["RegionID"]);
+    }
+</div>
+<div class="text-right">
+    <button id="reset" class="btn btn-default btn-xs">@Html.GlobalResource("Reset")</button>
+</div>

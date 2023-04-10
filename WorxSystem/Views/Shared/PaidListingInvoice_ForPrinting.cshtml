@@ -1,0 +1,415 @@
+﻿@model Invoice
+@{
+    bool hideTaxFields = SiteClient.BoolSetting(SiteProperties.HideTaxFields);
+    bool salesTaxEnabled = SiteClient.BoolSetting(SiteProperties.SalesTaxEnabled);
+    bool vatEnabled = SiteClient.BoolSetting(SiteProperties.VATEnabled);
+    bool buyersPremiumEnabled = SiteClient.BoolSetting(SiteProperties.EnableBuyersPremium);
+
+    List<CustomField> includableListingFields = CommonClient.GetCustomFields(CustomFieldGroups.Item, 0, 0, Fields.Id, false).List.Where(cf => cf.IncludeOnInvoice || cf.IncludeInSalesReport).ToList();
+    List<CustomField> fieldsToHide = includableListingFields.Where(cf => !cf.IncludeOnInvoice).ToList();
+
+    Event auctionEvent = null;
+    if (SiteClient.EnableEvents)
+    {
+        if (Model.AuctionEventId.HasValue)
+        {
+            auctionEvent = EventClient.GetEventByIDWithFillLevel(User.Identity.Name, Model.AuctionEventId.Value, EventFillLevels.Properties);
+        }
+        List<CustomField> includableEventFields = CommonClient.GetCustomFields(CustomFieldGroups.Event, 0, 0, Fields.Id, false).List.Where(cf => cf.IncludeOnInvoice || cf.IncludeInSalesReport).ToList();
+        fieldsToHide.AddRange(includableEventFields);
+    }
+
+    bool payerIsTaxExempt = Model.Payer.Properties.Any(up => up.Field.Name == StdUserProps.TaxExempt && up.Value != null)
+        ? bool.Parse(Model.Payer.Properties.First(up => up.Field.Name == StdUserProps.TaxExempt).Value) : false;
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        @SiteClient.Settings[SiteProperties.FriendlySiteName] @Html.GlobalResource("Invoice") # @Model.ID
+        <span class="pull-right">@Html.LocalDTTM(Model.CreatedDTTM, "g")</span>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        @if (Model.Shipped)
+        {
+            <img src="Content/Images/paidStamp.png" />
+            <img src="Content/Images/shippedStamp.png" />
+        }
+        else
+        {
+            <img src="Content/Images/paidStamp.png" />
+        }
+    </div>
+    <table class="table">
+        <tr>
+            <td>
+                <strong>@Html.GlobalResource("Seller"):</strong> @Model.Owner.UserName
+
+                @* display applicable seller custom fields *@
+                @foreach (var property in Model.Owner.Properties
+                    .Where(p => p.Field.IncludeOnInvoiceAsSeller && p.Field.Visibility > CustomFieldAccess.Admin)
+                    .OrderBy(p => p.Field.DisplayOrder))
+                {
+                    if (!string.IsNullOrEmpty(property.Value))
+                    {
+                        string formattedValue;
+                        switch (property.Field.Type)
+                        {
+                            case CustomFieldType.Boolean:
+                                formattedValue = bool.Parse(property.Value) ? Html.GlobalResourceString("Yes") : Html.GlobalResourceString("No");
+                                break;
+                            case CustomFieldType.Decimal:
+                                formattedValue = decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.Int:
+                                formattedValue = int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.DateTime:
+                                formattedValue = DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.Enum:
+                                formattedValue = Html.CustomFieldResourceString(property.Value);
+                                break;
+                            default:
+                                formattedValue = property.Value;
+                                break;
+                        }
+                        <br />@(string.Format("{0}: {1}", Html.CustomFieldResourceString(property.Field.Name), formattedValue))
+                    }
+                }
+
+                @* display applicable event custom fields *@
+                @if (auctionEvent != null)
+                {
+                    foreach (var property in auctionEvent.Properties
+                        .Where(p => p.Field.IncludeOnInvoice && p.Field.Visibility > CustomFieldAccess.Admin)
+                        .OrderBy(p => p.Field.DisplayOrder))
+                    {
+                        if (!string.IsNullOrEmpty(property.Value))
+                        {
+                            string formattedValue;
+                            switch (property.Field.Type)
+                            {
+                                case CustomFieldType.Boolean:
+                                    formattedValue = bool.Parse(property.Value) ? Html.GlobalResourceString("Yes") : Html.GlobalResourceString("No");
+                                    break;
+                                case CustomFieldType.Decimal:
+                                    formattedValue = decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo());
+                                    break;
+                                case CustomFieldType.Int:
+                                    formattedValue = int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                    break;
+                                case CustomFieldType.DateTime:
+                                    formattedValue = DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                    break;
+                                case CustomFieldType.Enum:
+                                    formattedValue = Html.CustomFieldResourceString(property.Value);
+                                    break;
+                                default:
+                                    formattedValue = property.Value;
+                                    break;
+                            }
+                            <br />@(string.Format("{0}: {1}", Html.CustomFieldResourceString(property.Field.Name), formattedValue))
+                        }
+                    }
+                }
+
+                <br /><strong>@Html.GlobalResource("Buyer"):</strong> @Model.Payer.UserName
+                @if (payerIsTaxExempt)
+                {
+                    <br /><span class="label label-success">@Html.GlobalResource("TaxExempt")</span>
+                }
+
+                @* display applicable buyer custom fields *@
+                @foreach (var property in Model.Payer.Properties
+                    .Where(p => p.Field.IncludeOnInvoiceAsBuyer && p.Field.Visibility > CustomFieldAccess.Admin)
+                    .OrderBy(p => p.Field.DisplayOrder))
+                {
+                    if (!string.IsNullOrEmpty(property.Value))
+                    {
+                        string formattedValue;
+                        switch (property.Field.Type)
+                        {
+                            case CustomFieldType.Boolean:
+                                formattedValue = bool.Parse(property.Value) ? Html.GlobalResourceString("Yes") : Html.GlobalResourceString("No");
+                                break;
+                            case CustomFieldType.Decimal:
+                                formattedValue = decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.Int:
+                                formattedValue = int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.DateTime:
+                                formattedValue = DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.Enum:
+                                formattedValue = Html.CustomFieldResourceString(property.Value);
+                                break;
+                            default:
+                                formattedValue = property.Value;
+                                break;
+                        }
+                        <br />@(string.Format("{0}: {1}", Html.CustomFieldResourceString(property.Field.Name), formattedValue))
+                    }
+                }
+
+            </td>
+            <td>
+                <strong>@Html.GlobalResource("SellerAddress")</strong><br />
+                @if (!string.IsNullOrEmpty(Model.OwnerCountry))
+                {
+                    @Model.OwnerName<br />
+                    @Model.OwnerStreet1<br />
+                    if (!string.IsNullOrEmpty(Model.OwnerStreet2))
+                    {
+                        @Model.OwnerStreet2<br />
+                    }
+                    @Model.OwnerCity@:, @Model.OwnerStateRegion @Model.OwnerZipPostal<br />
+                    @Model.OwnerCountry
+                }
+                else
+                {
+                    <div class="no-address">@Html.GlobalResource("AddressNotDefined")</div>
+                }
+            </td>
+            <td>
+                <strong>@Html.GlobalResource("BillingAddress")</strong><br />
+                @if (!string.IsNullOrEmpty(Model.BillingCountry))
+                {
+                    @(string.Format("{0} {1}", Model.BillingFirstName, Model.BillingLastName))<br />
+                    @Model.BillingStreet1<br />
+                    if (!string.IsNullOrEmpty(Model.BillingStreet2))
+                    {
+                        @Model.BillingStreet2<br />
+                    }
+                    @Model.BillingCity@:, @Model.BillingStateRegion @Model.BillingZipPostal @Model.BillingCountry
+                }
+                else
+                {
+                    <div class="no-address">@Html.GlobalResource("AddressNotDefined")</div>
+                }
+            </td>
+            <td>
+                @if (Model.Type == InvoiceTypes.Shipping)
+                {
+                    <strong>@Html.GlobalResource("ShippingAddress")</strong><br />
+                    if (!string.IsNullOrEmpty(Model.ShippingCountry))
+                    {
+                        @(string.Format("{0} {1}", Model.ShippingFirstName, Model.ShippingLastName))<br />
+                        @Model.ShippingStreet1<br />
+                        if (!string.IsNullOrEmpty(Model.ShippingStreet2))
+                        {
+                            @Model.ShippingStreet2<br />
+                        }
+                        @Model.ShippingCity@:, @Model.ShippingStateRegion @Model.ShippingZipPostal @Model.ShippingCountry
+                    }
+                    else
+                    {
+                        <div class="no-address">@Html.GlobalResource("AddressNotDefined")</div>
+                    }
+                }
+            </td>
+        </tr>
+    </table>
+    <table class="table">
+        <tr class="active">
+            <th>@Html.GlobalResource("Description")</th>
+            <th>@Html.GlobalResource("UnitPrice")</th>
+            <th>@Html.GlobalResource("Quantity")</th>
+            <th>@Html.GlobalResource("Total")</th>
+            <th>&nbsp;</th>
+        </tr>
+        @{
+            var allLineItemData = (Dictionary<int, Page<LineItem>>)ViewData[MVC.ViewData_PageOfLineitems];
+            var lineItems = (allLineItemData[Model.ID]).List;
+        }
+        @foreach (LineItem lineItem in lineItems.Where(li => li.Type == LineItemTypes.Listing))
+        {
+            string lineItemDescription = string.Format("{0} ({1})", lineItem.Description,
+                !string.IsNullOrWhiteSpace(lineItem.LotNumber) ? lineItem.LotNumber : lineItem.ListingID.ToString());
+            string exemptionLabel = string.Empty;
+            if (!hideTaxFields && buyersPremiumEnabled)
+            {
+                if (!lineItem.Taxable && !lineItem.BuyersPremiumApplies)
+                {
+                    exemptionLabel = Html.GlobalResourceString("TaxAndBpExempt");
+                }
+                else if (!lineItem.BuyersPremiumApplies)
+                {
+                    exemptionLabel = Html.GlobalResourceString("BpExempt");
+                }
+                else if (!lineItem.Taxable)
+                {
+                    exemptionLabel = Html.GlobalResourceString("TaxExempt");
+                }
+            }
+            else if (buyersPremiumEnabled && !lineItem.BuyersPremiumApplies)
+            {
+                exemptionLabel = Html.GlobalResourceString("BpExempt");
+            }
+            else if (!hideTaxFields && !lineItem.Taxable)
+            {
+                exemptionLabel = Html.GlobalResourceString("TaxExempt");
+            }
+            <tr>
+                <td>
+                    @lineItemDescription
+                </td>
+                <td>@Html.LocalCurrency(lineItem.PerUnitAmount, Model.Currency)</td>
+                <td>@Html.LocalInteger(lineItem.Quantity)</td>
+                <td>
+                    @Html.LocalCurrency(lineItem.TotalAmount, Model.Currency)
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(exemptionLabel))
+                    {
+                        @exemptionLabel
+                    }
+                </td>
+            </tr>
+            foreach (KeyValuePair<string, string> pair in lineItem.Properties.Where(lip => !fieldsToHide.Any(cf => cf.Name == lip.Key)))
+            {
+                <tr>
+                    <td colspan="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>@Html.CustomFieldResource(pair.Key, Model.Owner.Culture): @Html.CustomFieldResource(pair.Value, Model.Owner.Culture)</em></td>
+                </tr>
+            } // foreach (KeyValuePair<string, string> pair in lineItem.Properties)
+        }
+        @foreach (LineItem lineItem in lineItems.Where(li => li.Type == LineItemTypes.Adjustment))
+        {
+            string exemptionLabel = string.Empty;
+            if (!hideTaxFields && buyersPremiumEnabled)
+            {
+                if (!lineItem.Taxable && !lineItem.BuyersPremiumApplies)
+                {
+                    exemptionLabel = Html.GlobalResourceString("TaxAndBpExempt");
+                }
+                else if (!lineItem.BuyersPremiumApplies)
+                {
+                    exemptionLabel = Html.GlobalResourceString("BpExempt");
+                }
+                else if (!lineItem.Taxable)
+                {
+                    exemptionLabel = Html.GlobalResourceString("TaxExempt");
+                }
+            }
+            else if (buyersPremiumEnabled && !lineItem.BuyersPremiumApplies)
+            {
+                exemptionLabel = Html.GlobalResourceString("BpExempt");
+            }
+            else if (!hideTaxFields && !lineItem.Taxable)
+            {
+                exemptionLabel = Html.GlobalResourceString("TaxExempt");
+            }
+            <tr>
+                <td>
+                    @lineItem.Description
+                </td>
+                <td>@Html.LocalCurrency(lineItem.PerUnitAmount, Model.Currency)</td>
+                <td>@Html.LocalInteger(lineItem.Quantity)</td>
+                <td>@Html.LocalCurrency(lineItem.TotalAmount, Model.Currency)</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(exemptionLabel))
+                    {
+                        <div>@exemptionLabel</div>
+                    }
+                </td>
+            </tr>
+            foreach (KeyValuePair<string, string> pair in lineItem.Properties.Where(lip => !fieldsToHide.Any(cf => cf.Name == lip.Key)))
+            {
+                <tr>
+                    <td colspan="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>@Html.CustomFieldResource(pair.Key, Model.Owner.Culture): @Html.CustomFieldResource(pair.Value, Model.Owner.Culture)</em></td>
+                </tr>
+            } // foreach (KeyValuePair<string, string> pair in lineItem.Properties)
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                <label>@Html.GlobalResource("Subtotal")</label>
+            </td>
+            <td>
+                @Html.LocalCurrency(Model.Subtotal, Model.Currency)
+            </td>
+            <td></td>
+        </tr>
+        @if (Model.Type == InvoiceTypes.Shipping)
+        {
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <label>@Html.GlobalResource("Shipping")</label>
+                </td>
+                <td>
+                    @(((Dictionary<int, string>)ViewData["ShippingOption"])[Model.ID])
+                </td>
+                <td></td>
+            </tr>
+        }
+        @if (Model.BuyersPremiumAmount > 0)
+        {
+            string exemptionLabel = string.Empty;
+            if (!hideTaxFields)
+            {
+                if (!Model.BuyersPremiumIsTaxable())
+                {
+                    exemptionLabel = Html.GlobalResourceString("TaxExempt");
+                }
+            }
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <label>@Html.GlobalResource("BuyersPremium")</label>
+                    (@((Model.BuyersPremiumPercent / 100).ToString("P")))
+                </td>
+                <td>
+                    @Html.LocalCurrency(Model.BuyersPremiumAmount, Model.Currency)
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(exemptionLabel))
+                    {
+                        <div>@exemptionLabel</div>
+                    }
+                </td>
+            </tr>
+        }
+        @if (!(hideTaxFields && Model.SalesTax == 0.0M))
+        {
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <label>@Html.GlobalResource(vatEnabled ? "VAT" : "SalesTax")</label>
+                </td>
+                <td>
+                    @Html.LocalCurrency(Model.SalesTax, Model.Currency)
+                </td>
+                <td></td>
+            </tr>
+        }
+        <tr class="success">
+            <td></td>
+            <td></td>
+            <td>
+                <label>@Html.GlobalResource("Total")</label>
+            </td>
+            <td>
+                <strong>@Html.LocalCurrency(Model.Total, Model.Currency)</strong>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <strong>
+                    @if (!string.IsNullOrEmpty(Model.Comments))
+                    {
+                        @Html.GlobalResource("Comments")@: :
+                    }
+                </strong>
+                @Model.Comments
+            </td>
+        </tr>
+    </table>
+</div>
+@Html.Partial("PaymentHistory")

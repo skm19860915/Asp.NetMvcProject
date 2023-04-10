@@ -1,0 +1,149 @@
+﻿<ul class="breadcrumb">
+    <li>
+        <a href="@Html.Base()">@Html.GlobalResource("Home")</a>
+        <span class="divider"></span>
+    </li>
+    @if (ViewContext.RouteData.Values["controller"].ToString().Equals(MVC.EventController, StringComparison.OrdinalIgnoreCase))
+    {
+        var auctionEvent = (Event)ViewData[MVC.EventDetails];
+        <li>
+            @auctionEvent.BeginDetailLink()@auctionEvent.Title@auctionEvent.EndDetailLink()
+            <span class="divider"></span>
+        </li>
+    }
+    else if (Request.QueryString.Count > 0)
+    {
+        <li>
+            @{
+                string linkText = Html.GlobalResourceString("RefineSearch");
+                if (!string.IsNullOrEmpty(Request.QueryString["FullTextQuery"]))
+                {
+                    linkText += " [\"" + /*Server.HtmlEncode(*/Request.QueryString["FullTextQuery"]/*)*/ + "\"]";
+                }
+                var newRoutes = new RouteValueDictionary();
+                foreach (string key in Request.QueryString.AllKeys.Where(k => k != null))
+                {
+                    newRoutes.Add(key, Request.QueryString[key]);
+                }
+                if (!newRoutes.ContainsKey("RefineSearch"))
+                {
+                    newRoutes.Add("RefineSearch", "1");
+                }
+            }
+            @Html.ActionLink(linkText, "Search", "Listing", newRoutes, null)
+        </li>
+    }
+    else
+    {
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Browse"), MVC.IndexAction, MVC.ListingController)
+            <span class="divider"></span>
+        </li>
+    }
+    @if (!string.IsNullOrEmpty((string)ViewContext.RouteData.Values["breadcrumbs"]))
+    {
+        string[] categoryIDs = ((string)ViewContext.RouteData.Values["breadcrumbs"]).Split('-');
+        string[] extraStuff = ((string)ViewContext.RouteData.Values["extra"]).Split('-');
+        for (int i = 0; i < categoryIDs.Length; i++)
+        {
+            if (categoryIDs.Length == 1 /*&& Request.QueryString.Count == 0*/)
+            {
+                //only
+                Category category = CommonClient.GetCategoryByID(int.Parse(categoryIDs[i].Substring(1)));
+                if (category != null)
+                {
+                    <li>
+                        @Html.LocalizedCategoryName(category.Name)
+                    </li>
+                }
+            }
+            else if (i == categoryIDs.Length - 1 /*&& Request.QueryString.Count == 0*/)
+            {
+                //last
+                Category category = CommonClient.GetCategoryByID(int.Parse(categoryIDs[i].Substring(1)));
+                if (category != null)
+                {
+                    <li>
+                        @Html.LocalizedCategoryName(category.Name)
+                    </li>
+                }
+            }
+            else
+            {
+                string breadcrumbs;
+                string extra;
+                if (i == categoryIDs.Length - 1)
+                { // last
+                    breadcrumbs = (string)ViewContext.RouteData.Values["breadcrumbs"];
+                    extra = (string)ViewContext.RouteData.Values["extra"];
+                }
+                else
+                {
+                    string origBreadcrumbs = (string)ViewContext.RouteData.Values["breadcrumbs"];
+                    string currentCatID = categoryIDs[i];
+                    int removeBreadcrumbsIndex = origBreadcrumbs.IndexOf(currentCatID + "-");
+                    if (removeBreadcrumbsIndex > 0)
+                    {
+                        removeBreadcrumbsIndex += currentCatID.Length;
+                    }
+                    else
+                    {
+                        removeBreadcrumbsIndex = currentCatID.Length;
+                    }
+                    breadcrumbs = origBreadcrumbs.Length > removeBreadcrumbsIndex
+                                            ? origBreadcrumbs.Remove(removeBreadcrumbsIndex)
+                                            : origBreadcrumbs;
+                    extra = string.Empty;
+                    if (categoryIDs.Length == extraStuff.Length)
+                    {
+                        string origExtra = ((string)ViewContext.RouteData.Values["extra"]);
+                        string currentExtra = extraStuff[i];
+                        int removeExtraIndex = origExtra.IndexOf(currentExtra + "-");
+                        if (removeExtraIndex > 0)
+                        {
+                            removeExtraIndex += currentExtra.Length;
+                        }
+                        else
+                        {
+                            removeExtraIndex = currentExtra.Length;
+                        }
+                        if (removeExtraIndex < origExtra.Length)
+                        {
+                            extra = origExtra.Remove(removeExtraIndex);
+                        }
+                    }
+                }
+                string toAdd = string.Empty;
+                if (Request.QueryString.Count > 0)
+                {
+                    string toAddDelim = "?";
+                    foreach (string key in Request.QueryString.AllKeys.Where(k => k != null))
+                    {
+                        string value = Request.QueryString[key];
+                        if (key == "CategoryID")
+                        {
+                            value = categoryIDs[i].Substring(1);
+                        }
+                        toAdd += toAddDelim + key + "=" + Server.UrlEncode(value);
+                        toAddDelim = "&";
+                    }
+                }
+                Category category = CommonClient.GetCategoryByID(int.Parse(categoryIDs[i].Substring(1)));
+                if (category != null)
+                {
+                    <li>
+                        @if (ViewContext.RouteData.Values["controller"].ToString().Equals(MVC.EventController, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <a href="Event/Details/@ViewContext.RouteData.Values["id"]/@ViewContext.RouteData.Values["extra2"]/@(breadcrumbs)/@(extra + toAdd)">@Html.LocalizedCategoryName(category.Name)</a>
+                        }
+                        else
+                        {
+                            <a href="Browse/@(breadcrumbs)/@(extra + toAdd)">@Html.LocalizedCategoryName(category.Name)</a>
+                        }
+                        <span class="divider"></span>
+                    </li>
+                }
+            }
+        }
+    }
+</ul>

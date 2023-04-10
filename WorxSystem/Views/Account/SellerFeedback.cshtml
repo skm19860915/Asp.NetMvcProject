@@ -1,0 +1,57 @@
+﻿@model Page<Feedback>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Feedback_Seller")
+</div>
+@{
+    var currentAction = (String)ViewContext.RouteData.Values["action"];
+}
+<div class="panel panel-default">
+    <table class="table table-condensed">
+        <tr>
+            <th>@Html.ActionLink(Html.GlobalResource("Rating"), currentAction, new { sort = "Rating", descending = !((bool)ViewData["SortDescending"]) })</th>
+            <th class="hidden-xs">@Html.GlobalResource("Feedback")</th>
+            <th>@Html.GlobalResource("LeftBy")</th>
+            <th>@Html.GlobalResource("Listing")</th>
+            <th>@Html.ActionLink(Html.GlobalResource("DateTime"), currentAction, new { sort = "DateStamp", descending = !((bool)ViewData["SortDescending"]) })</th>
+        </tr>
+        @foreach (Feedback feedback in Model.List)
+        {
+            User otherUser = (Html.FBOUserName() == feedback.Sender.UserName) ? feedback.Receiver : feedback.Sender;
+            <tr>
+                <td><div class="stars-off"><div class="stars-on" style="width:@(feedback.Rating * 16)px"></div></div></td>
+                <td class="hidden-xs">@feedback.Comment</td>
+                <td>
+                    @Html.ActionLink(otherUser.UserName, MVC.ViewFeedbackAction, new { userid = otherUser.ID })
+                </td>
+                <td>@Html.ActionLink(feedback.ListingID.ToString(), "Details", "Listing", new { id = feedback.ListingID }, null)</td>
+                <td>@Html.LocalDTTM(feedback.DateStamp, "G")</td>
+            </tr>
+            <tr class="visible-xs">
+                <td></td>
+                <td colspan="3">
+                    @feedback.Comment
+                </td>
+            </tr>
+        }
+
+        @if (Model.TotalPageCount > 1)
+        {
+            <tr>
+                <td colspan="5">
+                    @{ Html.RenderPageNumberLinks(Model); }
+                </td>
+            </tr>
+        }
+    </table>
+    @if (Model.TotalItemCount == 0)
+    {
+        <div class="panel-body">
+            <span class="text-muted"><strong><em>@Html.GlobalResource("NoFeedbackHistory")</em></strong></span>
+        </div>
+    }
+</div>

@@ -1,0 +1,110 @@
+﻿@model UserMessage
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("ReadMessage")
+</div>
+@Html.LocalizedValidationSummary()
+@{
+    if (SiteClient.UserMessagingEnabled)
+    {
+        <div class="panel panel-default">
+            <div class="panel-heading">@Model.Subject</div>
+            <div class="panel-body">
+                @if (Model.ListingID.HasValue)
+                {
+                    <p>
+                        <strong>@Html.GlobalResource("Listing"):</strong>
+                        @(Html.ActionLink(Model.ListingID.ToString(), MVC.DetailsAction, MVC.ListingController,
+                                    new { id = Model.ListingID }, null))
+                    </p>
+                }
+                <p>
+                    <strong>@Html.GlobalResource("From"):</strong>
+                    @Model.From
+                </p>
+                <p>
+                    <strong>@Html.GlobalResource("To"):</strong>
+                    @Model.To
+                </p>
+                <p>
+                    <strong>@Html.GlobalResource("Sent"):</strong>
+                    @Html.LocalDTTM(Model.Sent, "G")
+                </p>
+                <p>
+                    <strong>@Html.GlobalResource("Message"):</strong><br />
+                    @Model.Body.ToMvcHtmlString()
+                </p>
+            </div>
+        </div>
+        string returnUrl = (ViewData.ContainsKey(Fields.ReturnUrl)) ? (string)ViewData[Fields.ReturnUrl] : string.Empty;
+        if (string.IsNullOrEmpty(returnUrl))
+        {
+            returnUrl = Html.GetActionUrl(MVC.ViewMessagesAction,
+                new
+                {
+                    incoming = ViewData[MVC.ViewData_UserMessages_Incoming],
+                    sort = ViewData[MVC.ViewData_SortField],
+                    descending = ViewData[MVC.ViewData_SortDescending]
+                });
+        }
+        string method;
+        string template;
+        if (Model.ListingID.HasValue)
+        {
+            method = MVC.SendListingMessageAction;
+            template = Templates.UserMessageReply;
+        }
+        else
+        {
+            method = MVC.SendMessageAction;
+            template = Templates.UserMessageReplyGeneral;
+        }
+
+        if (!Model.Sender.UserName.Equals(Html.FBOUserName()))
+        {
+            using (Html.BeginForm(method, MVC.AccountController,
+                    new { receiver = Model.Sender.UserName, template, listingID = Model.ListingID, returnUrl }))
+            {
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("Reply")</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="required">@Html.GlobalResource("Subject")</label>
+                            @Html.TextBox("Subject", null, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="required">@Html.GlobalResource("Message")</label>
+                            @Html.TextArea("Body", (string)ViewData["Body"], 8, 45, new { @class = "form-control" })
+                        </div>
+                        @if (Model.MasterMessageID.HasValue)
+                        {
+                            //This reply message should have the same MasterMessageID as the message being replied to.
+                            @Html.Hidden("masterMessageID", Model.MasterMessageID.Value)
+                        }
+                        else
+                        {
+                            //This reply message should have the same MasterMessageID as the message being replied to.
+                            @Html.Hidden("masterMessageID", Model.ID)
+                        }
+                        <input type="submit" class="btn btn-primary" name="Send" id="Submit1" value="@Html.GlobalResource("Send")" />
+                    </div>
+                </div>
+            } // using ( Html.BeginForm ... )
+        } // if (!Model.Sender.UserName.Equals(Html.FBOUserName()))
+
+        <p></p>
+        <button class="btn btn-default" onclick="document.location='@returnUrl.ToJavascriptSafeString()'; return false;">
+            <span class="glyphicon glyphicon-chevron-left"></span>@Html.GlobalResource("BackToMessaging")
+        </button>
+        if (!Model.Sender.UserName.Equals(Html.FBOUserName()))
+        {
+            @(Html.ButtonLink(Html.GlobalResource("ReportAbuse"), MVC.ReportMessagingAbuseAction,
+        new { id = Model.ID }, new { @class = "btn btn-default" }))
+        }
+    } // if (SiteClient.UserMessagingEnabled)
+}

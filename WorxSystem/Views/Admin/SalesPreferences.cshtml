@@ -1,0 +1,189 @@
+﻿@model List<CustomProperty>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = ViewData[MVC.LineageString];
+}
+
+@section head {
+    <script>
+        function updateInputs() {
+            if ($("#AutoChargeCCs_Daily").prop("checked")) {
+                $("#TimeOfDay").slideDown();
+            } else {
+                $("#TimeOfDay").slideUp();
+            }
+        };
+
+        $(document).ready(function () {
+            $(".AutoChargeCCs_Option").on("change", function () {
+                updateInputs();
+            });
+
+            //[Process Payment(s)] button click
+            $(".AttemptBatchPaymentButton").click(function () {
+                $(this).html('@Html.AdminResource("BatchProcessingQueued")')
+                    .attr("disabled", "disabled");
+                DemandSalesBatchProcessing();
+                return false;
+            });
+
+
+            $("#@SiteProperties.AutoGenerateInvoices").on("click", function () {
+                if (!$(this).prop("checked")) {
+                    $("#AutoChargeCCs_Off").prop("checked", true).checkbox("update");
+                    updateInputs();
+                }
+            });
+
+            $(".AutoChargeCCs_Option").on("click", function () {
+                if (!$("#@SiteProperties.AutoGenerateInvoices").prop("checked")) {
+                    $("#@SiteProperties.AutoGenerateInvoices").prop("checked", true).checkbox("update");
+                }
+            });
+
+            updateInputs();
+        });
+    </script>
+}
+    <div class="form-horizontal">
+        @using (Html.BeginForm())
+        {
+            CustomProperty property = null;
+            MvcHtmlString helpText = null;
+
+            property = Model.Single(p => p.Field.Name == SiteProperties.AutoGenerateInvoices);
+            helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource(property.Field.Name)
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @{ Html.RenderCustomField_Admin(property.Field); }
+
+                </div>
+                @if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                {
+                    <div class="col-xs-2">
+                        @Html.ToolTipButton(property.Field.Name + "_Help")
+                    </div>
+                    <div class="col-xs-12">@Html.ToolTipContent(property.Field.Name + "_Help", helpText)</div>
+                }
+            </div>
+
+            property = Model.Single(p => p.Field.Name == SiteProperties.AutoChargeCCs);
+            helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help_", SiteClient.EnableEvents ? "EV" : "EN"));
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource(property.Field.Name)
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(property.Field.Name, "Off", property.Value == "Off", new { @id = property.Field.Name + "_Off", @class = "AutoChargeCCs_Option" })
+                            @Html.CustomFieldResourceString("Off")
+                        </label>
+                    </div>
+                    @if (SiteClient.EnableEvents)
+                    {
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButton(property.Field.Name, "WhenEventCloses", property.Value == "WhenEventCloses", new { @id = property.Field.Name + "_WhenEventCloses", @class = "AutoChargeCCs_Option" })
+                                @Html.CustomFieldResourceString("WhenEventCloses")
+                            </label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButton(property.Field.Name, "Immediately", property.Value == "Immediately", new { @id = property.Field.Name + "_Immediately", @class = "AutoChargeCCs_Option" })
+                                @Html.CustomFieldResourceString("Immediately")
+                            </label>
+                        </div>
+                    }
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(property.Field.Name, "Daily", property.Value == "Daily", new { @id = property.Field.Name + "_Daily", @class = "AutoChargeCCs_Option" })
+                            @Html.CustomFieldResourceString("Daily")
+                        </label>
+                    </div>
+                </div>
+                @if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                {
+                    <div class="col-xs-2">
+                        @Html.ToolTipButton(property.Field.Name + "_Help")
+                    </div>
+                    <div class="col-xs-12">@Html.ToolTipContent(property.Field.Name + "_Help", helpText)</div>
+                }
+            </div>
+
+            <div class="form-group @(property.Value == "Daily" ? "" : "awe-hidden")" id="TimeOfDay">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource("BatchPaymentTime")
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @Html.TextBox("BatchTime", null, new { @class = "form-control input-sm" })
+                </div>
+                @{
+                    helpText = Html.CustomFieldResourceOrDefault(string.Concat("BatchPaymentTime", "_Help"));
+                    if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                    {
+                        <div class="col-xs-2">
+                            @Html.ToolTipButton("helpText")
+                        </div>
+                        <div class="col-xs-12">@Html.ToolTipContent("helpText", helpText)</div>
+                    }
+                }
+            </div>
+
+            <div class="group">
+                @if (SiteClient.TextSetting(SiteProperties.AutoChargeCCs) == "Daily")
+                {
+                    <p>
+                        @Html.CustomFieldResource("NextBatchPayment") -
+                        <strong>
+                            @ViewData["NextAttemptDTTM"]
+                        </strong>
+                    </p>
+                    <hr />
+                }
+                @if (!SiteClient.DemoEnabled)
+                {
+                    <button class="btn btn-default AttemptBatchPaymentButton" type="button">@Html.AdminResource("ProcessSalePayments")</button>
+                    <span>@Html.AdminResource("ProcessSalePayments_Help")</span>
+                }
+                else
+                {
+                    <button class="btn btn-default disabled AttemptBatchPaymentButton" type="button" disabled="disabled">@Html.AdminResource("ProcessSalePayments")</button>
+                    <span>@Html.AdminResource("ProcessSalePayments_Help")</span>
+                    <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+            </div>
+
+            <div class="action-panel">
+                @if (!SiteClient.DemoEnabled)
+                {
+                    <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+                }
+                else
+                {
+                    <input type="submit" class="btn btn-success disabled" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" disabled="disabled" />
+                }
+            </div>
+        }
+
+    </div>
+

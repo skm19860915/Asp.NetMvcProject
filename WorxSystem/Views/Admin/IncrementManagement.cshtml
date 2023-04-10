@@ -1,0 +1,18 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h3 class="h3row">@Html.AdminResource("LineageString_IncrementManagement")</h3>
+@using (Html.BeginForm())
+{
+    foreach (Increment increment in ListingClient.GetIncrements(Context.User.Identity.Name, ((Category)ViewData["ParentCategory"]).Name).OrderBy(i => i.PriceLevel))
+    {
+    @Html.AdminResource("PriceLevel")@: : @Html.TextBox("inc_PriceLevel_" + increment.ID, increment.PriceLevel)
+    @Html.AdminResource("Increment")@: : @Html.TextBox("inc_Increment_" + increment.ID, increment.Amount)
+    @Html.AdminResource("Delete")@: : <input type="checkbox" name="deleteIncrement" value="@increment.ID" />
+    <br />
+    }
+    @Html.AdminResource("PriceLevel")@: : @Html.TextBox("inc_new_PriceLevel")
+    @Html.AdminResource("Increment")@: : @Html.TextBox("inc_new_Increment") @Html.AdminResource("EnterNewIncrement")<br />
+    <input type="submit" class="DefaultButton" value="@Html.AdminResource("Save")" name="Save" id="Save" />
+}

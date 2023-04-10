@@ -1,0 +1,44 @@
+﻿@model Listing
+<table class="table-condensed">
+    <tr>
+        <td><strong>@Html.Resource("FixedPriceListing, Price")</strong></td>
+        <td>@Html.LocalCurrency((decimal)Model.CurrentPrice, Model.Currency.Code)</td>
+    </tr>
+    <tr>
+        <td><strong>@Html.Resource("FixedPriceListing, QuantityAvailable")</strong></td>
+        <td>@Html.LocalInteger(Model.CurrentQuantity)</td>
+    </tr>
+    @if (!Model.IsGoodTilCanceled())
+    {
+        if (Model.Status == ListingStatuses.Active)
+        {
+            <tr>
+                <td><strong>@Html.GlobalResource("RemainingTime")</strong></td>
+                <td>@Html.RemainingTime(Model.EndDTTM.Value)</td>
+            </tr>
+            <tr>
+                <td><strong>@Html.GlobalResource("StartDTTM")</strong></td>
+                <td>@Html.LocalDTTM(Model.StartDTTM.Value)</td>
+            </tr>
+            <tr>
+                <td><strong>@Html.GlobalResource("EndDTTM")</strong></td>
+                <td>@Html.LocalDTTM(Model.EndDTTM.Value)</td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td><strong>@Html.GlobalResource("EndDTTM")</strong></td>
+                <td>@Html.LocalDTTM(Model.EndDTTM.Value)</td>
+            </tr>
+        }
+    }
+    <tr>
+        <td><strong>@Html.GlobalResource("Seller")</strong></td>
+        <td>@Model.OwnerUserName</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+</table>

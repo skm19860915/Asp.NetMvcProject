@@ -1,0 +1,115 @@
+﻿@model Offer
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+}
+<div class="list clearfix">
+    <div class="row">
+        <div class="col-sm-2">
+            @if (string.IsNullOrEmpty(Model.Listing.PrimaryImageURI))
+            {
+                @Html.Partial("NoPhotoThumbnail")
+            }
+            else
+            {
+                string uri = string.Format(Model.Listing.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                @Model.Listing.BeginDetailLink()
+                <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                @Model.Listing.EndDetailLink()
+            }
+        </div>
+        <div class="col-sm-5">
+            <p>
+                <strong>
+                    @if (Model.Listing.Lot != null)
+                    {
+                        @Html.ActionLink(string.Format("{0} {1} - {2}", Html.GlobalResourceString("Lot"), Model.Listing.Lot.LotNumber, Model.Listing.Title), 
+                            MVC.DetailsAction, MVC.ListingController, new { ID = Model.ListingID }, null)
+                    }
+                    else
+                    {
+                        @Html.ActionLink(string.Format("{0} ({1})", Model.Listing.Title, Model.ListingID), 
+                            MVC.DetailsAction, MVC.ListingController, new { ID = Model.ListingID }, null)
+                    }
+                </strong>
+            </p>
+            <div class="row">
+                <div class="col-sm-4">@Model.Quantity</div>
+                <div class="col-sm-4">@Html.LocalCurrency(Model.Amount, Model.Listing.Currency.Code)</div>
+                <div class="col-sm-4">@Html.LocalCurrency(Model.Amount * Model.Quantity, Model.Listing.Currency.Code)</div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <p>
+                @if (Model.Status == OfferStatuses.Active)
+                {
+                    @Html.GlobalResource("ExpiresInX", Html.RemainingTime(Model.ExpirationDTTM).ToString())
+                }
+                else
+                {
+                    @Html.GlobalResource(Model.Status)
+                }
+            </p>
+            <p>
+                @if (Model.SendingUserName.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    @Model.ReceivingUserName
+                }
+                else
+                {
+                    @Model.SendingUserName
+                }
+            </p>
+        </div>
+    </div>
+    <div class="btn-group">
+        @if (Model.Status == OfferStatuses.Active && Model.ReceivingUserName.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase))
+        {
+            @Html.ActionLink(Html.GlobalResource("PendingOffer"), MVC.ManageOffersAction, MVC.ListingController,
+                new { ListingID = Model.ListingID, returnUrl }, new { @class = "btn btn-success" })
+        }
+        else if (Model.Status == OfferStatuses.Active)
+        {
+            @Html.ActionLink(Html.GlobalResource("AwaitingResponse"), MVC.ManageOffersAction, MVC.ListingController,
+                new { ListingID = Model.ListingID, returnUrl }, new { @class = "btn btn-warning" })
+        }
+        else
+        {
+            @Html.ActionLink(Html.GlobalResource("OfferHistory"), MVC.ManageOffersAction, MVC.ListingController,
+                new { ListingID = Model.ListingID, returnUrl }, new { @class = "btn btn-warning" })
+        }
+        @if (SiteClient.UserMessagingEnabled)
+        {
+            <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="glyphicon glyphicon-cog"></span></a>
+            <ul class="dropdown-menu dropdown-menu-right">
+                @{
+                    string userNameToContact;
+                    if (Model.SendingUserName.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        userNameToContact = Model.ReceivingUserName;
+                    }
+                    else
+                    {
+                        userNameToContact = Model.SendingUserName;
+                    }
+                    if (userNameToContact.Equals(Model.ListingOwnerUsername, StringComparison.OrdinalIgnoreCase))
+                    {
+                        <li>
+                            @Html.ActionLink(Html.GlobalResourceString("ContactSeller"), MVC.SendListingMessageAction, MVC.AccountController,
+                                new { receiver = userNameToContact, template = Templates.AskListingQuestion, listingID = Model.ListingID, returnUrl },
+                                new { @title = Html.GlobalResourceString("ContactSeller") })
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            @Html.ActionLink(Html.GlobalResourceString("ContactBuyer"), MVC.SendListingMessageAction, MVC.AccountController,
+                                new { receiver = userNameToContact, template = Templates.AskBuyerQuestion, listingID = Model.ListingID, returnUrl },
+                                new { @title = Html.GlobalResourceString("ContactBuyer") })
+                        </li>
+                    }
+                }
+            </ul>
+        }
+    </div>
+
+</div>

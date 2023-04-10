@@ -1,0 +1,75 @@
+﻿@model User
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_UserManagement");
+}
+
+@section PageName {
+    &gt; @Model.UserName (@Model.ID) &gt; @Html.GlobalResource("CreditCardInformation")
+    }
+    
+@Html.Partial("UserManagementTopNav", "creditcards")
+<div class="user-details panel panel-default">
+    <div class="panel-body">
+        @using (Html.BeginForm())
+        {
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group">
+                        <label class="required control-label">@Html.AdminResource("CardType")</label>
+
+                        @Html.DropDownList("CardType", (IEnumerable<SelectListItem>)ViewData[Fields.CreditCardTypes], Html.AdminResourceString("SelectACreditCardType"), new { @class = "form-control" })
+
+                    </div>
+                    <div class="form-group">
+                        <label class="required control-label">@Html.AdminResource("CardNumber")</label>
+
+                        @Html.TextBox("CardNumber", null, new { @class = "form-control" })
+
+                    </div>
+                    <div class="form-group">
+                        <label class="required control-label">@Html.AdminResource("ExpirationMonth")</label>
+
+                        @Html.MonthDropDownList(Fields.ExpirationMonth, " ", new { @class = "form-control" })
+
+                    </div>
+                    <div class="form-group">
+
+                        <label class="required control-label">@Html.AdminResource("ExpirationYear")</label>
+                        @Html.YearDropDownList(Fields.ExpirationYear, " ", new { @class = "form-control" })
+                    </div>
+
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group">
+                        <label class="required control-label">@Html.AdminResource("SelectAddress")</label>
+                    </div>
+
+                    <table class="table">
+                        @foreach (Address address in (IEnumerable<Address>)ViewData[MVC.ViewData_AddressList])
+                        {
+                            <tr>
+                                <td>
+                                    @Html.RadioButton("AddressID", address.ID, false)
+                                </td>
+                                <td>
+                                    @Html.Partial("Address", address)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+                    <hr />
+                   
+                        <input type="submit" class="btn btn-success" id="Save" name="Save" value="@Html.AdminResource("Save")" />
+                        
+                        @Html.ActionLink(Html.AdminResource("Cancel"), MVC.UserCreditCardsAction, new { @id = Model.ID, @class="btn btn-link"})
+                  
+                    
+               
+        }
+            </div>
+</div>
+        

@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <base href="@Html.Base()" />
+    <meta charset="utf-8" />
+    @Scripts.Render("~/bundles/jquery")
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/bootstrap_js")
+    @Styles.Render("~/bundles/bootstrap_dialog_css")
+
+    @Styles.Render("~/bundles/bootstrap_css")
+    @* @Styles.Render("~/bundles/social_buttons_css")*@
+
+</head>
+<body>
+    @RenderBody()
+    @*@Html.GetSiteContent("Literal_Footer")*@
+    @Scripts.Render("~/bundles/generalAJAX")
+    @if (!(Html.GetCultureInfo().Calendar is System.Globalization.GregorianCalendar))
+    {
+        <script>disableDatePicker = true;</script>
+    }
+    @if (SiteClient.DemoEnabled)
+    {
+        @Scripts.Render("~/bundles/demojs")
+    }
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+@{Html.LogPageRenderStats();}

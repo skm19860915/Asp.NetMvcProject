@@ -1,0 +1,72 @@
+﻿@model Listing
+<script>
+    $(document).ready(function () {
+        if ($.cookie('currency') == '@Model.Currency.Code') {
+            $("#convertedprice").hide();
+        } else {
+            $("#convertedprice").show();
+        }
+    });
+</script>
+@{
+    bool showSellerData = bool.Parse(SiteClient.Settings["SellerUsernameDetailPage"]);
+    bool paymentsEnabled = (Model.Owner.CreditCardAccepted() && SiteClient.BoolSetting(SiteProperties.AuthorizeNet_Enabled)) ||
+        (Model.Owner.BoolProperty(StdUserProps.StripeConnect_SellerAccountConnected) && SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled)) ||
+        (Model.OwnerAcceptsPayPal() && SiteClient.BoolSetting(SiteProperties.PayPal_Enabled));
+    bool hasShipping = Model.ShippingOptions.Count > 0;
+
+    if (showSellerData || paymentsEnabled || hasShipping)
+    {
+        string sellerPaymentData = "seller-data__payment";
+        if (!showSellerData)
+        {
+            sellerPaymentData += "  seller-data__fullwidth";
+        }
+        <div class="detail__seller-data">
+            <div class="seller-data__container">
+                @{
+
+                    if (showSellerData)
+                    {
+                        <div class="seller-data__summary">
+                            @Html.Partial("ListingDetail_SellerUserSummary")
+                        </div>
+                    }
+                }
+                <div class="@sellerPaymentData">
+                    @Html.Partial("ClassifiedPaymentOptions")
+                </div>
+            </div>
+            @Html.Partial("ShippingOptionDisplay")
+        </div>
+                    }
+}
+
+<script>
+    @*
+
+        //if End DTTM is set to >= 80 years in future (aka Good Til Canceled/GTC) then hide the end date and start date sections
+        $(document).on("SignalR_UpdateListingDTTM", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            var newEndDTTM = new Date(data.DTTM);
+            if (data.Epoch == "ending") {
+                if (newEndDTTM.getFullYear() >= (@DateTime.UtcNow.AddYears(80).ToString("yyyy"))) {
+                    $(".awe-end-dttm-container").hide();
+                    $(".awe-start-dttm-container").hide();
+                } else {
+                    $(".awe-end-dttm-container").show();
+                    $(".awe-start-dttm-container").show();
+                }
+            }
+        });
+    *@
+    $(document).ready(function () {
+        //classified specific context messages
+        contextMessageDictionary["LISTING_NOT_STARTED"] = "@Html.Resource("ClassifiedListing, LISTING_NOT_STARTED").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_DELETED"] = "@Html.Resource("ClassifiedListing, LISTING_DELETED").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_AWAITING_PAYMENT"] = "@Html.Resource("ClassifiedListing, LISTING_AWAITING_PAYMENT").ToJavascriptSafeString()";
+
+        contextMessageDictionary["ActionSuccess"] = "@Html.Resource("ClassifiedListing, ActionSuccess").ToJavascriptSafeString()";
+    });
+</script>

@@ -1,0 +1,140 @@
+﻿@model Media
+
+@{
+    string fileInputIdTag = "photo_";
+    string imageIdTag = "img_";
+    string progressIdTag = "progress_";
+    string html5ButtonIDTag = "html5Button_";
+    string html5FilesIDTag = "html5files_";
+    string percentIdTag = "percent_";
+    string currentImageSource = string.Empty;
+    if (Model.ID > 0)
+    {
+        imageIdTag += Model.ID;
+        fileInputIdTag += Model.ID;
+        progressIdTag += Model.ID;
+        html5ButtonIDTag += Model.ID;
+        html5FilesIDTag += Model.ID;
+        percentIdTag += Model.ID;
+
+        //Load Media
+        IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(Model.Loader);
+        Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, Model.Context);
+        currentImageSource = mediaLoader.Load(loaderProviderSettings, Model, "Main"/*"FullSize"*/);
+        
+    }
+    else
+    {
+        fileInputIdTag += "new";
+        imageIdTag += "new";
+        progressIdTag += "new";
+        html5ButtonIDTag += "new";
+        html5FilesIDTag += "new";
+        percentIdTag += "new";
+        currentImageSource = "Content/Images/General/clear.gif";
+    }
+}
+
+<style>
+    #@progressIdTag {
+      margin: 10px 0;
+      padding: 3px;
+      border: 1px solid #000;
+      font-size: 14px;
+      clear: both;
+        display: none;
+    }
+    #@progressIdTag .@percentIdTag {
+      background-color: #99ccff;
+      height: auto;
+      width: 0;
+    }
+</style>
+
+   
+    @if (SiteClient.DemoEnabled)
+    {
+        <p>
+            <strong>@Html.AdminResource("BannerImage") </strong><img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" /> <small>@Html.AdminResource("BannerDisplayInfo")</small>
+            <br />
+            <button class="btn btn-default btn-block" disabled="disabled">@Html.AdminResource("SelectBannerImage")</button>
+        </p>
+    }
+    else
+    {
+        <p>
+           <strong> @Html.AdminResource("BannerImage") </strong> <small>@Html.AdminResource("BannerDisplayInfo")</small><br />
+            <input type="file" id="@fileInputIdTag" name="photo" class="awe-hidden-no-toggle" />
+            <button class="btn btn-info btn-block awe-hidden" id="@html5ButtonIDTag" onclick="$('#@html5FilesIDTag').click();return false;">@Html.AdminResource("SelectBannerImage") </button>
+            <input type="file" id="@html5FilesIDTag" name="files[]" class="awe-hidden-no-toggle" />
+        </p>
+    <div id="@progressIdTag"><div class="@percentIdTag">0%</div></div>
+
+    <script>
+        $(document).ready(function () {
+            if (window.File && window.FileList) {
+                $("#@html5FilesIDTag").change(function () {
+                    $("#@progressIdTag").slideDown();
+                    var formData = new FormData();
+                    formData.append("file", this.files[0]);
+                    $.ajax({
+                        url: $.url("Media/AsyncUploadBanner"),  //server script to process data
+                        type: 'POST',
+                        xhr: function () {  // custom xhr
+                            var myXhr = $.ajaxSettings.xhr();
+                            if (myXhr.upload) { // check if upload property exists
+                                myXhr.upload.onprogress = function (evt) {
+                                    if (evt.lengthComputable) {
+                                        var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+                                        // Increase the progress bar length.
+                                        if (percentLoaded < 100) {
+                                            $('.@percentIdTag').css("width", percentLoaded + "%");
+                                            $('.@percentIdTag').text(percentLoaded + "%");
+                                        }
+                                    }
+                                };
+                            }
+                            return myXhr;
+                        },
+                        //Ajax events
+                        //beforeSend: beforeSendHandler,
+                        //success: successHandler,
+                        //error: errorHandler,
+                        // Form data
+                        data: formData,
+                        //Options to tell JQuery not to process data or worry about content-type
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    }).done(function (result) {
+                        $('.@percentIdTag').css("width", "100%");
+                        $('.@percentIdTag').text("100%");
+                        $('#@imageIdTag').attr("src", result.uri).show();
+                        $("#@imageIdTag").after('<input type="hidden" name="media_guid_' + result.guid + '" value="' + result.guid + '"/>');
+                        $("#@imageIdTag").after('<input type="hidden" name="media_ordr_' + result.guid + '" value="1"/>');
+                        $("#@progressIdTag").slideUp('slow');
+                    }).fail(function (e) {
+                        alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()');
+                        $("#@progressIdTag").slideUp('slow');
+                    });
+                });
+                $("#@html5ButtonIDTag").show();
+            } else {
+                $("#@fileInputIdTag").show();
+                $('#@fileInputIdTag.ToJavascriptSafeString()').makeAsyncUploaderWithSuccessHandler({
+                    upload_url: $.url('Media/AsyncUploadBanner'),
+                    flash_url: 'Content/swf/swfupload.swf',
+                    button_image_url: 'Content/images/blankButton.png',
+                    disableDuringUpload: 'INPUT[type="submit"]',
+                    button_text: '@Html.AdminResource("UploadImage").ToJavascriptSafeString()'
+                }, function (fileName, fileSize, fileType, guid, uri) {
+                    $('#@imageIdTag').attr("src", uri).show();
+                    $("#@imageIdTag").after('<input type="hidden" name="media_guid_' + guid + '" value="' + guid + '"/>');
+                    $("#@imageIdTag").after('<input type="hidden" name="media_ordr_' + guid + '" value="1"/>');
+                });
+            }
+        });
+    </script>
+}
+<img id="@imageIdTag" src="@currentImageSource" alt="" class="img-responsive" />
+@Scripts.Render("~/bundles/imageupload")

@@ -1,0 +1,31 @@
+﻿@model Listing
+
+@{
+    bool showWatchCount = SiteClient.BoolSetting(SiteProperties.EnableWatchCount);
+}
+@if (User.Identity.IsAuthenticated && Model.Context.Watched)
+{
+    <a href="@Url.Action(MVC.BiddingWatchingAction, MVC.AccountController)" class="awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview detail__action-link disabled" title="@Html.GlobalResource("GoToWatchList")">
+        @if (showWatchCount)
+        {
+            <span class="detail__action-link-count">
+                @Html.GlobalResource("WatchCount", UserClient.GetWatchCount(Model.ID))
+            </span>
+        }
+        <span class="glyphicon glyphicon-ok"></span>
+        <span class="detail__action-link-text">@Html.GlobalResource("Watching") </span>
+    </a>
+}
+else
+{
+    <a href="@Url.Action(MVC.AddWatchAction, MVC.ListingController, new { id = Model.ID })" class="awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusPreview detail__action-link">
+       @if (showWatchCount)
+       {
+        <span class="detail__action-link-count">
+            @Html.GlobalResource("WatchCount", UserClient.GetWatchCount(Model.ID))
+        </span>
+       }
+         <span class="glyphicon glyphicon-plus"></span>
+        @Html.GlobalResource("AddtoWatchList") 
+    </a>
+}

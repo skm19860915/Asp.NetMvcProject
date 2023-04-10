@@ -1,0 +1,224 @@
+﻿@model Listing
+@{
+    //determine if inline bidding is enabled
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool quickBidForListViewsEnabled = false;
+    var quickBidForListViewsProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidForListViewsEnabled);
+    if (quickBidForListViewsProp != null)
+    {
+        bool.TryParse(quickBidForListViewsProp.Value, out quickBidForListViewsEnabled);
+    }
+    if (ViewBag.BlockInlineBidding ?? false)
+    {
+        quickBidForListViewsEnabled = false;
+    }
+}
+@if (quickBidForListViewsEnabled)
+{
+    @Html.Partial("AuctionThumbnail_WithBidding")
+}
+else
+{
+    bool showDecorations = ViewData.ContainsKey("ShowDecorations") ? (bool)ViewData["ShowDecorations"] : true;
+    string containerCssClasses = "panel panel-default";
+    if (showDecorations && Model.Decorations.Any(d => d.Name == DecorationNames.Highlight))
+    {
+        containerCssClasses += " highlight";
+    }
+    bool boldDecoration = showDecorations && Model.Decorations.Any(d => d.Name == DecorationNames.Bold);
+    var TimeFormatType = (SiteClient.Settings[SiteProperties.TimeRemainingStyle] == "Active") ? "time__format--active" : "time__format--classic";
+
+    <div class="@containerCssClasses">
+        @if (showDecorations && Model.Decorations.Any(d => d.Name == "Sunburst"))
+        {
+            <div class="listing-badge"></div>
+        }
+        <div class="galleryImage">
+            @{
+                if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                {
+                    @Model.BeginDetailLink()
+                    @Html.Partial("NoPhoto")
+                    @Model.EndDetailLink()
+                }
+                else
+                {
+                    string uri = string.Format(Model.PrimaryImageURI, "FullSize".ToLower());
+                    @Model.BeginDetailLink()
+                    <img src="@uri" alt="@Model.Title" class="img-responsive" />
+                    @Model.EndDetailLink()
+                }
+            }
+        </div>
+        <h1 class="galleryTitle">
+            @Model.BeginDetailLink()
+            @if (SiteClient.EnableEvents)
+            {
+                if (Model.Lot != null)
+                {
+                    <span class="small">@string.Format("{0} {1}", Html.GlobalResourceString("Lot"), Model.Lot.LotNumber)</span>
+                    <br />
+                }
+                else
+                {
+                    <span class="small">&nbsp;</span>
+                    <br />
+                }
+            }
+            @if (boldDecoration)
+            {
+                <strong>@Model.Title</strong>
+            }
+            else
+            {
+                @Model.Title
+            }
+            @Model.EndDetailLink()
+        </h1>
+        @if (Model.Status.Equals(ListingStatuses.Preview))
+        {
+            <p class="awe-rt-HideOnEnd galleryData--title">
+                <span class="awe-rt-HideOnStart">@Html.Resource("AuctionListing , StartingBid")</span>
+                <span class="awe-hidden awe-rt-ShowOnStart">@Html.Resource("AuctionListing , CurrentBid")</span>
+                &nbsp;
+                <span class="timeLabel">
+                    &nbsp;
+                    <span class="awe-rt-HideOnStart"><strong>@Html.GlobalResource("StartsIn")</strong></span>
+                    <span class="awe-rt-ShowOnStart awe-hidden">@Html.GlobalResource("TimeRemaining")</span>
+                </span>
+            </p>
+            <p class="awe-hidden awe-rt-ShowOnEnd galleryData--title">
+                <span class="awe-hidden awe-rt-hideable awe-rt-ShowStatusSuccessful sold">@Html.GlobalResource("Sold")</span>
+                <span class="awe-hidden awe-rt-hideable awe-rt-ShowStatusUnsuccessful">@Html.GlobalResource("Ended")</span>
+                &nbsp;
+            </p>
+            <p class="awe-rt-HideOnEnd galleryData--values">
+                <span class="awe-rt-CurrentPrice galleryPrice">
+                    @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                </span>
+                <span class="galleryTime--active @TimeFormatType">
+                    &nbsp;
+                    <span class="awe-rt-HideOnStart" data-epoch="starting"
+                          data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnStart"
+                          data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnStart"
+                          data-action-time="@Html.CultureInvariantLocalDTTM(Model.StartDTTM.Value)">
+                        @*Leave Empty, autofilled by SignalR*@
+                    </span>
+                    <span class="awe-hidden awe-rt-ShowOnStart" data-epoch="ending"
+                          data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd"
+                          data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnEnd"
+                          data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"
+                          data-end-value="@Html.GlobalResource("Ended")">
+                        @*Leave Empty, autofilled by SignalR*@
+                    </span>
+                </span>
+            </p>
+            <p class="awe-hidden awe-rt-ShowOnEnd galleryData--values">
+                <span class="awe-rt-CurrentPrice galleryPrice">
+                    @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                </span>
+                <span class="galleryDate--ended awe-date-only awe-rt-endingDTTM" data-initial-dttm="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"></span>
+            </p>
+            if (SiteClient.DisplayListingType)
+            {
+                <div class="awe-hidden awe-rt-ShowOnEnd listingTypeIcon">
+                    <svg fill="rgba(0,0,0,.3)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img">
+                        <defs>
+                            <path d="M0 0h24v24H0V0z" id="a" />
+                        </defs>
+                        <clipPath id="b">
+                            <use overflow="visible" xlink:href="#a" />
+                        </clipPath>
+                        <path clip-path="url(#b)" d="M1 21h12v2H1zM5.245 8.07l2.83-2.827 14.14 14.142-2.828 2.828zM12.317 1l5.657 5.656-2.83 2.83-5.654-5.66zM3.825 9.485l5.657 5.657-2.828 2.828-5.657-5.657z">
+                            <title>@Html.Resource("AuctionListing, TypeIconAlt")</title>
+                        </path>
+                    </svg>
+                </div>
+            }
+        }
+        else if (Model.Status.Equals(ListingStatuses.Active))
+        {
+            <p class="awe-rt-HideOnEnd galleryData--title">
+                @Html.Resource("AuctionListing , CurrentBid")
+                <span class="timeLabel">@Html.GlobalResource("TimeRemaining")</span>
+            </p>
+            <p class="awe-hidden awe-rt-ShowOnEnd galleryData--title">
+                <span class="awe-hidden awe-rt-hideable awe-rt-ShowStatusSuccessful sold">@Html.GlobalResource("Sold")</span>
+                <span class="awe-hidden awe-rt-hideable awe-rt-ShowStatusUnsuccessful">@Html.GlobalResource("Ended")</span>
+                &nbsp;
+            </p>
+            <p class="awe-rt-HideOnEnd galleryData--values">
+                <span class="awe-rt-CurrentPrice galleryPrice">
+                    @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                </span>
+                <span class="galleryTime--active @TimeFormatType">
+                    &nbsp;
+                    <span data-epoch="ending"
+                          data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd"
+                          data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnEnd"
+                          data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"
+                          data-end-value="@Html.GlobalResource("Ended")">
+                        @*Leave Empty, autofilled by SignalR*@
+                    </span>
+                </span>
+            </p>
+            <p class="awe-hidden awe-rt-ShowOnEnd galleryData--values">
+                <span class="awe-rt-CurrentPrice galleryPrice">
+                    @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                </span>
+                <span class="galleryDate--ended awe-date-only awe-rt-endingDTTM" data-initial-dttm="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"></span>
+            </p>
+            if (SiteClient.DisplayListingType)
+            {
+                <div class="awe-hidden awe-rt-ShowOnEnd listingTypeIcon">
+                    <svg fill="rgba(0,0,0,.3)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img">
+                        <defs>
+                            <path d="M0 0h24v24H0V0z" id="a" />
+                        </defs>
+                        <clipPath id="b">
+                            <use overflow="visible" xlink:href="#a" />
+                        </clipPath>
+                        <path clip-path="url(#b)" d="M1 21h12v2H1zM5.245 8.07l2.83-2.827 14.14 14.142-2.828 2.828zM12.317 1l5.657 5.656-2.83 2.83-5.654-5.66zM3.825 9.485l5.657 5.657-2.828 2.828-5.657-5.657z">
+                            <title>@Html.Resource("AuctionListing, TypeIconAlt")</title>
+                        </path>
+                    </svg>
+                </div>
+            }
+        }
+        else if (Model.Status.Equals(ListingStatuses.Successful) || Model.Status.Equals(ListingStatuses.Unsuccessful))
+        {
+            <p class="galleryData--title">
+                @if (Model.Status.Equals(ListingStatuses.Successful))
+                {
+                    <span class="sold">@Html.GlobalResource("Sold")</span>
+                }
+                else
+                {
+                    @Html.GlobalResource("Ended")
+                }
+            </p>
+            <p class="galleryData--values">
+                <span class="awe-rt-CurrentPrice galleryPrice">
+                    @(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)
+                </span>
+                <span class="galleryDate--ended awe-date-only awe-rt-endingDTTM" data-initial-dttm="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"></span>
+            </p>
+            if (SiteClient.DisplayListingType)
+            {
+                <div class="listingTypeIcon">
+                    <svg fill="rgba(0,0,0,.3)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img">
+                        <defs>
+                            <path d="M0 0h24v24H0V0z" id="a" />
+                        </defs>
+                        <clipPath id="b">
+                            <use overflow="visible" xlink:href="#a" />
+                        </clipPath>
+                        <path clip-path="url(#b)" d="M1 21h12v2H1zM5.245 8.07l2.83-2.827 14.14 14.142-2.828 2.828zM12.317 1l5.657 5.656-2.83 2.83-5.654-5.66zM3.825 9.485l5.657 5.657-2.828 2.828-5.657-5.657z">
+                            <title>@Html.Resource("AuctionListing, TypeIconAlt")</title>
+                        </path>
+                    </svg>
+                </div>
+            }
+        }
+    </div>
+}

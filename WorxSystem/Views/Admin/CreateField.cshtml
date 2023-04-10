@@ -1,0 +1,226 @@
+﻿@model CustomField
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("CreateField", Html.AdminResource("" + ViewData[Fields.Group]));
+}
+
+<script>
+    $(function () {
+        $(document).ready(SetValues);
+
+        function SetValues() {
+            if ($('#Type').val() == 3) {
+                $("#Default").hide();
+                $("#BooleanDefaultSpan").show();
+                if ($("#Default").val().toLowerCase() == "true") {
+                    $('#BooleanDefault').prop("checked", true);
+                }
+                else {
+                    $("#Default").val("False");
+                    $('#BooleanDefault').prop("checked", false);
+                }
+            }
+            else {
+                $("#Default").show();
+                $("#BooleanDefaultSpan").hide();
+            }
+        }
+
+        $('#BooleanDefault').change(function () {
+            if ($(this).is(":checked")) {
+                $("#Default").val("True");
+            }
+            else {
+                $("#Default").val("False");
+            }
+        });
+
+        $('#Type').change(SetValues);
+    });
+</script>
+
+@using (Html.BeginForm(MVC.CreateFieldAction, MVC.AdminController))
+{
+    @Html.Hidden(Fields.ReturnUrl)
+    <table class="table">
+        <tr>
+            <td>@Html.AdminResource("Name")</td>
+            <td>@Html.TextBox("Name",null, new { @class="form-control input-sm"})</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Type")</td>
+            <td>@Html.DropDownList("Type", null, new { @class = "form-control input-sm" })</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Required")</td>
+            <td>@Html.CheckBox("Required")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("DefaultValue")</td>
+            <td>
+                @Html.TextBox("Default", null, new { @class = "form-control input-sm" })
+                <span id="BooleanDefaultSpan" class="awe-hidden">
+                    <input type="checkbox" name="BooleanDefault" id="BooleanDefault" />
+                    @Html.AdminResource("CheckForTrue")
+                </span>
+            </td>
+        </tr>
+        @if (string.IsNullOrEmpty((string)ViewData[Fields.Group]))
+        {
+            <tr>
+                <td>@Html.AdminResource("GroupName")</td>
+                <td>@Html.DropDownList("GroupName",null, new { @class="form-control input-sm"})</td>
+            </tr>
+            <tr>
+                <td>@Html.AdminResource("Deferred")</td>
+                <td>@Html.CheckBox("Deferred")</td>
+            </tr>
+            <tr>
+                <td>@Html.AdminResource("IncludeOnInvoice")</td>
+                <td>@Html.CheckBox("IncludeOnInvoice")</td>
+            </tr>
+            <tr>
+                <td>@Html.AdminResource("IncludeInSalesReport")</td>
+                <td>@Html.CheckBox("IncludeInSalesReport")</td>
+            </tr>
+        }
+        else
+        {
+            @Html.Hidden("GroupName", ViewData[Fields.Group])
+            if ((string)ViewData[Fields.Group] == CustomFieldGroups.User)
+            {
+                <tr>
+                    <td>@Html.AdminResource("Deferred")</td>
+                    <td>@Html.CheckBox("Deferred")
+                        <span class="help-block">@Html.AdminResource("CustomUserDeferredHelpText")</span></td>
+                </tr>
+            }
+            else
+            {
+                @Html.Hidden("Deferred", false)
+            }
+
+            string group = (string)ViewData[Fields.Group];
+            if (group == CustomFieldGroups.Item || group == CustomFieldGroups.Event)
+            {
+                <tr>
+                    <td>@Html.AdminResource("IncludeOnInvoice")</td>
+                    <td>@Html.CheckBox("IncludeOnInvoice")
+                        <span class="help-block">@Html.AdminResource("IncludeOnInvoice_Help")</span>
+                        @Html.Hidden("IncludeOnInvoiceAsSeller", false)
+                        @Html.Hidden("IncludeOnInvoiceAsBuyer", false)
+                        @Html.Hidden("IncludeInSalesReportAsSeller", false)
+                        @Html.Hidden("IncludeInSalesReportAsBuyer", false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.AdminResource("IncludeInSalesReport")</td>
+                    <td>
+                        @Html.CheckBox("IncludeInSalesReport")
+                    <span class="help-block">@Html.AdminResource("IncludeInSalesReport_Help")</span>
+                </td>
+            </tr>
+            }
+            else if (group == CustomFieldGroups.User)
+            {
+                <tr>
+                    <td>@Html.AdminResource("IncludeOnInvoiceAsSeller")</td>
+                    <td>
+                        @Html.CheckBox("IncludeOnInvoiceAsSeller")
+                        <span class="help-block">@Html.AdminResource("IncludeOnInvoiceAsSeller_Help")</span>
+                        @Html.Hidden("IncludeOnInvoice", false)
+                        @Html.Hidden("IncludeInSalesReport", false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.AdminResource("IncludeOnInvoiceAsBuyer")</td>
+                    <td>
+                        @Html.CheckBox("IncludeOnInvoiceAsBuyer")
+                        <span class="help-block">@Html.AdminResource("IncludeOnInvoiceAsBuyer_Help")</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.AdminResource("IncludeInSalesReportAsSeller")</td>
+                    <td>
+                        @Html.CheckBox("IncludeInSalesReportAsSeller")
+                        <span class="help-block">@Html.AdminResource("IncludeInSalesReportAsSeller_Help")</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.AdminResource("IncludeInSalesReportAsBuyer")</td>
+                    <td>
+                        @Html.CheckBox("IncludeInSalesReportAsBuyer")
+                        <span class="help-block">@Html.AdminResource("IncludeInSalesReportAsBuyer_Help")</span>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @Html.Hidden("IncludeOnInvoice", false)
+                @Html.Hidden("IncludeOnInvoiceAsSeller", false)
+                @Html.Hidden("IncludeOnInvoiceAsBuyer", false)
+                @Html.Hidden("IncludeInSalesReport", false)
+                @Html.Hidden("IncludeInSalesReportAsSeller", false)
+                @Html.Hidden("IncludeInSalesReportAsBuyer", false)
+            }
+        }
+
+        <tr>
+            <td>@Html.AdminResource("DisplayOrder")</td>
+            <td>@Html.TextBox("DisplayOrder", null, new { @class = "form-control input-sm" })
+                <span class="help-block">@Html.AdminResource("DisplayOrder_Help")</span>
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Visibility")</td>
+            <td>@Html.DropDownList("Visibility", null, new { @class = "form-control input-sm" })
+                <span class="help-block">@Html.AdminResource("Visibility_Help")</span>
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Mutability")</td>
+            <td>@Html.DropDownList("Mutability", null, new { @class = "form-control input-sm" })
+                <span class="help-block">@Html.AdminResource("Mutability_Help")</span>
+            </td>
+        </tr>
+
+        @if ((string)ViewData[Fields.Group] == CustomFieldGroups.Item)
+        {
+            <tr>
+                <td>@Html.AdminResource("AssignToAllCategories")</td>
+                <td>
+                    @Html.CheckBox("AssignToAllCategories", true)
+                    <span class="help-block">@Html.AdminResource("AssignToAllCategoriesToolTip")</span>
+                </td>
+            </tr>
+        }                
+    </table>
+
+    string returnUrl = (ViewData.ContainsKey(Fields.ReturnUrl)) ? (string)ViewData[Fields.ReturnUrl] : string.Empty;
+    if (string.IsNullOrEmpty(returnUrl))
+    {
+        returnUrl = Html.GetActionUrl(MVC.FieldsAction, MVC.AdminController,
+                                        new { GroupName = ViewData[Fields.Group] });
+    }
+                
+    <script>
+        $(document).ready(function () {
+            //[Cancel] button click
+            $("#CancelButton").click(function () {
+                var targetUrl = '@returnUrl.ToJavascriptSafeString()';
+                var confirmMessage = // "All changes will be lost lost.\nAre you sure?";
+                      '@Html.AdminResourceString("CancelChangesWarning1").ToJavascriptSafeString()' + '\n'
+                    + '@Html.AdminResourceString("CancelChangesWarning2").ToJavascriptSafeString()';
+                if (confirm(confirmMessage)) document.location = $.htmlDecode(targetUrl);
+                return false;
+            });
+        });
+    </script>
+                
+    <div></div>
+    <div class="action-panel">
+        <button class="btn btn-link" id="CancelButton">@Html.AdminResource("Cancel")</button> <input type="submit" class="btn btn-success" id="Save" name="Save" value="@Html.AdminResource("CreateCustomField")" />
+        
+    </div>
+}

@@ -1,0 +1,79 @@
+﻿@using System.Globalization
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_LanguageManagement");
+    string helpDocsBaseUrl = SiteClient.EnableEvents
+        ? "http://www.rainworx.com/ev-docs-3.1r2"
+        : "http://www.rainworx.com/docs-3.1r2";
+}
+@section PageName{
+    <div class="pull-right text-muted hidden-xs hidden-sm">
+        <small>
+            @Html.AdminResource("LanguageManagement_Help")
+            <a href="@helpDocsBaseUrl/Installation/Language-Translation.htm" target="_blank">&nbsp;<span class="glyphicon glyphicon-new-window"></span></a>
+        </small>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        //[Save] button click
+        $(".SaveButton").on("click", function () {
+            rwx_form_changed = false; // disabled the "unsaved changes" warning manually so this logic works correctly.
+            $("#@MVC.SubmitAction_Save").val("1");
+            this.form.submit();
+            return false;
+        });
+    });
+</script>
+
+<div class="form-horizontal">
+    @using (Html.BeginForm())
+    {
+        <input type="hidden" id="@MVC.SubmitAction_Save" name="@MVC.SubmitAction_Save" />
+
+        var allCultures =
+            new List<CultureInfo>(
+                CultureInfo.GetCultures(CultureTypes.NeutralCultures).Where(c => c.Name != string.Empty).OrderBy(
+                    c => c.EnglishName));
+        var allCulturesSorted = new List<CultureInfo>(allCultures.Count);
+        //first add enabled cultures to the top of the list, ordered by English Name
+        allCulturesSorted.AddRange(allCultures
+                .Where(c => SiteClient.SupportedLanguageCultures.ContainsKey(c.Name))
+                .OrderBy(c => c.EnglishName)
+            );
+        //then add the remaining cultures, ordered by the English Name
+        allCulturesSorted.AddRange(allCultures
+                .Where(c => !SiteClient.SupportedLanguageCultures.ContainsKey(c.Name))
+                .OrderBy(c => c.EnglishName)
+            );
+
+        foreach (CultureInfo ci in allCulturesSorted)
+        {
+            <div class="form-group">
+                @if (SiteClient.SupportedLanguageCultures.Values.Where(c => c.Name == ci.Name).Count() > 0)
+                {
+                <input type="checkbox" name="Languages" id="Languages_@ci.Name" value="@ci.Name" checked="checked" />
+                <label for="Languages_@ci.Name">@ci.EnglishName / @ci.NativeName (@ci.Name)</label>
+                }
+                else
+                {
+                <input type="checkbox" name="Languages" id="Languages_@ci.Name" value="@ci.Name" />
+                <label for="Languages_@ci.Name">@ci.EnglishName / @ci.NativeName (@ci.Name)</label>
+                }
+            </div>
+        }
+        <div class="action-panel">
+            @if (!SiteClient.DemoEnabled)
+            {
+                <button class="btn btn-success SaveButton confirm-before-leaving">@Html.AdminResource("SaveConfiguration")</button>
+            }
+            else
+            {
+                <button class="btn btn-success SaveButton" disabled="disabled">@Html.AdminResource("SaveConfiguration")</button>
+                <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+	        }
+        </div>
+
+    }
+
+</div>

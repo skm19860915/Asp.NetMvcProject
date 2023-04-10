@@ -1,0 +1,58 @@
+﻿@model Page<ListingAction>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            @{
+                Listing CurrentListing = (Listing)ViewData["CurrentListing"];
+            }
+            <a href="@Url.Action(MVC.DetailsAction, new {id = CurrentListing.ID})" class="btn btn-default btn-xs"> <span class="glyphicon glyphicon-chevron-left"></span>&nbsp;@Html.GlobalResource("BackToListing")</a>
+            &nbsp;
+            @Html.Resource(CurrentListing.Type.Name + "Listing, History")
+        </div>
+
+        @Html.ToolTipContent("AuditButton_Help", Html.GlobalResource("AuditButton_Help"))
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                @if ((string)ViewContext.RouteData.Values["action"] == "Audit")
+            {
+                    @Html.GlobalResource("AuditFor") @:&nbsp;
+            }
+            else
+            {
+                    @Html.GlobalResource("HistoryFor") @:&nbsp;
+            }
+                @CurrentListing.BeginDetailLink()
+                @if (CurrentListing.Lot != null)
+                {
+                    <span>@string.Format("{0} {1}", Html.GlobalResourceString("Lot"), CurrentListing.Lot.LotNumber) -&nbsp;</span>
+                }
+                @CurrentListing.Title
+                @CurrentListing.EndDetailLink()
+                @if ((string)ViewContext.RouteData.Values["action"] != MVC.AuditAction)
+            {
+                bool isAdmin = User.IsInRole("Admin");
+                if (isAdmin)
+                {
+                        <span class="pull-right">
+                            @(Html.ButtonLink(Html.GlobalResource("AuditLink"), MVC.AuditAction, new { id = CurrentListing.ID, currency = CurrentListing.Currency.Code }, new { @class = "btn btn-default btn-xs" }))
+                            @Html.ToolTipButton("AuditButton_Help")
+                        </span>
+                    }
+                }
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        @Html.Partial(CurrentListing.Type.Name + "ListingSummaryDetails", ViewData["CurrentListing"])
+                    </div>
+                    <div class="col-md-6">
+                        @Html.Partial(CurrentListing.Type.Name + "OfferHistory", CurrentListing)
+                    </div>
+                </div>
+               
+                @Html.Partial(CurrentListing.Type.Name + "ListingActions")
+            </div>
+        </div>
+    </div>
+</div>

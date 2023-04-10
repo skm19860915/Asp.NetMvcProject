@@ -1,0 +1,254 @@
+﻿@model List<CustomProperty>
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+    string helpDocsBaseUrl = SiteClient.EnableEvents
+        ? "http://www.rainworx.com/ev-docs-3.1r2"
+        : "http://www.rainworx.com/docs-3.1r2";
+}
+<script>
+    $(document).ready(function () {
+        //apply missing validation css to masked fields if applicable
+        $("ul.validation-summary-errors li").each(function () {
+            var inputKey = $(this).attr("data-input-key");
+            if (!$("#" + inputKey).hasClass("input-validation-error")) {
+                $("#" + inputKey).addClass("input-validation-error");
+            }
+        });
+
+    });
+    
+</script>
+@{
+    //these fields will be disabled when the system is in "Demo Mode"
+    var demoFields = new List<string>();
+    demoFields.Add(SiteProperties.URL); //demoFields.Add(76101); // URL
+    demoFields.Add(SiteProperties.SecureURL); //demoFields.Add(76103); // SecureURL
+    demoFields.Add(SiteProperties.RestrictOutsideSellers); //demoFields.Add(41402); // RestrictOutsideSellers
+
+    demoFields.Add(SiteProperties.TopBannersToDisplay); //demoFields.Add(201); // TopBannersToDisplay
+    demoFields.Add(SiteProperties.LeftBannersToDisplay); //demoFields.Add(202); // LeftBannersToDisplay
+    demoFields.Add(SiteProperties.BottomBannersToDisplay); //demoFields.Add(203); // BottomBannersToDisplay
+    demoFields.Add(SiteProperties.RequireAuthentication); //demoFields.Add(704); // RequireAuthentication
+
+    demoFields.Add(SiteProperties.ProcessingEnabled); //demoFields.Add(69101); // ProcessingEnabled
+
+    demoFields.Add(SiteProperties.CssTheme); //demoFields.Add(740); // CssTheme
+    demoFields.Add(SiteProperties.HeadingColor); //demoFields.Add(904); // HeadingColor
+    demoFields.Add(SiteProperties.CenterLogo); //demoFields.Add(903); // CenterLogo
+
+    demoFields.Add(SiteProperties.EnableWebAPI); //demoFields.Add(727); // EnableWebAPI
+
+    demoFields.Add(SiteProperties.RecaptchaPublicKey); //demoFields.Add(817); //RecaptchaPublicKey
+    demoFields.Add(SiteProperties.RecaptchaPrivateKey); // demoFields.Add(818); //RecaptchaPrivateKey
+    demoFields.Add(SiteProperties.EnableRecaptchaForContactUs); //demoFields.Add(819); //EnableRecaptchaForContactUs
+    demoFields.Add(SiteProperties.EnableRecaptchaForRegistration); //demoFields.Add(820); //EnableRecaptchaForRegistration
+
+    demoFields.Add(SiteProperties.AuthorizeNet_PostUrl); //demoFields.Add(44404); //AuthorizeNet_PostUrl
+    demoFields.Add(SiteProperties.AuthorizeNet_MerchantLoginID); //demoFields.Add(44406); //AuthorizeNet_MerchantLoginID
+    demoFields.Add(SiteProperties.AuthorizeNet_TransactionKey); //demoFields.Add(44408); //AuthorizeNet_TransactionKey
+    demoFields.Add(SiteProperties.AuthorizeNet_TestMode); //demoFields.Add(111013); //AuthorizeNet_TestMode
+    demoFields.Add(SiteProperties.AuthorizeNet_EnableForSellers); //demoFields.Add(1001); //AuthorizeNet_EnableForSellers
+
+    demoFields.Add(SiteProperties.PayPal_PostURL); //demoFields.Add(44905); //PayPal_PostURL
+    demoFields.Add(SiteProperties.PayPal_IPNURL); //demoFields.Add(54201); //PayPal_IPNURL
+    demoFields.Add(SiteProperties.PayPal_SuccessReturnURL); //demoFields.Add(59305); //PayPal_SuccessReturnURL
+    demoFields.Add(SiteProperties.PayPal_CancelReturnURL); //demoFields.Add(59401); //PayPal_CancelReturnURL
+    demoFields.Add(SiteProperties.PayPal_FeesEmail); //demoFields.Add(63801); //PayPal_FeesEmail
+
+    demoFields.Add(SiteProperties.MaintenanceMode); //demoFields.Add(827); //MaintenanceMode
+
+    demoFields.Add(SiteProperties.StripeConnect_ClientId);
+    demoFields.Add(SiteProperties.StripeConnect_SiteFeesPublishableApiKey);
+    demoFields.Add(SiteProperties.StripeConnect_SiteFeesSecretApiKey);
+    demoFields.Add(SiteProperties.StripeConnect_EnabledForSellers);
+
+    demoFields.Add(SiteProperties.HomepageContent);
+
+    var hiddenFields = new List<string>();
+    //hiddenFields.Add(SiteProperties.QuickBidForListViewsEnabled);
+    //hiddenFields.Add(SiteProperties.RequireCreditCardForSellers);
+    //hiddenFields.Add(SiteProperties.RequireCreditCardForBuyers);
+    hiddenFields.Add(StdUserProps.CreditCardRequiredExempt);
+
+    var securedFields = new List<string>();
+    securedFields.Add(SiteProperties.AuthorizeNet_TransactionKey); //securedFields.Add(44408); //AuthorizeNet_TransactionKey
+}
+<div class="form-horizontal">
+    @foreach (var property in Model)
+    {
+        if (property.Field.Encrypted)
+        {
+            securedFields.Add(property.Field.Name);
+        }
+        if (!SiteClient.EnableEvents && property.Field.Name == SiteProperties.EnableNonAuctionListingsForEvents)
+        {
+            hiddenFields.Add(property.Field.Name);
+        }
+    }
+
+    @foreach (CustomProperty property in Model.OrderBy(cp => cp.Field.DisplayOrder))
+    {
+        bool demoDisabled = SiteClient.DemoEnabled && demoFields.Contains(property.Field.Name);
+        bool securedField = securedFields.Contains(property.Field.Name);
+        bool hiddenField = hiddenFields.Contains(property.Field.Name);
+        MvcHtmlString helpText;
+        switch (property.Field.Name)
+        {
+            case SiteProperties.QuickBidForListViewsEnabled:
+                helpText = SiteClient.EnableEvents
+                    ? Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_EventsHelp"))
+                    : Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+                break;
+            default:
+                helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help")); ;
+                break;
+        }
+        if (SiteClient.BoolSetting(SiteProperties.AutoGenerateInvoices) && property.Field.Name == StdUserProps.AllowInstantCheckout)
+        {
+            <input type="hidden" id="@StdUserProps.AllowInstantCheckout" name="@StdUserProps.AllowInstantCheckout" value="@MVC.FalseValue" />
+            continue;
+        }
+        if (!hiddenField)
+        {
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource(property.Field.Name)
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @if (demoDisabled)
+                    {
+                        switch (property.Field.Type)
+                        {
+                            case CustomFieldType.Boolean:
+                                @Html.CheckBox(property.Field.Name, false, new { onclick = "return false;", onkeydown = "return false;" })
+                                break;
+                            case CustomFieldType.String:
+                            case CustomFieldType.Int:
+                            case CustomFieldType.Decimal:
+                            case CustomFieldType.DateTime:
+                                if (securedField && !string.IsNullOrEmpty(property.Value))
+                                {
+                                    <input type="text" id="@property.Field.Name" name="@property.Field.Name" value="@Fields.MaskedFieldValue" class="form-control  input-sm" disabled="disabled" />
+                                }
+                                else
+                                {
+                                    @Html.TextBox(property.Field.Name, null, new { @class = "form-control input-sm" })
+                                }
+                                break;
+                            case CustomFieldType.Enum:
+                                if (property.Field.Name.Equals(SiteProperties.HomepageContent))
+                                {
+                                    foreach (ListItem item in property.Field.Enumeration)
+                                    {
+                                        @Html.RadioButton(property.Field.Name, item.Value, false, new { @disabled = "disabled" })
+                                        @Html.CustomFieldResource(item.Name + (SiteClient.EnableEvents ? "_Events" : string.Empty))
+                                    }
+                                }
+                                else if (property.Field.Enumeration.Count > 3)
+                                {
+                                    //automatic drop down
+                                    List<ListItem> localizedList = new List<ListItem>(property.Field.Enumeration.Count);
+                                    foreach (ListItem li in property.Field.Enumeration)
+                                    {
+                                        localizedList.Add(new ListItem(li.ID, Html.CustomFieldResourceString(li.Name), li.Enabled, li.Value));
+                                    }
+                                    @Html.DropDownList(property.Field.Name, new SelectList(localizedList, Fields.Value, Fields.Name), new { @class = "form-control  input-sm", @disabled = "disabled" });
+                                }
+                                else
+                                {
+                                    //automatic radio buttons
+                                    foreach (ListItem item in property.Field.Enumeration)
+                                    {
+                                        @Html.RadioButton(property.Field.Name, item.Value, false, new { @disabled = "disabled" })
+                                        @Html.CustomFieldResource(item.Name)
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    else if (property.Field.Name.Equals(SiteProperties.SiteTimeZone))
+                    {
+                        @Html.DropDownList(SiteProperties.SiteTimeZone, Html.TimeZoneSelectList(SiteClient.SiteTimeZone), new { @class = "form-control input-sm" })
+                    }
+                    else if (property.Field.Name.Equals(SiteProperties.PayPal_BackupPaymentCurrency))
+                    {
+                        var payPalCurrencyOpts = new List<SelectListItem>();
+                        payPalCurrencyOpts.Add(new SelectListItem() { Value = "", Text = Html.AdminResourceString("Disabled") });
+                        payPalCurrencyOpts.AddRange(Html.GetSelectList(SiteClient.TextSetting(SiteProperties.PayPal_AcceptedCurrencies).Split(','), property.Value));
+                        @Html.DropDownList(property.Field.Name, payPalCurrencyOpts, new { @class = "form-control input-sm" })
+                    }
+                    else if (property.Field.Name.Equals(StdUserProps.StripeConnect_SellerAccountConnected))
+                    {
+                        var targetUser = (User)ViewData["User"];
+                        string stripeSellerId = targetUser.Properties.GetPropertyValue(StdUserProps.StripeConnect_SellerUserId, string.Empty);
+                        @Html.Hidden(property.Field.Name, property.Value)
+                        string targetUserName = ((User)ViewData["User"]).UserName;
+                        bool sellerAccountConnected = false;
+                        bool.TryParse(property.Value, out sellerAccountConnected);
+                        if (sellerAccountConnected)
+                        {
+                            @*@Html.GlobalResource("Yes")*@
+                            @(string.IsNullOrWhiteSpace(stripeSellerId) ? Html.GlobalResource("SiteCredentials") : Html.GlobalResource("ConnectedAccountX", stripeSellerId))
+                            <text>&nbsp; &nbsp;</text>
+                            <a href="@Html.GetActionUrl(MVC.DisconnectSiteFeesStripeCredentialsAction, MVC.StripeController, new { targetUserName, returnUrl })" target="_parent">
+                                @Html.AdminResource("Delete")
+                            </a>
+                        }
+                        else
+                        {
+                            @Html.GlobalResource("No")
+                            <text>&nbsp; &nbsp;</text>
+                            <a href="@Html.GetActionUrl(MVC.CopySiteFeesStripeCredentialsAction, MVC.StripeController, new { targetUserName, returnUrl })" target="_parent">
+                                @Html.AdminResource("UseSiteFeeStripeAccount")
+                            </a>
+                        }
+                    }
+                    else if (property.Field.Name.Equals(SiteProperties.HomepageContent))
+                    {
+                        int enumIndex = 0;
+                        foreach (ListItem item in property.Field.Enumeration)
+                        {
+                            @Html.RadioButton(property.Field.Name, item.Value, (item.Value == property.Value), new { @id = property.Field.Name + "_" + enumIndex++ })
+                            @Html.CustomFieldResource(item.Name + (SiteClient.EnableEvents ? "_Events" : string.Empty))
+                        }
+                    }
+                    else
+                    {
+                        if (securedField && !string.IsNullOrEmpty(property.Value))
+                        {
+                            <input type="text" id="@property.Field.Name" name="@property.Field.Name" value="@Fields.MaskedFieldValue" class="form-control input-sm" />
+                        }
+                        else
+                        {
+                            Html.RenderCustomField_Admin(property.Field, new { @class = "form-control input-sm" });
+                        }
+                    }
+                </div>
+                <div class="col-xs-2">
+                    @if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                    {
+                        @Html.ToolTipButton(property.Field.Name + "_Help")
+
+                    }
+                    @if (demoDisabled)
+                    {
+                        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                    }
+                </div>
+                <div class="col-xs-12">@Html.ToolTipContent(property.Field.Name + "_Help", helpText)</div>
+            </div>
+        }
+        else
+        { //hidden property
+            @Html.Hidden(property.Field.Name, property.Value)
+        }
+    }
+</div>
+
+
+       
+

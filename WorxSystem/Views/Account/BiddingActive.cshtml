@@ -1,0 +1,139 @@
+﻿@model Page<Listing>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool reserveEnabled = bool.Parse(auctionProperties.Single(ap => ap.Field.Name == SiteProperties.EnableReserve).Value);
+
+    //determine if inline bidding is enabled
+    //List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool quickBidForListViewsEnabled = false;
+    var quickBidForListViewsProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidForListViewsEnabled);
+    if (quickBidForListViewsProp != null)
+    {
+        bool.TryParse(quickBidForListViewsProp.Value, out quickBidForListViewsEnabled);
+    }
+    bool auctionsEnabled = false;
+    var auctionsEnabledProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.Enabled);
+    if (auctionsEnabledProp != null)
+    {
+        bool.TryParse(auctionsEnabledProp.Value, out auctionsEnabled);
+    }
+    quickBidForListViewsEnabled = quickBidForListViewsEnabled && auctionsEnabled;
+
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Bidding_Active")
+</div>
+<script>
+    $(document).ready(function () {
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+
+        $(document).on("SignalR_UpdateListingAction", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            RefreshListingRowContextualStatus(data.ListingID);
+        });
+
+        function RefreshListingRowContextualStatus(listingId) {
+            if (aweUserName) {
+                var promise = Proxy.invokeAsync("GetListingContextStatus", {
+                    listingId: listingId
+                }, function (data) {
+                    //got result
+                    if (!data.Disregard && !data.Error) {
+                        var cssClass = "";
+
+                        //update color of "Curent Price" span
+                        switch (data.Disposition) {
+                            case 0:
+                                cssClass = "winning";
+                                break;
+                            case 1:
+                                cssClass = "winning-reserve";
+                                break;
+                            case 2:
+                                cssClass = "not-winning";
+                                break;
+                        }
+                        $('[data-listingid="' + listingId + '"] .awe-rt-CurrentPrice').each(function () {
+                            $(this).removeClass("winning").removeClass("winning-reserve").removeClass("not-winning").addClass(cssClass);
+                            $(this).pulse();
+                        });
+
+                        //Update Max Bid Amount
+                        $('[data-listingid="' + listingId + '"] .awe-rt-MaxBid span.NumberPart').each(function () {
+                            $(this).html(Globalize.formatNumber(data.MaxBidAmount, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                            $(this).pulse();
+                        });
+
+                    } else {
+                        //disregard or error
+                    }
+                    if (data.Error) {
+                        console.log("Error updating contextual status row for listing #" + listingId + ": ", data.Error, data);
+                    }
+                }, function (error) {
+                    ShowSignalRAlert();
+                    jslog("error (1) retrieving contextual status row for listing #" + listingId + ": " + error);
+                });
+                promise.fail(function (jqXHR, textStatus) {
+                    ShowSignalRAlert();
+                    jslog("error (2) retrieving contextual status row for listing #" + listingId + ": " + textStatus);
+                });
+            }
+
+        }
+
+    });
+</script>
+<div class="panel panel-default">
+    @using (Html.BeginForm(new { page = 0 }))
+    {
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-8 form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">@Html.GlobalResource("Sort")</div>
+                    @Html.DropDownList(MVC.SortFilterOptions, null, new { @class = "form-control" })
+                </div>
+                <input type="submit" id="submitDropDown" class="awe-hidden" />
+            </div>
+        </div>
+    }
+
+    @foreach (Listing listing in Model.List)
+    {
+        <section data-listingid="@listing.ID" class="active-bid-section">
+            @Html.Partial(listing.Type.Name + "BiddingRow", listing)
+        </section>
+    }
+    @if (Model.TotalItemCount == 0)
+    {
+        <p class="no-history">
+            @Html.GlobalResource("NoActiveBids")
+        </p>
+    }
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}
+
+
+<div class="well well-sm section-title">
+    <strong>@Html.GlobalResource("ColorKey")</strong>
+    <span class="winning key">@Html.GlobalResource("WinningBid")</span>
+    @if (reserveEnabled)
+    {
+        <span class="winning-reserve key">@Html.GlobalResource("WinningBidBelowReserve")</span>
+    }
+    <span class="not-winning key">@Html.GlobalResource("Outbid")</span>
+</div>
+@if (quickBidForListViewsEnabled)
+{
+    @Html.Partial("AuctionInlineBidding_Includes")
+}

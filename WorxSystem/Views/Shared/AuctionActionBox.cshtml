@@ -1,0 +1,332 @@
+﻿@model Listing
+@{
+    bool proxy = Model.Lot != null
+        ? Model.Lot.Event.ProxyBidding
+        : bool.Parse(
+            ListingClient.GetListingTypeProperties(Model.Type.Name, "Site").Single(
+                ltp => ltp.Field.Name.Equals(SiteProperties.EnableProxyBidding)).Value);
+
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool reserveEnabled = bool.Parse(auctionProperties.Single(ap => ap.Field.Name == SiteProperties.EnableReserve).Value);
+    bool reserveDefined = !string.IsNullOrWhiteSpace(Model.Properties.Where(p => p.Field.Name.Equals(Fields.ReservePrice)).Single().Value);
+    bool quickBidEnabled = false;
+    var quickBidProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidEnabled);
+    if (quickBidProp != null)
+    {
+        bool.TryParse(quickBidProp.Value, out quickBidEnabled);
+    }
+    decimal currentMinBidAmount = (Model.CurrentPrice ?? 0) + (Model.CurrentListingAction != null ? (Model.Increment ?? 0) : 0);
+}
+<script>
+    function checkValues() {
+        if ($("input[name='BidAmount']").val() == "") {
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+<div class="detail__submit-wrapper">
+    <div class="detail__price">
+        <strong>@Html.Resource("AuctionListing, CurrentPrice")</strong>
+        <span class="detail__price--current Bidding_Current_Price awe-rt-CurrentPrice">
+            @* do not remove this span, it gets populated via ajax *@
+            @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+        </span>
+        <span id="convertedprice" class="awe-hidden">
+            (<span class="Bidding_Local_Price" data-currency="@Model.Currency.Code">
+                @* do not remove this span, it gets populated via AJAX *@
+                @if (Model.Currency.Code != Html.GetCookie("currency"))
+                {
+                    @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value.ConvertAmount(Model.Currency.Code, Html.GetCookie("currency")), Html.GetCookie("currency"))
+                }
+            </span>)
+        </span>
+        @if (reserveDefined || reserveEnabled)
+        {
+            <span class="reserve-not-met awe-rt-ReserveStatus">@Html.Resource("AuctionListing, " + (string)ViewData["ReserveStatus"])</span>
+        }
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 watching__wrapper">
+            @Html.Partial("ListingDetail_AddWatch")
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            @if ((User.Identity.IsAuthenticated) && (Model.Context.UserListingAction != null) && (Model.Context != null))
+            {
+                <div class="alert alert-warning detail__biddermax">
+                    @if (proxy)
+                    {
+                        @Html.Resource("AuctionListing, YourMaximumBidIs")
+                        <span id="MaxBid">
+                            @if (Model.Context.UserListingAction != null)
+                            {
+                                @Html.LocalCurrencyWithNumberTags(Model.Context.UserListingAction.ProxyAmount.Value, Model.Currency.Code)
+                            }
+                            else
+                            {
+                                @Html.LocalCurrencyWithNumberTags(0, Model.Currency.Code)
+                            }
+                        </span>
+                    }
+                    else
+                    {
+                        @Html.Resource("AuctionListing, YourLastBidWas")
+                        <span id="MaxBid">
+                            @Html.LocalCurrencyWithNumberTags(Model.Context.UserListingAction.ProxyAmount.Value, Model.Currency.Code)
+                        </span>
+                    }
+                </div>
+            }
+            else if (proxy)
+            {
+                <div class="alert alert-warning detail__biddermax awe-hidden">
+                    @Html.Resource("AuctionListing, YourMaximumBidIs")
+                    <span id="MaxBid">
+                        @Html.LocalCurrencyWithNumberTags(0, Model.Currency.Code)
+                    </span>
+                </div>
+            }
+
+            @if (quickBidEnabled)
+            {
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <a id="PlaceQuickBid" class="btn btn-danger btn-block awe-rt-MinimumBid">
+                                @Html.Resource("AuctionListing, QuickBid", Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code))
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col-xs-12 col-sm-7">
+                    <div class="form-group">
+                        @Html.CurrencyBox("BidAmount", null, Model.Currency.Code, null)
+                        <div class="detail__minbid">
+                            @Html.Resource("AuctionListing, MinimumBid")
+                            <span class="Bidding_Listing_MinPrice awe-rt-MinimumBid">
+                                @* do not remove this span, it gets populated via AJAX *@
+                                @Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code)
+                            </span>
+                            @{
+                                string visibilityClass = string.Empty;
+                                if (Model.AcceptedActionCount <= 0)
+                                {
+                                    visibilityClass = "awe-hidden";
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-5">
+                    <div class="form-group">
+                        <input id="SubmitBid" type="submit" class="btn btn-success btn-block" onclick="return checkValues()" value="@Html.Resource("AuctionListing, SubmitBid")" />
+                    </div>
+                </div>
+            </div>
+            @{
+                string buyNowAvailable = "awe-hidden";
+                decimal buyNowPrice = 0.0M;
+                if (Model.Status == ListingStatuses.Active && bool.Parse(Model.Properties.Where(
+                   p => p.Field.Name == "BuyItNow").Single().Value))
+                {
+                    buyNowAvailable = string.Empty;
+                    buyNowPrice = decimal.Parse(Model.Properties.Where(p => p.Field.Name.Equals(Fields.FixedPrice)).Single().Value);
+                }
+            }
+            <div class="form-group awe-rt-BuyItNowContainer @buyNowAvailable">
+                <div class="text-or"><span>@Html.GlobalResource("Or")</span></div>
+                @Html.Hidden("BuyItNow", false)
+
+                @*   <input type="submit" class="btn btn-default btn-block" name="BINButton" id="BINButton" value="@Html.Resource("AuctionListing, BuyItNow")" />*@
+                <button type="submit" class="btn btn-default btn-block detail__submit--BIN" name="BINButton" id="BINButton">
+                    @Html.Resource("AuctionListing, BuyItNow")
+                    <span class="awe-rt-BuyNowPrice">
+                        @Html.LocalCurrencyWithNumberTags(buyNowPrice, Model.Currency.Code)
+                    </span>
+                </button>
+            </div>
+            @{
+                bool makeOfferAvailable = false;
+                string makeOfferVisibilityClass = "awe-hidden";
+                if (Model.Properties.Any(lp => lp.Field.Name == Fields.MakeOfferAvailable && bool.TryParse(lp.Value, out makeOfferAvailable) && makeOfferAvailable))
+                {
+                    makeOfferVisibilityClass = string.Empty;
+                }
+            }
+            <div class="form-group awe-rt-MakeOfferContainer @makeOfferVisibilityClass">
+                <div class="text-or"><span>@Html.GlobalResource("Or")</span></div>
+                <button type="submit" class="btn btn-default btn-block" name="MakeOffer" id="MakeOffer">@Html.Resource("AuctionListing, MakeOffer")</button>
+            </div>
+            @{
+                if (Model.Status.Equals(ListingStatuses.Active) && !Model.IsGoodTilCanceled())
+                {
+                    <div class="detail__show-time awe-rt-Hide">
+
+                        <strong>
+                            @Html.GlobalResource("RemainingTime")
+                        </strong>
+                        <span class="detail__time awe-rt-Extended" data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-Hide" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)">
+                            @Html.RemainingTime(Model.EndDTTM.Value)
+                        </span>
+
+                    </div>
+                }
+                else if (Model.Status.Equals(ListingStatuses.Pending) || Model.Status.Equals(ListingStatuses.Preview))
+                {
+                    if (!Model.IsGoodTilCanceled())
+                    {
+                        <div class="detail__show-time">
+                            <strong>
+                                @Html.GlobalResource("RemainingTime"):
+                            </strong>
+                            <span class="detail__time awe-rt-Extended" data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-Remaining" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)">
+                                @Html.RemainingTime(Model.EndDTTM.Value)
+                            </span>
+                        </div>
+                    }
+                }
+            }
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="detail__properties">
+                <a href="@Url.Action(MVC.HistoryAction, "Listing", new { id = Model.ID, currency = Model.Currency.Code })" class="detail__action-link bid-history">
+                    @{
+                        var showUserNames = bool.Parse(SiteClient.Settings["ShowBidHistoryUserNames"]);
+                        bool isAdmin = false;
+                        if (Context.User.Identity.IsAuthenticated)
+                        {
+                            isAdmin = User.IsInRole("Admin");
+                        }
+                        if (isAdmin && User.Identity.Name == Html.FBOUserName())
+                        {
+                            showUserNames = true;
+                        }
+
+                        if (Model.CurrentListingAction != null && showUserNames)
+                        {
+                            <span class="detail__action-link-count">
+                                @Html.Resource("AuctionListing, HighBidder"): <span class="HighBidder">@Model.CurrentListingAction.UserName</span>
+
+                            </span>
+                        }
+                        else if (showUserNames)
+                        {
+                            <span class="awe-hidden HighBidderRow">
+                                <span class="detail__action-link-count">
+                                    @Html.Resource("AuctionListing, HighBidder"): <span class="HighBidder"></span>
+                                </span>
+                            </span>
+                        }
+                    }
+                    @if (Model.CurrentListingAction != null)
+                    {
+                        <span class="pull-right">
+                            @Html.Resource("AuctionListing, BidHistory")
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </span>
+                    }
+                    <span class="awe-rt-AcceptedListingActionCount" data-previous-value="@Model.AcceptedListingActionCount()">@Model.AcceptedListingActionCount()</span>&nbsp;@Html.Resource("AuctionListing, Bids")
+                </a>
+                <div class="fee">
+                    @{
+                        decimal buyersPremiumPct = 0;
+                        if (Model.Lot != null)
+                        {
+                            buyersPremiumPct = Model.Lot.Event.BuyersPremiumPercent;
+                        }
+                        else if (Model.Owner.Properties.Any(p => p.Field.Name == StdUserProps.BuyersPremiumPercent))
+                        {
+                            decimal.TryParse(Model.Owner.Properties.First(p => p.Field.Name == StdUserProps.BuyersPremiumPercent).Value,
+                                             out buyersPremiumPct);
+                        }
+                        if (buyersPremiumPct > 0)
+                        {
+                            <div class="detail__fee-heading">
+                                @Html.GlobalResource("BuyersPremium")
+                            </div>
+                            <div class="detail__buyer-premium">@Html.GlobalResource("Plus_Xpct_BuyersPremium", (buyersPremiumPct / 100).ToString("P"))</div>
+                        }
+                    }
+                    @Html.Partial("BuyerFee")
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="detail__disclaimer--auction">
+                @if (proxy)
+                {
+                    <div>
+                        @Html.Resource("AuctionListing, ProxyBidDisclaimer", SiteClient.Settings[SiteProperties.FriendlySiteName])
+                    </div>
+                }
+                <div>
+                    @Html.Resource("AuctionListing, BidDisclaimer")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(document).on("SignalR_ListingActionResponse", function (event, data) {
+            if ($.inArray(data.Action_ListingID, interestingListings) >= 0) {
+                //console.log("SignalR_ListingActionResponse data:", data);
+                if (data.Accepted || data.ReasonCode == @((int)ReasonCode.ProxyBeatingNewBid)) {
+                    $(".detail__biddermax").show();
+                    $("#MaxBid span.NumberPart").html(Globalize.formatNumber(data.Action_ProxyAmount, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    $("#MaxBid span.NumberPart").pulse();
+                }
+            }
+        });
+
+        $(document).on("SignalR_UpdateListingAction", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            //Update Increment
+            $('[data-listingid="' + data.ListingID + '"] .awe-rt-Increment span.NumberPart').each(function () {
+                $(this).html(Globalize.formatNumber(data.Increment, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $(this).pulse();
+            });
+
+            //Update Minimum Bid
+            $('[data-listingid="' + data.ListingID + '"] .awe-rt-MinimumBid span.NumberPart').each(function () {
+                if (data.AcceptedActionCount > 0) {
+                    $(this).html(Globalize.formatNumber(data.NextPrice, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                } else {
+                    $(this).html(Globalize.formatNumber(data.Price, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                }
+                $(this).pulse();
+            });
+
+            //show minimum bid math if applicable
+            if (data.AcceptedActionCount > 0) {
+                $('[data-listingid="' + data.ListingID + '"] .awe-rt-MinimumBidMath').each(function () {
+                    $(this).show();
+                });
+            }
+        });
+
+        buyNowPriceForJS = "@buyNowPrice.ToString("F", Html.GetCurrentCultureInfo())";
+
+        $("#SubmitBid").on("click", function () {
+            $("input[name='BuyItNow']").val("false");
+        })
+
+        $("#BINButton").click(function () {
+            $("input[name='BuyItNow']").val("true");
+            $("input[name='BidAmount']").val(buyNowPriceForJS);
+        });
+
+        $("#PlaceQuickBid").on("click", function (event) {
+            event.preventDefault();
+            var minBidVal = $('[data-listingid="@Model.ID"] .awe-rt-MinimumBid span.NumberPart').first().html();
+            minBidVal = minBidVal.replace(/&nbsp;/g, ' ');//replace any '&nbsp;' characters with a space, to support numeric formats that use a space for the thousands separator            $("#BidAmount").val(minBidVal);
+            $("#BidAmount").val(minBidVal);
+            $("#SubmitBid").click();
+        });
+    });
+</script>

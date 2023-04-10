@@ -1,0 +1,15 @@
+﻿/*
+    Theme Name: AuctionWorx - Child Theme for Square Cornered Elements
+    Author: RainWorx Software
+    Description: The CSS rule below can be used to remove the rounded 
+    corners from the default Bootstrap elements.
+
+*/
+
+.alert, .bootstrap-dialog .modal-header, .btn, .form-control, .img-rounded, .label, .modal-content, .nav-pills > li > a, .nav-tabs > li > a, .thumbnail, .pagination, .panel, .panel-heading, .validation-summary-errors, .well,
+.pagination > li:first-child > a, .pagination > li:first-child > span,
+.pagination > li:last-child > a, .pagination > li:last-child > span,
+.input-group .form-control:first-child, .input-group-addon:first-child, .input-group-btn:first-child > .btn, .input-group-btn:first-child > .dropdown-toggle, .input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle), .input-group .form-control:last-child, .input-group-addon:last-child, .input-group-btn:last-child > .btn, .input-group-btn:last-child > .dropdown-toggle, .input-group-btn:first-child > .btn:not(:first-child) {
+    border-radius: 0;
+}
+

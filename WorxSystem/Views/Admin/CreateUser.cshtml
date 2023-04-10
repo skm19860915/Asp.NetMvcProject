@@ -1,0 +1,126 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_CreateUser");
+}
+@section head {
+    <script>
+        $(document).ready(function () {
+            $("input[type='submit']").click(function (event) {
+                //prevent form submission temporarily
+                event.preventDefault();
+                //disable submit button
+                $(this).prop("disabled", true);
+                //submit container form
+                $(this).parents("form").first().submit();
+            });
+        });
+    </script>
+}
+<div class="form-horizontal">
+    @using (Html.BeginForm())
+    {
+        <div class="sub-header">@Html.GlobalResource("CreateLogin")</div>
+        <div class="form-group">
+            <label for="Username" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("Username") <strong class="Required">*</strong></label>
+            <div class="col-xs-10 col-sm-6">
+                @Html.TextBox("UserName", "", new { @class = "form-control input-sm" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="Password" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("Password") <strong class="Required">*</strong></label>
+            <div class="col-xs-10 col-sm-6">
+                @Html.Password("Password", "", new { @class = "form-control  input-sm" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("ConfirmPassword") <strong class="Required">*</strong></label>
+            <div class="col-xs-10 col-sm-6">
+                @Html.Password("confirmPassword", "", new { @class = "form-control  input-sm" })
+            </div>
+        </div>
+        if (SiteClient.Settings["EnableSecurityQuestionAndAnswer"].Equals("True"))
+        {
+            <div class="sub-header">
+                @Html.GlobalResource("SecurityQuestion")
+            </div>
+
+            <div class="form-group">
+                <label for="PasswordQuestion" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("CreateASecurityQuestion")</label>
+                <div class="col-xs-10 col-sm-6">
+                    @Html.TextBox("PasswordQuestion", "", new { @class = "form-control  input-sm" })
+                </div>
+            </div>
+                <div class="form-group">
+                    <label for="PasswordAnswer" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("AnswerToSecurityQuestion")</label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.TextBox("PasswordAnswer", "", new { @class = "form-control  input-sm" })
+                    </div>
+                </div>
+
+        }
+
+        <div class="sub-header">
+            @Html.AdminResource("ContactInformation")
+        </div>
+        <div class="form-group">
+            <label for="Email" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("Email") <strong class="Required">*</strong></label>
+            <div class="col-xs-10 col-sm-6">
+                @Html.TextBox("Email", "", new { @class = "form-control  input-sm" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="confirmEmail" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("ConfirmEmail") <strong class="Required">*</strong></label>
+            <div class="col-xs-10 col-sm-6">
+                @Html.TextBox("confirmEmail", "", new { @class = "form-control  input-sm" })
+            </div>
+        </div>
+
+
+        List<CustomField> userFields = UserClient.UserCustomFields.Where(ucf => !ucf.Deferred).ToList();
+
+        if (userFields.Count > 0)
+        {
+            <div class="sub-header">
+                @Html.GlobalResource("AdditionalInformation")
+            </div>
+            foreach (CustomField customField in userFields.OrderBy(ucf => ucf.DisplayOrder))
+            {
+                <div class="form-group">
+                    <label for="@customField.Name" class="col-xs-12 col-sm-4 control-label">
+                        @Html.CustomFieldResource(customField.Name)
+                        @if (customField.Type != CustomFieldType.Boolean && customField.Required)
+                        {
+                            <strong class="Required">*</strong>
+                        }
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @{ Html.RenderCustomField_Admin(customField, new { @class = "form-control  input-sm" }, true); }
+                    </div>
+                </div>
+            }
+        }
+
+        if (SiteClient.BoolSetting(SiteProperties.RequireAddressOnRegistration))
+        {
+	        <div class="sub-header">
+	            @Html.GlobalResource("AddressInformation")
+	        </div>
+
+            @Html.Partial("InitialAddress", new Address())
+        }
+        <div class="sub-header">
+            @Html.GlobalResource("Agreements")
+        </div>
+        @Html.Hidden("agreements", "True")
+        <div class="form-group">
+            <label for="Newsletter" class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("EmailOptIn")</label>
+            <div class="col-xs-10 col-sm-6">
+                @Html.CheckBox("Newsletter")
+                </div>
+        </div>
+        <div class="text-right">
+            <input type="submit" class="btn btn-success" value="@Html.AdminResource("CreateUser")" />
+        </div>
+    }
+</div>
+

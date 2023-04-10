@@ -1,0 +1,132 @@
+﻿@model dynamic
+@{
+    bool showCounts = bool.Parse(SiteClient.Settings["ShowCategoryCounts"]);
+    bool isEventDetailView = ViewContext.RouteData.Values["controller"].ToString().Equals(MVC.EventController, StringComparison.OrdinalIgnoreCase) &&
+        ViewContext.RouteData.Values["action"].ToString().Equals(MVC.DetailsAction, StringComparison.OrdinalIgnoreCase);
+    bool showZeroCountCategories = bool.Parse(SiteClient.Settings["ShowZeroCountCategories"]) && !isEventDetailView;
+
+    List<Category> categories;
+    if (Model is List<Category>)
+    {
+        categories = (List<Category>)Model;
+    }
+    else if (ViewData.ContainsKey(MVC.ViewData_CategoryNavigator))
+    {
+        categories = (List<Category>)ViewData[MVC.ViewData_CategoryNavigator];
+    }
+    else
+    {
+        categories = CommonClient.GetChildCategories(CategoryRoots.ListingCats, includeRelatedCustomFields: false);
+    }
+
+    Dictionary<int, int> counts;
+    if (ViewData.ContainsKey(MVC.ViewData_CategoryCounts))
+    {
+        counts = (Dictionary<int, int>)ViewData[MVC.ViewData_CategoryCounts];
+    }
+    else
+    {
+        string statuses = ListingStatuses.Active + "," + ListingStatuses.Preview;
+        counts = CommonClient.GetCategoryCounts(new List<string>(0), statuses, string.Empty);
+    }
+}
+@foreach (Category c in categories)
+{
+    if (showZeroCountCategories || !((bool)(ViewData["ValidCategoryCounts"] ?? false)) || counts.ContainsKey(c.ID))
+    {
+        string breadcrumbs;
+        if (Request.QueryString["breadcrumbs"] != null && !string.IsNullOrEmpty(Request.QueryString["breadcrumbs"]))
+        {
+            breadcrumbs = Request.QueryString["breadcrumbs"] + "-C" + c.ID;
+        }
+        else if(ViewContext.RouteData.Values["breadcrumbs"] == null || (string)ViewContext.RouteData.Values["breadcrumbs"] == string.Empty)
+        {
+            breadcrumbs = "C" + c.ID;
+        }
+        else
+        {
+            breadcrumbs = ViewContext.RouteData.Values["breadcrumbs"] + "-C" + c.ID;
+        }
+
+        string extra;
+        if (Request.QueryString["extra"] != null && !string.IsNullOrEmpty(Request.QueryString["extra"]))
+        {
+            extra = Request.QueryString["extra"] + "-" + Html.LocalizedCategoryName(c.Name).SimplifyForURL("-");
+        }
+        else if (ViewContext.RouteData.Values["extra"] == null || (string)ViewContext.RouteData.Values["extra"] == string.Empty)
+        {
+            extra = Html.LocalizedCategoryName(c.Name).SimplifyForURL("-");
+        }
+        else
+        {
+            extra = ViewContext.RouteData.Values["extra"] + "-" + Html.LocalizedCategoryName(c.Name).SimplifyForURL("-");
+        }
+
+        RouteValueDictionary routes = new RouteValueDictionary();
+        foreach (string key in Request.QueryString.AllKeys.Where(k => k != null))
+        {
+            if (!key.StartsWith("selectFor") && !key.StartsWith("Search") && !key.StartsWith("page") && !key.StartsWith("breadcrumbs") && !key.StartsWith("extra"))
+            {
+                routes.Add(key, Request.QueryString[key]);
+            }
+        }
+        routes.Add("breadcrumbs", breadcrumbs);
+        routes.Add("extra", extra);
+
+        string categoryUrl;
+        if (isEventDetailView)
+        {
+            string extra2 = ((Event)ViewData[MVC.EventDetails]).Title.SimplifyForURL("-");
+            routes.Add("extra2", extra2);
+            categoryUrl = Html.GetActionUrl(MVC.DetailsAction, MVC.EventController, routes);
+        }
+        else
+        {
+            categoryUrl = Html.GetActionUrl(MVC.BrowseAction, MVC.ListingController, routes);
+        }
+
+        <li>
+            <a href="@categoryUrl">
+                @Html.LocalizedCategoryName(c.Name)
+                @if (showCounts && (bool)(ViewData["ValidCategoryCounts"] ?? true))
+                {
+                    <span class="badge pull-right">
+                        @if (counts.ContainsKey(c.ID))
+                        {
+                            @counts[c.ID]
+                        }
+                        else
+                        {
+                            @:0
+                    }
+                    </span>
+                }
+            </a>
+        </li>
+    }
+}
+@if (categories.Count <= 0)
+{
+    <li class="awe-category-back-link"></li>
+}
+<script>
+    $(document).ready(function () {
+@if (Model is Event)
+{
+    <text>
+        var rootIndicator = 1;
+    </text>
+}
+else
+{
+    <text>
+        var rootIndicator = 2;
+    </text>
+}
+        if ($(".breadcrumb a").length > rootIndicator) {
+            $(".awe-category-back-link").html('<a href="' + $(".breadcrumb a:last").attr("href") + '"><span class="glyphicon glyphicon-chevron-left"></span>@Html.GlobalResource("BackToListing").ToJavascriptSafeString()</a>');
+        } else if ($(".breadcrumb a").length == rootIndicator) {
+            $(".awe-category-back-link").html('<a href="@Html.ShortBase()"><span class="glyphicon glyphicon-chevron-left"></span>@Html.GlobalResource("BackToListing").ToJavascriptSafeString()</a>');
+        }
+    });
+</script>

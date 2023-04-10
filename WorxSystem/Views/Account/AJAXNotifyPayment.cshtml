@@ -1,0 +1,13 @@
+﻿@model Invoice
+
+<script>
+    function NotifyPayment(providerName) {
+        var retVal = null;
+        Proxy.invoke("NotifyPayment", { paymentProviderName: providerName, invoiceID : @Model.ID },
+                    function(result) {
+
+                    },
+                    function(error) { window.alert(error); });
+        return retVal;
+    }
+</script>

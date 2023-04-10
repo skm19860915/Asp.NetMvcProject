@@ -1,0 +1,19 @@
+﻿@model List<RainWorx.FrameWorx.MVC.Models.SiteCheck>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("SystemCheck");
+}
+
+@foreach (RainWorx.FrameWorx.MVC.Models.SiteCheck check in Model)
+{
+    @Html.Partial("SiteCheck", check)
+}
+@if (!SiteClient.EnableEvents)
+{
+    <script>
+        $(document).ready(function () {
+            $("#EventImageSaveLoad").hide();
+        });
+    </script>
+}

@@ -1,0 +1,81 @@
+﻿@model Page<Feedback>
+
+@{
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    User targetUser = (User)ViewData["TargetUser"];
+}
+<script>
+    $(document).ready(function () {
+        $("#FeedbackMonthsSelect").val($("#FeedbackMonthsValue").val());
+        $("#FeedbackMonthsSelect").change(function () {
+            var currentUrl = '@Html.GetActionUrl(currentAction, new { userid = targetUser.ID, sort = ViewData["Sort"], descending = ((bool)ViewData["SortDescending"]) }).ToMvcHtmlString().ToJavascriptSafeString()';
+            var targetUrl = currentUrl + '&months=' + $(this).val();
+            document.location = $.htmlDecode(targetUrl);
+            return true;
+        });
+    });
+</script>
+<table class="table table-condensed">
+    <tr>
+        <th colspan="5">
+            <div class="form-inline">
+                <div class="form-group"> <label> @Html.GlobalResource("Period") </label> </div>
+                <div class="form-group">
+                    <select id="FeedbackMonthsSelect" class="form-control">
+                        <option value="0">@Html.GlobalResource("All")</option>
+                        <option value="1">@Html.GlobalResource("Past_1_Month")</option>
+                        <option value="6">@Html.GlobalResource("Past_X_Months", 6)</option>
+                        <option value="12">@Html.GlobalResource("Past_X_Months", 12)</option>
+                    </select>
+                </div>
+                @Html.Hidden("FeedbackMonthsValue", ViewData["Months"])
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th class="FeedbackSmallerColumn">@Html.ActionLink(Html.GlobalResource("Rating"), currentAction, new { @sort = "Rating", @userid = targetUser.ID, @months = ViewData["Months"], @descending = !((bool)ViewData["SortDescending"]) })</th>
+        <th class="hidden-xs">@Html.GlobalResource("Feedback")</th>
+        <th class="FeedbackSmallerColumn">@Html.GlobalResource("LeftBy")</th>
+        <th class="FeedbackSmallerColumn">@Html.GlobalResource("Listing")</th>
+        <th class="FeedbackSmallerColumn">@Html.ActionLink(Html.GlobalResource("DateTime"), currentAction, new { @sort = "DateStamp", @userid = targetUser.ID, @months = ViewData["Months"], @descending = !((bool)ViewData["SortDescending"]) })</th>
+    </tr>
+    @{
+        foreach (Feedback feedback in Model.List)
+        {
+            User otherUser = (targetUser.ID == feedback.Sender.ID) ? feedback.Receiver : feedback.Sender;
+            <tr>
+                <td><div class="stars-off"><div class="stars-on" style="width:@(feedback.Rating * 16)px"></div></div></td>
+                <td class="hidden-xs">@feedback.Comment</td>
+                <td>
+                    @Html.ActionLink(otherUser.UserName, MVC.ViewFeedbackAction, new { userid = otherUser.ID })
+                </td>
+                <td>@Html.ActionLink(feedback.ListingID.ToString(), MVC.DetailsAction, MVC.ListingController, new { id = feedback.ListingID }, null)</td>
+                <td><small>@Html.LocalDTTM(feedback.DateStamp, "G")</small></td>
+            </tr>
+        <tr class="visible-xs">
+            <td></td>
+            <td colspan="3">
+                @feedback.Comment
+            </td>
+        </tr>
+        }
+
+        if (Model.TotalPageCount > 1)
+        {
+        <tr>
+            <td colspan="5">
+                @{
+            Html.RenderPageNumberLinks(Model, null, null, new
+                {
+                    @userid = targetUser.ID,
+                    @months = ViewData["Months"],
+                    @sort = ViewData["Sort"],
+                    @descending = ((bool)ViewData["SortDescending"])
+                }, null);
+                }
+            </td>
+        </tr>
+        }
+    }
+    <tr><td colspan="5"></td></tr>
+</table>

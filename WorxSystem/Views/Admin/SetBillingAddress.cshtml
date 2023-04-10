@@ -1,0 +1,28 @@
+﻿@model List<Address>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("SetBillingAddress");
+}
+
+@using (Html.BeginForm())
+{
+    
+        foreach (Address address in Model)
+        {
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-2 col-sm-1">@Html.RadioButton("selectedAddressID", address.ID)</div>
+                        <div class="col-xs-10 col-sm-11">@Html.Partial("Address", address)</div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    @Html.Hidden("InvoiceID", ViewData[Fields.InvoiceID])
+        <input type="submit" class="btn btn-success" value="@Html.AdminResource("ApplyAddress")" />
+        <a href="@Url.Action(MVC.AddAddressAction,null,new { @id = ViewData["TargetUserID"], SetBillingAddress = ViewData[Fields.InvoiceID] })" class="btn btn-default">@Html.AdminResource("NewAddress") <span class="glyphicon glyphicon-plus"></span></a>
+        @Html.ActionLink(Html.AdminResource("Cancel"), MVC.InvoiceDetailAction, new { @id = ViewData[Fields.InvoiceID]}, new {@class = "btn btn-default" })
+
+}

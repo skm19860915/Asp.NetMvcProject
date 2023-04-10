@@ -1,0 +1,28 @@
+﻿@model List<ListingType>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h3 class="h3row">@Html.AdminResource("LineageString_ListingsGeneral")</h3>
+
+<table>
+    @foreach (ListingType listingType in Model)
+    {
+        <tr>
+            <td>@listingType.Name</td>
+            @if (listingType.Enabled)
+            {
+                <td>@Html.ActionLink(Html.AdminResource("Disable"), "ToggleListingType", new { listingTypeID = listingType.ID })</td>
+            }
+            else
+            {
+                <td>@Html.ActionLink(Html.AdminResource("Enable"), "ToggleListingType", new { listingTypeID = listingType.ID })</td>
+
+            }
+        </tr>
+    }
+</table>
+
+
+<!-- Pending Review -->

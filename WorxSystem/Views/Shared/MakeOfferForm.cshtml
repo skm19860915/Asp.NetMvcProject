@@ -1,0 +1,300 @@
+﻿@model Listing
+@{ 
+    var currentAction = (string)ViewContext.RouteData.Values["action"];
+    var currentController = (string)ViewContext.RouteData.Values["controller"];
+    var allOffers = (List<Offer>)ViewData["AllOffers"];
+    bool allowMultipleOffers = SiteClient.BoolSetting(SiteProperties.AllowMultipleOffers);
+    bool makeOfferAllowed = allowMultipleOffers ||
+        !allOffers.Any(o => o.SendingUserName.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase) && o.Status == OfferStatuses.Active);
+}
+<script>
+    var makeOfferDialog;
+    var makeOfferAllowed = @(makeOfferAllowed.ToString().ToLower());
+    var allowMultipleOffers = @(allowMultipleOffers.ToString().ToLower());
+    $(document).ready(function () {
+        makeOfferDialog = new BootstrapDialog({
+            title: '@Model.Title.ToJavascriptSafeString() &nbsp;<em>(@(Model.Lot != null ? Model.Lot.ID : Model.ID))</em>',
+            message: '<img src="Content/Images/progress-wheel.gif" />',
+            autodestroy: false,
+            closable: false
+        });
+
+        makeOfferDialog.realize();
+
+        $(makeOfferDialog).on('shown.bs.modal', function () {
+            $("#Amount").focus();
+        });
+
+        //opens make offer form modal
+        $("#MakeOffer").on("click", function (event) {
+            event.preventDefault();
+            if ('@Html.FBOUserName().ToJavascriptSafeString()' == '@Model.OwnerUserName.ToJavascriptSafeString()') {
+                var systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" +
+                    '@Html.GlobalResourceString("YouCantMakeAnOfferToYourself").ToJavascriptSafeString()' +
+                    "</div>";
+                if (!$(".awe-rt-ListingActionMessage").is(":visible") || $(".awe-rt-ListingActionMessage").html() == "") {
+                    $(".awe-rt-ListingActionMessage").hide();
+                    $(".awe-rt-ListingActionMessage").html(systemMessage);
+                    $(".awe-rt-ListingActionMessage").slideDown();
+                } else {
+                    $(".awe-rt-ListingActionMessage").fadeOut(200, function () {
+                        $(this).html(systemMessage);
+                        $(this).fadeIn(200);
+                    });
+                }
+                return;
+            } else if (!makeOfferAllowed) {
+                var systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" +
+                    '@Html.GlobalResourceString("YouHaveAlreadySubmittedAnOfferForThisItem").ToJavascriptSafeString()' +
+                    "</div>";
+                if (!$(".awe-rt-ListingActionMessage").is(":visible") || $(".awe-rt-ListingActionMessage").html() == "") {
+                    $(".awe-rt-ListingActionMessage").hide();
+                    $(".awe-rt-ListingActionMessage").html(systemMessage);
+                    $(".awe-rt-ListingActionMessage").slideDown();
+                } else {
+                    $(".awe-rt-ListingActionMessage").fadeOut(200, function () {
+                        $(this).html(systemMessage);
+                        $(this).fadeIn(200);
+                    });
+                }
+                return;
+            }
+
+            var fullurl = "@Html.GetActionUrl(MVC.MakeOfferModalAction, MVC.ListingController).ToJavascriptSafeString()";
+            makeOfferDialog.open();
+            makeOfferDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+            $.ajax({
+                url: fullurl,
+                type: "get",
+                cache: false,
+                data: { ListingID: '@Model.ID' },//$(this).serialize(),
+                success: function (data) {
+                    if (data.indexOf("LOGON_NEEDED") >= 0) {
+                        //not logged in -- redirect
+                        $.cookie("continueOfferData", "ListingID=@Model.ID", { path: "/", expires: 1 });
+                        var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                        var logonUrl = "@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController)" + "?returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(logonUrl);
+                    } else if (data.indexOf("CC_NEEDED") >= 0) {
+                        //cedit card req'd -- redirect
+                        $.cookie("continueOfferData", "ListingID=@Model.ID", { path: "/", expires: 1 });
+                        var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                        var addCardUrl = "@Html.GetActionUrl(MVC.AddCardAction, MVC.AccountController, new { SellerID = Model.Owner.ID })" + "&returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(addCardUrl);
+                    } else {
+                        //proceed with bidding modal
+                        makeOfferDialog.getModalBody().html(data);//.find("#Amount").focus();
+
+                        //update characters left for message length
+                        UpdateCharsRemaining(makeOfferDialog.getModalBody().find("#OfferMessage"), makeOfferDialog.getModalBody().find("#RemainingChars_OfferMessage"), MAX_MESSAGE_CHARS);
+
+                        //var amountInput = makeOfferDialog.getModalBody().find("#Amount"); // $("#Amount");
+                        //console.log("amountInput", amountInput.length);
+                        //amountInput.get(0).focus();
+                    }
+                }
+            });
+        });
+
+        //if saved offer details exist, opens make offer modal and pre-fills fields with saved values
+        $(document).on("SignalR_Started", function () {
+            var serializedOfferData = $.cookie("continueOfferData");
+            //clear saved offer values
+            $.cookie('continueOfferData', "", { path: '/', expires: 0 });
+            console.log("serializedOfferData:", serializedOfferData);
+            if (aweUserName && !(serializedOfferData == null || serializedOfferData == "")) {
+                var fullurl = "@Html.GetActionUrl(MVC.MakeOfferModalAction, MVC.ListingController).ToJavascriptSafeString()";
+                makeOfferDialog.open();
+                makeOfferDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+                $.ajax({
+                    url: fullurl,
+                    type: "get",
+                    cache: false,
+                    data: { ListingID: '@Model.ID' },//$(this).serialize(),
+                    success: function (data) {
+                        if (data.indexOf("LOGON_NEEDED") >= 0) {
+                            //not logged in -- redirect
+                            var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                            var logonUrl = "@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController)" + "?returnUrl=" + encodeURIComponent(retUrl);
+                            window.location.replace(logonUrl);
+                        } else if (data.indexOf("CC_NEEDED") >= 0) {
+                            //cedit card req'd -- redirect
+                            var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                            var addCardUrl = "@Html.GetActionUrl(MVC.AddCardAction, MVC.AccountController, new { SellerID = Model.Owner.ID })" + "&returnUrl=" + encodeURIComponent(retUrl);
+                            window.location.replace(addCardUrl);
+                        } else {
+                            makeOfferDialog.getModalBody().html(data);
+
+                            //bidding modal loaded, proceed to pre-fill any saved offer values
+                            var offerForm = makeOfferDialog.getModalBody().find("#MakeOfferForm");
+                            var continueOfferData = ParseOfferData(serializedOfferData.toString());
+                            for (var qiKey in continueOfferData) {
+                                var qiValue = continueOfferData[qiKey];
+                                offerForm.find("#" + qiKey).val(qiValue);
+                            }
+
+                            //update characters left for message length
+                            UpdateCharsRemaining(makeOfferDialog.getModalBody().find("#OfferMessage"), makeOfferDialog.getModalBody().find("#RemainingChars_OfferMessage"), MAX_MESSAGE_CHARS);
+
+                            //makeOfferDialog.getModalBody().find("#Amount").focus();
+                        }
+                    }
+                });
+            }
+        });
+
+        //cancel offer
+        $(document).on('click', '#modalCancelOfferButton', function (event) {
+            event.preventDefault();
+            makeOfferDialog.close();
+        });
+
+        //validates offer for confirmation
+        $(document).on('click', '#modalMakeOfferConfirmButton', function (event) {
+            event.preventDefault();
+            var dataToSubmit = $("#MakeOfferForm").serialize();
+            //console.log("data to submit:", dataToSubmit);
+
+            var fullurl = "@Html.GetActionUrl(MVC.ConfirmOfferModalAction, MVC.ListingController)";
+            makeOfferDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+
+            $.ajax({
+                url: fullurl,
+                method: "POST",
+                data: dataToSubmit,
+                cache: false,
+                success: function (data) {
+                    if (data.indexOf("LOGON_NEEDED") >= 0) {
+                        //not logged in -- redirect
+                        $.cookie("continueOfferData", dataToSubmit, { path: "/", expires: 1 });
+                        var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                        var logonUrl = "@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController)" + "?returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(logonUrl);
+                    } else if (data.indexOf("CC_NEEDED") >= 0) {
+                        //cedit card req'd -- redirect
+                        $.cookie("continueOfferData", dataToSubmit, { path: "/", expires: 1 });
+                        var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                        var addCardUrl = "@Html.GetActionUrl(MVC.AddCardAction, MVC.AccountController, new { SellerID = Model.Owner.ID })" + "&returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(addCardUrl);
+                    } else {
+                        //proceed with bidding modal
+                        makeOfferDialog.getModalBody().html(data);
+                        //makeOfferDialog.getModalBody().find("#Amount").focus();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //console.log("Confirm Offer AJAX call failed", jqXHR, textStatus, errorThrown);
+                    makeOfferDialog.getModalBody().html(jqXHR.responseText);
+                }
+            });
+        });
+
+        //submits offer and processes response
+        $(document).on('click', '#modalMakeOfferSubmitButton', function (event) {
+            event.preventDefault();
+            var dataToSubmit = $("#ConfirmOfferForm").serialize();
+            console.log("(1)data to submit:", dataToSubmit);
+
+            var fullurl = "@Html.GetActionUrl(MVC.SubmitOfferAction, MVC.ListingController)";
+            makeOfferDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+
+            $.ajax({
+                url: fullurl,
+                method: "POST",
+                data: dataToSubmit,
+                cache: false,
+                success: function (data) {
+                    if (data.status == "ERROR") {
+                        makeOfferDialog.close();
+                        //alert("ERROR Details: " + data.errorDetails);
+                        var systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" +
+                            data.errorDetails +
+                            "</div>";
+                        if (!$(".awe-rt-ListingActionMessage").is(":visible") || $(".awe-rt-ListingActionMessage").html() == "") {
+                            $(".awe-rt-ListingActionMessage").hide();
+                            $(".awe-rt-ListingActionMessage").html(systemMessage);
+                            $(".awe-rt-ListingActionMessage").slideDown();
+                        } else {
+                            $(".awe-rt-ListingActionMessage").fadeOut(200, function () {
+                                $(this).html(systemMessage);
+                                $(this).fadeIn(200);
+                            });
+                        }
+                    } else if (data.status == "LOGON_NEEDED") {
+                        //not logged in -- redirect
+                        $.cookie("continueOfferData", dataToSubmit, { path: "/", expires: 1 });
+                        var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                        var logonUrl = "@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController)" + "?returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(logonUrl);
+                    } else if (data.status == "CC_NEEDED") {
+                        //cedit card req'd -- redirect
+                        $.cookie("continueOfferData", dataToSubmit, { path: "/", expires: 1 });
+                        var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                        var addCardUrl = "@Html.GetActionUrl(MVC.AddCardAction, MVC.AccountController, new { SellerID = Model.Owner.ID })" + "&returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(addCardUrl);
+                    } else {
+                        makeOfferDialog.close();
+                        //alert("offer submitted!");
+                        //prepare success system message
+                        var systemMessage = "<div class='alert alert-success'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" +
+                            '@Html.GlobalResourceString("YourOfferHasBeenSubmitted").ToJavascriptSafeString()' +
+                            "</div>";
+                        if (!$(".awe-rt-ListingActionMessage").is(":visible") || $(".awe-rt-ListingActionMessage").html() == "") {
+                            $(".awe-rt-ListingActionMessage").hide();
+                            $(".awe-rt-ListingActionMessage").html(systemMessage);
+                            $(".awe-rt-ListingActionMessage").slideDown();
+                        } else {
+                            $(".awe-rt-ListingActionMessage").fadeOut(200, function () {
+                                $(this).html(systemMessage);
+                                $(this).fadeIn(200);
+                            });
+                        }
+                        if (!allowMultipleOffers) makeOfferAllowed = false;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Submit Offer AJAX call failed", jqXHR, textStatus, errorThrown);
+                    //makeOfferDialog.getModalBody().html(jqXHR.responseText);
+                }
+            });
+        });
+
+        $(document).on("SignalR_UpdateListingStatus", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            makeOfferDialog.close();
+        });
+
+        function ParseOfferData(serializedOfferData) {
+            var result = new Array();
+            var kvPairs = serializedOfferData.split('&');
+            for (var i = 0; i < kvPairs.length; i++) {
+                var kvPair = kvPairs[i].split('=');
+                result[kvPair[0]] = decodeURIComponent(replaceAll(kvPair[1], "+", " "));
+            }
+            return result;
+        }
+
+        var MAX_MESSAGE_CHARS = 250;
+        $(document).on("keyup", "#OfferMessage", function () {
+            UpdateCharsRemaining($(this), $("#RemainingChars_OfferMessage"), MAX_MESSAGE_CHARS);
+        });
+        $(document).on("keydown", "#OfferMessage", function (event) {
+            var hasRoomLeft = ($(this).val().length < MAX_MESSAGE_CHARS);
+            //console.log("key pressed:", event.keyCode);
+            return (hasRoomLeft || event.keyCode == 8 || event.keyCode == 46 || event.keyCode == 37 || event.keyCode == 38 || event.keyCode == 39 || event.keyCode == 40); //always return 'true' if delete, backsp, up, down, left, or right key was pressed
+        });
+
+        function UpdateCharsRemaining(textAreaElement, labelElement, maxChars) {
+            var currentCharsCount = textAreaElement.val().length;
+            var remainingcount = maxChars - currentCharsCount;
+            console.log("updating count: ", remainingcount);
+            if (remainingcount < 0) {
+                labelElement.html("0");
+                return false;
+            }
+            labelElement.html(remainingcount);
+            return true;
+        }
+    });
+</script>

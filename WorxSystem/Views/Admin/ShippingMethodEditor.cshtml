@@ -1,0 +1,29 @@
+﻿@model List<ShippingMethod>
+
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>@Html.AdminResource("ShippingMethod")</th>
+            <th>@Html.AdminResource("DisplayOrder")</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tr>
+        <td>@Html.TextBox("sm_name_new", null, new { @class="form-control input-sm", size = 35, @placeholder= Html.AdminResource("NewShippingService")  })</td>
+        <td>@Html.TextBox("sm_order_new", "", new { @class = "form-control input-sm", size = 4, @placeholder = "###" })</td>
+        <td>@Html.AdminResource("New")</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><strong>@Html.AdminResource("Delete")?</strong></td>
+    </tr>
+    @foreach (ShippingMethod shipMethod in Model.OrderBy(cp => cp.DisplayOrder))
+    {
+        <tr>
+            <td>@Html.TextBox("sm_name_" + shipMethod.ID, shipMethod.Name, new { @class = "form-control input-sm", size = 35 })</td>
+            <td>@Html.TextBox("sm_order_" + shipMethod.ID, shipMethod.DisplayOrder.ToString(), new { @class = "form-control input-sm", size = 4 })</td>
+            <td>@Html.CheckBox("sm_delete_" + shipMethod.ID,false,new { @class = "no-toggle"})</td>
+        </tr>
+    }
+</table>

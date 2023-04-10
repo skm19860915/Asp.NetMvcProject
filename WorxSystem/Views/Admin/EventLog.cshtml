@@ -1,0 +1,340 @@
+﻿@model Page<RainWorx.FrameWorx.DTO.LogEntry>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_EventLog");
+    var loggingProperties = (List<CustomProperty>)ViewData["LogOptionSiteProps"];
+}
+@section head {
+    <link rel="stylesheet" href="~/Content/css/bootstrap-multiselect.css" type="text/css">
+    <script type="text/javascript" src="~/Scripts/bootstrap-multiselect.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#ShowConfigOpts").on("click", function (event) {
+                event.preventDefault();
+                $("#EventLogConfig").toggle();
+            });
+            $("#ShowDateFilters").on("click", function (event) {
+                event.preventDefault();
+                $("#DateFilters").toggle();
+            });
+            $("#ShowHistogram").on("click", function (event) {
+                event.preventDefault();
+                //alert('not yet implemented');
+                if ($("#Histogram:visible").length > 0) {
+                    //visble, so hide it and clear contents
+                    $("#Histogram").hide().html('<img src="Content/Images/progress-wheel.gif" />');
+                } else {
+                    //not visible, so show it and load default contents
+                    $("#Histogram").show().html('<img src="Content/Images/progress-wheel.gif" />');
+
+                    var targetHref = '@Html.GetActionUrl("EventLogHistogram", new { DataIncrement = "HOUR" })';
+
+                    //detect current width of container where the chart will be shown
+                    var w = $("#EventLogFilters").prop("offsetWidth");
+                    //console.log("w: ", w);
+                    if (w)  targetHref += "&displaywidth=" + w;
+
+                    $("#Histogram").load(targetHref);
+                }
+            });
+            $("#Histogram").on("click", ".view-entries", function (event) {
+                $("#CloseHistogram").html('<img style="max-height: 40px;" src="Content/Images/progress-wheel.gif" />');
+            });
+            $("#Histogram").on("click", ".update-histogram", function (event) {
+                event.preventDefault();
+
+                $("#CloseHistogram").html('<img style="max-height: 40px;" src="Content/Images/progress-wheel.gif" />');
+
+                var targetHref = $(this).attr("href");
+
+                //detect current width of container where the chart will be shown
+                var w = $("#EventLogFilters").prop("offsetWidth");
+                //console.log("w: ", w);
+                if (w) targetHref += "&displaywidth=" + w;
+
+                $("#Histogram").load(targetHref);
+            });
+            $("#Histogram").on("click", "#CloseHistogram", function (event) {
+                event.preventDefault();
+                $("#Histogram").hide().html('<img src="Content/Images/progress-wheel.gif" />');
+            });
+
+            if ($("#FromDate").val() != "" || $("#ToDate").val() != "") {
+                $("#DateFilters").show();
+            }
+
+            $('#Severity').multiselect({
+                onChange: function (option, checked, select) {
+                    if (option.val() == "All") {
+                        if (checked) {
+                            // All checked, deselect all other options
+                            var optionsToDeselect = [];
+                            $("#Severity").find("option[value!=All]").each(function () {
+                                optionsToDeselect[optionsToDeselect.length] = $(this).val();
+                            })
+                            $('#Severity').multiselect("deselect", optionsToDeselect);
+                        }
+                        else {
+                            // All un-checked, if no other options are checked, check Warning and Error
+                            if ($("#Severity").find("option:checked").length == 0) {
+                                $('#Severity').multiselect("select", ["Information", "Error", "Warning"]);
+                            }
+                        }
+                    } else if (option.val() != "All") {
+                        //option other than "All" was changed, deselect "All"
+                        $("#Severity").multiselect("deselect", "All");
+                    }
+                }
+            });
+
+            $('#FunctionalArea').multiselect({
+                onChange: function (option, checked, select) {
+                    if (option.val() == "All") {
+                        if (checked) {
+                            // All checked, deselect all other options
+                            var optionsToDeselect = [];
+                            $("#FunctionalArea").find("option[value!=All]").each(function () {
+                                optionsToDeselect[optionsToDeselect.length] = $(this).val();
+                            })
+                            $('#FunctionalArea').multiselect("deselect", optionsToDeselect);
+                        }
+                        else {
+                            // All un-checked, if no other options are checked, re-check All
+                            if ($("#FunctionalArea").find("option:checked").length == 0) {
+                                $('#FunctionalArea').multiselect("select", ["All"]);
+                            }
+                        }
+                    } else if (option.val() != "All") {
+                        //option other than "All" was changed, deselect "All"
+                        $("#FunctionalArea").multiselect("deselect", "All");
+                    }
+                }
+            });
+
+        });
+    </script>
+}
+
+@using (Html.BeginForm(MVC.EventLogAction, MVC.AdminController, FormMethod.Get))
+{
+    <div id="EventLogFilters" class="group form-inline">
+        <a href="#ShowConfigOpts" id="ShowConfigOpts" class="config-icon pull-right" title="@Html.AdminResource("ShowHideConfguration")">
+            <span class="glyphicon glyphicon-cog"></span>
+        </a>
+        <a href="#ShowHistogram" id="ShowHistogram" class="histogram-icon pull-right" title="@Html.AdminResource("ShowHideHistogram")">
+            <span class="glyphicon glyphicon-stats"></span>
+        </a>
+        <a href="#ShowDateFilters" id="ShowDateFilters" class="datefilter-icon pull-right" title="@Html.AdminResource("ShowHideDateTimeFilters")">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </a>
+        <div class="form-group">
+            <label class="control-label" for="severity">@Html.AdminResource("Severity")</label>
+            @*@Html.DropDownList("Severity", Html.LogEntrySeverityOptions((string)ViewData["Severity"]))*@
+            @Html.ListBox("Severity", Html.LogEntrySeverityOptions((string[])ViewData["Severity"]))
+            &nbsp;
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="FunctionalArea">@Html.AdminResource("Area")</label>
+            @*@Html.DropDownList("FunctionalArea", Html.LogEntryAreaOptions((string)ViewData["FunctionalArea"]))*@
+            @Html.ListBox("FunctionalArea", Html.LogEntryAreaOptions((string[])ViewData["FunctionalArea"]))
+            &nbsp;
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="SearchTerm">@Html.AdminResource("Search")</label>
+            @Html.TextBox("SearchTerm")
+            &nbsp;
+        </div>
+        <input type="submit" class="btn btn-success btn-sm " value="@Html.AdminResource("ApplyFilters")" />
+        @Html.ActionLink(Html.GlobalResource("reset"), MVC.EventLogAction, null, new { @class = "small" })
+        <div id="DateFilters" class="awe-hidden">
+            <div class="form-group">
+                <label class="control-label" for="FromDate">@Html.AdminResource("From")</label>
+                @Html.TextBox("FromDate")
+                &nbsp;
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="ToDate">@Html.AdminResource("To")</label>
+                @Html.TextBox("ToDate")
+                &nbsp;
+            </div>
+        </div>
+    </div>
+
+    <div id="Histogram" class="group form-inline awe-hidden">
+        <img src="Content/Images/progress-wheel.gif" />
+    </div>
+}
+
+<div id="EventLogConfig" class="group form-horizontal awe-hidden">
+    @using (Html.BeginForm(MVC.UpdateLoggingSettingsAction, MVC.AdminController))
+    {
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-6">
+                <label class="control-label">@Html.AdminResource("AutomaticallyClearLogEntriesOlderThan")</label>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-group">
+                    @Html.TextBox(SiteProperties.LogAgeDays, null, new { size = 3, @class = "form-control input-sm" })
+                    <div class="input-group-addon">@Html.AdminResource("days")</div>
+                </div>
+            </div>
+        </div>
+        foreach (var property in loggingProperties.Where(p => p.Field.Name != SiteProperties.LogAgeDays).OrderBy(p => p.Field.DisplayOrder))
+        {
+            MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+            <div class="form-group">
+                <div class="col-xs-6">
+                    <label class="control-label">
+                        @Html.CustomFieldResource(property.Field.Name)
+                        @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                        {
+                            <strong class="Required">*</strong>
+                        }
+                    </label>
+                </div>
+                <div class="col-xs-4">
+                    @{
+                        Html.RenderCustomField_Admin(property.Field, new { @class = "form-control input-sm" });
+                    }
+                </div>
+                <div class="col-xs-2">
+                    @if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                    {
+                        @Html.ToolTipButton(property.Field.Name + "_Help")
+
+                    }
+                </div>
+                <div class="col-xs-12">@Html.ToolTipContent(property.Field.Name + "_Help", helpText)</div>
+            </div>
+        }
+        <div class="form-group">
+            <div class="col-xs-6">
+                <input type="submit" class="btn btn-success btn-sm " value="@Html.AdminResource("Save")" />
+            </div>
+            <div class="col-xs-6">
+                @Html.ActionLink(Html.AdminResource("ClearEventLogNow"), "ClearEventLog", null, null, new { @class = "btn btn-default btn-sm pull-right" })
+            </div>
+        </div>
+    }
+</div>
+
+<div class="panel panel-default">
+    <table id="AdminEventLog" class="table table-striped table-condensed">
+        <tr>
+            <th>@Html.AdminResource("DateTime")</th>
+            <th>@Html.AdminResource("Severity")</th>
+            <th>@Html.AdminResource("FunctionalArea")</th>
+            <th>@Html.AdminResource("Title")</th>
+            <th>@Html.AdminResource("Message")</th>
+        </tr>
+        @foreach (RainWorx.FrameWorx.DTO.LogEntry logEntry in Model.List)
+        {
+            <tr class="expandable">
+                <td>@Html.LocalDTTM(logEntry.EntryDateStamp, "G")</td>
+                <td>
+                    @switch (logEntry.Severity)
+                    {
+                        case "Critical":
+                        case "Error":
+                            //red
+                            <span style="color:red;font-weight: bold;">@logEntry.Severity</span>
+                            break;
+                        case "Warning":
+                            //yellow
+                            <span style="color:#FFCC00;font-weight: bold;">@logEntry.Severity</span>
+                            break;
+                        default:
+                            //green
+                            <span style="color:green;font-weight: bold;">@logEntry.Severity</span>
+                            break;
+                    }
+
+                    @if (logEntry.Properties != null)
+                    {
+                        <small><span class="glyphicon glyphicon-list-alt"></span></small>
+                    }
+                    @if (!string.IsNullOrEmpty(logEntry.StackTrace))
+                    {
+                        <small><span class="glyphicon glyphicon-alert text-danger"></span></small>
+                    }
+                </td>
+                <td>@logEntry.FunctionalArea</td>
+                <td>@logEntry.Title</td>
+                <td>@logEntry.Message</td>
+            </tr>
+            <tr class="awe-hidden">
+                <td colspan="5">
+                    <table class="table">
+                        <tr>
+                            <th>@Html.AdminResource("ID")</th>
+                            <th>@Html.AdminResource("SQLDateTime")</th>
+                            <th>@Html.AdminResource("Actor")</th>
+                            <th>@Html.AdminResource("MachineName")</th>
+                            <th>@Html.AdminResource("Priority")</th>
+                            <th>@Html.AdminResource("EventID")</th>
+                        </tr>
+                        <tr>
+                            <td>@logEntry.ID</td>
+                            <td>@Html.LocalDTTM(logEntry.SQLDateStamp, "G")</td>
+                            <td>@logEntry.Actor</td>
+                            <td>@logEntry.MachineName</td>
+                            <td>@logEntry.Priority</td>
+                            <td>@logEntry.EventID</td>
+                        </tr>
+                    </table>
+
+                    @if (logEntry.Properties != null)
+                    {
+
+                        <table class="table">
+                            <tr>
+                                <th>@Html.AdminResource("Parameters")</th>
+                                <th>@Html.AdminResource("Key")</th>
+                                <th>@Html.AdminResource("Value")</th>
+                            </tr>
+                            @foreach (KeyValuePair<string, string> pair in logEntry.Properties)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <strong>@pair.Key</strong>
+                                    </td>
+                                    <td>@pair.Value</td>
+                                </tr>
+                            }
+                        </table>
+                    }
+
+                    @if (!string.IsNullOrEmpty(logEntry.ExceptionClass))
+                    {
+
+                        <table class="table">
+                            <tr>
+                                <th>@Html.AdminResource("Exception")</th>
+                                <th class="text-danger">
+                                    @logEntry.ExceptionClass
+                                </th>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <textarea class="stacktrace" disabled>@logEntry.StackTrace</textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+@if (Model.TotalPageCount > 1) { Html.RenderPageNumberLinks(Model); }
+
+<script>
+    $(document).ready(function () {
+        $("table#AdminEventLog tr.expandable").click(function () {
+            $(this).next().slideToggle(0);
+            return false;
+        });
+    });
+</script>

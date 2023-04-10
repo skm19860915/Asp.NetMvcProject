@@ -1,0 +1,65 @@
+﻿@using Stripe
+@model Dictionary<int, List<StripeCard>>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Account_CreditCards")
+</div>
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <tr>
+            <th>@Html.GlobalResource("CreditCard")</th>
+            <th>@Html.GlobalResource("CardType")</th>
+            <th>@Html.GlobalResource("Expires")</th>
+            @if (Model.Keys.Count > 1)
+            {
+                <th class="hidden-xs">@Html.GlobalResource("Seller")</th>
+            }
+            <th>&nbsp;</th>
+        </tr>
+        @foreach (int sellerId in Model.Keys)
+        {
+            var sellerUN = sellerId == 0
+                ? SiteClient.TextSetting(SiteProperties.FriendlySiteName)
+                : (UserClient.GetUserByID(SystemActors.SystemUserName, sellerId) ?? new User()
+                {
+                    UserName = "UNKNOWN"
+                }).UserName;
+            var stripCardList = Model[sellerId];
+            foreach (var stripeCard in stripCardList)
+            {
+                <tr>
+                    <td>@string.Format("x{0}", stripeCard.Last4)</td>
+                    <td>@stripeCard.Brand</td>
+                    <td>@stripeCard.ExpirationMonth.ToString("00")/@stripeCard.ExpirationYear.ToString("00").Right(2)</td>
+                    @if (Model.Keys.Count > 1)
+                    {
+                        <td class="hidden-xs">
+                            @sellerUN
+                        </td>
+                    }
+                    <td>
+                        <div class="hidden-xs text-right">
+                            <div class="btn-group-vertical">
+                                @Html.ButtonLink(Html.GlobalResource("Delete"), MVC.DeleteCardAction, MVC.StripeController,
+                                    new { SellerID = sellerId, cardID = stripeCard.Id, returnUrl }, new { @class = "btn btn-default" })
+                            </div>
+                        </div>
+                        <div class="visible-xs">
+                            <div class="btn-group-vertical">
+                                @Html.ButtonLink(Html.GlobalResource("Delete_small"), MVC.DeleteCardAction, MVC.StripeController,
+                                    new { SellerID = sellerId, cardID = stripeCard.Id, returnUrl }, new { @class = "btn btn-danger" })
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+    <div class="panel-footer">
+        @Html.ActionLink(Html.GlobalResource("AddNew"), MVC.AddStripeCardAction, MVC.AccountController, null, new { @class = "btn btn-default" })
+    </div>
+</div>

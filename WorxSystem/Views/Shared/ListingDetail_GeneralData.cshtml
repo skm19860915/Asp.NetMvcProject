@@ -1,0 +1,45 @@
+﻿@model Listing
+<ul class="detail__custom-fields list-unstyled">
+    @if (Model.Lot != null)
+    {
+        <li><span><strong>@Html.GlobalResource("LotNumX", Model.Lot.LotNumber)</strong></span></li>
+        <li><span><strong>@Html.GlobalResource("LotSystemIDNum", Model.Lot.ID)</strong></span></li>
+    }
+    else
+    {
+        <li>
+           <span> 
+            <strong>
+                @Html.GlobalResource("ItemNumber", Model.ID)
+            </strong>
+           </span>
+        </li>
+    }
+    @if (Model.Type.Name == "FixedPrice")
+    {
+        <li>
+            <strong>
+                @Html.Resource("FixedPriceListing, QtyAvailable")
+            </strong>
+            <span class="awe-rt-Quantity">@Html.LocalInteger(Model.CurrentQuantity)</span>
+        </li>
+    }
+    @if (!Model.IsGoodTilCanceled())
+    {
+        <li>
+            <strong>@Html.GlobalResource("ListingEndDateTime")</strong>
+            <span class="awe-rt-endingDTTM" data-initial-dttm="@(Model.EndDTTM.HasValue ? Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value) : MvcHtmlString.Empty)"></span>
+        </li>
+        <li>
+            <strong>@Html.GlobalResource("ListingStartDateTime")</strong>
+            <span class="awe-rt-startingDTTM" data-initial-dttm="@(Model.StartDTTM.HasValue ? Html.CultureInvariantLocalDTTM(Model.StartDTTM.Value) : MvcHtmlString.Empty)"></span>
+        </li>
+    }
+    @{
+        bool showHitCount = ViewData["EnableListingHitCounts"] != null && (bool)ViewData["EnableListingHitCounts"];
+        if (showHitCount)
+        {
+            <li class="detail__pageviews">@Html.GlobalResource("ListingPageViews", Model.Hits)</li>
+        }
+    }
+</ul>

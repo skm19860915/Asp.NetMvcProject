@@ -1,0 +1,551 @@
+﻿@model Event
+
+@{
+    var pageOfLots = (Page<Listing>)ViewData["PageOfLots"];
+    bool showEventCategories = bool.Parse(SiteClient.Settings["EventHomeCategories"]);
+    string IndexCssColumns = "col-xs-12";
+    string EventToggleDetails = "";
+    bool hasKeys = Request.QueryString.HasKeys();
+
+    if ((Model.Status == AuctionEventStatuses.Closing) || (Request.QueryString["page"] != null))
+    {
+        EventToggleDetails = "awe-hidden EventToggleWrapper";
+    }
+    bool rollingUpdatesInEffect = (bool)ViewData["RollingUpdatesInEffect"];
+    bool rollingUpdatesAvailable = (bool)ViewData["RollingUpdatesAvailable"];
+
+    bool categorySelected = false;
+    if (!string.IsNullOrEmpty((string)ViewData["CategoryName"]))
+    {
+        categorySelected = true;
+    }
+
+    //determine if inline bidding is enabled
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool quickBidForListViewsEnabled = false;
+    var quickBidForListViewsProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidForListViewsEnabled);
+    if (quickBidForListViewsProp != null)
+    {
+        bool.TryParse(quickBidForListViewsProp.Value, out quickBidForListViewsEnabled);
+    }
+    bool auctionsEnabled = false;
+    var auctionsEnabledProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.Enabled);
+    if (auctionsEnabledProp != null)
+    {
+        bool.TryParse(auctionsEnabledProp.Value, out auctionsEnabled);
+    }
+    quickBidForListViewsEnabled = quickBidForListViewsEnabled && auctionsEnabled;
+
+}
+
+@section head {
+    <script>
+        $(document).ready(function () {
+
+            //this is the number of days the user's preference to "Auto hide ended lots" will be remembererd, if applicable
+            var ROLLING_LOT_UPDATES_PREF_EXP_DAYS = 1;
+
+            $("#FollowLive").on("click", function (event) {
+                event.preventDefault();
+                var thisEventId = '@Model.ID';
+                console.log("Finding next lot...");
+                $.post('RealTime/GetNextLotClosing', { eventId: thisEventId }).done(function (data) {
+                    if (data.LotId) {
+                        var baseTargetUrl = '@Html.GetActionUrl(MVC.LotDetailsAction, new { id = "[NEXTLOTID]" }).ToJavascriptSafeString()';
+                        if (baseTargetUrl.indexOf("?") < 0) {
+                            baseTargetUrl += "?FollowLive=true"
+                        } else {
+                            baseTargetUrl += "&FollowLive=true"
+                        }
+                        var targetUrl = baseTargetUrl.replace("[NEXTLOTID]", data.LotId);
+                        console.log("Redirecting to next lot...", targetUrl);
+                        document.location = targetUrl;
+                    } else {
+                        console.log("Next lot NOT FOUND; EV ID: ", thisEventId);
+                    }
+                });
+            });
+            $("#EnableRollingUpdates").on("click", function (event) {
+                event.preventDefault();
+                var targetUrl = '@Model.GetDetailUrl().ToJavascriptSafeString()' + '?ViewStyle=@ViewData["ViewStyle"]';
+                $.cookie('RollingLotUpdatesEnabledByUser', "true", { path: '/', expires: ROLLING_LOT_UPDATES_PREF_EXP_DAYS });
+                window.location.href = targetUrl;
+            });
+            $("#DisableRollingUpdates").on("click", function (event) {
+                event.preventDefault();
+                var targetUrl = '@Model.GetDetailUrl().ToJavascriptSafeString()' + '?ViewStyle=@ViewData["ViewStyle"]';
+                $.cookie('RollingLotUpdatesEnabledByUser', "false", { path: '/', expires: ROLLING_LOT_UPDATES_PREF_EXP_DAYS });
+                window.location.href = targetUrl;
+            });
+        });
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+</script>
+<div class="row">
+    <div class="col-xs-12" data-eventid="@Model.ID">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Partial("OptionsDropDown_Event")
+                @if (!string.IsNullOrEmpty(Model.SecondaryImageURI))
+                {
+                    <div class="row">
+                        <div class="col-xs-12 event-banner">
+                            <img class="img-responsive" src="@string.Format(Model.SecondaryImageURI, "LargeSize".ToLower())" />
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-xs-12">
+                        @if ((Model.Status == AuctionEventStatuses.Closing) || (Request.QueryString["page"] != null))
+                        {
+                        <button class="btn btn-default pull-right" id="EventToggleBTN" type="button">
+                            @Html.GlobalResource("ToggleEventDetails")
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </button>
+                        <script>
+                            $("#EventToggleBTN").on('click', function () {
+                                $(".EventToggleWrapper").toggle();
+                                $(this).find('span').toggleClass('glyphicon-chevron-right').toggleClass('glyphicon-chevron-down');
+                            });
+                        </script>
+                        }
+                        <h1 class="event-title">
+                            @Model.Title
+                        </h1>
+                    </div>
+                </div>
+                <div class="row @EventToggleDetails">
+                    <div class="col-md-8">
+                        <p>
+                            @Model.Subtitle
+                        </p>
+                        @Model.Description.ToMvcHtmlString()
+                    </div>
+                    <div class="col-md-4">
+                        @if (!string.IsNullOrEmpty(Model.ManagedByName))
+                        {
+                            <p>
+                                <strong>
+                                    @Html.GlobalResource("ManagedByX", Model.ManagedByName)
+                                </strong>
+                            </p>
+                        }
+                        <p>
+                            <strong>@Html.GlobalResource("Status")</strong> <span class="awe-rt-Status">@Html.GlobalResource(Model.Status)</span>
+                        </p>
+                        <p>
+                            <strong>@Html.GlobalResource("EventID")</strong> @Model.ID
+                        </p>
+
+                        @if (!string.IsNullOrEmpty(Model.TermsAndConditions))
+                        {
+                            <p class="event-data"><a data-toggle="modal" href="#TermsAndConditions"><span class="glyphicon glyphicon-list-alt"></span>@Html.GlobalResource("TermsAndConditions")</a></p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.ShippingInfo))
+                        {
+                            <p class="event-data"><a data-toggle="modal" href="#ShippingInformation"><span class="glyphicon glyphicon-envelope"></span>@Html.GlobalResource("ShippingInformation")</a></p>
+                        }
+                        <div class="modal fade" id="TermsAndConditions">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        @Model.TermsAndConditions.ToMvcHtmlString()
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="ShippingInformation">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        @Model.ShippingInfo.ToMvcHtmlString()
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @{IEnumerable<Media> nonImageMedia = Model.Media.Where(m => m.Context.Equals(MediaUploadContexts.UploadFile));}
+                        @if (nonImageMedia.Count() > 0)
+                        {
+                            foreach (Media media in nonImageMedia)
+                            {
+                                @Html.Partial(media.Type + "_" + media.DefaultVariationName, media)<br />
+                            }
+                        }
+                    </div>
+                </div>
+                <hr class="@EventToggleDetails"/>
+
+                <div class="row event-data @EventToggleDetails">
+                    <div class="col-sm-6">
+                        @if (Model.StartDTTM.HasValue)
+                        {
+                            <div class="data-card">
+                                <strong>
+                                    <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("Starts")
+                                </strong>
+                                @Html.LocalDTTM(Model.StartDTTM.Value, Model.TimeZone, "G")
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="data-card">
+                                <strong>
+                                    <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("ScheduledStart")
+                                </strong>
+                                @Html.GlobalResource("NotSet")
+                            </div>
+                        }
+                        <div class="data-card">
+                            <strong>
+                                <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("FirstLotCloses")
+                            </strong>
+                            @Html.LocalDTTM(Model.EndDTTM, Model.TimeZone, "G")
+                            <small>
+                                (@Html.GlobalResource("NumberOfLots"): @Model.LotCount)
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        @if (Model.ProxyBidding)
+                        {
+                            <div class="data-card">
+                                @Html.GlobalResource("EventUsesProxy")
+                            </div>
+                        }
+                        <div class="data-card">
+                            @if (Model.BuyersPremiumPercent > 0)
+                            {
+                                @Model.BuyersPremiumPercent.ToString(Formats.PercentFormat) @:&#37;&nbsp; @Html.GlobalResource("BuyersPremium") -
+                            }
+                            @Html.GlobalResource("EventCurrencyInfo") <strong>@Model.Currency.Code</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @{List<CustomProperty> properties = Model.Properties.Where(p => p.Field.Group.Equals("Event") && !string.IsNullOrEmpty(p.Value)).OrderBy(cp => cp.Field.DisplayOrder).ToList();}
+        @if (properties.Count > 0)
+        {
+            <div class="panel panel-default @EventToggleDetails">
+                <div class="panel-heading">
+                    @Html.GlobalResource("AdditionalInformation")
+                </div>
+                <table class="table">
+                    @foreach (CustomProperty property in properties)
+                    {
+                        <tr>
+                            <td><strong>@Html.CustomFieldResource(property.Field.Name)</strong></td>
+                            @switch (property.Field.Type)
+                            {
+                                case CustomFieldType.Boolean:
+                                    <td>@(bool.Parse(property.Value) ? Html.GlobalResource("Yes") : Html.GlobalResource("No"))</td>
+                                    break;
+                                case CustomFieldType.Decimal:
+                                    if (property.Value.ToString().TrimEnd('0') != "")
+                                    {
+                                        int count = BitConverter.GetBytes(decimal.GetBits(decimal.Parse(property.Value.ToString().TrimEnd('0')))[3])[2];
+                                        <td>@decimal.Parse(property.Value).ToString("N" + count, Html.GetCurrentCultureInfo())</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@decimal.Parse(property.Value).ToString("N0", Html.GetCurrentCultureInfo())</td>
+                                    }
+                                    break;
+                                case CustomFieldType.Int:
+                                    <td>@int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo())</td>
+                                    break;
+                                case CustomFieldType.DateTime:
+                                    <td>@DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo())</td>
+                                    break;
+                                case CustomFieldType.Enum:
+                                    <td>@Html.CustomFieldResource(property.Value)</td>
+                                    break;
+                                default:
+                                    <td>@property.Value</td>
+                                    break;
+                            }
+                            <td>
+                                @{MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));}
+                                @if (helpText != null)
+                                {
+                                    @Html.ToolTipButton(property.Field.Name + "_Help")
+                                }
+                            </td>
+                        </tr>
+                        if (helpText != null)
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    @Html.ToolTipContent(property.Field.Name + "_Help", helpText)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    @if (showEventCategories)
+    {
+        IndexCssColumns += " col-md-9";
+        <div class="col-xs-12 col-md-3 categories">
+            <div class="panel panel-default hidden-xs hidden-sm">
+                <div class="panel-heading">@Html.GlobalResource("Categories")</div>
+                <ul class="nav nav-pills nav-stacked">
+                    @Html.Partial("CategoryNavigator")
+                </ul>
+            </div>
+            <div class="dropdown visible-sm visible-xs">
+                <button class="dropdown-toggle btn btn-default btn-block" data-toggle="dropdown">
+                    @Html.GlobalResource(categorySelected ? "SubCategoryMenu" : "CategoryMenu")&nbsp;<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    @Html.Partial("CategoryNavigator")
+                </ul>
+            </div>
+            @if (bool.Parse(SiteClient.Settings[SiteProperties.EnableRegions]))
+            {
+                <div class="panel panel-default hidden-xs hidden-sm region-container">
+                    <div class="panel-heading">@Html.GlobalResource("Regions")</div>
+                    <ul class="nav nav-pills nav-stacked">
+                        @Html.Partial("RegionNavigator")
+                    </ul>
+                </div>
+                <div class="dropdown visible-sm visible-xs region-container">
+                    <button class="dropdown-toggle btn btn-default btn-block" data-toggle="dropdown">
+                        @Html.GlobalResource("RegionMenu")&nbsp;<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @Html.Partial("RegionNavigator")
+                    </ul>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        if ($(".region-container ul li").length == 0) {
+                            $(".region-container").hide();
+                        }
+                    });
+                </script>
+            }
+        </div>
+    }
+
+    @if (rollingUpdatesAvailable)
+    {
+        <div class="@IndexCssColumns text-right">
+            @if (rollingUpdatesInEffect)
+            {
+                <p>
+                    <a id="DisableRollingUpdates" href="#DisableRollingUpdates"><span class="glyphicon glyphicon-check"></span> @Html.GlobalResource("AutomaticallyHideEndedLots")</a>
+                </p>
+            }
+            else
+            {
+                <p>
+                    <a id="EnableRollingUpdates" href="#EnableRollingUpdates"><span class="glyphicon glyphicon-unchecked"></span> @Html.GlobalResource("AutomaticallyHideEndedLots")</a>
+                </p>
+            }
+        </div>
+    }
+
+    <div class="@IndexCssColumns">
+        <div class="row">
+            <div class="col-sm-8 hidden-xs">
+                @Html.Partial("BreadCrumbNavigator")
+            </div>
+            @if (Model.FollowLiveEnabled &&
+                (Model.Status == AuctionEventStatuses.Preview || Model.Status == AuctionEventStatuses.Active || Model.Status == AuctionEventStatuses.Closing))
+            {
+                <div class="col-xs-12 col-sm-4 text-right">
+                    <p>
+                        <a id="FollowLive" href="#FollowLive"><span class="glyphicon glyphicon-forward"></span> @Html.GlobalResource("FollowAuctionLive")</a>
+                    </p>
+                </div>
+            }
+        </div>
+        <script>
+            $(document).ready(function () {
+
+                //Jump to Lot
+                $("#JumpToLotButton").click(function (event) {
+                    event.preventDefault();
+                    TryJumpToLot();
+                });
+
+                $("#JumpToLotInput").change(function (event) {
+                    TryJumpToLot();
+                });
+
+                function TryJumpToLot() {
+                    var requestedLotNumber = $("#JumpToLotInput").val();
+                    if (requestedLotNumber != "") {
+                        $("#JumpToLotInput").prop("disabled", true);
+                        $.post("@Html.GetActionUrl(MVC.GetLotIdByLotNumberAction, MVC.RealTimeController)",
+                            { eventId: @Model.ID, lotNumber: requestedLotNumber })
+                            .done(function (data) {
+                                if (data.LotId) {
+                                    window.location.href = "@Html.GetActionUrl(MVC.LotDetailsAction, MVC.EventController, new { @id = "" } )" + "/" + data.LotId;
+                                } else {
+                                    $("#JumpToLotInput").addClass("input-validation-error").prop("disabled", false);
+                                }
+                            });
+                    } else {
+                        $("#JumpToLotInput").addClass("input-validation-error");
+                    }
+                }
+
+                //Toggle view style
+                $("#ShowListView").click(function (event) {
+                    event.preventDefault();
+                    if ($(this).hasClass("btn-primary")) {
+                        $("input[name=ViewStyle]").val("grid");
+                    } else {
+                        $("input[name=ViewStyle]").val("list");
+                    }
+                    $(this).parents("form").submit();
+                });
+                $("#ShowGridView").click(function (event) {
+                    event.preventDefault();
+                    if ($(this).hasClass("btn-primary")) {
+                        $("input[name=ViewStyle]").val("list");
+                    } else {
+                        $("input[name=ViewStyle]").val("grid");
+                    }
+                    $(this).parents("form").submit();
+                });
+
+                //toggle active/completed filter
+                $("#Status_IncludeActive").click(function (event) {
+                    event.preventDefault();
+                    var newValue = "";
+                    if ($("#Status_IncludeCompleted").hasClass("btn-primary")) {
+                        newValue = "active_only";
+                    }
+                    $("input[name=StatusFilter]").val(newValue);
+                    $(this).parents("form").submit();
+                });
+                $("#Status_IncludeCompleted").click(function (event) {
+                    event.preventDefault();
+                    var newValue = "";
+                    if ($("#Status_IncludeActive").hasClass("btn-primary")) {
+                        newValue = "completed_only";
+                    }
+                    else if ($("#Status_IncludeCompleted").hasClass("btn-primary")) {
+                        newValue = "completed_only";
+                    }
+                    $("input[name=StatusFilter]").val(newValue);
+                    $(this).parents("form").submit();
+                });
+
+                //Change Sort
+                $("select#@MVC.SortFilterOptions").change(function () {
+                    $("input#submitDropDown").click();
+                });
+
+            });
+        </script>
+        <div class="well well-sm section-title form-inline">
+            <div class="form-group pull-left">
+                <div class="input-group input-group-sm">
+                    <input id="JumpToLotInput" type="text" class="form-control" placeholder="@Html.GlobalResource("JumpToLot")" />
+                    <div class="input-group-btn">
+                        <button type="button" id="JumpToLotButton" class="btn btn-default"><span id="ToggleIcon" class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                </div>
+            </div>
+            @using (Html.BeginForm(MVC.DetailsAction, MVC.EventController, FormMethod.Get, new { @class = "form-inline text-right" }))
+            {
+                List<string> queryString = HttpContext.Current.Request.QueryString.AllKeys.Where(k => k != null && !k.StartsWith("SortFilterOptions")).ToList();
+                string listViewCss = (string)ViewData["ViewStyle"] == "grid" ? "btn-default" : "btn-primary";
+                string gridViewCss = (string)ViewData["ViewStyle"] == "grid" ? "btn-primary" : "btn-default";
+                string includeActiveCss;
+                string includeCompletedCss;
+                if ((string)ViewData["StatusFilter"] == "completed_only")
+                {
+                    includeActiveCss = "btn-default";
+                    includeCompletedCss = "btn-primary";
+                }
+                else // "active_only" (default)
+                {
+                    includeActiveCss = "btn-primary";
+                    includeCompletedCss = "btn-default";
+                }
+                foreach (string key in queryString.Where(key => key.ToLower() != "viewstyle"
+                                                                && key.ToLower() != "statusfilter"
+                                                                && key.ToLower() != "sortfilteroptions"
+                                                                && key.ToLower() != "listingtype"
+                                                                && key.ToLower() != "page"))
+                {
+                    @Html.Hidden(key, HttpContext.Current.Request.QueryString[key])
+                }
+                @Html.Hidden("ViewStyle")
+                @Html.Hidden("StatusFilter")
+
+                <div class="form-group">
+                    <div class="btn-group">
+                        <button id="ShowListView" type="button" class="btn btn-sm @listViewCss"><span id="ToggleIcon" class="glyphicon glyphicon-list"></span></button>
+                        <button id="ShowGridView" type="button" class="btn btn-sm @gridViewCss"><span id="ToggleIcon" class="glyphicon glyphicon-th-large"></span></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="btn-group">
+                        <button id="Status_IncludeActive" class="btn btn-sm @includeActiveCss">@Html.GlobalResource("Active")</button>
+                        <button id="Status_IncludeCompleted" class="btn btn-sm @includeCompletedCss">@Html.GlobalResource("Completed")</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="@MVC.SortFilterOptions" class="input-group-addon">@Html.GlobalResource("Sort")</label>
+                        @Html.DropDownList(MVC.SortFilterOptions, null, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+                <input type="submit" id="submitDropDown" class="awe-hidden" />
+            }
+        </div>
+        @if (pageOfLots == null || pageOfLots.TotalItemCount == 0)
+        {
+            @Html.GetSiteContent("NoSearchResults")
+        }
+        else if ((string)ViewData["ViewStyle"] == "grid")
+        {
+            if (rollingUpdatesInEffect)
+            {
+                @Html.Partial("RollingLots_Grid", pageOfLots)
+            }
+            else
+            {
+                @Html.Partial("PageOfListing_EventDetailGrid", pageOfLots)
+            }
+        }
+        else
+        {
+            if (rollingUpdatesInEffect)
+            {
+                @Html.Partial("RollingLots_List", pageOfLots)
+            }
+            else
+            {
+                @Html.Partial("PageOfListing", pageOfLots)
+            }
+        }
+        @Html.Partial("RandomBottomBanners", ViewData["BannerCats"])
+    </div>
+</div>
+@if (quickBidForListViewsEnabled)
+{
+    @Html.Partial("AuctionInlineBidding_Includes")
+}

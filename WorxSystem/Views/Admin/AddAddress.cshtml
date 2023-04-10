@@ -1,0 +1,37 @@
+﻿@model User
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = @Html.AdminResource("LineageString_UserManagement");
+}
+@section PageName{
+    &gt; @Model.UserName (@Model.ID) &gt; @Html.GlobalResource("AddressInformation")
+    }
+
+@Html.Partial("UserManagementTopNav", "addresses")
+
+<div class="user-details panel panel-default">
+    <div class="panel-body">
+        @using (Html.BeginForm(MVC.AddAddressAction, MVC.AdminController, new { @id = Model.ID, backUrl = ViewData["backUrl"] }, FormMethod.Post, new { @id = "Form_EditAddress" }))
+        {
+            @Html.Partial("AddressEditor", new Address())
+            @Html.Hidden(Fields.SetBillingAddress)
+            @Html.Hidden(Fields.SetShippingAddress)
+                <input type="submit" class="btn btn-success" value="@Html.AdminResource("Save")" />
+                
+                if (ViewData[Fields.SetBillingAddress] != null)
+                {
+                    @Html.ActionLink(Html.AdminResource("Cancel"), MVC.InvoiceDetailAction, new { @id = ViewData[Fields.SetBillingAddress], @class="btn btn-link"})
+                }
+                else if (ViewData[Fields.SetShippingAddress] != null)
+                {
+                    @Html.ActionLink(Html.AdminResource("Cancel"), MVC.InvoiceDetailAction, new { @id = ViewData[Fields.SetShippingAddress], @class = "btn btn-link" })
+                }
+                else
+                {
+                    @Html.ActionLink(Html.AdminResource("Cancel"), MVC.UserAddressesAction, new { @id = Model.ID, @class = "btn btn-link" })
+                }
+           
+        }
+    </div>
+</div>

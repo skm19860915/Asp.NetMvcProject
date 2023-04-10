@@ -1,0 +1,1422 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <!--
+  *****************************************************************************************************************************
+  The <configSections> node MUST appear here at the top, however, under normal circumstances, it should not need to be changed.
+  
+  Please proceed just below </configSections> for the settings that can/should be changed for AuctionWorx
+  *****************************************************************************************************************************
+  -->
+  <configSections>
+    <!-- InProc -->
+    <!-- Shared InProc/WCF -->
+    <section name="validation" type="Microsoft.Practices.EnterpriseLibrary.Validation.Configuration.ValidationSettings, Microsoft.Practices.EnterpriseLibrary.Validation"/>
+    <sectionGroup name="applicationSettings" type="System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <!-- Shared InProc/WCF -->
+      <section name="RainWorx.FrameWorx.MVC.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/>
+      <section name="RainWorx.FrameWorx.Clients.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/>
+      <!-- InProc -->
+      <section name="RainWorx.FrameWorx.BLL.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/>
+      <section name="RainWorx.FrameWorx.BLL.Events.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
+      <section name="RainWorx.FrameWorx.DAL.LightSpeed.Logger.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/>
+    </sectionGroup>
+    <!-- InProc -->
+    <section name="lightSpeedContexts" type="Mindscape.LightSpeed.Configuration.LightSpeedConfigurationSection, Mindscape.LightSpeed"/>
+    <!-- Shared InProc/WCF -->
+    <section name="unity" type="Microsoft.Practices.Unity.Configuration.UnityConfigurationSection, Microsoft.Practices.Unity.Configuration"/>
+    <!-- For more information on Entity Framework configuration, visit http://go.microsoft.com/fwlink/?LinkID=237468 -->
+    <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
+  </configSections>
+
+  <!--
+  ***********************************
+  Start configuring AuctionWorx here!
+  ***********************************
+  -->
+
+  <!--1.) Edit the connectionString attribute below to refer to the database you created for AuctionWorx-->
+  <connectionStrings>
+    <!-- REQUIRED   db_connection is used for all standard AuctionWorx queries; note: the Max Pool Size and Application Name values may be changed as needed -->
+    <add name="db_connection" connectionString="Data Source=your_server_name;Initial Catalog=your_db_name;user=your_user_name;password=your_password;Max Pool Size=100;Application Name=AuctionWorx;" providerName="System.Data.SqlClient" />
+
+    <!-- OPTIONAL   db_connection_signalr may optionally be defined in order to distinguish SignalR-specific queries from all other AuctionWorx queries -->
+    <!--<add name="db_connection_signalr" connectionString="Data Source=your_server_name;Initial Catalog=your_db_name;user=your_user_name;password=your_password;Max Pool Size=100;Application Name=SignalR;" providerName="System.Data.SqlClient" />-->
+
+    <!-- OPTIONAL   For more information on using Azure Blob Storage for uploaded files and images see http://www.rainworx.com/docs-3.1r2/Installation/Deployment/Azure-Installation.htm#Using2 -->
+    <!--<add name="azure_blob_storage" connectionString="DefaultEndpointsProtocol=https;AccountName=your_account_name;AccountKey=your_account_key"/>-->
+  </connectionStrings>
+
+  <!--2.) Edit "LicenseKey" and "NotificationTemplatesFolder" (if necessary) below...-->
+  <applicationSettings>
+    <!-- InProc -->
+    <RainWorx.FrameWorx.BLL.Events.Properties.Settings>
+      <setting name="DisableAntiXSS" serializeAs="String">
+        <value>False</value>
+      </setting>
+      <!--2.a.) (1 of 2) Set the "value" for the "LicenseKey" below to the License Key provided to you by RainWorx-->
+      <!-- ** IMPORTANT: for Events edition, you must set this value is both locations ** -->
+      <setting name="LicenseKey" serializeAs="String">
+        <value>your_license_key</value>
+      </setting>
+      <setting name="ValidationRuleSet" serializeAs="String">
+        <value>default</value>
+      </setting>
+      <setting name="AllowNonEventOwnerLots" serializeAs="String">
+        <value>False</value>
+      </setting>
+    </RainWorx.FrameWorx.BLL.Events.Properties.Settings>
+    <RainWorx.FrameWorx.BLL.Properties.Settings>
+      <!--2.a.) (2 of 2) Set the "value" for the "LicenseKey" below to the License Key provided to you by RainWorx-->
+      <!-- ** IMPORTANT: for Events edition, you must set this value is both locations ** -->
+      <setting name="LicenseKey" serializeAs="String">
+        <value>your_license_key</value>
+      </setting>
+      <setting name="ValidationRuleSet" serializeAs="String">
+        <value>default</value>
+      </setting>
+      <setting name="VerificationTokenLength" serializeAs="String">
+        <value>8</value>
+      </setting>
+      <setting name="VerificationTokenCharacterSet" serializeAs="String">
+        <value>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890</value>
+      </setting>
+      <setting name="NotificationQueueIntervalMilliseconds" serializeAs="String">
+        <value>60000</value>
+      </setting>
+      <setting name="ListingEndingThreadIntervalMilliseconds" serializeAs="String">
+        <value>5000</value>
+      </setting>
+      <setting name="ListingStartingThreadIntervalMilliseconds" serializeAs="String">
+        <value>60000</value>
+      </setting>
+      <setting name="ListingClosingThreadIntervalMilliseconds" serializeAs="String">
+        <value>60000</value>
+      </setting>
+      <setting name="ListingCloseBatchSize" serializeAs="String">
+        <value>10</value>
+      </setting>
+      <setting name="ListingCloseRetryCount" serializeAs="String">
+        <value>5</value>
+      </setting>
+      <setting name="ListingEndingThreadUserName" serializeAs="String">
+        <value>ListingEndingThread</value>
+      </setting>
+      <setting name="ListingStartingThreadUserName" serializeAs="String">
+        <value>ListingStartingThread</value>
+      </setting>
+      <setting name="ListingClosingThreadUserName" serializeAs="String">
+        <value>ListingClosingThread</value>
+      </setting>
+      <setting name="ListingResolverThreadProcUserName" serializeAs="String">
+        <value>ListingResolverThread</value>
+      </setting>
+      <setting name="NotificationThreadUserName" serializeAs="String">
+        <value>NotificationThread</value>
+      </setting>
+      <setting name="FeeRefresherThreadIntervalMilliseconds" serializeAs="String">
+        <value>60000</value>
+      </setting>
+      <setting name="FeeRefresherThreadUserName" serializeAs="String">
+        <value>FeeRefresherThread</value>
+      </setting>
+      <setting name="NotificationBatchSize" serializeAs="String">
+        <value>10</value>
+      </setting>
+      <setting name="DisableAntiXSS" serializeAs="String">
+        <value>False</value>
+      </setting>
+      <setting name="AsyncListingActionThreads" serializeAs="String">
+        <value>1</value>
+      </setting>
+      <setting name="PublishEventThreadIntervalMilliseconds" serializeAs="String">
+        <value>5000</value>
+      </setting>
+      <setting name="PublishEventThreadUserName" serializeAs="String">
+        <value>PublishEventThread</value>
+      </setting>
+      <setting name="DeleteOriginalImageDays" serializeAs="String">
+        <value>0</value><!-- default: 0, -1 means 'never' -->
+      </setting>
+      <setting name="PurgeDeletedMediaTimeoutSeconds" serializeAs="String">
+        <value>600</value><!-- default: 600, 0 means 'no limit' -->
+      </setting>
+      <setting name="OrphanedListingMediaCleanupBatchSize" serializeAs="String">
+        <value>100</value><!-- default: 100 -->
+      </setting>
+      <setting name="OriginalListingMediaCleanupBatchSize" serializeAs="String">
+        <value>5</value><!-- default: 5 -->
+      </setting>
+      <setting name="DeleteOldListingsTimeoutSeconds" serializeAs="String">
+        <value>600</value>
+        <!-- default: 600, 0 means 'no limit' -->
+      </setting>
+      <setting name="CurrentTimeThreadIntervalMilliseconds" serializeAs="String">
+        <value>59000</value>
+      </setting>
+      <setting name="MaxDataCleanupMinutes" serializeAs="String">
+        <value>30</value>
+        <!-- default: 30, which caps deleting old listing data to 30 minutes per session, whether scheduled nightly or demanded manually -->
+      </setting>
+      <setting name="AutoInvoiceThreadIntervalMilliseconds" serializeAs="String">
+        <value>5000</value>
+      </setting>
+      <setting name="AutoInvoiceThreadUserName" serializeAs="String">
+        <value>AutoInvoiceThread</value>
+      </setting>
+    </RainWorx.FrameWorx.BLL.Properties.Settings>
+    <RainWorx.FrameWorx.DAL.LightSpeed.Logger.Properties.Settings>
+      <setting name="LogFileName" serializeAs="String">
+        <value>C:\Logs\LightSpeedLog.txt</value>
+      </setting>
+    </RainWorx.FrameWorx.DAL.LightSpeed.Logger.Properties.Settings>
+    <!-- Shared InProc/WCF -->
+    <RainWorx.FrameWorx.Clients.Properties.Settings>
+      <setting name="WCFSiteClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_ISiteManager</value>
+      </setting>
+      <setting name="WCFUserClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_IUserManager</value>
+      </setting>
+      <setting name="WCFListingClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_IListingManager</value>
+      </setting>
+      <setting name="WCFCommonClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_ICommonManager</value>
+      </setting>
+      <setting name="WCFSchedulerClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_ISchedulerManager</value>
+      </setting>
+      <setting name="WCFAccountingClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_IAccountingManager</value>
+      </setting>
+      <setting name="ExecutionContext" serializeAs="String">
+        <!--<value>InProcess</value>-->
+        <!--<value>WCF</value>-->
+        <value>InProcess</value>
+      </setting>
+      <setting name="WCFNotifierClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_INotifierManager</value>
+      </setting>
+      <setting name="WCFEventClientEndpoint" serializeAs="String">
+        <value>NetNamedPipeBinding_IEventManager</value>
+      </setting>
+      <setting name="CategoryMaxCacheMinutes" serializeAs="String">
+        <value>10</value>
+      </setting>
+      <setting name="CategoryCountsMaxCacheMinutes" serializeAs="String">
+        <value>5</value>
+      </setting>
+      <setting name="CustomFieldMaxCacheMinutes" serializeAs="String">
+        <value>10</value>
+      </setting>
+      <setting name="MediaAttributeMaxCacheMinutes" serializeAs="String">
+        <value>10</value>
+      </setting>
+      <setting name="PropertyBagMaxCacheMinutes" serializeAs="String">
+        <value>10</value>
+      </setting>
+      <setting name="LogEntryFilterOptionsMaxCacheMinutes" serializeAs="String">
+        <value>5</value>
+      </setting>
+    </RainWorx.FrameWorx.Clients.Properties.Settings>
+  </applicationSettings>
+
+  <!--3.) Edit the following mail settings to refer to your outgoing email server (if login is not required, remove the username and password attributes)-->
+  <system.net>
+    <mailSettings>
+      <smtp>
+        <network host="yoursmtpserver" userName="username" password="secret" port="25"/>
+      </smtp>
+    </mailSettings>
+  </system.net>
+
+  <!--4.) [OPTIONAL] If you need to enable SSL:
+          a.) Set the "URL" and "Secure URL" from "Site Preferences > Setup" in the Admin Control Panel (this MUST be done PRIOR to the next step)
+          b.) Change the "value" for "EnableSSL" below from "false" to "true"-->
+  <appSettings>
+    <add key="webpages:Version" value="3.0.0.0"/>
+    <add key="webpages:Enabled" value="false"/>
+    <add key="vs:EnableBrowserLink" value="false" />
+    <add key="PreserveLoginUrl" value="true"/>
+    <add key="ClientValidationEnabled" value="true"/>
+    <add key="UnobtrusiveJavaScriptEnabled" value="true"/>
+    <add key="enableSimpleMembership" value="false" />
+    <add key="EnableSSL" value="false"/>
+    <add key="AlwaysSSL" value="false" />
+    <add key="StrictActiveUserChecking" value="true" />
+    <add key="EnsureTls12Support" value="true" />
+    <add key="SiteMapCategoryDepth" value="1"/>
+    <add key="SiteMapRegionDepth" value="1"/>
+    <add key="MvcSiteMapProvider_UseExternalDIContainer" value="true"/>
+    <add key="WebAPIAuthScheme" value="RWX_BASIC"/>
+    <add key="ListingDTTMUpdateForSignalRThreads" value="2" />
+    <add key="ListingActionUpdateForSignalRThreads" value="2" />
+    <add key="ListingStatusUpdateForSignalRThreads" value="2" />
+    <add key="ListingActionResponseForSignalRThreads" value="2" />
+    <add key="GetCurrentTimeForSignalRThreads" value="1" />
+    <add key="EventStatusUpdateForSignalRThreads" value="2" />
+    <add key="ForceAsyncBidWaitForTesting" value="false" />
+    <add key="EnableListingHitCounts" value="false" />
+    <add key="API_CORS_Enabled" value="false" />
+    <add key="API_CORS_AllowedOrigins" value="*" />
+    <add key="LotCsvExport_ForcePlainTextValues" value="false" />
+    <add key="LotCsvExport_IncludeEventColumns" value="false" />
+    <!-- 
+      Add support for custom currencies (or override system values) by specfying the details below, 
+        with fields separated by commas (,) and each separate currency separated by semicolons (;).
+      Fields needed: 3-digit ISO code, currency symbol, the English currency name, and the native currency name 
+      Example: value="USD,$,US Dollar,US Dollar;TRY,₺,Turkish Lira,Türk Lirası" 
+    -->
+    <add key="CustomCurrencies" value="" />
+
+    <!-- this is the maximum number of bytes allowed for each individual file selected for upload -->
+    <add key="MAX_UPLOADED_FILE_SIZE_BYTES" value="10000000" />
+    <add key="MAX_UPLOADED_IMAGE_SIZE_BYTES" value="10000000" />
+
+    <!-- set this to false if synchronous bidding is required -->
+    <add key="AsyncActionProcessingEnabled" value="true" />
+
+    <!-- password complexity requirements -->
+    <add key="Password_RequiredLength" value="6" />
+    <add key="Password_RequireNonLetterOrDigit" value="false" />
+    <add key="Password_RequireDigit" value="false" />
+    <add key="Password_RequireLowercase" value="false" />
+    <add key="Password_RequireUppercase" value="false" />
+
+    <!-- disabling this setting is recommended for scenarios where there are a large number of existing users (i.e. more than a few thousand) -->
+    <!-- when enabled, open a browser to /Account/LogOn to initiate upgrading v3.0 users for use with v3.1 -->
+    <!-- when disabled, open a browser to /Account/UpgradeUsers to initiate upgrading v3.0 users for use with v3.1 -->
+    <add key="AutoConvertPasswordsOnUpgrade" value="true" />
+
+    <!-- user lockout defaults  -->
+    <add key="UserLockoutEnabledByDefault" value="true" />
+    <add key="DefaultAccountLockout_Minutes" value="3" />
+    <add key="MaxFailedAccessAttemptsBeforeLockout" value="3" />
+
+    <!-- facebook authentication -->
+    <add key="Facebook_Authentication_Enabled" value="false" />
+    <add key="Facebook_App_ID" value="" />
+    <add key="Facebook_App_Secret" value="" />
+
+    <!-- google authentication -->
+    <add key="Google_Authentication_Enabled" value="false" />
+    <add key="Google_Client_ID" value="" />
+    <add key="Google_Client_Secret" value="" />
+
+    <!-- adjust the settings below to tune SignalR performance, if needed -->
+    <!-- for more info, see: https://docs.microsoft.com/en-us/aspnet/signalr/overview/performance/signalr-performance#tuning -->
+    <add key="SignalR_ScaleoutEnabled" value="false" />
+    <add key="SignalR_SqlTableCount" value="1" />
+    <add key="SignalR_MaxQueueLength" value="0" />
+
+    <!-- when enabled, users will subscribe to a single SignalR channel to receive all listing and event messages, rather than one channel per Listing ID or Event ID -->
+    <add key="SignalR_SingleListingChannel" value="false"/>
+
+    <add key="AllowAuctionListingsAndLots" value="false" />
+
+    <!-- Note: this may need to be disabled for certain cultures -->
+    <add key="EnableHtml5NumberInputs" value="false" />
+    <add key="Html5NumberInputStepValue" value="0.01" />
+
+    <!-- Enabling this option will cause all username/password checks to be authenticated via LDAP Active Directory -->
+    <add key="ActiveDirectoryEnabled" value="false" />
+    <!-- enter your active directory server domain here -->
+    <add key="ActiveDirectoryDomain" value="my_active_directory_domain" />
+    <!-- specify a username here who will be assigned AuctionWorx Admin privileges the first time they sign in -->
+    <!-- otherwise, you may need to temporarily disable AD Authentication in order to acces the Admin Control Panel -->
+    <add key="ActiveDirectoryAdminUserName" value="my_admin_username" />
+
+    <!-- Enabling one or more of the options below will log additional details in the /Admin/EventLog -->
+    <add key="LogFrontEndRequestStats" value="false" />
+    <add key="LogAdminRequestStats" value="false" />
+    <add key="LogSignalrStats" value="false" />
+    <add key="LogSignalrConnectionIssues" value="false" />
+    <add key="LogQueueStats" value="false" />
+    <add key="LogMemoryStats" value="false" />
+
+    <!-- If not blank, this email address will be applied as a CC to one or more notification emails -->
+    <add key="CcEmailAddress" value="" />
+    <!-- If not blank: ONLY Notification Email Templates listed here will have the CC email address applied -->
+    <add key="CcIncludeTemplateList" value="" />
+    <!-- If not blank: ALL Notification Emails Templates EXCEPT those listed here will have the CC email address applied -->
+    <add key="CcExcludeTemplateList" value="" />
+
+    <!-- If not blank, this email address will be applied as a BCC to one or more notification emails -->
+    <add key="BccEmailAddress" value="" />
+    <!-- If not blank: ONLY Notification Email Templates listed here will have the BCC email address applied -->
+    <add key="BccIncludeTemplateList" value="" />
+    <!-- If not blank: ALL Notification Emails Templates EXCEPT those listed here will have the BCC email address applied -->
+    <add key="BccExcludeTemplateList" value="" />
+
+    <!-- this value controls the default date filter used for some admin reports when no date was specified; to disable, set to "0" -->
+    <add key="AdminReportDefaultMonthsOldFilter" value="0" />
+
+    <!--
+    This value controls the bahavior of a page when ALL of the following conditions occur:
+      - browser width is 750px or smaller
+      - there are one or more listings on the page
+      - the user had this page open previously
+      - then switched away from the browser
+      - then switched back to the browser
+         
+    Default value: "True"; To disable: "False";
+    Note: if disabled, some countdowns may be incorrect after returning to the page.
+    -->
+    <add key="ForceMobileBrowserRefreshOnVisibilityChange" value="True" />
+
+    <!--
+    If SignalR becomes disconnected a disconnect popup alert will be displayed. Fault value: 10000 (10 seconds)
+    -->
+    <add key="RealtimeDisconnectAlertDelayMS" value="10000" />
+
+    <!-- default: True; Set to 'False' to prevent this instance from running background processing threads, either permanently as a secondary instance, or temporarily for maintenance, if needed. -->
+    <add key="BackgroundThreadsEnabled" value="True" />
+
+    <!-- off by default, allows buyers to remove line items from their own an unpaid sales invoices in some cases -->
+    <add key="BuyerRemoveSaleButtonEnabled" value="False" />
+
+    <!-- off by default, supresses 'contact seller' and  'leave feedback' buttons when a someone makes a purchase -->
+    <add key="HighlightCheckoutButtonForBuyNow" value="False" />
+
+    <!-- off by default, automatically redirects to checkout page if possible when a someone makes a purchase -->
+    <add key="AutoCheckoutForBuyNow" value="False" />
+
+    <!-- off by default, allows toggle and saves user preferences as cookies for collapsed/expanded navigation sections  -->
+    <add key="EnableMyAccountNavCollapse" value="False"/>
+    <add key="EnableAdminNavCollapse" value="False"/>
+
+    <!-- Default value: "True", if disabled then invoices with more than one shipping option will be excluded from auto/bulk payment functions  -->
+    <!-- Note: If an invoice only has one valid shipping option then it will be automatically selected regardless of this setting. -->
+    <add key="AutoSelectFirstShippingOptionOnAutoPay" value="True"/>
+
+    <!-- off by default, allows event owner to reset all lot numbers at once -->
+    <add key="EnableResetLotNumsBtn" value="False" />
+
+    <!-- off by default, logs PayPal IPN details for every payment, instead of only on errors -->
+    <add key="EnableVerbosePayPalLogging" value="False" />
+
+    <!-- off by default, retrieves realtime category counts on search result pages, may be disabled to increase performance for very high-traffic sites -->
+    <add key="GetCatCountsForAllSearches" value="False" />
+
+    <!-- the number of lots to pre-load for use when the older lots start closing -->
+    <!-- default value: 0; any invalid value or value below 4 will revert to using the standard page size -->
+    <add key="RollingLotsBufferSize" value="0"  />
+
+    <!-- off by default; when enabled, if a countdown reaches 0 incorrectly the page will automatically reload itself -->
+    <add key="AutoRefreshOnCountdownError" value="False" />
+
+  </appSettings>
+
+  <!--
+  **********************************************************************************************************************
+  Stop configuring AuctionWorx here! (under normal circumstances, the configuration below should not need to be changed)
+  **********************************************************************************************************************
+  -->
+
+  <validation>
+    <type name="RainWorx.FrameWorx.DTO.CustomField" defaultRuleset="default" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Name">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation, Culture=neutral" pattern="^[A-Z0-9_ ]*$" options="IgnoreCase" patternResourceName="" patternResourceType="" messageTemplate="NewCustomField_Name_Invalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="Name" name="Regex Validator" />
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="100" lowerBound="1" lowerBoundType="Ignore" upperBoundType="Inclusive" messageTemplate="CustomFieldNameTooLong" messageTemplateResourceName="" messageTemplateResourceType="" tag="Name" name="String Length Validator 1" />
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="100" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Ignore" messageTemplate="Name_Required" messageTemplateResourceName="" messageTemplateResourceType="" tag="Name" name="String Length Validator 2" />
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.CustomProperty" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="FirstName">
+        <properties>
+          <property name="Value">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{2}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="FirstName" name="String Length Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+      <ruleset name="LastName">
+        <properties>
+          <property name="Value">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{2}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="LastName" name="String Length Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+      <ruleset name="PayPal_Email">
+        <properties>
+          <property name="Value">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.OrCompositeValidator, Microsoft.Practices.EnterpriseLibrary.Validation" name="Or Composite Validator" tag="PayPal_Email" messageTemplate="{2}_Invalid">
+              <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.NotNullValidator, Microsoft.Practices.EnterpriseLibrary.Validation" negated="true" name="Null Validator" tag="PayPal_Email"/>
+              <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation" pattern="^$|^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{1,63}$" options="IgnoreCase" patternResourceName="" patternResourceType="" messageTemplate="{2}_Invalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="PayPal_Email" name="Regex Validator"/>
+            </validator>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.Listing" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Description">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="0" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Ignore" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="Hits"/>
+          <property name="Location"/>
+          <property name="RemainingRelistCount"/>
+          <property name="Subtitle">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="80" lowerBound="0" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="Title">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="80" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+      <ruleset name="status-draft">
+        <properties>
+          <property name="Description">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="0" lowerBound="0" lowerBoundType="Inclusive" upperBoundType="Ignore" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator" />
+          </property>
+          <property name="Hits"/>
+          <property name="Location"/>
+          <property name="RemainingRelistCount"/>
+          <property name="Subtitle">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="80" lowerBound="0" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="Title">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="80" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.LineItem" defaultRuleset="default" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Description">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="1" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Ignore" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Min Str Len 1"/>
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="1000" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Max Str Len 1000"/>
+          </property>
+          <property name="Currency">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="3" lowerBound="3" lowerBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Str Len = 3"/>
+          </property>
+          <property name="Type">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Ignore" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Min Str Len 1"/>
+          </property>
+          <property name="Status">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Ignore" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Min Str Len 1"/>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.CreditCard" defaultRuleset="default" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <add type="RainWorx.FrameWorx.BLL.Validators.UnExpired, RainWorx.FrameWorx.BLL" messageTemplate="CreditCard_Expired" name="UnExpired"/>
+        <properties>
+          <property name="ExpirationMonth">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RangeValidator, Microsoft.Practices.EnterpriseLibrary.Validation" culture="en-US" lowerBound="1" lowerBoundType="Inclusive" upperBound="12" messageTemplate="{1}_Range_{3}_{4}_to_{5}_{6}" name="Range Validator"/>
+          </property>
+          <property name="ExpirationYear">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RangeValidator, Microsoft.Practices.EnterpriseLibrary.Validation" culture="en-US" lowerBound="2010" lowerBoundType="Inclusive" upperBound="2070" messageTemplate="{1}_Range_{3}_{4}_to_{5}_{6}" name="Range Validator"/>
+          </property>
+          <property name="CardNumber">
+            <validator type="RainWorx.FrameWorx.BLL.Validators.LUHN10, RainWorx.FrameWorx.BLL" messageTemplate="{1}_AlgorithmInvalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="Warning" name="LUHN10 check"/>
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation" pattern="^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$" messageTemplate="{1}_FormatInvalid" name="Regular Expression Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.UserMessage" defaultRuleset="default" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Subject">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="100" lowerBound="3" lowerBoundType="Inclusive" upperBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Min Str Len 1"/>
+          </property>
+          <property name="Body">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="100000" lowerBound="3" lowerBoundType="Inclusive" upperBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Str Len = 3"/>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.Feedback" defaultRuleset="default" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Comment">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="80" lowerBound="3" lowerBoundType="Inclusive" upperBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Str Len = 3"/>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.Address" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Description">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="FirstName">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="LastName">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="Street1">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="Street2">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Ignore" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="City">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="StateRegion">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="ZipPostal">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+      <ruleset name="noname">
+        <properties>
+          <property name="Description">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="Street1">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="Street2">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Ignore" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="City">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="StateRegion">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+          <property name="ZipPostal">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.User" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Comment"/>
+          <property name="Email">
+            <validator type="RainWorx.FrameWorx.BLL.Validators.IsUnique, RainWorx.FrameWorx.BLL" messageTemplate="{1}_Exists" messageTemplateResourceName="" messageTemplateResourceType="" tag="Warning" name="Unique Email"/>
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="500" lowerBound="3" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation" pattern="^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{1,63}$" options="IgnoreCase" patternResourceName="" patternResourceType="" messageTemplate="{1}_Invalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="Regex Validator"/>
+          </property>
+          <property name="UserName">
+            <validator type="RainWorx.FrameWorx.BLL.Validators.IsUnique, RainWorx.FrameWorx.BLL" messageTemplate="{1}_Exists" messageTemplateResourceName="" messageTemplateResourceType="" tag="Warning" name="Unique UserName" />
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="50" lowerBound="1" lowerBoundType="Ignore" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator1" />
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="50" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Ignore" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator2" />
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation" pattern="(^[\\@a-zA-Z0-9._-]+$)|(^$)" options="None" patternResourceName="" patternResourceType="" messageTemplate="{1}_Invalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="Regex Validator" />
+          </property>
+        </properties>
+      </ruleset>
+      <ruleset name="disregardunique">
+        <properties>
+          <property name="Comment"/>
+          <property name="Email">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="500" lowerBound="3" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation" pattern="^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{1,63}$" options="IgnoreCase" patternResourceName="" patternResourceType="" messageTemplate="{1}_Invalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="Regex Validator"/>
+          </property>
+          <property name="UserName">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="50" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator"/>
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation" pattern="^[\\@a-zA-Z0-9._-]+$" options="None" patternResourceName="" patternResourceType="" messageTemplate="{1}_Invalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="Regex Validator"/>
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.EmailTemplateContent" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Subject">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="500" lowerBound="0" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator" />
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.State" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Code">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="10" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="State_{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator" />
+          </property>
+          <property name="Name">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="100" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="State_{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator" />
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.Event" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Title">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="80" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator" />
+          </property>
+          <property name="Subtitle">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="1000" lowerBound="0" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator" />
+          </property>
+          <property name="ManagedByName">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="1000" lowerBound="0" lowerBoundType="Inclusive" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator" />
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.Content" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="Name">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Ignore" upperBoundType="Inclusive" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator1" />
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="200" lowerBound="1" lowerBoundType="Inclusive" upperBoundType="Ignore" negated="false" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="String Length Validator2" />
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.RegexValidator, Microsoft.Practices.EnterpriseLibrary.Validation" pattern="(^[a-zA-Z0-9._-]+$)|(^$)" options="None" patternResourceName="" patternResourceType="" messageTemplate="{1}_Invalid" messageTemplateResourceName="" messageTemplateResourceType="" tag="" name="Regex Validator" />
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.CustomCurrency" defaultRuleset="default" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="ISOCurrencySymbol">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="3" lowerBound="3" lowerBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="CustomCurrency_ISOCurrencySymbol_Len" />
+          </property>
+          <property name="CurrencySymbol">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="10" lowerBound="1" lowerBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="CustomCurrency_CurrencySymbol_Len" />
+          </property>
+          <property name="CurrencyEnglishName">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="100" lowerBound="1" lowerBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="CustomCurrency_CurrencyEnglishName_Len" />
+          </property>
+          <property name="CurrencyNativeName">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="100" lowerBound="1" lowerBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="CustomCurrency_CurrencyNativeName_Len" />
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+    <type name="RainWorx.FrameWorx.DTO.Offer" defaultRuleset="default" assemblyName="RainWorx.FrameWorx.DTO">
+      <ruleset name="default">
+        <properties>
+          <property name="OfferMessage">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="250" upperBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Offer_OfferMessage_Len" />
+          </property>
+          <property name="DeclineMessage">
+            <validator type="Microsoft.Practices.EnterpriseLibrary.Validation.Validators.StringLengthValidator, Microsoft.Practices.EnterpriseLibrary.Validation" upperBound="250" upperBoundType="Inclusive" messageTemplate="{1}_Length_{3}_{4}_to_{5}_{6}" name="Offer_DeclineMessage_Len" />
+          </property>
+        </properties>
+      </ruleset>
+    </type>
+  </validation>
+
+  <lightSpeedContexts>
+    <add name="default" connectionStringName="db_connection" dataProvider="SqlServer2008" identityMethod="KeyTable" pluralizeTableNames="true" identityBlockSize="100" autoTimestamps="Utc" />
+  </lightSpeedContexts>
+
+  <system.web>
+    <compilation debug="false" targetFramework="4.6.2"/>
+    <httpRuntime targetFramework="4.6.2" requestValidationMode="2.0" executionTimeout="600" maxRequestLength="10240" requestLengthDiskThreshold="4096"/>
+    <siteMap defaultProvider="MvcSiteMap">
+      <providers>
+        <add name="MvcSiteMap" type="MvcSiteMap.Core.MvcSiteMapProvider" siteMapFile="~/Web.sitemap" securityTrimmingEnabled="false" cacheDuration="10" treatAttributesAsRouteValues="false"/>
+      </providers>
+    </siteMap>
+    <globalization uiCulture="en" culture="en-US"/>
+    <authentication mode="None" />
+    <!--
+            The <customErrors> section enables configuration 
+            of what to do if/when an unhandled error occurs 
+            during the execution of a request. Specifically, 
+            it enables developers to configure html error pages 
+            to be displayed in place of a error stack trace.
+    -->
+    <!-- <customErrors mode="Off"/> -->
+    <customErrors mode="On">
+      <error statusCode="404" redirect="~/Home/NotFound"/>
+    </customErrors>
+    <pages>
+      <namespaces>
+        <add namespace="System.Web.Helpers"/>
+        <add namespace="System.Web.Mvc"/>
+        <add namespace="System.Web.Mvc.Ajax"/>
+        <add namespace="System.Web.Mvc.Html"/>
+        <add namespace="System.Web.Optimization"/>
+        <add namespace="System.Web.Routing"/>
+        <add namespace="System.Web.WebPages"/>
+      </namespaces>
+    </pages>
+    <sessionState mode="Off" />
+  </system.web>
+  <system.webServer>
+    <modules>
+      <remove name="FormsAuthentication" />
+    </modules>
+    <validation validateIntegratedModeConfiguration="false"/>
+    <handlers>
+      <add name="ApiURIs-ISAPI-Integrated-4.0" path="sitemap.xml" verb="GET,HEAD,POST,DEBUG,PUT,DELETE,PATCH,OPTIONS" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0"/>
+      <add name="ApiURIs-ISAPI-Integrated-4.0_1" path="/page/*"   verb="GET,HEAD,POST,DEBUG,PUT,DELETE,PATCH,OPTIONS" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0" />
+      <remove name="ExtensionlessUrlHandler-Integrated-4.0"/>
+      <remove name="OPTIONSVerbHandler"/>
+      <remove name="TRACEVerbHandler"/>
+      <add name="ExtensionlessUrlHandler-Integrated-4.0" path="*." verb="*" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0"/>
+    </handlers>
+    <staticContent>
+      <remove fileExtension=".woff" />
+      <mimeMap fileExtension=".woff" mimeType="application/font-woff" />
+      <remove fileExtension=".woff2" />
+      <mimeMap fileExtension=".woff2" mimeType="application/font-woff" />
+      <remove fileExtension=".svg"/>
+      <mimeMap fileExtension=".svg" mimeType="image/svg+xml" />
+    </staticContent>
+    <httpProtocol>
+      <customHeaders>
+        <add name="X-UA-Compatible" value="IE=Edge" />
+      </customHeaders>
+    </httpProtocol>
+  </system.webServer>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="System.Spatial" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.8.3.0" newVersion="5.8.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Data.Edm" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.8.3.0" newVersion="5.8.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Optimization" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-1.1.0.0" newVersion="1.1.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="0.0.0.0-1.6.5135.21930" newVersion="1.6.5135.21930" />
+      </dependentAssembly>     
+      <dependentAssembly>
+        <assemblyIdentity name="Antlr3.Runtime" publicKeyToken="eb42632606e9261f" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-3.5.0.2" newVersion="3.5.0.2" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Data.OData" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.8.3.0" newVersion="5.8.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Helpers" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.WebPages" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="0.0.0.0-5.2.3.0" newVersion="5.2.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Net.Http.Formatting" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.2.3.0" newVersion="5.2.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Http" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.2.3.0" newVersion="5.2.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Data.Services.Client" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.8.3.0" newVersion="5.8.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-10.0.0.0" newVersion="10.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="WebMatrix.Data" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-1.0.0.0" newVersion="1.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.AspNet.SignalR.Core" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-2.4.0.0" newVersion="2.4.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.ServiceBus" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Azure.KeyVault.Core" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-2.0.0.0" newVersion="2.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Unity.Abstractions" publicKeyToken="6d32ff45e0ccc69f" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-2.0.2.67" newVersion="2.0.2.67" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-3.1.0.0" newVersion="3.1.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin.Security" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-3.1.0.0" newVersion="3.1.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin.Security.OAuth" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-3.1.0.0" newVersion="3.1.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin.Security.Cookies" publicKeyToken="31bf3856ad364e35" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-3.1.0.0" newVersion="3.1.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+  <system.serviceModel>
+    <serviceHostingEnvironment aspNetCompatibilityEnabled="true" multipleSiteBindingsEnabled="true"/>
+    <bindings>
+      <webHttpBinding>
+        <binding name="basicHttpBinding"/>
+        <binding name="basicHttpsBinding">
+          <security mode="Transport">
+            <transport clientCredentialType="None"/>
+          </security>
+        </binding>
+      </webHttpBinding>
+      <msmqIntegrationBinding>
+        <binding name="NotifierBinding">
+          <security mode="None"/>
+        </binding>
+      </msmqIntegrationBinding>
+      <netNamedPipeBinding>
+        <binding name="NetNamedPipeBinding_IAccountingManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" transactionFlow="false" transferMode="Buffered" transactionProtocol="OleTransactions" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxBufferSize="5242880" maxConnections="10" maxReceivedMessageSize="5242880">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <security mode="Transport">
+            <transport protectionLevel="EncryptAndSign"/>
+          </security>
+        </binding>
+        <binding name="NetNamedPipeBinding_ICommonManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" transactionFlow="false" transferMode="Buffered" transactionProtocol="OleTransactions" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxBufferSize="5242880" maxConnections="10" maxReceivedMessageSize="5242880">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <security mode="Transport">
+            <transport protectionLevel="EncryptAndSign"/>
+          </security>
+        </binding>
+        <binding name="NetNamedPipeBinding_IListingManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" transactionFlow="false" transferMode="Buffered" transactionProtocol="OleTransactions" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxBufferSize="5242880" maxConnections="10" maxReceivedMessageSize="5242880">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <security mode="Transport">
+            <transport protectionLevel="EncryptAndSign"/>
+          </security>
+        </binding>
+        <binding name="NetNamedPipeBinding_ISiteManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" transactionFlow="false" transferMode="Buffered" transactionProtocol="OleTransactions" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxBufferSize="5242880" maxConnections="10" maxReceivedMessageSize="5242880">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <security mode="Transport">
+            <transport protectionLevel="EncryptAndSign"/>
+          </security>
+        </binding>
+        <binding name="NetNamedPipeBinding_IUserManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" transactionFlow="false" transferMode="Buffered" transactionProtocol="OleTransactions" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxBufferSize="5242880" maxConnections="10" maxReceivedMessageSize="5242880">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <security mode="Transport">
+            <transport protectionLevel="EncryptAndSign"/>
+          </security>
+        </binding>
+        <binding name="NetNamedPipeBinding_INotifierManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" transactionFlow="false" transferMode="Buffered" transactionProtocol="OleTransactions" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxBufferSize="5242880" maxConnections="10" maxReceivedMessageSize="5242880">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <security mode="Transport">
+            <transport protectionLevel="EncryptAndSign"/>
+          </security>
+        </binding>
+        <binding name="NetNamedPipeBinding_IEventManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" transactionFlow="false" transferMode="Buffered" transactionProtocol="OleTransactions" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxBufferSize="5242880" maxConnections="10" maxReceivedMessageSize="5242880">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <security mode="Transport">
+            <transport protectionLevel="EncryptAndSign"/>
+          </security>
+        </binding>
+      </netNamedPipeBinding>
+      <wsHttpBinding>
+        <binding name="WSHttpBinding_IAccountingManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" bypassProxyOnLocal="false" transactionFlow="false" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxReceivedMessageSize="5242880" messageEncoding="Text" textEncoding="utf-8" useDefaultWebProxy="true" allowCookies="false">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <reliableSession ordered="true" inactivityTimeout="00:10:00" enabled="false"/>
+          <security mode="Message">
+            <transport clientCredentialType="Windows" proxyCredentialType="None" realm=""/>
+            <message clientCredentialType="Windows" negotiateServiceCredential="true" algorithmSuite="Default" establishSecurityContext="true"/>
+          </security>
+        </binding>
+        <binding name="WSHttpBinding_ICommonManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" bypassProxyOnLocal="false" transactionFlow="false" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxReceivedMessageSize="5242880" messageEncoding="Text" textEncoding="utf-8" useDefaultWebProxy="true" allowCookies="false">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <reliableSession ordered="true" inactivityTimeout="00:10:00" enabled="false"/>
+          <security mode="Message">
+            <transport clientCredentialType="Windows" proxyCredentialType="None" realm=""/>
+            <message clientCredentialType="Windows" negotiateServiceCredential="true" algorithmSuite="Default" establishSecurityContext="true"/>
+          </security>
+        </binding>
+        <binding name="WSHttpBinding_IListingManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" bypassProxyOnLocal="false" transactionFlow="false" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxReceivedMessageSize="5242880" messageEncoding="Text" textEncoding="utf-8" useDefaultWebProxy="true" allowCookies="false">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <reliableSession ordered="true" inactivityTimeout="00:10:00" enabled="false"/>
+          <security mode="Message">
+            <transport clientCredentialType="Windows" proxyCredentialType="None" realm=""/>
+            <message clientCredentialType="Windows" negotiateServiceCredential="true" algorithmSuite="Default" establishSecurityContext="true"/>
+          </security>
+        </binding>
+        <binding name="WSHttpBinding_ISiteManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" bypassProxyOnLocal="false" transactionFlow="false" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxReceivedMessageSize="5242880" messageEncoding="Text" textEncoding="utf-8" useDefaultWebProxy="true" allowCookies="false">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <reliableSession ordered="true" inactivityTimeout="00:10:00" enabled="false"/>
+          <security mode="Message">
+            <transport clientCredentialType="Windows" proxyCredentialType="None" realm=""/>
+            <message clientCredentialType="Windows" negotiateServiceCredential="true" algorithmSuite="Default" establishSecurityContext="true"/>
+          </security>
+        </binding>
+        <binding name="WSHttpBinding_IUserManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" bypassProxyOnLocal="false" transactionFlow="false" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxReceivedMessageSize="5242880" messageEncoding="Text" textEncoding="utf-8" useDefaultWebProxy="true" allowCookies="false">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <reliableSession ordered="true" inactivityTimeout="00:10:00" enabled="false"/>
+          <security mode="Message">
+            <transport clientCredentialType="Windows" proxyCredentialType="None" realm=""/>
+            <message clientCredentialType="Windows" negotiateServiceCredential="true" algorithmSuite="Default" establishSecurityContext="true"/>
+          </security>
+        </binding>
+        <binding name="WSHttpBinding_INotifierManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" bypassProxyOnLocal="false" transactionFlow="false" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxReceivedMessageSize="5242880" messageEncoding="Text" textEncoding="utf-8" useDefaultWebProxy="true" allowCookies="false">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <reliableSession ordered="true" inactivityTimeout="00:10:00" enabled="false"/>
+          <security mode="Message">
+            <transport clientCredentialType="Windows" proxyCredentialType="None" realm=""/>
+            <message clientCredentialType="Windows" negotiateServiceCredential="true" algorithmSuite="Default" establishSecurityContext="true"/>
+          </security>
+        </binding>
+        <binding name="WSHttpBinding_IEventManager" closeTimeout="00:01:00" openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00" bypassProxyOnLocal="false" transactionFlow="false" hostNameComparisonMode="StrongWildcard" maxBufferPoolSize="524288" maxReceivedMessageSize="5242880" messageEncoding="Text" textEncoding="utf-8" useDefaultWebProxy="true" allowCookies="false">
+          <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384" maxBytesPerRead="4096" maxNameTableCharCount="16384"/>
+          <reliableSession ordered="true" inactivityTimeout="00:10:00" enabled="false"/>
+          <security mode="Message">
+            <transport clientCredentialType="Windows" proxyCredentialType="None" realm=""/>
+            <message clientCredentialType="Windows" negotiateServiceCredential="true" algorithmSuite="Default" establishSecurityContext="true"/>
+          </security>
+        </binding>
+      </wsHttpBinding>
+    </bindings>
+    <client>
+      <endpoint address="http://localhost:8731/RainWorx.FrameWorx/AccountingService" binding="wsHttpBinding" bindingConfiguration="WSHttpBinding_IAccountingManager" contract="RainWorx.FrameWorx.Services.IAccountingService" name="WSHttpBinding_IAccountingManager">
+        <identity>
+          <dns value="localhost"/>
+        </identity>
+      </endpoint>
+      <endpoint address="net.pipe://localhost/RainWorx.FrameWorx/AccountingService" binding="netNamedPipeBinding" bindingConfiguration="NetNamedPipeBinding_IAccountingManager" contract="RainWorx.FrameWorx.Services.IAccountingService" name="NetNamedPipeBinding_IAccountingManager">
+        <identity>
+          <userPrincipalName value=""/>
+        </identity>
+      </endpoint>
+      <endpoint address="http://localhost:8731/RainWorx.FrameWorx/CommonService" binding="wsHttpBinding" bindingConfiguration="WSHttpBinding_ICommonManager" contract="RainWorx.FrameWorx.Services.ICommonService" name="WSHttpBinding_ICommonManager">
+        <identity>
+          <dns value="localhost"/>
+        </identity>
+      </endpoint>
+      <endpoint address="net.pipe://localhost/RainWorx.FrameWorx/CommonService" binding="netNamedPipeBinding" bindingConfiguration="NetNamedPipeBinding_ICommonManager" contract="RainWorx.FrameWorx.Services.ICommonService" name="NetNamedPipeBinding_ICommonManager">
+        <identity>
+          <userPrincipalName value=""/>
+        </identity>
+      </endpoint>
+      <endpoint address="http://localhost:8731/RainWorx.FrameWorx/ListingService" binding="wsHttpBinding" bindingConfiguration="WSHttpBinding_IListingManager" contract="RainWorx.FrameWorx.Services.IListingService" name="WSHttpBinding_IListingManager">
+        <identity>
+          <dns value="localhost"/>
+        </identity>
+      </endpoint>
+      <endpoint address="net.pipe://localhost/RainWorx.FrameWorx/ListingService" binding="netNamedPipeBinding" bindingConfiguration="NetNamedPipeBinding_IListingManager" contract="RainWorx.FrameWorx.Services.IListingService" name="NetNamedPipeBinding_IListingManager">
+        <identity>
+          <userPrincipalName value=""/>
+        </identity>
+      </endpoint>
+      <endpoint address="http://localhost:8731/RainWorx.FrameWorx/SiteService" binding="wsHttpBinding" bindingConfiguration="WSHttpBinding_ISiteManager" contract="RainWorx.FrameWorx.Services.ISiteService" name="WSHttpBinding_ISiteManager">
+        <identity>
+          <dns value="localhost"/>
+        </identity>
+      </endpoint>
+      <endpoint address="net.pipe://localhost/RainWorx.FrameWorx/SiteService" binding="netNamedPipeBinding" bindingConfiguration="NetNamedPipeBinding_ISiteManager" contract="RainWorx.FrameWorx.Services.ISiteService" name="NetNamedPipeBinding_ISiteManager">
+        <identity>
+          <userPrincipalName value=""/>
+        </identity>
+      </endpoint>
+      <endpoint address="http://localhost:8731/RainWorx.FrameWorx/UserService" binding="wsHttpBinding" bindingConfiguration="WSHttpBinding_IUserManager" contract="RainWorx.FrameWorx.Services.IUserService" name="WSHttpBinding_IUserManager">
+        <identity>
+          <dns value="localhost"/>
+        </identity>
+      </endpoint>
+      <endpoint address="net.pipe://localhost/RainWorx.FrameWorx/UserService" binding="netNamedPipeBinding" bindingConfiguration="NetNamedPipeBinding_IUserManager" contract="RainWorx.FrameWorx.Services.IUserService" name="NetNamedPipeBinding_IUserManager">
+        <identity>
+          <userPrincipalName value=""/>
+        </identity>
+      </endpoint>
+      <endpoint address="http://localhost:8731/RainWorx.FrameWorx/NotifierService" binding="wsHttpBinding" bindingConfiguration="WSHttpBinding_INotifierManager" contract="RainWorx.FrameWorx.Services.INotifierService" name="WSHttpBinding_INotifierManager">
+        <identity>
+          <dns value="localhost"/>
+        </identity>
+      </endpoint>
+      <endpoint address="net.pipe://localhost/RainWorx.FrameWorx/NotifierService" binding="netNamedPipeBinding" bindingConfiguration="NetNamedPipeBinding_INotifierManager" contract="RainWorx.FrameWorx.Services.INotifierService" name="NetNamedPipeBinding_INotifierManager">
+        <identity>
+          <userPrincipalName value=""/>
+        </identity>
+      </endpoint>
+      <endpoint address="http://localhost:8731/RainWorx.FrameWorx/EventService" binding="wsHttpBinding" bindingConfiguration="WSHttpBinding_IEventManager" contract="RainWorx.FrameWorx.Services.IEventService" name="WSHttpBinding_IEventManager">
+        <identity>
+          <dns value="localhost" />
+        </identity>
+      </endpoint>
+      <endpoint address="net.pipe://localhost/RainWorx.FrameWorx/EventService" binding="netNamedPipeBinding" bindingConfiguration="NetNamedPipeBinding_IEventManager" contract="RainWorx.FrameWorx.Services.IEventService" name="NetNamedPipeBinding_IEventManager">
+        <identity>
+          <userPrincipalName value="" />
+        </identity>
+      </endpoint>
+    </client>
+    <extensions>
+      <!-- In this extension section we are introducing all known service bus extensions. User can remove the ones they don't need. -->
+      <!--<behaviorExtensions>
+        <add name="connectionStatusBehavior" type="Microsoft.ServiceBus.Configuration.ConnectionStatusElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="transportClientEndpointBehavior" type="Microsoft.ServiceBus.Configuration.TransportClientEndpointBehaviorElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="serviceRegistrySettings" type="Microsoft.ServiceBus.Configuration.ServiceRegistrySettingsElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      </behaviorExtensions>
+      <bindingElementExtensions>
+        <add name="netMessagingTransport" type="Microsoft.ServiceBus.Messaging.Configuration.NetMessagingTransportExtensionElement, Microsoft.ServiceBus,  Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="tcpRelayTransport" type="Microsoft.ServiceBus.Configuration.TcpRelayTransportElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="httpRelayTransport" type="Microsoft.ServiceBus.Configuration.HttpRelayTransportElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="httpsRelayTransport" type="Microsoft.ServiceBus.Configuration.HttpsRelayTransportElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="onewayRelayTransport" type="Microsoft.ServiceBus.Configuration.RelayedOnewayTransportElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      </bindingElementExtensions>
+      <bindingExtensions>
+        <add name="basicHttpRelayBinding" type="Microsoft.ServiceBus.Configuration.BasicHttpRelayBindingCollectionElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="webHttpRelayBinding" type="Microsoft.ServiceBus.Configuration.WebHttpRelayBindingCollectionElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="ws2007HttpRelayBinding" type="Microsoft.ServiceBus.Configuration.WS2007HttpRelayBindingCollectionElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="netTcpRelayBinding" type="Microsoft.ServiceBus.Configuration.NetTcpRelayBindingCollectionElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="netOnewayRelayBinding" type="Microsoft.ServiceBus.Configuration.NetOnewayRelayBindingCollectionElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="netEventRelayBinding" type="Microsoft.ServiceBus.Configuration.NetEventRelayBindingCollectionElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add name="netMessagingBinding" type="Microsoft.ServiceBus.Messaging.Configuration.NetMessagingBindingCollectionElement, Microsoft.ServiceBus, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      </bindingExtensions>-->
+    </extensions>
+  </system.serviceModel>
+
+  <unity>
+    <sectionExtension type="Microsoft.Practices.Unity.InterceptionExtension.Configuration.InterceptionConfigurationExtension, Microsoft.Practices.Unity.Interception.Configuration" />
+    <typeAliases>
+      <!--Lifetime manager types-->
+      <typeAlias alias="singleton" type="Microsoft.Practices.Unity.ContainerControlledLifetimeManager,Microsoft.Practices.Unity" />
+      <typeAlias alias="external" type="Microsoft.Practices.Unity.ExternallyControlledLifetimeManager,Microsoft.Practices.Unity" />
+    </typeAliases>
+    <containers>
+      <container>
+        <extensions>
+          <add type="Microsoft.Practices.Unity.InterceptionExtension.Interception, Microsoft.Practices.Unity.Interception" />
+        </extensions>
+
+        <interception>
+          <policy name="SQLRetry">
+            <matchingRule name="MatchServiceImplementations" type="NamespaceMatchingRule">
+              <constructor>
+                <param name="namespaceName" value="RainWorx.FrameWorx.BLL.ServiceImplementations" />
+              </constructor>
+            </matchingRule>
+            <callHandler name="SQLRetryHandler" type="RainWorx.FrameWorx.Policies.SQLRetry, RainWorx.FrameWorx.Policies">
+              <constructor>
+                <param name="retryCount" value="3" />
+                <param name="minWaitMilliseconds" value="1000" />
+                <param name="maxWaitMilliseconds" value="5000" />
+              </constructor>
+              <lifetime type="singleton" />
+            </callHandler>
+          </policy>
+        </interception>
+
+        <types>
+          <!-- Clients -->
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1, RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.InProcessServiceClient`1, RainWorx.FrameWorx.Clients" name="InProcess">
+            <lifetime type="singleton" />
+          </type>
+          <!-- WCF -->
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1[[RainWorx.FrameWorx.Services.IUserService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.WcfServiceClient`1[[RainWorx.FrameWorx.Services.IUserService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" name="WCF">
+            <lifetime type="singleton" />
+            <constructor>
+              <param name="endpointSettingName" value="WCFUserClientEndpoint" />
+            </constructor>
+          </type>
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1[[RainWorx.FrameWorx.Services.ISiteService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.WcfServiceClient`1[[RainWorx.FrameWorx.Services.ISiteService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" name="WCF">
+            <lifetime type="singleton" />
+            <constructor>
+              <param name="endpointSettingName" value="WCFSiteClientEndpoint" />
+            </constructor>
+          </type>
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1[[RainWorx.FrameWorx.Services.IAccountingService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.WcfServiceClient`1[[RainWorx.FrameWorx.Services.IAccountingService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" name="WCF">
+            <lifetime type="singleton" />
+            <constructor>
+              <param name="endpointSettingName" value="WCFAccountingClientEndpoint" />
+            </constructor>
+          </type>
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1[[RainWorx.FrameWorx.Services.IListingService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.WcfServiceClient`1[[RainWorx.FrameWorx.Services.IListingService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" name="WCF">
+            <lifetime type="singleton" />
+            <constructor>
+              <param name="endpointSettingName" value="WCFListingClientEndpoint" />
+            </constructor>
+          </type>
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1[[RainWorx.FrameWorx.Services.ICommonService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.WcfServiceClient`1[[RainWorx.FrameWorx.Services.ICommonService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" name="WCF">
+            <lifetime type="singleton" />
+            <constructor>
+              <param name="endpointSettingName" value="WCFCommonClientEndpoint" />
+            </constructor>
+          </type>
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1[[RainWorx.FrameWorx.Services.INotifierService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.WcfServiceClient`1[[RainWorx.FrameWorx.Services.INotifierService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" name="WCF">
+            <lifetime type="singleton" />
+            <constructor>
+              <param name="endpointSettingName" value="WCFNotifierClientEndpoint" />
+            </constructor>
+          </type>
+          <type type="RainWorx.FrameWorx.Clients.IServiceClient`1[[RainWorx.FrameWorx.Services.IEventService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" mapTo="RainWorx.FrameWorx.Clients.WcfServiceClient`1[[RainWorx.FrameWorx.Services.IEventService, RainWorx.FrameWorx.Services]], RainWorx.FrameWorx.Clients" name="WCF">
+            <lifetime type="singleton" />
+            <constructor>
+              <param name="endpointSettingName" value="WCFEventClientEndpoint" />
+            </constructor>
+          </type>
+          <!-- End Clients -->
+
+          <!-- Encryption Filters and DAL -->
+          <type type="RainWorx.FrameWorx.Filters.IEncryptor, RainWorx.FrameWorx.Filters" mapTo="RainWorx.FrameWorx.Filters.SymmetricEncryptionFilter, RainWorx.FrameWorx.Filters" name="passwordEncryptor">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Filters.IEncryptor, RainWorx.FrameWorx.Filters" mapTo="RainWorx.FrameWorx.Filters.SymmetricEncryptionFilter, RainWorx.FrameWorx.Filters" name="creditcardEncryptor">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Filters.IEncryptor, RainWorx.FrameWorx.Filters" mapTo="RainWorx.FrameWorx.Filters.SymmetricEncryptionFilter, RainWorx.FrameWorx.Filters" name="customFieldEncryptor">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.DAL.IDataContext, RainWorx.FrameWorx.DAL" mapTo="RainWorx.FrameWorx.DAL.LightSpeed.LightSpeedDataContext, RainWorx.FrameWorx.DAL.LightSpeed">
+            <lifetime type="singleton" />
+          </type>
+          <!-- End Encryption Filters and DAL -->
+
+          <!-- Services -->
+          <type type="RainWorx.FrameWorx.Services.IAccountingService, RainWorx.FrameWorx.Services" mapTo="RainWorx.FrameWorx.BLL.ServiceImplementations.AccountingService, RainWorx.FrameWorx.BLL">
+            <lifetime type="singleton" />
+            <interceptor type="InterfaceInterceptor" />
+            <interceptionBehavior type="PolicyInjectionBehavior" />
+          </type>
+          <type type="RainWorx.FrameWorx.Services.IUserService, RainWorx.FrameWorx.Services" mapTo="RainWorx.FrameWorx.BLL.ServiceImplementations.UserService, RainWorx.FrameWorx.BLL">
+            <lifetime type="singleton" />
+            <interceptor type="InterfaceInterceptor" />
+            <interceptionBehavior type="PolicyInjectionBehavior" />
+          </type>
+          <type type="RainWorx.FrameWorx.Services.ISiteService, RainWorx.FrameWorx.Services" mapTo="RainWorx.FrameWorx.BLL.ServiceImplementations.SiteService, RainWorx.FrameWorx.BLL">
+            <lifetime type="singleton" />
+            <interceptor type="InterfaceInterceptor" />
+            <interceptionBehavior type="PolicyInjectionBehavior" />
+          </type>
+          <type type="RainWorx.FrameWorx.Services.IListingService, RainWorx.FrameWorx.Services" mapTo="RainWorx.FrameWorx.BLL.ServiceImplementations.ListingService, RainWorx.FrameWorx.BLL">
+            <lifetime type="singleton" />
+            <interceptor type="InterfaceInterceptor" />
+            <interceptionBehavior type="PolicyInjectionBehavior" />
+          </type>
+          <type type="RainWorx.FrameWorx.Services.ICommonService, RainWorx.FrameWorx.Services" mapTo="RainWorx.FrameWorx.BLL.ServiceImplementations.CommonService, RainWorx.FrameWorx.BLL">
+            <lifetime type="singleton" />
+            <interceptor type="InterfaceInterceptor" />
+            <interceptionBehavior type="PolicyInjectionBehavior" />
+          </type>
+          <type type="RainWorx.FrameWorx.Services.INotifierService, RainWorx.FrameWorx.Services" mapTo="RainWorx.FrameWorx.BLL.ServiceImplementations.NotifierService, RainWorx.FrameWorx.BLL">
+            <lifetime type="singleton" />
+            <interceptor type="InterfaceInterceptor" />
+            <interceptionBehavior type="PolicyInjectionBehavior" />
+          </type>
+          <type type="RainWorx.FrameWorx.Services.IEventService, RainWorx.FrameWorx.Services" mapTo="RainWorx.FrameWorx.BLL.Events.ServiceImplementations.EventService, RainWorx.FrameWorx.BLL.Events">
+            <lifetime type="singleton" />
+            <interceptor type="InterfaceInterceptor" />
+            <interceptionBehavior type="PolicyInjectionBehavior" />
+          </type>
+          <!-- End Services -->
+
+          <!-- Listing Types -->
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingAction, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.Auction.BlindBid, RainWorx.FrameWorx.Providers.Listing.Auction" name="Auction">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListing, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.Auction.StandardAuction, RainWorx.FrameWorx.Providers.Listing.Auction" name="Auction">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingResolver, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.Auction.StandardAuctionCloser, RainWorx.FrameWorx.Providers.Listing.Auction" name="Auction">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingOffer, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.Auction.AuctionOffer, RainWorx.FrameWorx.Providers.Listing.Auction" name="Auction">
+            <lifetime type="singleton" />
+          </type>
+
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingAction, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.FixedPrice.Purchase, RainWorx.FrameWorx.Providers.Listing.FixedPrice" name="FixedPrice">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListing, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.FixedPrice.StandardFixedPrice, RainWorx.FrameWorx.Providers.Listing.FixedPrice" name="FixedPrice">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingResolver, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.FixedPrice.StandardFixedPriceCloser, RainWorx.FrameWorx.Providers.Listing.FixedPrice" name="FixedPrice">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingOffer, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.FixedPrice.FixedPriceOffer, RainWorx.FrameWorx.Providers.Listing.FixedPrice" name="FixedPrice">
+            <lifetime type="singleton" />
+          </type>
+
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingAction, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.Classified.ClassifiedAdAction, RainWorx.FrameWorx.Providers.Listing.Classified" name="Classified">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListing, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.Classified.ClassifiedAd, RainWorx.FrameWorx.Providers.Listing.Classified" name="Classified">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Listing.IListingResolver, RainWorx.FrameWorx.Providers.Listing" mapTo="RainWorx.FrameWorx.Providers.Listing.Classified.ClassifiedAdCloser, RainWorx.FrameWorx.Providers.Listing.Classified" name="Classified">
+            <lifetime type="singleton" />
+          </type>
+          <!-- End Listing Types -->
+
+          <!-- Payment Providers -->
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.AdminBypass, RainWorx.FrameWorx.Providers.Payment.Dummy" name="AdminBypass">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.Dummy.DummyFailure, RainWorx.FrameWorx.Providers.Payment.Dummy" name="DummyFailure">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.Dummy.DummySuccess, RainWorx.FrameWorx.Providers.Payment.Dummy" name="DummySuccess">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.Dummy.AsyncDummySuccess, RainWorx.FrameWorx.Providers.Payment.Dummy" name="AsyncDummySuccess">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.Dummy.AsyncDummyFailure, RainWorx.FrameWorx.Providers.Payment.Dummy" name="AsyncDummyFailure">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.PayPal.PayPalStandard, RainWorx.FrameWorx.Providers.Payment.PayPal" name="PayPalStandard">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.AuthorizeNet.AuthorizeNetAim, RainWorx.FrameWorx.Providers.Payment.AuthorizeNet" name="AuthorizeNetAIM">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.FreeForm.FreeFormProvider, RainWorx.FrameWorx.Providers.Payment.FreeForm" name="FreeForm">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Payment.IPaymentProvider, RainWorx.FrameWorx.Providers.Payment" mapTo="RainWorx.FrameWorx.Providers.Payment.Stripe.StripeConnect, RainWorx.FrameWorx.Providers.Payment.Stripe" name="StripeConnect">
+            <lifetime type="singleton" />
+          </type>
+          <!-- End Payment Providers -->
+
+          <!-- Media Asset Providers -->
+          <type type="RainWorx.FrameWorx.Providers.MediaAsset.IMediaGenerator, RainWorx.FrameWorx.Providers.MediaAsset" mapTo="RainWorx.FrameWorx.Providers.MediaAsset.Images.JPEGWithThumbailsGenerator, RainWorx.FrameWorx.Providers.MediaAsset.Images" name="JPEGWithThumbnails">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaAsset.IMediaGenerator, RainWorx.FrameWorx.Providers.MediaAsset" mapTo="RainWorx.FrameWorx.Providers.MediaAsset.Images.PNGGenerator, RainWorx.FrameWorx.Providers.MediaAsset.Images" name="PNG">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaAsset.IMediaGenerator, RainWorx.FrameWorx.Providers.MediaAsset" mapTo="RainWorx.FrameWorx.Providers.MediaAsset.Files.PDF, RainWorx.FrameWorx.Providers.MediaAsset.Files" name=".pdf">
+            <lifetime type="singleton"/>
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaSaver.IMediaSaver, RainWorx.FrameWorx.Providers.MediaSaver" mapTo="RainWorx.FrameWorx.Providers.MediaSaver.FileSystem.DirectSaver, RainWorx.FrameWorx.Providers.MediaSaver.FileSystem" name="DirectFileSystem">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaSaver.IMediaSaver, RainWorx.FrameWorx.Providers.MediaSaver" mapTo="RainWorx.FrameWorx.Providers.MediaSaver.FileSystem.DateHashedSaver, RainWorx.FrameWorx.Providers.MediaSaver.FileSystem" name="DateHashedFileSystem">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaLoader.IMediaLoader, RainWorx.FrameWorx.Providers.MediaLoader" mapTo="RainWorx.FrameWorx.Providers.MediaLoader.URI.DirectLoader, RainWorx.FrameWorx.Providers.MediaLoader.URI" name="DirectURI">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaLoader.IMediaLoader, RainWorx.FrameWorx.Providers.MediaLoader" mapTo="RainWorx.FrameWorx.Providers.MediaLoader.URI.DateHashedLoader, RainWorx.FrameWorx.Providers.MediaLoader.URI" name="DateHashedURI">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaAsset.IMediaGenerator, RainWorx.FrameWorx.Providers.MediaAsset" mapTo="RainWorx.FrameWorx.Providers.Media.YouTube.YouTubeVideoReferenceGenerator, RainWorx.FrameWorx.Providers.Media.YouTube" name="YouTubeVideoReference">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaSaver.IMediaSaver, RainWorx.FrameWorx.Providers.MediaSaver" mapTo="RainWorx.FrameWorx.Providers.MediaSaver.NullSaver, RainWorx.FrameWorx.Providers.MediaSaver" name="NullSaver">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaLoader.IMediaLoader, RainWorx.FrameWorx.Providers.MediaLoader" mapTo="RainWorx.FrameWorx.Providers.Media.YouTube.YouTubeVideoReferenceEmbedLoader, RainWorx.FrameWorx.Providers.Media.YouTube" name="YouTubeVideoEmbed">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaLoader.IMediaLoader, RainWorx.FrameWorx.Providers.MediaLoader" mapTo="RainWorx.FrameWorx.Providers.MediaLoader.ReferenceLoader, RainWorx.FrameWorx.Providers.MediaLoader" name="ReferenceLoader">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaAsset.IMediaGenerator, RainWorx.FrameWorx.Providers.MediaAsset" mapTo="RainWorx.FrameWorx.Providers.MediaAsset.Images.NativeImage, RainWorx.FrameWorx.Providers.MediaAsset.Images" name="NativeImage">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaAsset.IMediaGenerator, RainWorx.FrameWorx.Providers.MediaAsset" mapTo="RainWorx.FrameWorx.Providers.MediaAsset.HTML.NativeHTML, RainWorx.FrameWorx.Providers.MediaAsset.HTML" name="NativeHTML">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaSaver.IMediaSaver, RainWorx.FrameWorx.Providers.MediaSaver" mapTo="RainWorx.FrameWorx.Providers.Media.Azure.BlobStorageMediaSaver, RainWorx.FrameWorx.Providers.Media.Azure" name="BlobStorage">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.MediaLoader.IMediaLoader, RainWorx.FrameWorx.Providers.MediaLoader" mapTo="RainWorx.FrameWorx.Providers.Media.Azure.BlobStorageMediaLoader, RainWorx.FrameWorx.Providers.Media.Azure" name="BlobStorageURI">
+            <lifetime type="singleton" />
+          </type>
+          <!-- End Media Asset Providers -->
+
+          <!-- Fee Providers -->
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.CurrentPrice, RainWorx.FrameWorx.Providers.Fee.Standard" name="CurrentPrice">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.Decorations, RainWorx.FrameWorx.Providers.Fee.Standard" name="Decorations">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.Locations, RainWorx.FrameWorx.Providers.Fee.Standard" name="Locations">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.ImageCount, RainWorx.FrameWorx.Providers.Fee.Standard" name="ImageCount">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.SubtitleExists, RainWorx.FrameWorx.Providers.Fee.Standard" name="SubtitleExists">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.FlatFee, RainWorx.FrameWorx.Providers.Fee.Standard" name="FlatFee">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.YouTube, RainWorx.FrameWorx.Providers.Fee.Standard" name="YouTube">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.Fee.IFeeProcessor, RainWorx.FrameWorx.Providers.Fee" mapTo="RainWorx.FrameWorx.Providers.Fee.Standard.GoodUntilCanceled, RainWorx.FrameWorx.Providers.Fee.Standard" name="GoodUntilCanceled">
+            <lifetime type="singleton" />
+          </type>
+          <!-- End Fee Providers-->
+
+          <!--Queueing-->
+
+          <!-- Un-comment to queue SignalR messages in-process, not compatible with multiple-web-server configurations -->
+          <type type="RainWorx.FrameWorx.Queueing.IQueueManager, RainWorx.FrameWorx.Queueing" mapTo="RainWorx.FrameWorx.Queueing.LocalQueuing, RainWorx.FrameWorx.Queueing">
+            <lifetime type="singleton" />
+            <constructor />
+          </type>
+
+          <!-- Un-comment to use SQL Service Broker as Queueing mechanism for SignalR -->
+          <!--<type type="RainWorx.FrameWorx.Queueing.IQueueManager, RainWorx.FrameWorx.Queueing" mapTo="RainWorx.FrameWorx.Queueing.SimpleSSB, RainWorx.FrameWorx.Queueing">
+            <lifetime type="singleton" />
+            <constructor />
+          </type>-->
+
+          <!-- Un-comment to use Azure Service Bus as Queueing mechanism for SignalR -->
+          <!--<type type="RainWorx.FrameWorx.Queueing.IQueueManager, RainWorx.FrameWorx.Queueing" mapTo="RainWorx.FrameWorx.Queueing.AzureServiceBus, RainWorx.FrameWorx.Queueing">
+            <lifetime type="singleton" />
+            <constructor />
+          </type>-->
+
+          <!-- Un-comment to safely disable all SignalR functionality -->
+          <!--<type type="RainWorx.FrameWorx.Queueing.IQueueManager, RainWorx.FrameWorx.Queueing" mapTo="RainWorx.FrameWorx.Queueing.QueueingDisabled, RainWorx.FrameWorx.Queueing">
+            <lifetime type="singleton" />
+            <constructor />
+          </type>-->
+
+          <!--End Queueing-->
+
+          <!--Invoice Logic-->
+          
+          <type type="RainWorx.FrameWorx.Providers.InvoiceLogic.ITotalCalculator, RainWorx.FrameWorx.Providers.InvoiceLogic" mapTo="RainWorx.FrameWorx.Providers.InvoiceLogic.StandardTotalCalculator, RainWorx.FrameWorx.Providers.InvoiceLogic">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.InvoiceLogic.INewSaleHandler, RainWorx.FrameWorx.Providers.InvoiceLogic" mapTo="RainWorx.FrameWorx.Providers.InvoiceLogic.StandardNewSaleHandler, RainWorx.FrameWorx.Providers.InvoiceLogic">
+            <lifetime type="singleton" />
+          </type>
+          <type type="RainWorx.FrameWorx.Providers.InvoiceLogic.IPaymentHandler, RainWorx.FrameWorx.Providers.InvoiceLogic" mapTo="RainWorx.FrameWorx.Providers.InvoiceLogic.StandardPaymentHandler, RainWorx.FrameWorx.Providers.InvoiceLogic">
+            <lifetime type="singleton" />
+          </type>
+
+          <!-- End Invoice Logic -->
+
+          <!-- Notification Handler -->
+
+          <type type="RainWorx.FrameWorx.Providers.Notification.INotificationHandler, RainWorx.FrameWorx.Providers.Notification" mapTo="RainWorx.FrameWorx.Providers.Notification.StandardNotificationHandler, RainWorx.FrameWorx.Providers.Notification">
+            <lifetime type="singleton" />
+          </type>
+
+          <!-- End Invoice Logic -->
+
+        </types>
+      </container>
+    </containers>
+  </unity>
+  <entityFramework>
+    <defaultConnectionFactory type="System.Data.Entity.Infrastructure.LocalDbConnectionFactory, EntityFramework">
+      <parameters>
+        <parameter value="v13.0" />
+      </parameters>
+    </defaultConnectionFactory>
+    <providers>
+      <provider invariantName="System.Data.SqlClient" type="System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer" />
+    </providers>
+  </entityFramework>
+</configuration>

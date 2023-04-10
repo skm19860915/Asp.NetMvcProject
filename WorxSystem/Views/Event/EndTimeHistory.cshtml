@@ -1,0 +1,82 @@
+﻿@model Page<ReportRow>
+@using System.Globalization
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            @Html.GlobalResource("ListingExtensionHistory")
+        </div>
+        <div class="panel panel-default">
+            <table class="table table-condensed">
+                <tr>
+                    <th>@Html.GlobalResource("DateChanged")</th>
+                    <th class="hidden-xs">@Html.GlobalResource("Event")</th>
+                    <th>@Html.GlobalResource("Listing")</th>
+                    <th class="hidden-xs">@Html.GlobalResource("RelatedListing")</th>
+                    <th>@Html.GlobalResource("Reason")</th>
+                    <th>@Html.GlobalResource("NewEndDTTM")</th>
+                </tr>
+                @foreach (var row in Model.List)
+            {
+                    <tr>
+                        @for (var i = 0; i < row.Values.Count; i++)
+                        {
+                            if (!string.IsNullOrEmpty(row.Values[i]))
+                            {
+                                switch (row.Names[i])
+                                {
+                                    case "ChangeDTTM":
+                                        {
+                                            <td>@Html.LocalDTTM(DateTime.Parse(row.Values[i], CultureInfo.InvariantCulture), "G")</td>
+                                            break;
+                                        }
+                                    case "EventID":
+                                        {
+                                            <td class="hidden-xs">@int.Parse(row.Values[i], CultureInfo.InvariantCulture)</td>
+                                            break;
+                                        }
+                                    case "ListingID":
+                                        {
+                                            <td>@int.Parse(row.Values[i], CultureInfo.InvariantCulture)</td>
+                                            break;
+                                        }
+                                    case "SourceListingID":
+                                        {
+                                            <td class="hidden-xs">@int.Parse(row.Values[i], CultureInfo.InvariantCulture)</td>
+                                            break;
+                                        }
+                                    case "Origin":
+                                        {
+                                            <td>@Html.GlobalResource("ExtensionReason_" + row.Values[i])</td>
+                                            break;
+                                        }
+                                    case "NewEndDTTM":
+                                        {
+                                            <td>@Html.LocalDTTM(DateTime.Parse(row.Values[i], CultureInfo.InvariantCulture), "G")</td>
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                if (row.Names[i] == "SourceListingID" || row.Names[i] == "EventID")
+                                {
+                                    <td class="hidden-xs">&nbsp;</td>
+                                }
+                                else
+                                {
+                                    <td>&nbsp;</td>
+                                }
+                            }
+                        }
+                    </tr>
+                }
+            </table>
+            @if (Model.TotalPageCount > 1)
+            {
+                <div class="panel-footer">
+                    @{Html.RenderPageNumberLinks(Model); }
+                </div>
+                        }
+        </div>
+    </div>
+</div>

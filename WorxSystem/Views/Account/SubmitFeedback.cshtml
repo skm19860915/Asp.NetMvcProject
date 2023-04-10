@@ -1,0 +1,68 @@
+﻿@section scripts {
+    @Styles.Render("~/bundles/css/uistars")
+    @Scripts.Render("~/bundles/uistars_js")
+    <script>
+        $(document).ready(function () {
+            $("#stars-wrapper").stars();
+        });
+    </script>
+}
+
+<div class="col-xs-12">
+    <div class="well well-sm section-title">
+        @Html.GlobalResource("SubmitFeedback")
+    </div>
+    @Html.LocalizedValidationSummary()
+    @using (Html.BeginForm())
+    {
+        @Html.Hidden(Fields.ListingID)
+        @Html.Hidden(Fields.Sender)
+        @Html.Hidden(Fields.Receiver)
+        @Html.Hidden(Fields.ReturnUrl)
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                @Html.GlobalResource("Listing"): @ViewData[MVC.ListingName]
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item">@Html.GlobalResource("FeedbackFor"): @ViewData[Fields.Receiver] </li>
+                <li class="list-group-item">
+                    <span class="required pull-left clear-fix"> @Html.GlobalResource("Rating")</span>
+                    <div id="stars-wrapper" class="radio-inline">
+                        @Html.RadioButton("Rating", "1", new { @id = "Rating_1" })
+                        @Html.RadioButton("Rating", "2", new { @id = "Rating_2" })
+                        @Html.RadioButton("Rating", "3", new { @id = "Rating_3" })
+                        @Html.RadioButton("Rating", "4", new { @id = "Rating_4" })
+                        @Html.RadioButton("Rating", "5", new { @id = "Rating_5" })
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <span class="required">
+                        @Html.GlobalResource("Comment"): 
+                    </span>
+                    <small class="text-danger pull-right">@Html.GlobalResource("FeedbackCharacterLimit")</small>
+                    @Html.TextBox(Fields.Comment, null, new { @class = "form-control", maxlength = "80" })
+                </li>
+            </ul>
+            <div class="panel-footer">
+                @{string returnUrl = (ViewData.ContainsKey(Fields.ReturnUrl)) ? (string)ViewData[Fields.ReturnUrl] : string.Empty;}
+                @if (string.IsNullOrEmpty(returnUrl))
+                {
+                    returnUrl = Html.GetActionUrl(MVC.DetailsAction, MVC.ListingController,
+                                                    new { id = ViewData[Fields.ListingID] });
+                }
+                <script>
+                    $(document).ready(function () {
+                        //[Cancel] Button
+                        $("#CancelButton").click(function () {
+                            var targetUrl = '@returnUrl.ToJavascriptSafeString()';
+                            document.location = $.htmlDecode(targetUrl);
+                            return false;
+                        });
+                    });
+                </script>
+                <button class="btn btn-link" id="CancelButton">@Html.GlobalResource("Cancel")</button>
+                <input type="submit" class="btn btn-default" id="save" name="save" value="@Html.GlobalResource("Save")" />
+            </div>
+        </div>
+    }
+</div>

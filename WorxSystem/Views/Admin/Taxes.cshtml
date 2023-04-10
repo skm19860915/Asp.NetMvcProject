@@ -1,0 +1,163 @@
+﻿@model List<CustomProperty>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_Taxes");
+}
+<div class="group">
+    @using (Html.BeginForm(MVC.TaxesAction, MVC.AdminController, FormMethod.Post, new { @id = "TaxesForm" }))
+    {
+        @Html.Hidden("HideTaxFields", Model.Single(p => p.Field.Name == "HideTaxFields").Value)
+        @Html.Hidden("SalesTaxEnabled", Model.Single(p => p.Field.Name == "SalesTaxEnabled").Value)
+        @Html.Hidden("VATEnabled", Model.Single(p => p.Field.Name == "VATEnabled").Value)
+
+        <div class="row">
+            <div class="col-xs-10">
+                <input type="radio" name="TaxMode" id="TaxMode_HideTaxFields" />
+
+                <label for="TaxMode_HideTaxFields">@Html.CustomFieldResource("HideTaxFields")</label>
+            </div>
+            <div class="col-xs-2">
+                @Html.ToolTipButton("HideTaxFields_Help")
+            </div>
+            <div class="col-xs-12">@Html.ToolTipContent("HideTaxFields_Help", Html.CustomFieldResourceOrDefault("HideTaxFields_Help"))</div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-10">
+                <input type="radio" name="TaxMode" id="TaxMode_SalesTaxEnabled" />
+                <label for="TaxMode_SalesTaxEnabled">@Html.CustomFieldResource("SalesTaxEnabled")</label>
+            </div>
+            <div class="col-xs-2">
+                @Html.ToolTipButton("SalesTaxEnabled_Help")
+            </div>
+            <div class="col-xs-12">@Html.ToolTipContent("SalesTaxEnabled_Help", Html.CustomFieldResourceOrDefault("SalesTaxEnabled_Help"))</div>
+            <div id="SalesTaxFieldsContainer" class="yesNoToggle">
+                <div class="row">
+                    <div class="col-xs-offset-1 col-xs-8">
+                        @Html.CheckBox("SalesTaxAppliesToBuyersPremium")
+                        <label for="SalesTaxAppliesToBuyersPremium">@Html.CustomFieldResource("SalesTaxAppliesToBuyersPremium")</label>
+                        <span class="help-block">@Html.CustomFieldResource("SalesTaxAppliesToBuyersPremium_Help")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-10">
+                <input type="radio" name="TaxMode" id="TaxMode_VATEnabled" />
+                <label for="TaxMode_VATEnabled">@Html.CustomFieldResource("VATEnabled")</label>
+            </div>
+            <div class="col-xs-2">
+                @Html.ToolTipButton("VATEnabled_Help")
+            </div>
+            <div class="col-xs-12">@Html.ToolTipContent("VATEnabled_Help", Html.CustomFieldResourceOrDefault("VATEnabled_Help"))</div>
+            <div id="VatFieldsContainer" class="yesNoToggle">
+                <div class="row form-inline">
+                    <div class="col-xs-10 col-xs-offset-1">
+                        <label for="VatRate">@Html.CustomFieldResource("VatRate") </label>
+                        <div class="input-group">
+
+                            @Html.TextBox("VatRate", null, new { @class = "form-control input-sm" })
+                            <div class="input-group-addon">%</div>
+                        </div>
+                        <span class="help-block">@Html.CustomFieldResource("VatRate_Help")</span>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-offset-2 col-xs-8">
+                        @Html.CheckBox("VatAppliesToSiteFees")
+                        <label for="VatAppliesToSiteFees">@Html.CustomFieldResource("VatAppliesToSiteFees")</label>
+                        <span class="help-block">&nbsp;</span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-offset-2 col-xs-8">
+                        @Html.CheckBox("VatAppliesToShipping")
+                        <label for="VatAppliesToShipping">@Html.CustomFieldResource("VatAppliesToShipping")</label>
+
+                        <span class="help-block"> @Html.CustomFieldResource("VatAppliesToShipping_Help")</span>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-offset-2 col-xs-8">
+                        @Html.CheckBox("VatAppliesToBuyersPremium")
+                        <label for="VatAppliesToBuyersPremium">@Html.CustomFieldResource("VatAppliesToBuyersPremium")</label>
+                        <span class="help-block"> @Html.CustomFieldResource("VatAppliesToBuyersPremium_Help")</span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-panel">
+            <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+        </div>
+    }
+</div>
+
+@section head {
+    <script>
+        $(document).ready(function () {
+
+            if ($("#HideTaxFields").val() == "True") {
+                $("#TaxMode_HideTaxFields").prop("checked", true);
+                $("#VatFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#VatFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+                $("#SalesTaxFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#SalesTaxFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+            } else if ($("#VATEnabled").val() == "True") {
+                $("#TaxMode_VATEnabled").prop("checked", true);
+                $("#VatFieldsContainer input").prop("disabled", false).prop("readonly", false);
+                $("#VatFieldsContainer .fs-checkbox").removeClass("fs-checkbox-disabled");
+                $("#SalesTaxFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#SalesTaxFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+            } else {//if ($("#SalesTaxEnabled").val() == "True") {
+                $("#TaxMode_SalesTaxEnabled").prop("checked", true);
+                $("#VatFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#VatFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+                $("#SalesTaxFieldsContainer input").prop("disabled", false).prop("readonly", false);
+                $("#SalesTaxFieldsContainer .fs-checkbox").removeClass("fs-checkbox-disabled");
+            }
+
+            $("#TaxMode_HideTaxFields").on("click", function () {
+                $("#VatFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#VatFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+                $("#SalesTaxFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#SalesTaxFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+                $("#HideTaxFields").val("True");
+                $("#SalesTaxEnabled").val("False");
+                $("#VATEnabled").val("False");
+            });
+
+            $("#TaxMode_SalesTaxEnabled").on("click", function () {
+                $("#VatFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#VatFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+                $("#SalesTaxFieldsContainer input").prop("disabled", false).prop("readonly", false);
+                $("#SalesTaxFieldsContainer .fs-checkbox").removeClass("fs-checkbox-disabled");
+                $("#HideTaxFields").val("False");
+                $("#SalesTaxEnabled").val("True");
+                $("#VATEnabled").val("False");
+            });
+
+            $("#TaxMode_VATEnabled").on("click", function () {
+                $("#VatFieldsContainer input").prop("disabled", false).prop("readonly", false);
+                $("#VatFieldsContainer .fs-checkbox").removeClass("fs-checkbox-disabled");
+                $("#SalesTaxFieldsContainer input").prop("disabled", true).prop("readonly", true);
+                $("#SalesTaxFieldsContainer .fs-checkbox").addClass("fs-checkbox-disabled");
+                $("#HideTaxFields").val("False");
+                $("#SalesTaxEnabled").val("False");
+                $("#VATEnabled").val("True");
+            });
+
+            $("#TaxesForm").on("submit", function () {
+                $("#VatFieldsContainer input").prop("disabled", false);
+                $("#SalesTaxFieldsContainer input").prop("disabled", false);
+            });
+
+        });
+    </script>
+}

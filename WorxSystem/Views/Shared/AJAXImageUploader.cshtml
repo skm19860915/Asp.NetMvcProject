@@ -1,0 +1,349 @@
+﻿@model List<Media>
+@{
+    int MAX_UPLOADED_IMAGE_SIZE_BYTES = 5000000; // default 5 MB
+    int tempMax;
+    if (int.TryParse(System.Configuration.ConfigurationManager.AppSettings["MAX_UPLOADED_IMAGE_SIZE_BYTES"], out tempMax))
+    {
+        MAX_UPLOADED_IMAGE_SIZE_BYTES = tempMax;
+    }
+}
+<script>
+
+    $(document).ready(function () {
+        if (window.File && window.FileList) {
+            $("#html5files").change(handleFileSelect);
+
+            var ie_version =  getIEVersion();
+            var safari_version = getSafariVersion();
+            if ((ie_version.major > 0 && ie_version.major < 11) || (safari_version > 0 && safari_version < 7)) {
+                // programmatically triggering file select causes IE9 & 10 to disallow form submission, so show file input object instead of "Add Image(s)" button...
+                $("#html5files").removeClass("hidden");
+            } else {
+                $("#html5button").show();
+            }
+
+        } else {
+            $("#photo").show();
+            $("#photo").makeAsyncUploader({
+                upload_url: $.url('Media/AsyncUploadListingImage'),
+                flash_url: 'Content/swf/swfupload.swf',
+                button_image_url: 'Content/images/blankButton.png',
+                disableDuringUpload: 'INPUT[type="submit"]',
+                button_text: '@Html.GlobalResource("ChooseImages")',
+                file_queue_error_handler: function(file, code, msg) {
+                    //alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()'/* + ': ' + msg*/);
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                        message: '@Html.GlobalResourceString("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()',
+                        buttons: [{
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }]
+                    });
+                },
+                /* function(file, code, msg) { alert("Sorry, your file wasn't uploaded: " + msg); }, */
+                upload_error_handler: function(file, code, msg) {
+                    //alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()'/* + ': ' + msg*/);
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                        message: '@Html.GlobalResourceString("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()',
+                        buttons: [{
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }]
+                    });
+                }
+                /* function(file, code, msg) { alert("Sorry, your file wasn't uploaded: " + msg); } */
+            });
+        }
+    });
+
+    var files;
+
+    function handleFileSelect() {
+        //max file size definition
+        var MAX_SINGLE_FILE_SIZE_BYTES = @MAX_UPLOADED_IMAGE_SIZE_BYTES;
+        var abort = false;
+
+        files = new Array();
+        for (var i = 0, singleFile; singleFile = this.files[i]; i++) {
+            files.push(singleFile);
+
+            //file size check
+            if (MAX_SINGLE_FILE_SIZE_BYTES > 0 && singleFile.size > MAX_SINGLE_FILE_SIZE_BYTES) {
+                abort = true;
+                var errorMessage = '@Html.GlobalResourceString("SelectedFileIsTooLarge").ToJavascriptSafeString()'
+                    .replace('[FILE_NAME]', singleFile.name)
+                    .replace('[FILE_SIZE]', fileSizeLabel(singleFile.size))
+                    .replace('[MAX_FILE_SIZE]', fileSizeLabel(MAX_SINGLE_FILE_SIZE_BYTES));
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                    message: errorMessage,
+                    buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                    ]
+                });
+            }
+        }
+
+        if (!abort) {
+            var file = files.shift();
+            if (file != undefined) {
+                $("#progress_bar").slideDown();
+                UploadFile(file);
+            }
+        } else {
+            //clear selected files
+            $(this).val("");
+        }
+    }
+
+    function updateProgress(evt) {
+        // evt is an ProgressEvent.
+        //While the request entity body is being uploaded and the upload complete flag is false,
+        //queue a task to fire a progress event named progress at the XMLHttpRequestUpload object
+        //about every 50ms or for every byte transmitted, whichever is least frequent.
+        //- W3 XMLHttpRequest Level 2 (Bolded for emphasis)
+        if (evt.lengthComputable) {
+            var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+            // Increase the progress bar length.
+            if (percentLoaded < 100) {
+                $('.percent').css("width", percentLoaded + "%");
+                $('.percent').text(percentLoaded + "%");
+            }
+        }
+    }
+
+    function successHandler(result) {
+        $('.percent').css("width", "100%");
+        $('.percent').text("100%");
+        addImage('unk', 'unk', 'unk', result.guid, result.uri);
+        var file = files.shift();
+        if (file != undefined) {
+            UploadFile(file);
+        } else {
+            $("#progress_bar").slideUp('slow');
+            $("#html5files").val("");
+        }
+    }
+
+    function UploadFile(file) {
+        var formData = new FormData();
+        formData.append("file", file);
+        $.ajax({
+            url: $.url("Media/AsyncUploadListingImage"),  //server script to process data
+            type: 'POST',
+            xhr: function () {  // custom xhr
+                var myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) { // check if upload property exists
+                    myXhr.upload.addEventListener('progress', updateProgress, false); // for handling the progress of the upload
+                }
+                return myXhr;
+            },
+            //Ajax events
+            //beforeSend: beforeSendHandler,
+            //success: successHandler,
+            //error: errorHandler,
+            // Form data
+            data: formData,
+            //Options to tell JQuery not to process data or worry about content-type
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (results) {
+            successHandler(results);
+        }).fail(function (e) {
+            //alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()'/* + ': ' + msg*/);
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                message: '@Html.GlobalResourceString("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()',
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                        action: function(dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            $("#progress_bar").slideUp('slow');
+        });
+    }
+
+    function DeleteMedia(guid) {
+        $.ajax({
+            url: $.url("Media/DeleteMedia"),  //server script to process data
+            type: 'POST',
+            //Ajax events
+            //beforeSend: beforeSendHandler,
+            //success: successHandler,
+            //error: errorHandler,
+            // Form data
+            data: { guid : guid },
+            //Options to tell JQuery not to process data or worry about content-type
+            cache: false
+            //contentType: false,
+            //processData: false
+        });
+    }
+
+    function RotateMedia(guid, clockwise) {
+        $.ajax({
+            url: $.url("Media/RotateMedia"),  //server script to process data
+            type: 'POST',
+            //Ajax events
+            //beforeSend: beforeSendHandler,
+            //success: successHandler,
+            //error: errorHandler,
+            // Form data
+            data: { guid: guid, clockwise: clockwise, resultStyle: "@SiteClient.ThumbnailType" },
+            //Options to tell JQuery not to process data or worry about content-type
+            cache: false
+            //contentType: false,
+            //processData: false
+        }).done(function (results) {
+            if (results.Success) {
+                var base = $("input[value='" + results.OldGUID + "']");
+                base.attr("name", "media_guid_" + results.NewGUID);
+                base.attr("value", results.NewGUID);
+                base.next().attr("name", "media_ordr_" + results.NewGUID);
+                base.prev().attr("src", results.NewURI);
+                base.prev().removeClass("img-busy");
+                EnableDisplayButtons();
+            } else if (results.Message) {
+                //alert(results.Message);
+                var alertTitle = '@Html.GlobalResourceString("Error").ToJavascriptSafeString()';
+                var alertMessage = results.Message;
+                BootstrapDialog.show({
+                    type: 'type-danger', title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; ' + alertTitle, message: alertMessage,
+                    buttons: [{ label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()', action: function (dialogItself) { dialogItself.close(); } }]
+                });
+                EnableDisplayButtons();
+            }
+        });
+    }
+
+</script>
+
+<input type="file" id="photo" name="photo" class="hidden" />
+<button class="btn btn-default awe-hidden" id="html5button" onclick="$('#html5files').click();return false;">@Html.GlobalResource("ChooseImages_HTML5")</button>
+@Html.ToolTipButton("DeleteImageDisclaimer")
+<input type="file" id="html5files" name="files[]" multiple class="hidden" />
+<div id="progress_bar" class="awe-hidden"><div class="percent">0%</div></div>
+<script>
+
+    function addImage(fileName, fileSize, fileType, guid, response) {
+        var thumbnails = $("div#sortablethumbnails");
+
+        var newDiv = $("<div class='imagecontainer'/>").appendTo(thumbnails);
+
+        var newImg = $("<img alt='thumbnail' class='img-responsive'/>").appendTo(newDiv).attr("src", response);
+        $("<input type='hidden' name='media_guid_" + guid + "'/>").appendTo(newDiv).attr("value", guid);
+        $("<input type='hidden' name='media_ordr_" + guid + "'/>").appendTo(newDiv).attr("class", "order");
+        $("<div class='btn-group'><a href='#' class='btn btn-default btn-xs img-rotate-CW'><span class='glyphicon glyphicon-refresh'></span>&nbsp;@Html.GlobalResource("RotateImage")</a>" +
+        "<a href='#' class='btn btn-danger btn-xs img-delete'><span class='glyphicon glyphicon-remove'></span>&nbsp;@Html.GlobalResource("Remove")</a></div>").appendTo(newDiv);
+
+        RefreshOrder();
+    }
+
+    $(document).ready(function () {
+        $("div#sortablethumbnails").html($("input#ThumbnailRendererState").val());
+    });
+
+    $(document).ready(function () {
+        $("div#sortablethumbnails").sortable({
+            opacity: 0.7,
+            revert: false,
+            scroll: true,
+            tolerance: 'pointer',
+            placeholder: "imagecontainer-highlight",
+            update: function (event, ui) {
+                RefreshOrder();
+            }
+        });
+        $("div#sortablethumbnails").disableSelection();
+
+        $(document).on("click", "a.img-delete", function () {
+            var guid = $(this).parent().parent().children("input[type=hidden]:first").val();
+            $(this).parent().parent().remove();
+            RefreshOrder();
+            DeleteMedia(guid);
+            return false;
+        });
+
+        $(document).on("click", "a.img-rotate-CW", function () {
+            DisableThumbButtons();
+            $(this).parent().parent().children("img:first").addClass("img-busy");
+            var guid = $(this).parent().parent().children("input[type=hidden]:first").val();
+            RotateMedia(guid, true);
+            return false;
+        });
+
+        @{
+            bool thumbButtonsValid = true;
+        }
+        @if (Model != null) {
+
+                List<Media> mediaList = Model.Where(m => m.Variations.ContainsKey("ThumbFit")).ToList();
+
+
+                foreach (Media media in mediaList)
+                {
+                    //Load Media
+                    IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(media.Loader);
+                    Dictionary<string, string> loaderProviderSettings =
+                    CommonClient.GetAttributeData(mediaLoader.TypeName, "UploadListingImage");
+                    <text>addImage('unk', 'unk', 'unk', '@media.GUID', '@mediaLoader.Load(loaderProviderSettings, media, "ThumbFit")');</text>
+
+                    if (!media.Variations.ContainsKey("Original") && !media.Variations.ContainsKey("LargeSize"))
+                    {
+                        thumbButtonsValid = false;
+                    }
+                }
+            }
+
+        if (!(@thumbButtonsValid.ToString().ToLower())) {
+            $(".img-rotate-CCW").addClass("img-buttons-hide");
+            $(".img-rotate-CW").addClass("img-buttons-hide");
+        }
+    });
+
+    function DisableThumbButtons() {
+        $(".img-delete").addClass("img-buttons-hide");
+        $(".img-rotate-CCW").addClass("img-buttons-hide");
+        $(".img-rotate-CW").addClass("img-buttons-hide");
+        $("#create").addClass("img-buttons-hide");
+    }
+
+    function EnableDisplayButtons() {
+        $(".img-delete").removeClass("img-buttons-hide");
+        $(".img-rotate-CCW").removeClass("img-buttons-hide");
+        $(".img-rotate-CW").removeClass("img-buttons-hide");
+        $("#create").removeClass("img-buttons-hide");
+    }
+
+    function RefreshOrder() {
+        var images = $(".imagecontainer");
+        for (var x = 0; x < images.length; x++) {
+            $(".imagecontainer .order:eq(" + x + ")").val(x);
+        }
+    }
+
+</script>
+<div id="sortablethumbnails">
+</div>
+
+@Scripts.Render("~/bundles/imageupload")

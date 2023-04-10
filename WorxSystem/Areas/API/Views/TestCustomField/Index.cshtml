@@ -1,0 +1,104 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">RainWorx AuctionWorx ASP.NET Web API</a></p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <div id="TestResults"></div>
+</div>
+@section scripts
+{
+    <script>
+        function DisplayTestResult(testName, disposition, status, detail) {
+            var now = new Date();
+            var testResults = $("#TestResults");
+            var testResult = $("<div class='testresult'></div>").appendTo(testResults);
+            $("<span>" + testName + " @@ " + now + ": </span>").appendTo(testResult);
+            if (disposition == "SUCCESS") {
+                $("<span class='successResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            } else {
+                $("<span class='failureResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            }
+            $("<div class='detailResult'>" + JSON.stringify(detail) + "</div>").appendTo(testResult);
+        }
+
+        function Test(testName, url, method, expectation) {
+            $.ajax({
+                url: url,
+                type: method,
+                //data: JSON.stringify(newTitle),
+                contentType: "application/json",
+                processData: false,
+                async: false
+            }).always(function (data) {
+                if (expectation == data.status) {
+                    DisplayTestResult(testName, "SUCCESS", data.status, data.detail);
+                } else {
+                    DisplayTestResult(testName, "FAIL", data.status, data.detail);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+//            //get customfield
+            Test('CustomField Get with No Auth', 'TestCustomField/GetCustomField?id=1', 'POST', 401);
+            Test('CustomField Get with User that doesn\'t exist', 'TestCustomField/GetCustomField?id=1&auth=nouser', 'POST', 401);
+            Test('CustomField Get with Existing User, but bad key', 'TestCustomField/GetCustomField?id=1&auth=badkey', 'POST', 401);
+            Test('CustomField Get with any User', 'TestCustomField/GetCustomField?id=1&auth=nonadmin', 'POST', 200);
+            Test('CustomField Get that doesn\'t exist with No Auth', 'TestCustomField/GetCustomField?id=-1', 'POST', 401);
+
+//            //Get customfield by category
+            Test('Get CustomFields By Category with No Auth', 'TestCustomField/GetCustomFieldByCategoryID?id=41202', 'POST', 401);
+            Test('Get CustomFields By Category with User that doesn\'t exist', 'TestCustomField/GetCustomFieldByCategoryID?id=41202&auth=nouser', 'POST', 401);
+            Test('Get CustomFields By Category with Existing User, but bad key', 'TestCustomField/GetCustomFieldByCategoryID?id=41202&auth=badkey', 'POST', 401);
+            Test('Get CustomFields By Category with Any User', 'TestCustomField/GetCustomFieldByCategoryID?id=41202&auth=nonadmin', 'POST', 200);
+            Test('Get CustomFields By Category whose category doesn\'t exist with No Auth', 'TestCustomField/GetCustomFieldByCategoryID?id=-1', 'POST', 401);
+
+            //create custom field
+            Test('Create CustomField with No Auth', 'TestCustomField/CreateCustomField', 'POST', 401);
+            Test('Create CustomField with User that doesn\'t exist', 'TestCustomField/CreateCustomField?auth=nouser', 'POST', 401);
+            Test('Create CustomField with Existing User, but bad key', 'TestCustomField/CreateCustomField?auth=badkey', 'POST', 401);
+            Test('Create CustomField with Unauthorized User', 'TestCustomField/CreateCustomField?auth=nonadmin', 'POST', 403);
+            Test('Create CustomField with Admin User', 'TestCustomField/CreateCustomField?auth=admin', 'POST', 201);
+
+            //create enumeration
+            Test('Create Enumeration with No Auth', 'TestCustomField/CreateEnumeration', 'POST', 401);
+            Test('Create Enumeration with User that doesn\'t exist', 'TestCustomField/CreateEnumeration?auth=nouser', 'POST', 401);
+            Test('Create Enumeration with Existing User, but bad key', 'TestCustomField/CreateEnumeration?auth=badkey', 'POST', 401);
+            Test('Create Enumeration with Unauthorized User', 'TestCustomField/CreateEnumeration?auth=nonadmin', 'POST', 403);
+            Test('Create Enumeration with Admin User', 'TestCustomField/CreateEnumeration?auth=admin', 'POST', 201);
+
+            //Delete Enumeration
+            Test('Enumeration Delete with No Auth', 'TestCustomField/DeleteEnumeration?id=-1', 'POST', 401);
+            Test('Enumeration Delete with User that doesn\'t exist', 'TestCustomField/DeleteEnumeration?id=-1&auth=nouser', 'POST', 401);
+            Test('Enumeration Delete with Existing User, but bad key', 'TestCustomField/DeleteEnumeration?id=-1&auth=badkey', 'POST', 401);
+            Test('Enumeration Delete with Unauthorized User', 'TestCustomField/DeleteEnumeration?id=-1&auth=nonadmin', 'POST', 403);
+            Test('Enumeration Delete with Admin User', 'TestCustomField/DeleteEnumeration?id=-1&auth=admin', 'POST', 204);
+
+            //Delete Custom Field
+            Test('Custom Field Delete with No Auth', 'TestCustomField/DeleteCustomField?id=-1', 'POST', 401);
+            Test('Custom Field Delete with User that doesn\'t exist', 'TestCustomField/DeleteCustomField?id=-1&auth=nouser', 'POST', 401);
+            Test('Custom Field Delete with Existing User, but bad key', 'TestCustomField/DeleteCustomField?id=-1&auth=badkey', 'POST', 401);
+            Test('Custom Field Delete with Unauthorized User', 'TestCustomField/DeleteCustomField?id=-1&auth=nonadmin', 'POST', 403);
+            Test('Custom Field Delete with Admin User', 'TestCustomField/DeleteCustomField?id=-1&auth=admin', 'POST', 204);
+
+            //Update Custom Field
+            Test('Update Category with No Auth', 'TestCustomField/UpdateCustomField', 'POST', 401);
+            Test('Update Category with User that doesn\'t exist', 'TestCustomField/UpdateCustomField?auth=nouser', 'POST', 401);
+            Test('Update Category with Existing User, but bad key', 'TestCustomField/UpdateCustomField?auth=badkey', 'POST', 401);
+            Test('Update Category with Unauthorized User', 'TestCustomField/UpdateCustomField?auth=nonadmin', 'POST', 403);
+            Test('Update Custom Field with Admin User', 'TestCustomField/UpdateCustomField?auth=admin', 'POST', 204);
+
+            //Assign CustomField to Category
+            Test('Assign CustomField to Category with No Auth', 'TestCustomField/CreateAssignment', 'POST', 401);
+            Test('Assign CustomField to Category with User that doesn\'t exist', 'TestCustomField/CreateAssignment?auth=nouser', 'POST', 401);
+            Test('Assign CustomField to Category with Existing User, but bad key', 'TestCustomField/CreateAssignment?auth=badkey', 'POST', 401);
+            Test('Assign CustomField to Category with Unauthorized User', 'TestCustomField/CreateAssignment?auth=nonadmin', 'POST', 403);
+            Test('Assign CustomField to Category with Admin User', 'TestCustomField/CreateAssignment?auth=admin', 'POST', 201);
+        });                
+        
+    </script>
+}

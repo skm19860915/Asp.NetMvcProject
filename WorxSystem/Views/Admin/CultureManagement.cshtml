@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_CultureManagement");
+}
+<div class="form-horizontal">
+    <div class="form-group"> @Html.AdminResource("ChooseDefaultCulture")</div>
+    <div class="form-group">
+        @using (Html.BeginForm())
+        {
+            foreach (SelectListItem item in Html.Cultures())
+            {
+                @Html.RadioButton("DefaultCulture", item.Value, item.Value.Equals(SiteClient.Settings[SiteProperties.SiteCulture])) @item.Text @:(@item.Value)<br />
+            }
+            <div class="action-panel">
+                <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+            </div>
+        }
+    </div>
+</div>

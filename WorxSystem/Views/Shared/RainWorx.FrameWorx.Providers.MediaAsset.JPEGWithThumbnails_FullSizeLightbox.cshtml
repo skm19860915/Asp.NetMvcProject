@@ -1,0 +1,16 @@
+﻿@model Media
+
+@{
+    //Load Media
+    IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(Model.Loader);
+    Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, Model.Context);
+    string uri = mediaLoader.Load(loaderProviderSettings, Model, "FullSize");
+
+    //jQuery LightBox
+    string uriLarge = uri;
+    if (Model.Variations.ContainsKey("LargeSize"))
+    {
+        uriLarge = mediaLoader.Load(loaderProviderSettings, Model, "LargeSize");
+    }
+}
+<a data-lightbox="lightbox" class="awe-hidden" href="@uriLarge"></a>

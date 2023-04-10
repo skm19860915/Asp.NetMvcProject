@@ -1,0 +1,224 @@
+﻿@model Invoice
+@*This view exists in both the Account and Admin view folders, be sure you're editing the correct one*@
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+    var currentAction = (string)ViewContext.RouteData.Values["action"];
+    var currentController = (string)ViewContext.RouteData.Values["controller"];
+    var savedStripeCards = Html.GetStripeCards(Model);
+}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    $(document).ready(function () {
+
+        @*  v3 implementation  *@
+        @if (Model.Type == InvoiceTypes.Fee)
+        {
+            <text>
+            var stripe = Stripe('@SiteClient.TextSetting(SiteProperties.StripeConnect_SiteFeesPublishableApiKey).ToJavascriptSafeString()');
+            var elements = stripe.elements();
+
+            </text>
+        }
+        else
+        {
+            <text>
+            var stripe = Stripe('@Model.Owner.Properties.Single(p => p.Field.Name == StdUserProps.StripeConnect_SellerPublishableApiKey).Value.ToJavascriptSafeString()');
+            var elements = stripe.elements();
+            </text>
+        }
+
+        // Create an instance of the card UI component
+        //var card = elements.create('card');
+        var card = elements.create('card', {
+            'style': {
+                'base': {
+                    'fontFamily': '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                    'fontSize': '16px',
+                    'color': '#555',
+                }
+            }
+        });
+
+        // Add an instance of the card UI component into the `card-element` <div>
+        card.mount('#card-element');
+
+        function stripeTokenHandler(token) {
+            // Insert the token ID into the form so it gets submitted to the server
+            var form = document.getElementById('CheckoutForm');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            //hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('name', '@Fields.StripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            // Submit the form
+            form.submit();
+        }
+
+        function createToken() {
+            stripe.createToken(card).then(function (result) {
+                if (result.error) {
+                    // Inform the user if there was an error
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    // Send the token to your server
+                    stripeTokenHandler(result.token);
+                }
+            });
+        };
+
+        // Create a token when the form is submitted.
+        var formSubmitting = false;
+        var form = document.getElementById('CheckoutForm');
+        form.addEventListener('submit', function (e) {
+            if (formSubmitting) {
+                e.preventDefault();
+            }
+            else if ($("#AddNewCC:checked").length > 0) {
+                formSubmitting = true;
+                e.preventDefault();
+                createToken();
+            }
+            formSubmitting = true;
+        });
+
+        card.addEventListener('change', function (event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        //Make sure at least one of the options is checked
+        if ($("input[name='@Fields.SelectedStripeCardId']:checked").length == 0) {
+            $("input[name='@Fields.SelectedStripeCardId']").first().attr("checked", "checked");
+        }
+
+        //Initially hides extra "New" options if an "Existing" option is checked
+        if ($("input.ExstCcOpt:checked").length > 0) {
+            $("div.ShowOnNewOnly").hide();
+        }
+
+        //When any option is clicked, toggle extra "New" options as needed
+        $("input[name='@Fields.SelectedStripeCardId']").change(function () {
+            if ($("#AddNewCC:checked").length > 0) {
+                $("div.ShowOnNewOnly").show();
+            } else {
+                $("div.ShowOnNewOnly").hide();
+            }
+        });
+
+        //When any "New" details are entered, automatically check the "New" radio button
+        $(".OnChangeCheckNew").change(function () {
+            $("#AddNewCC").attr("checked", "checked").change();
+        });
+
+    });
+</script>
+
+<div class="col-xs-12 col-sm-6">
+    <div class="payment-method clearfix">
+        <a class="btn btn-info btn-block" role="button" href="#CCCheckout" data-toggle="collapse"> @Html.GlobalResource("CheckoutWithCreditCard") <span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+    <div class="collapse" id="CCCheckout">
+        @if (true)//Model.Total >= 0.50M)
+        {
+            <div class="payment-method clearfix">
+                @using (Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @id = "CheckoutForm" }))
+                {
+                    <div id="card-errors" class="payment-errors stripeError alert alert-danger" role="alert"></div>
+                    @*<span class="payment-errors"></span>*@
+                    @Html.Hidden("provider", ViewData["ProviderName"])
+
+                    <div class="form-horizontal">
+
+                        @if (savedStripeCards.Count() > 0)
+                        {
+                            <strong>@Html.GlobalResource("SelectFromExistingCC")</strong>
+                            <hr />
+                        }
+                        @foreach (var stripeCard in savedStripeCards)
+                        {
+                            <div class="radio">
+                                <label>
+                                    @Html.RadioButton(Fields.SelectedStripeCardId, stripeCard.Id, false, new { @class = "ExstCcOpt" })
+                                    @stripeCard.Brand
+                                    &nbsp; &nbsp; xxxx-@stripeCard.Last4 &nbsp; &nbsp; @stripeCard.ExpirationMonth/@stripeCard.ExpirationYear.ToString().Right(2)
+                                    &nbsp; &nbsp;
+                                    @Html.ActionLink(Html.GlobalResourceString("Remove"), MVC.DeleteCardAction, MVC.StripeController,
+                                        new { invoiceID = Model.ID, cardID = stripeCard.Id, returnUrl },
+                                        new { @class = "btn btn-default btn-xs hidden-xs" })
+                                </label>
+                            </div>
+                        }
+
+                        <div class="radio">
+                            <label>
+                                @Html.RadioButton(Fields.SelectedStripeCardId, 0, false, new { @id = "AddNewCC" })
+                                <strong>@Html.GlobalResource("NewCreditCard")</strong>
+                            </label>
+                            <p>&nbsp;</p>
+                        </div>
+                        <div class="ShowOnNewOnly">
+
+                            @* v3 implementation *@
+                            @if (true)
+                            {
+                                <div class="col-xs-12">
+                                    <div id="card-element">
+                                        <!-- a Stripe Element will be inserted here. -->
+                                    </div>
+                                </div>
+                                <p>&nbsp;</p>
+                            }
+
+                            <div class="form-group">
+                                <div class="col-xs-10 col-xs-offset-2 checkbox">
+                                    @Html.CheckBox(Fields.SaveNewStripeCard, true)
+                                    <label for="@Fields.SaveNewStripeCard">
+                                        @Html.GlobalResource("SaveNewCardInformation")
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="submit" id="CompletePaymentButton" class="btn btn-success btn-block" value="@Html.GlobalResource("PayWithCreditCard")" />
+
+                    </div>
+
+                    <input type="hidden" data-stripe="name" value="@(Model.BillingFirstName + " " + Model.BillingLastName)" />
+                    <input type="hidden" data-stripe="address_line1" value="@Model.BillingStreet1" />
+                    <input type="hidden" data-stripe="address_line2" value="@Model.BillingStreet2" />
+                    <input type="hidden" data-stripe="address_city" value="@Model.BillingCity" />
+                    <input type="hidden" data-stripe="address_state" value="@Model.BillingStateRegion" />
+                    <input type="hidden" data-stripe="address_zip" value="@Model.BillingZipPostal" />
+                    <input type="hidden" data-stripe="address_country" value="@Model.BillingCountry" />
+                }
+                @*<p class="text-center">
+                        &nbsp;<br />
+                        @Html.ButtonLink(Html.GlobalResource("ManageExistingCC"), "CreditCards", "Account", null, new { @class = "btn btn-link" })
+                    </p>*@
+            </div>
+        }
+        else
+        {
+            <div class="payment-method clearfix alert alert-warning">
+                @Html.GlobalResource("CreditCardCheckoutAvailableForInvoiceTotalsOfXandAbove", "$0.50")
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $(document).on("click tap keypress mousemove", function () {
+        if ($.trim($("#card-errors").text()).length) {
+            $("#card-errors").show();
+        }
+        else {
+            $("#card-errors").hide();
+        }
+    });
+</script>

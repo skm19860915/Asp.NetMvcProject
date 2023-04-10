@@ -1,0 +1,90 @@
+﻿
+<script>
+    var childSpanName = null;
+
+    function GetCategories(parentCategoryID) {
+        var retVal = null;
+        var indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("div#" + childSpanName);
+        Proxy.invoke("GetChildCategories", { parentCategoryID: parentCategoryID },
+        function (result) {
+            indicator.remove();
+            //draw select box
+            if (result.length > 0) {
+                $("div#" + childSpanName).append("<div class='form-group'><select class='form-control CategorySelectBox' name='selectFor" + parentCategoryID + "' id='selectFor" + parentCategoryID + "'></select></div>");
+                //render any child divs
+                $("div#" + childSpanName).append("<div class='awe-category-group' id='spanFor" + parentCategoryID + "></div>");
+                childSpanName = "spanFor" + parentCategoryID;
+
+                $("select#selectFor" + parentCategoryID).attr("size", 6);
+                $("select#selectFor" + parentCategoryID).append("<option disabled value='' class='visible-xs visible-sm'> &nbsp;</option>");
+
+                //fill select box
+                for (category in result) {
+                    $("select#selectFor" + parentCategoryID).append("<option value='" + result[category].ID + "'>" + result[category].Name + "</option>");
+                }
+
+
+
+                //attach change handler for select box
+                AttachCategoryChangeHandler(parentCategoryID);
+            }
+            if (FormHasRequiredFields()) {
+                $("#create").prop("disabled", false).fadeTo(0, 1);
+            } else {
+                $("#create").prop("disabled", true).fadeTo(0, 0.5);
+            }
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function AttachCategoryChangeHandler(parentCatID) {
+        $("select#selectFor" + parentCatID).change(function () {
+            if ($(this).find(':selected').length > 0) {
+                var catID = $(this).attr("id");
+                catID = catID.substring(9);
+                $("input#CategoryID").val($(this).val()).change();
+                $("div#spanFor" + catID).fadeOut("fast");
+                $("div#spanFor" + catID).remove();
+                $("select#selectFor" + catID).parent("div").after("<div class='awe-category-group' id='spanFor" + catID + "'></div>");
+                childSpanName = "spanFor" + catID;
+                GetCategories($("select#selectFor" + catID).val());
+            }
+        });
+    }
+
+    function AttachParentChangeHandlers(catID) {
+        var parentSpanID = $("option[value='" + catID + "']").parent("select").parent("div").next().attr("id");
+        childSpanName = parentSpanID;
+        while (parentSpanID != "catlistboxes") {
+            var parentCatID = parentSpanID.substring(7);
+            AttachCategoryChangeHandler(parentCatID);
+            parentSpanID = $("div#spanFor" + parentCatID).parent().attr("id");
+        }
+    }
+
+    $(document).ready(function () {
+        var catID = $("#CategoryID").val();
+        if (catID == "" || $("#selectFor9").length == 0) {
+            //if there's no selected category...
+            childSpanName = "catlistboxes";
+            $("input#CategoryID").val("9");
+            GetCategories(9);
+        }
+        else {
+            AttachParentChangeHandlers(catID);
+            GetCategories(catID);
+        }
+
+    });
+
+</script>
+@Html.Hidden("CategoryID")
+
+<div id="catlistboxes">
+    @if (ViewData["CategoryID"] != null)
+    {
+        @Html.CategorySelectsWithParents((int)ViewData["CategoryID"]);
+    }
+
+</div>

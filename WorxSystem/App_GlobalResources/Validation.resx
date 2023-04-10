@@ -1,0 +1,906 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Birthday_Required" xml:space="preserve">
+    <value>Birthday is required</value>
+  </data>
+  <data name="City_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>City must be at least 1 character</value>
+  </data>
+  <data name="ConfirmationEmailMismatch" xml:space="preserve">
+    <value>The confirmation email doesn't match the email address</value>
+  </data>
+  <data name="confirmEmail_Required" xml:space="preserve">
+    <value>Confirmation email is required</value>
+  </data>
+  <data name="confirmPassword_Required" xml:space="preserve">
+    <value>Confirm Password is required</value>
+  </data>
+  <data name="Country_Required" xml:space="preserve">
+    <value>Country is required</value>
+  </data>
+  <data name="Email_Exists" xml:space="preserve">
+    <value>Email address already exists</value>
+  </data>
+  <data name="Email_Invalid" xml:space="preserve">
+    <value>Email address appears to be invalid</value>
+  </data>
+  <data name="Email_Length_3_Inclusive_to_500_Inclusive" xml:space="preserve">
+    <value>The email address does not meet the character limits</value>
+  </data>
+  <data name="Email_Required" xml:space="preserve">
+    <value>Email address is required</value>
+  </data>
+  <data name="FirstName_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>First Name must be at least 1 character</value>
+  </data>
+  <data name="FirstName_Required" xml:space="preserve">
+    <value>First Name is required</value>
+  </data>
+  <data name="LastName_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>Last Name must be at least 1 character</value>
+  </data>
+  <data name="LastName_Required" xml:space="preserve">
+    <value>Last Name is required</value>
+  </data>
+  <data name="MustAgreeToAgreements" xml:space="preserve">
+    <value>You must accept the Terms &amp; Conditions to complete your registration</value>
+  </data>
+  <data name="Password_Required" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="StateRegion_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>State/Region must be at least 1 character</value>
+  </data>
+  <data name="Street1_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>Street Line 1 must be at least 1 character</value>
+  </data>
+  <data name="UserName_Exists" xml:space="preserve">
+    <value>The username already exists</value>
+  </data>
+  <data name="UserName_Invalid" xml:space="preserve">
+    <value>User Name is invalid</value>
+  </data>
+  <data name="UserName_Length_1_Ignore_to_50_Inclusive" xml:space="preserve">
+    <value>Username must be less than 50 characters</value>
+  </data>
+  <data name="ZipPostal_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>Zip/Postal must be at least 1 character</value>
+  </data>
+  <data name="_" xml:space="preserve">
+    <value>!</value>
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>Login Failed, User Name or Password is incorrect</value>
+  </data>
+  <data name="PasswordMissing" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="UserNameMissing" xml:space="preserve">
+    <value>Username is required</value>
+  </data>
+  <data name="UserNotExist" xml:space="preserve">
+    <value>User does not exist</value>
+  </data>
+  <data name="AFieldThatAllItemsHave_Required" xml:space="preserve">
+    <value>AFieldThatAllItemsHave is required</value>
+  </data>
+  <data name="Description_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>Description must be at least 1 character</value>
+  </data>
+  <data name="Description_Required" xml:space="preserve">
+    <value>Description is required</value>
+  </data>
+  <data name="Duration_Required" xml:space="preserve">
+    <value>Duration is required</value>
+  </data>
+  <data name="FixedPrice_ConvertDecimal" xml:space="preserve">
+    <value>Fixed Price must be a number</value>
+  </data>
+  <data name="Price_ConvertDecimal" xml:space="preserve">
+    <value>Price must be a number</value>
+  </data>
+  <data name="Price_Required" xml:space="preserve">
+    <value>Price is required</value>
+  </data>
+  <data name="ReservePrice_ConvertDecimal" xml:space="preserve">
+    <value>Reserve Price must be a number</value>
+  </data>
+  <data name="SelectCategoryAndListingType" xml:space="preserve">
+    <value>Select Category and Listing Type</value>
+  </data>
+  <data name="Title_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>Title must be 200 characters or less</value>
+  </data>
+  <data name="Title_Required" xml:space="preserve">
+    <value>Title is required</value>
+  </data>
+  <data name="PasswordAnswerRequiresPasswordQuestion" xml:space="preserve">
+    <value>Since you supplied a Password Answer, Password Question is required</value>
+  </data>
+  <data name="PasswordQuestionRequiresPasswordAnswer" xml:space="preserve">
+    <value>Since you supplied a Password Question, Password Answer is required</value>
+  </data>
+  <data name="Password_Length_6_Inclusive_to_100_Inclusive" xml:space="preserve">
+    <value>Password must be between 6 and 100 characters</value>
+  </data>
+  <data name="Body_Length_3_Inclusive_to_100000_Inclusive" xml:space="preserve">
+    <value>Body must be between 3 and 100,000 characters</value>
+  </data>
+  <data name="FixedPrice_TooLow" xml:space="preserve">
+    <value>Buy Now Price is too low</value>
+  </data>
+  <data name="ReservePrice_TooLow" xml:space="preserve">
+    <value>Reserve Price is too low</value>
+  </data>
+  <data name="shippingAmountNotNumeric" xml:space="preserve">
+    <value>Shipping Amount must be numeric</value>
+  </data>
+  <data name="Subject_Length_3_Inclusive_to_100_Inclusive" xml:space="preserve">
+    <value>Subject must be between 3 and 100 characters</value>
+  </data>
+  <data name="AddressID_Missing" xml:space="preserve">
+    <value>Please select an Address</value>
+  </data>
+  <data name="Birthday_ConvertDateTime" xml:space="preserve">
+    <value>Unable to convert Birthday to a Date/Time</value>
+  </data>
+  <data name="CardNumber_AlgorithmInvalid" xml:space="preserve">
+    <value>Card Number appears to be invalid</value>
+  </data>
+  <data name="CardNumber_FormatInvalid" xml:space="preserve">
+    <value>Card Number is not in the correct format</value>
+  </data>
+  <data name="CardNumber_Required" xml:space="preserve">
+    <value>Card Number is required</value>
+  </data>
+  <data name="CardType_Required" xml:space="preserve">
+    <value>Card Type is required</value>
+  </data>
+  <data name="City_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>City must contain between 1 and 200 characters</value>
+  </data>
+  <data name="ConfirmationPasswordMismatch" xml:space="preserve">
+    <value>The confirmation password doesn't match the password</value>
+  </data>
+  <data name="CurrenctPasswordIncorrect" xml:space="preserve">
+    <value>Current password is incorrect</value>
+  </data>
+  <data name="Description_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>Description must be between 1 and 200 characters</value>
+  </data>
+  <data name="Description_Length_3_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>Description must be between 3 and 200 characters</value>
+  </data>
+  <data name="ExpirationMonth_Range_1_Inclusive_to_12_Inclusive" xml:space="preserve">
+    <value>Expiration Month must be an integer between 1 and 12</value>
+  </data>
+  <data name="ExpirationMonth_Required" xml:space="preserve">
+    <value>Expiration Month is required</value>
+  </data>
+  <data name="ExpirationYear_Range_2010_Inclusive_to_2070_Inclusive" xml:space="preserve">
+    <value>Expiration Year is invalid.</value>
+  </data>
+  <data name="ExpirationYear_Required" xml:space="preserve">
+    <value>Expiration Year is required</value>
+  </data>
+  <data name="FirstName_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>First Name must be less than 200 characters</value>
+  </data>
+  <data name="LastName_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>Last Name must be less than 200 characters</value>
+  </data>
+  <data name="Quantity_ConvertInteger" xml:space="preserve">
+    <value>Quantity must be a number equal to or less than the number available</value>
+  </data>
+  <data name="StateRegion_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>State/Region is required</value>
+  </data>
+  <data name="Street1_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>Street Line 1 must be between 1 and 200 characters</value>
+  </data>
+  <data name="UserIsNotVerified" xml:space="preserve">
+    <value>Your account has not been verified.  Please check your email and follow the instructions.</value>
+  </data>
+  <data name="ZipPostal_Length_1_Inclusive_to_200_Inclusive" xml:space="preserve">
+    <value>Zip/Postal must be between 1 and 200 characters</value>
+  </data>
+  <data name="LicenceInvalid" xml:space="preserve">
+    <value>The Licence is invalid.  Contact the site administrator for further information.</value>
+  </data>
+  <data name="EndDate_Required" xml:space="preserve">
+    <value>Ending Date is required</value>
+  </data>
+  <data name="EndTime_Required" xml:space="preserve">
+    <value>Ending Time is required</value>
+  </data>
+  <data name="StartDate_Required" xml:space="preserve">
+    <value>Starting Date is required</value>
+  </data>
+  <data name="StartTime_Required" xml:space="preserve">
+    <value>Starting Time is required</value>
+  </data>
+  <data name="Price_GTZero" xml:space="preserve">
+    <value>Price must be greater than zero</value>
+  </data>
+  <data name="Quantity_GTZero" xml:space="preserve">
+    <value>Quantity must be greater than zero</value>
+  </data>
+  <data name="ListingId_ConvertInteger" xml:space="preserve">
+    <value>Listing ID must be a number</value>
+  </data>
+  <data name="PriceHigh_ConvertDecimal" xml:space="preserve">
+    <value>Price High must be a number</value>
+  </data>
+  <data name="PriceLow_ConvertDecimal" xml:space="preserve">
+    <value>Price Low must be a number</value>
+  </data>
+  <data name="Amount_ConvertDecimal" xml:space="preserve">
+    <value>Amount must be a number</value>
+  </data>
+  <data name="Amount_GTEZero" xml:space="preserve">
+    <value>Amount must be zero or greater</value>
+  </data>
+  <data name="Amount_Required" xml:space="preserve">
+    <value>Amount is required</value>
+  </data>
+  <data name="FormatString_Required" xml:space="preserve">
+    <value>Format String is required</value>
+  </data>
+  <data name="Name_Required" xml:space="preserve">
+    <value>Name is required</value>
+  </data>
+  <data name="ValidFields_Required" xml:space="preserve">
+    <value>Valid Fields is required</value>
+  </data>
+  <data name="LowerBoundInclusive_ConvertDecimal" xml:space="preserve">
+    <value>Lower Bound must be a number</value>
+  </data>
+  <data name="LowerBoundInclusive_GTEZero" xml:space="preserve">
+    <value>Lower Bound must be zero or greater</value>
+  </data>
+  <data name="LowerBoundInclusive_Required" xml:space="preserve">
+    <value>Lower Bound is required</value>
+  </data>
+  <data name="UpperBoundExclusive_ConvertDecimal" xml:space="preserve">
+    <value>Upper Bound must be a number</value>
+  </data>
+  <data name="UpperBoundExclusive_GTEZero" xml:space="preserve">
+    <value>Upper Bound must be zero or greater</value>
+  </data>
+  <data name="UpperBoundExclusive_Required" xml:space="preserve">
+    <value>Upper Bound is required</value>
+  </data>
+  <data name="Value_ConvertDecimal" xml:space="preserve">
+    <value>Value must be a number</value>
+  </data>
+  <data name="Value_GTEZero" xml:space="preserve">
+    <value>Value must be zero or greater</value>
+  </data>
+  <data name="Value_Required" xml:space="preserve">
+    <value>Value is required</value>
+  </data>
+  <data name="Default_ConvertBoolean" xml:space="preserve">
+    <value>Default Value must be true or false</value>
+  </data>
+  <data name="Default_ConvertDateTime" xml:space="preserve">
+    <value>Default Value must be a valid date</value>
+  </data>
+  <data name="Default_ConvertDecimal" xml:space="preserve">
+    <value>Default Value must be a number</value>
+  </data>
+  <data name="Default_ConvertInteger" xml:space="preserve">
+    <value>Default Value must be a number</value>
+  </data>
+  <data name="DisplayOrder_ConvertInteger" xml:space="preserve">
+    <value>Display Order must be a number</value>
+  </data>
+  <data name="DisplayOrder_Required" xml:space="preserve">
+    <value>Display Order is required</value>
+  </data>
+  <data name="Minutes_ConvertInteger" xml:space="preserve">
+    <value>Minutes must be a number</value>
+  </data>
+  <data name="Minutes_GTZero" xml:space="preserve">
+    <value>Minutes must be greater than zero</value>
+  </data>
+  <data name="Minutes_Required" xml:space="preserve">
+    <value>Minutes is required</value>
+  </data>
+  <data name="Rating_Required" xml:space="preserve">
+    <value>Rating is required</value>
+  </data>
+  <data name="MaxImagesExceeded" xml:space="preserve">
+    <value>You have exceeded the maximum number of images.</value>
+  </data>
+  <data name="PayPalEmailRequiredForAcceptPayPal" xml:space="preserve">
+    <value>You must provide a PayPal Email in order to set Accept PayPal Payments</value>
+  </data>
+  <data name="AcceptPayPalRequiredForInstantCheckout" xml:space="preserve">
+    <value>You must accept PayPal in order to offer Instant Checkout</value>
+  </data>
+  <data name="CultureManagementSuccess" xml:space="preserve">
+    <value>Culture Management Success</value>
+  </data>
+  <data name="IllegalNoLanguages" xml:space="preserve">
+    <value>You must enable at least one language.</value>
+  </data>
+  <data name="IllegalSiteCultureForLanguages" xml:space="preserve">
+    <value>The default site culture is related to one of the languages you attempted to disable.  Change the default site culture to match an enabled language first.</value>
+  </data>
+  <data name="BidAmount_ConvertDecimal" xml:space="preserve">
+    <value>Bid Amount must be a number</value>
+  </data>
+  <data name="BannerMediaId_Required" xml:space="preserve">
+    <value>A banner image is required</value>
+  </data>
+  <data name="LinkURI_Required" xml:space="preserve">
+    <value>A banner link is required</value>
+  </data>
+  <data name="Comment_Required" xml:space="preserve">
+    <value>Comment is required</value>
+  </data>
+  <data name="ListingId_Missing" xml:space="preserve">
+    <value>Listing ID is Missing</value>
+  </data>
+  <data name="Rating_Missing" xml:space="preserve">
+    <value>Rating is required</value>
+  </data>
+  <data name="BidAmount_GTZero" xml:space="preserve">
+    <value>Bid Amount must be greater than zero</value>
+  </data>
+  <data name="BannerHtml_Required" xml:space="preserve">
+    <value>Banner HTML is required</value>
+  </data>
+  <data name="EndTime_ConvertDateTime" xml:space="preserve">
+    <value>End Time must be a valid time value</value>
+  </data>
+  <data name="StartTime_ConvertDateTime" xml:space="preserve">
+    <value>Start Time must be a valid time value</value>
+  </data>
+  <data name="Title_Length_1_Inclusive_to_80_Inclusive" xml:space="preserve">
+    <value>Title must be 80 characters or less</value>
+  </data>
+  <data name="ListingNotFound" xml:space="preserve">
+    <value>Listing not found</value>
+  </data>
+  <data name="AuctionChanged" xml:space="preserve">
+    <value>Auction changed, please try again</value>
+  </data>
+  <data name="CantDeleteShippingMethod" xml:space="preserve">
+    <value>The shipping method could not be deleted because it is referenced by one or more listings</value>
+  </data>
+  <data name="CategoryIDMissing" xml:space="preserve">
+    <value>Missing Category ID</value>
+  </data>
+  <data name="ClassifiedChanged" xml:space="preserve">
+    <value>Listing changed, please try again</value>
+  </data>
+  <data name="DuplicateShippingMethod" xml:space="preserve">
+    <value>Duplicate Shipping Method</value>
+  </data>
+  <data name="FieldNotExist" xml:space="preserve">
+    <value>Field does not exist</value>
+  </data>
+  <data name="FixedPriceChanged" xml:space="preserve">
+    <value>Listing changed, please try again</value>
+  </data>
+  <data name="InvalidDisplayOrderValue" xml:space="preserve">
+    <value>Invalid Display Order</value>
+  </data>
+  <data name="InvalidShippingMethodName" xml:space="preserve">
+    <value>Invalid Shipping Method Name</value>
+  </data>
+  <data name="ListingIDMissing" xml:space="preserve">
+    <value>Missing Listing ID</value>
+  </data>
+  <data name="MissingPaymentProviderForIPN" xml:space="preserve">
+    <value>Missing payment provider for IPN</value>
+  </data>
+  <data name="Quantity_Required" xml:space="preserve">
+    <value>Quantity is required</value>
+  </data>
+  <data name="UserIsNotApproved" xml:space="preserve">
+    <value>Your account has not been approved yet.</value>
+  </data>
+  <data name="AutoRelistCantBeIncreased" xml:space="preserve">
+    <value>Auto Relist can't be increased</value>
+  </data>
+  <data name="AutoRelistTooHigh" xml:space="preserve">
+    <value>Auto Relist is too high</value>
+  </data>
+  <data name="PayPal_Email_Invalid" xml:space="preserve">
+    <value>PayPal Email address appears to be invalid</value>
+  </data>
+  <data name="adjustmentAmount_ConvertDecimal" xml:space="preserve">
+    <value>Adjustment Amount must be a number</value>
+  </data>
+  <data name="adjustmentAmount_Required" xml:space="preserve">
+    <value>Adjustment Amount is required</value>
+  </data>
+  <data name="adjustmentDescription_Required" xml:space="preserve">
+    <value>Adjustment Description is required</value>
+  </data>
+  <data name="Description_Length_0_Ignore_to_1000_Inclusive" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Description_Length_1_Inclusive_to_1_Ignore" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CustomField_ConvertBoolean" xml:space="preserve">
+    <value>{0} must be true or false</value>
+  </data>
+  <data name="CustomField_ConvertDateTime" xml:space="preserve">
+    <value>{0} must be a valid date</value>
+  </data>
+  <data name="CustomField_ConvertDecimal" xml:space="preserve">
+    <value>{0} must be a number</value>
+  </data>
+  <data name="CustomField_ConvertInteger" xml:space="preserve">
+    <value>{0} must be a number</value>
+  </data>
+  <data name="CustomField_GTZero" xml:space="preserve">
+    <value>{0} must be greater than zero</value>
+  </data>
+  <data name="CustomField_MaxLength" xml:space="preserve">
+    <value>{0} is too long</value>
+  </data>
+  <data name="CustomField_MinLength" xml:space="preserve">
+    <value>{0} is too short</value>
+  </data>
+  <data name="CustomField_Missing" xml:space="preserve">
+    <value>{0} is required</value>
+  </data>
+  <data name="CustomField_Required" xml:space="preserve">
+    <value>{0} is required</value>
+  </data>
+  <data name="CustomField_TooLow" xml:space="preserve">
+    <value>{0} is too low</value>
+  </data>
+  <data name="BidAmountTooLow" xml:space="preserve">
+    <value>Bid amount is too low</value>
+  </data>
+  <data name="QuantityTooHigh" xml:space="preserve">
+    <value>Quantity must be a number equal to or less than the number available</value>
+  </data>
+  <data name="Comment_Length_3_Inclusive_to_80_Inclusive" xml:space="preserve">
+    <value>Comment must be between 3 and 80 characters</value>
+  </data>
+  <data name="CustomField_CommaListInts" xml:space="preserve">
+    <value>{0} must be a comma delimited list of whole numbers</value>
+  </data>
+  <data name="CustomField_InvalidValue" xml:space="preserve">
+    <value>{0} is not one of the allowed values</value>
+  </data>
+  <data name="CustomField_NonNegative" xml:space="preserve">
+    <value>{0} cannot be negative</value>
+  </data>
+  <data name="EndDate_ConvertDateTime" xml:space="preserve">
+    <value>End Date must be a valid date value</value>
+  </data>
+  <data name="StartDate_ConvertDateTime" xml:space="preserve">
+    <value>Start Date must be a valid date value</value>
+  </data>
+  <data name="EndDateTimeMustBeInTheFuture" xml:space="preserve">
+    <value>End Date/Time must be in the future</value>
+  </data>
+  <data name="ConfirmationNewPasswordMismatch" xml:space="preserve">
+    <value>The new password and confirmation password do not match.</value>
+  </data>
+  <data name="BatchTime_ConvertDateTime" xml:space="preserve">
+    <value>Unable to convert Time of Day to a Time</value>
+  </data>
+  <data name="UserIsLockedOut" xml:space="preserve">
+    <value>Your account is locked.  Please contact the site administrator.</value>
+  </data>
+  <data name="AcceptPayPalOrCreditCardRequiredForInstantCheckout" xml:space="preserve">
+    <value>You must accept PayPal or Credit Cards in order to offer Instant Checkout</value>
+  </data>
+  <data name="BuyNowNotAvailable" xml:space="preserve">
+    <value>Sorry.  This listing is no longer eligible for instant purchase.  Please feel free to enter your BID below.</value>
+  </data>
+  <data name="Message_Required" xml:space="preserve">
+    <value>Message is required</value>
+  </data>
+  <data name="EndDTTMBeforeStartDTTM" xml:space="preserve">
+    <value>End Date/Time must be after Start Date/Time</value>
+  </data>
+  <data name="CreditCard_Expired" xml:space="preserve">
+    <value>Credit Card is expired</value>
+  </data>
+  <data name="CustomFieldAlreadyExists" xml:space="preserve">
+    <value>The custom field you are trying to add already exists</value>
+  </data>
+  <data name="CustomFieldReservedWord" xml:space="preserve">
+    <value>The field you are trying to add is a reserved word and cannot be used.</value>
+  </data>
+  <data name="NewCustomField_Name_Invalid" xml:space="preserve">
+    <value>Custom Field names may only contain letters, numbers, spaces, and underscores.</value>
+  </data>
+  <data name="Body_Length_1_Inclusive_to_0_Ignore" xml:space="preserve">
+    <value>Body is required</value>
+  </data>
+  <data name="Subject_Length_1_Inclusive_to_500_Inclusive" xml:space="preserve">
+    <value>Subject is required, up to 500 characters</value>
+  </data>
+  <data name="CustomField_EditNotAllowed" xml:space="preserve">
+    <value>Editing {0} is not allowed</value>
+  </data>
+  <data name="CountryNotExist" xml:space="preserve">
+    <value>Country does not exist</value>
+  </data>
+  <data name="StateCodesMustBeUnique" xml:space="preserve">
+    <value>State/Region Codes under the same country must be unique</value>
+  </data>
+  <data name="State_Code_Length_1_Inclusive_to_10_Inclusive" xml:space="preserve">
+    <value>State/Region Code must be between 1 and 10 characters</value>
+  </data>
+  <data name="State_Name_Length_1_Inclusive_to_100_Inclusive" xml:space="preserve">
+    <value>State/Region Name must be between 1 and 100 characters</value>
+  </data>
+  <data name="UserName_Length_1_Inclusive_to_50_Ignore" xml:space="preserve">
+    <value>Username is required</value>
+  </data>
+  <data name="LotNumber_Required" xml:space="preserve">
+    <value>Lot Number is required</value>
+  </data>
+  <data name="UnknownBillingCountryX" xml:space="preserve">
+    <value>Unknown billing country '{0}'</value>
+  </data>
+  <data name="UnknownCountryX" xml:space="preserve">
+    <value>Unknown country '{0}'</value>
+  </data>
+  <data name="RequiredNonDeferredAdminOnlyUserFieldNotAllowed" xml:space="preserve">
+    <value>Admin-only User fields cannot be set to required and not deferred.</value>
+  </data>
+  <data name="NoValidStateDataFound" xml:space="preserve">
+    <value>No valid State/Region data was found.  Each line must contain the State/Region Code, followed by a comma, followed by the State/Region Name.</value>
+  </data>
+  <data name="BidIncrement_ConvertDecimal" xml:space="preserve">
+    <value>Bid Increment must be a number</value>
+  </data>
+  <data name="BidIncrement_GTZero" xml:space="preserve">
+    <value>Bid Increment must be must be greater than zero</value>
+  </data>
+  <data name="PriceLevel_ConvertDecimal" xml:space="preserve">
+    <value>Price Level must be a number</value>
+  </data>
+  <data name="PriceLevel_GTZero" xml:space="preserve">
+    <value>Price Level must be must greater than zero</value>
+  </data>
+  <data name="adjustmentAmount_GTZero" xml:space="preserve">
+    <value>Adjustment Amount must be must greater than zero</value>
+  </data>
+  <data name="IncrementAmountMustBeGreaterThanZero" xml:space="preserve">
+    <value>Amount must be greater than zero</value>
+  </data>
+  <data name="IncrementPriceLevelMustBeZeroOrGreater" xml:space="preserve">
+    <value>Price Level must be zero or greater</value>
+  </data>
+  <data name="DemoDisabledNotSaved" xml:space="preserve">
+    <value>The requested changes were not been saved because the site is in demo mode.</value>
+  </data>
+  <data name="DataCleanup_DeleteListings_DaysOld_GTEZero" xml:space="preserve">
+    <value>Delete Listings Days Old must be  zero or greater</value>
+  </data>
+  <data name="InvoiceNumber_ConvertInteger" xml:space="preserve">
+    <value>Invoice # must be a number</value>
+  </data>
+  <data name="ListingNumber_ConvertInteger" xml:space="preserve">
+    <value>Listing # must be a number</value>
+  </data>
+  <data name="AutoRelist_ConvertInteger" xml:space="preserve">
+    <value>Auto Relist must be a number</value>
+  </data>
+  <data name="AutoRelist_GTZero" xml:space="preserve">
+    <value>Auto Relist must be greater than or equal to zero</value>
+  </data>
+  <data name="Invalid_Captcha" xml:space="preserve">
+    <value>The CAPTCHA code is missing or invalid</value>
+  </data>
+  <data name="InvalidTimeZone" xml:space="preserve">
+    <value>Invalid Time Zone</value>
+  </data>
+  <data name="Title_Length_1_Inclusive_to_1000_Inclusive" xml:space="preserve">
+    <value>Title must be 1000 characters or less</value>
+  </data>
+  <data name="LotNotFound" xml:space="preserve">
+    <value>Lot not found</value>
+  </data>
+  <data name="LotNumber_Exists" xml:space="preserve">
+    <value>Lot Number must be unique</value>
+  </data>
+  <data name="EventDescription_Required" xml:space="preserve">
+    <value>Description is required</value>
+  </data>
+  <data name="ShippingInfo_Required" xml:space="preserve">
+    <value>Shipping Info is required</value>
+  </data>
+  <data name="Subtitle_Length_0_Inclusive_to_1000_Inclusive" xml:space="preserve">
+    <value>Summary must be 1000 characters or less</value>
+    <comment>note Event.Subtitle has been renamed 'Summary'</comment>
+  </data>
+  <data name="TermsAndConditions_Required" xml:space="preserve">
+    <value>Terms &amp; Conditions are required</value>
+  </data>
+  <data name="INC_Increment_ConvertDecimal" xml:space="preserve">
+    <value>One or more Increment values (under Increments) contains data that cannot be converted to a decimal.</value>
+  </data>
+  <data name="INC_Increment_GTZero" xml:space="preserve">
+    <value>One or more Increment values (under Increments) is less than 0.01.  All Increment values must be &gt;= 0.01</value>
+  </data>
+  <data name="INC_PriceLevel_ConvertDecimal" xml:space="preserve">
+    <value>One or more Price Level values (under Increments) contains data that cannot be converted to a decimal.</value>
+  </data>
+  <data name="INC_PriceLevel_GTZero" xml:space="preserve">
+    <value>One or more Price Level values (under Increments) is less than zero.  All Price Level values must be &gt;= zero</value>
+  </data>
+  <data name="MissingZeroLevelIncrement" xml:space="preserve">
+    <value>A bid increment with a price level of 0 is required</value>
+  </data>
+  <data name="BuyersPremiumPercent_InvalidPercentageValue" xml:space="preserve">
+    <value>Invalid Buyers Premium Percentage</value>
+  </data>
+  <data name="RecaptchaPrivateKey_Required_For_EnableRecaptchaForContactUs" xml:space="preserve">
+    <value>Recaptcha Private Key is required in order to Enable Recaptcha For Contact Us</value>
+  </data>
+  <data name="RecaptchaPrivateKey_Required_For_EnableRecaptchaForRegistration" xml:space="preserve">
+    <value>Recaptcha Private Key is required in order to Enable Recaptcha For Registration</value>
+  </data>
+  <data name="RecaptchaPublicKey_Required_For_EnableRecaptchaForContactUs" xml:space="preserve">
+    <value>Recaptcha Public Key is required in order to Enable Recaptcha For Contact Us</value>
+  </data>
+  <data name="RecaptchaPublicKey_Required_For_EnableRecaptchaForRegistration" xml:space="preserve">
+    <value>Recaptcha Public Key is required in order to Enable Recaptcha For Registration</value>
+  </data>
+  <data name="UserName_Length_1_Inclusive_to_50_Inclusive" xml:space="preserve">
+    <value>Username must be between 1 and 50 characters</value>
+  </data>
+  <data name="ClosingGroupIncrementChangeNotAllowed" xml:space="preserve">
+    <value>Closing Group Increment change not allowed for this event</value>
+  </data>
+  <data name="EndDateChangeNotAllowed" xml:space="preserve">
+    <value>End Date change not allowed for this event</value>
+  </data>
+  <data name="StartDateChangeNotAllowed" xml:space="preserve">
+    <value>Start Date change not allowed for this event</value>
+  </data>
+  <data name="BuyersPremiumPercent_ConvertDecimal" xml:space="preserve">
+    <value>Invalid Buyers Premium Percentage</value>
+  </data>
+  <data name="ClosingGroupIncrementSeconds_ConvertInteger" xml:space="preserve">
+    <value>Closing Group Increment must be a whole number</value>
+  </data>
+  <data name="ClosingGroupIncrementSeconds_Required" xml:space="preserve">
+    <value>Closing Group Increment is required</value>
+  </data>
+  <data name="SoftClosingGroupIncrementSeconds_ConvertInteger" xml:space="preserve">
+    <value>Auto Extend Increment must be a whole number</value>
+  </data>
+  <data name="SoftClosingGroupIncrementSeconds_Required" xml:space="preserve">
+    <value>Auto Extend Increment is required</value>
+  </data>
+  <data name="ContentNameAlreadyExists" xml:space="preserve">
+    <value>Content Name Already Exists</value>
+  </data>
+  <data name="Name_Invalid" xml:space="preserve">
+    <value>Content Name may only contain alpha numeric characters, dashes, underscores or periods</value>
+  </data>
+  <data name="Name_Length_1_Ignore_to_200_Inclusive" xml:space="preserve">
+    <value>Content Name must be less than 200 characters</value>
+  </data>
+  <data name="Name_Length_1_Inclusive_to_200_Ignore" xml:space="preserve">
+    <value>Content Name is required</value>
+  </data>
+  <data name="ManagedByName_Length_0_Inclusive_to_1000_Inclusive" xml:space="preserve">
+    <value>Managed By must be 1000 characters or less</value>
+  </data>
+  <data name="MaxResultsPerPage_GTZero" xml:space="preserve">
+    <value>Max Results Per Page must be greater than zero</value>
+  </data>
+  <data name="AuthNetCredentialsRequiredForAcceptCreditCards" xml:space="preserve">
+    <value>You must provide Authorize.Net credentials in order to Accept Credit Card Payments</value>
+  </data>
+  <data name="VatRate_Required_For_VATEnabled" xml:space="preserve">
+    <value>VAT Rate is required in order to Enable VAT</value>
+  </data>
+  <data name="Question_Length_1_Inclusive_to_250_Inclusive" xml:space="preserve">
+    <value>Question must be between 1 and 250 characters</value>
+  </data>
+  <data name="Answer_Length_1_Inclusive_to_250_Inclusive" xml:space="preserve">
+    <value>Answer must be between 1 and 250 characters</value>
+  </data>
+  <data name="AuthNetAndStripeCantBothBeEnabled" xml:space="preserve">
+    <value>Either "Authorize.NET" or "Stripe" must be disabled</value>
+  </data>
+  <data name="StripeConnectCredentialsRequiredForAcceptCreditCards" xml:space="preserve">
+    <value>You must connect your Stripe.com account in order to Accept Credit Card Payments</value>
+  </data>
+  <data name="CreditCardRequired" xml:space="preserve">
+    <value>Credit Card Required</value>
+  </data>
+  <data name="StoredCreditCardsAndStripeCantBothBeEnabled" xml:space="preserve">
+    <value>When Stripe is enabled, Stored Credit Cards must be disabled</value>
+  </data>
+  <data name="AcceptCreditCardRequiredForInstantCheckout" xml:space="preserve">
+    <value>You must accept Credit Cards in order to offer Instant Checkout</value>
+  </data>
+  <data name="AcceptPayPalOrStripeRequiredForInstantCheckout" xml:space="preserve">
+    <value>You must accept PayPal or configure Stripe in order to offer Instant Checkout</value>
+  </data>
+  <data name="StripeRequiredForInstantCheckout" xml:space="preserve">
+    <value>You must configure Stripe in order to offer Instant Checkout</value>
+  </data>
+  <data name="TemplateNotExist" xml:space="preserve">
+    <value>Email template does not exist</value>
+  </data>
+  <data name="Amount_GTZero" xml:space="preserve">
+    <value>Amount must be greater than zero</value>
+  </data>
+  <data name="OfferMessage_Length_0_Ignore_to_250_Inclusive" xml:space="preserve">
+    <value>Offer Message must be 250 characters or less</value>
+  </data>
+  <data name="OfferAlreadyAccepted" xml:space="preserve">
+    <value>Offer Already Accepted</value>
+  </data>
+  <data name="OfferAmountMustBeLessThanBuyNowPrice" xml:space="preserve">
+    <value>Offer Amount must be less than the Buy Now price</value>
+  </data>
+  <data name="OfferAmountMustBeLessThanPrice" xml:space="preserve">
+    <value>Offer Amount must be less than the price</value>
+  </data>
+  <data name="OfferNotFound" xml:space="preserve">
+    <value>Offer not found</value>
+  </data>
+  <data name="CantSendMessageToSelf" xml:space="preserve">
+    <value>Message Failure:  Cannot send message to self.</value>
+  </data>
+  <data name="PasswordRequireDigit" xml:space="preserve">
+    <value>Passwords must have at least one digit ('0'-'9').</value>
+    <comment>Error when passwords do not have a digit</comment>
+  </data>
+  <data name="PasswordRequireLower" xml:space="preserve">
+    <value>Passwords must have at least one lowercase ('a'-'z').</value>
+    <comment>Error when passwords do not have a lowercase letter</comment>
+  </data>
+  <data name="PasswordRequireNonLetterOrDigit" xml:space="preserve">
+    <value>Passwords must have at least one non letter or digit character.</value>
+    <comment>Error when password does not have enough letter or digit characters</comment>
+  </data>
+  <data name="PasswordRequireUpper" xml:space="preserve">
+    <value>Passwords must have at least one uppercase ('A'-'Z').</value>
+    <comment>Error when passwords do not have an uppercase letter</comment>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>Passwords must be at least {0} characters.</value>
+    <comment>Error message for passwords that are too short</comment>
+  </data>
+  <data name="UserTemporarilyLockedOut" xml:space="preserve">
+    <value>Your account has been locked out due to too many password attempts, please try again later.</value>
+  </data>
+  <data name="LeafCategoryRequired" xml:space="preserve">
+    <value>You must select a category that does not have any sub-categories</value>
+  </data>
+  <data name="CustomFieldNameTooLong" xml:space="preserve">
+    <value>Custom Field Names must be 100 characters or less</value>
+  </data>
+  <data name="ListingTypeNotSpecified" xml:space="preserve">
+    <value>Listing Type Not Specified</value>
+  </data>
+</root>

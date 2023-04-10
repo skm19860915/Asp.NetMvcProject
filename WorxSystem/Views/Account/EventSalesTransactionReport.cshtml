@@ -1,0 +1,386 @@
+﻿@model Page<SalesTransactionReportResult>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+}
+@section head {
+    @Styles.Render("~/bundles/timepicker_css")
+    @Scripts.Render("~/bundles/datetimepicker_js")
+    <script>
+        $(document).ready(function () {
+            var isSubmitting = false;
+
+            //when any filter input is changed, submit the form
+            $(".SubmitOnChange").change(function () {
+                //submit container form
+                if (!isSubmitting) {
+                    isSubmitting = true;
+                    $("#Report1").submit();
+                    return true;
+                }
+                return false;
+            });
+
+            $("#ApplyFilters").show().click(function () {
+                if (!isSubmitting) {
+                    isSubmitting = true;
+                    $("#Report1").submit();
+                }
+                return false;
+            });
+            @{
+                string exportURL = Html.GetActionUrl(MVC.EventSalesTransactionCSVAction);
+                exportURL += "?" + HttpContext.Current.Request.QueryString;
+            }
+            $("#ExportCSV").show().click(function () {
+                document.location = $.htmlDecode("@exportURL");
+                return false;
+            });
+
+            $(".awe-print-invoice-link").click(function (event) {
+                event.preventDefault();
+                var targetUrl = $.htmlDecode($(this).attr("href"));
+                window.open(targetUrl, '_blank', 'width=600,height=600,scrollbars=yes');
+            });
+
+            $(".void-invoiced-sale-link").click(function () {
+                //alert('lineItemId:' + $(this).data("lineItemId"));
+                var urlTemplate = '@MvcHtmlString.Create(Html.GetActionUrl(MVC.RemoveLineItemAction, MVC.AccountController,
+                    new { lineItemID = "LINEITEMID", invoiceID = "INVOICEID",
+                        returnUrl = Html.GetActionUrl(MVC.VoidLineItemsAction, MVC.AccountController,
+                            new { LineItemIDs = "LINEITEMID", voided = "True", returnUrl })}).ToJavascriptSafeString())';
+                var targetUrl = urlTemplate.replace(/LINEITEMID/g, $(this).data("lineItemId")).replace(/INVOICEID/g, $(this).data("invoiceId"));
+                //alert(targetUrl);
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp;'
+                        + ' @Html.GlobalResourceString("VoidInvoicedSaleWarningTitle").ToJavascriptSafeString()',
+                    message: '@Html.GlobalResource("VoidInvoicedSaleWarningText").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("RemoveFromInvoiceAndVoidSale").ToJavascriptSafeString()',
+                            cssClass: 'btn-danger',
+                            action: function () {
+                                //alert('redirecting to: ' + targetUrl);
+                                window.location = $.htmlDecode(targetUrl);
+                            }
+                        }, {
+                            label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            });
+
+        });
+    </script>
+}
+
+<div class="well well-sm section-title clearfix">
+    @Html.GlobalResource("LineageString_Events_Sales")
+    <div class="pull-right">
+        <button class="btn btn-default btn-xs awe-hidden" id="ExportCSV" style="vertical-align: middle;">@Html.GlobalResource("ExportCSV")</button>
+        &nbsp;&nbsp;
+        <button class="btn btn-default btn-xs awe-hidden" id="ApplyFilters" style="vertical-align: middle;">@Html.GlobalResource("ApplyFilters")</button>
+        &nbsp;&nbsp;
+        @Html.ActionLink(Html.GlobalResource("ResetFilters"), MVC.EventSalesTransactionReportAction)
+    </div>
+</div>
+@using (Html.BeginForm(MVC.EventSalesTransactionReportAction, MVC.AccountController, FormMethod.Get, new { @id = "Report1", @class = "form-horizontal" }))
+{
+    <div class="panel panel-default awe-reports">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        @Html.GlobalResource("Event")
+                    </div>
+                    @Html.DropDownList("eventID", (SelectList)ViewData["eventSelectList"], new { @class = "form-control SubmitOnChange" })
+                </div>
+            </div>
+            @if (ViewData["CurrencyCount"] != null && Model.List.Count > 0 && (int)ViewData["CurrencyCount"] <= 1)
+            {
+                <div class="col-sm-6 text-right pull-right">
+                    <label class="control-label">
+                        @Html.GlobalResource("Total"): @Html.LocalCurrency((decimal)ViewData["TotalAmount"], Model.List[0].Currency)
+                    </label>
+                </div>
+            }
+        </div>
+        <hr />
+
+        <input type="hidden" name="page" value="0" />
+        @Html.Hidden("sort")
+        @Html.Hidden("descending")
+        @{
+            string baseReSortUrl = Html.GetActionUrl(MVC.EventSalesTransactionReportAction, MVC.AccountController, new
+            {
+                dateStart = ViewData["dateStart"],
+                dateEnd = ViewData["dateEnd"],
+                invoiceID = ViewData["invoiceID"],
+                listingID = ViewData["listingID"],
+                eventID = ViewData["eventID"],
+                lotNumber = ViewData["lotNumber"],
+                description = ViewData["description"],
+                quantity = ViewData["quantity"],
+                priceLow = ViewData["priceLow"],
+                priceHigh = ViewData["priceHigh"],
+                totalPriceLow = ViewData["totalPriceLow"],
+                totalPriceHigh = ViewData["totalPriceHigh"],
+                isPaid = ViewData["isPaid"],
+                payer = ViewData["payer"],
+                firstName = ViewData["firstName"],
+                lastName = ViewData["lastName"],
+                email = ViewData["email"]
+            });
+            if (!baseReSortUrl.Contains("?"))
+            {
+                baseReSortUrl += "?";
+            }
+            else
+            {
+                baseReSortUrl += "&";
+            }
+            string reSortUrl;
+        }
+        <div class="panel-heading">
+            <div class="row">
+                @{
+                    reSortUrl = baseReSortUrl + "sort=DateTime&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "DateTime" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("Date")</a>
+                    <br />
+                    @{ Html.RenderDateInput("dateStart", ViewData["dateStart"], new { @class = "form-control SubmitOnChange", @placeholder = Html.GlobalResourceString("From") }); }
+                    @{ Html.RenderDateInput("dateEnd", ViewData["dateEnd"], new { @class = "form-control SubmitOnChange", @placeholder = Html.GlobalResourceString("To") }); }
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=LotNumber&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "LotNumber" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("LotNumber")</a>
+                    <br />
+                    @Html.TextBox("lotNumber", ViewData["lotNumber"], new { @class = "form-control SubmitOnChange" })
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=Description&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "Description" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("Description")</a>
+                    <br />
+                    @Html.TextBox("description", ViewData["description"], new { @class = "form-control SubmitOnChange" })
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=Price&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "Price" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("Price")</a>
+                    <br />
+                    @Html.TextBox("priceLow", ViewData["priceLow"], new { @class = "form-control SubmitOnChange", @placeholder = Html.GlobalResourceString("From") })
+                    @Html.TextBox("priceHigh", ViewData["priceHigh"], new { @class = "form-control SubmitOnChange", @placeholder = Html.GlobalResourceString("To") })
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=Quantity&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "Quantity" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("Quantity")</a>
+                    <br />
+                    @Html.TextBox("quantity", ViewData["quantity"], new { @class = "form-control SubmitOnChange" })
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=Total&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "Total" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("Total")</a>
+                    <br />
+                    @Html.TextBox("totalPriceLow", ViewData["totalPriceLow"], new { @class = "form-control SubmitOnChange", @placeholder = Html.GlobalResourceString("From") })
+                    @Html.TextBox("totalPriceHigh", ViewData["totalPriceHigh"], new { @class = "form-control SubmitOnChange", @placeholder = Html.GlobalResourceString("To") })
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=InvoiceID&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "InvoiceID" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("InvoiceID")</a>
+                    <br />
+                    @Html.TextBox("invoiceID", ViewData["invoiceID"], new { @class = "form-control SubmitOnChange" })
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=Payer&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "Payer" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("Buyer")</a>
+                    <br />
+                    @Html.TextBox("payer", ViewData["payer"], new { @class = "form-control SubmitOnChange" })
+                </div>
+                @*@{
+                    reSortUrl = baseReSortUrl + "sort=Email&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "Email" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                    }
+                    <div class="col-sm-2">
+                        <a href="@reSortUrl">@Html.GlobalResource("Email")</a>
+                        <br />
+                        @Html.TextBox("email", ViewData["email"], new { @class = "form-control SubmitOnChange" })
+                    </div>*@
+                @{
+                    reSortUrl = baseReSortUrl + "sort=FirstName&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "FirstName" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("FirstName")</a>
+                    <br />
+                    @Html.TextBox("firstName", ViewData["firstName"], new { @class = "form-control SubmitOnChange" })
+                </div>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=LastName&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "LastName" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                }
+                <div class="col-sm-2">
+                    <a href="@reSortUrl">@Html.GlobalResource("LastName")</a>
+                    <br />
+                    @Html.TextBox("lastName", ViewData["lastName"], new { @class = "form-control SubmitOnChange" })
+                </div>
+                <div class="col-sm-2 hidden-xs">
+                    @Html.GlobalResource("Address")
+                    <br />
+                    &nbsp;
+                </div>
+                <div class="col-sm-2">
+                    @Html.GlobalResource("Paid")
+                    <br />
+                    @Html.DropDownList("isPaid", (SelectList)ViewData["PaidStatusSelectList"], new { @class = "form-control SubmitOnChange" })
+                </div>
+            </div>
+
+        </div>
+        @if (Model != null && Model.TotalItemCount > 0)
+        {
+            <div id="ReportResults" class="panel-body">
+                @foreach (SalesTransactionReportResult result in Model.List)
+                {
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("Date"):&nbsp;</span>
+                            @Html.LocalDTTM(result.DateTime, "d")
+                        </div>
+                        <div class="col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("LotNumber"):&nbsp;</span>
+                            @Html.ActionLink(!string.IsNullOrEmpty(result.LotNumber) ? result.LotNumber : " ", MVC.DetailsAction, MVC.ListingController,
+                                new { id = result.ListingID }, null)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.ActionLink(result.Description, MVC.DetailsAction, MVC.ListingController, new { id = result.ListingID }, null)
+                        </div>
+                        <div class="col-xs-6 col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("Price"):&nbsp;</span>
+                            @Html.LocalCurrency(result.Price, result.Currency)
+                        </div>
+                        <div class="col-xs-6 col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("Quantity"):&nbsp;</span>
+                            @Html.LocalInteger(result.Quantity)
+                        </div>
+                        <div class="col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("Total"):&nbsp;</span>
+                            @Html.LocalCurrency(result.Total, result.Currency)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("InvoiceID"):&nbsp;</span>
+                            @if (result.InvoiceID.HasValue)
+                            {
+                                @Html.ActionLink(result.InvoiceID.ToString(), MVC.InvoiceDetailAction, new { @id = result.InvoiceID, returnUrl }, null)
+                                <a class="awe-print-invoice-link" href="@Html.GetActionUrl(MVC.PrintInvoiceAction, new { @id = result.InvoiceID })">
+                                    <span class="glyphicon glyphicon-print"></span>
+                                </a>
+                            }
+                            else if (result.Status != LineItemStatuses.Void)
+                            {
+                                @Html.ActionLink(Html.GlobalResource("CreateInvoice"), "CreateInvoice", new { @id = result.LineItemID, returnUrl }, new { @class = "btn btn-xs btn-default" })
+                            }
+                        </div>
+                        <div class="col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("Buyer"):&nbsp;</span>
+                            @if (SiteClient.UserMessagingEnabled)
+                            {
+                                @Html.ActionLink(result.Payer, MVC.SendListingMessageAction, MVC.AccountController,
+                                    new { receiver = result.Payer, template = Templates.AskBuyerQuestion, listingID = result.ListingID, returnUrl }, null)
+                            }
+                            else
+                            {
+                                @result.Payer
+                            }
+                        </div>
+                        @*<div class="col-sm-2"><a href="mailto:@result.Email">@result.Email</a></div>*@
+                        <div class="col-xs-6 col-sm-2">
+                            @result.FirstName
+                        </div>
+                        <div class="col-sm-2">
+                            @result.LastName
+                        </div>
+                        <div class="col-sm-2">
+                            <span class="visible-xs">@Html.GlobalResource("Address"):&nbsp;</span>
+                            @result.Address
+                        </div>
+                        <div class="col-sm-2">
+                            @if (result.Paid)
+                            {
+                                <img src="Content/images/Paid.png" title="@Html.GlobalResource("Paid")" alt="@Html.GlobalResource("Paid")" />
+                            }
+                            else if (result.InvoiceID.HasValue)
+                            {
+                                <!-- void sale button -->
+                                <a href="#VoidSale"
+                                   class="btn btn-xs btn-default void-invoiced-sale-link"
+                                   data-line-item-id="@result.LineItemID"
+                                   data-invoice-id="@result.InvoiceID">@Html.GlobalResource("VoidSale")</a>
+                            }
+                            else if (result.Status != LineItemStatuses.Void)
+                            {
+                                <!-- void sale button -->
+                                @Html.ActionLink(Html.GlobalResource("VoidSale"), MVC.VoidLineItemsAction, MVC.AccountController,
+                                    new { LineItemIDs = result.LineItemID, voided = "True", returnUrl }, new { @class = "btn btn-xs btn-default" })
+                            }
+                            else
+                            {
+                                <!-- un-void sale button -->
+                                @Html.ActionLink(Html.GlobalResource("UnVoidSale"), MVC.VoidLineItemsAction, MVC.AccountController,
+                                    new { LineItemIDs = result.LineItemID, voided = "False", returnUrl }, new { @class = "btn btn-xs btn-default" })
+                            }
+                        </div>
+
+                    </div><!-- .row -->
+                }
+
+            </div>
+        } // if (Model != null && Model.TotalItemCount > 0)
+        else
+        {
+            <div class="panel-body">
+                <p class="no-history">@Html.GlobalResource("NoResultsToDisplay")</p>
+            </div>
+        }
+    </div>
+    if (Model != null && Model.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(Model);
+    }
+}
+
+@if (ViewData["CurrencyCount"] != null && Model.List.Count > 0 && (int)ViewData["CurrencyCount"] <= 1)
+{
+    <div class="well well-sm section-title text-right">
+        @Html.GlobalResource("Total"): @Html.LocalCurrency((decimal)ViewData["TotalAmount"], Model.List[0].Currency)
+    </div>
+}

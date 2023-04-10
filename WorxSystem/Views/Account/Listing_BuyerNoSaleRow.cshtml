@@ -1,0 +1,51 @@
+﻿@model Listing
+<div class="list clearfix">
+    <div class="row">
+        <div class="col-sm-2">
+            @{
+                if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                {
+                    @Html.Partial("NoPhotoThumbnail")
+                }
+                else
+                {
+                    string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                    @Model.BeginDetailLink()
+                    <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                    @Model.EndDetailLink()
+                }
+            }
+        </div>
+        <div class="col-sm-7">
+            <p>
+                <strong>
+                    @Model.BeginDetailLink()
+                    @if (Model.Lot != null)
+                    {
+                        <span>@string.Format("{0} {1}", Html.GlobalResourceString("Lot"), Model.Lot.LotNumber) -&nbsp;</span>
+                    }
+                    @Model.Title
+                    @if (!SiteClient.EnableEvents)
+                    {
+                        <em>(@Model.ID)</em>
+                    }
+                    @Model.EndDetailLink()
+                </strong>
+            </p>
+            <p>
+                @Html.LocalCurrency(Model.CurrentPrice.Value, Model.Currency.Code) &nbsp;<small><em>(@Html.LocalCurrency(Model.OriginalPrice.Value, Model.Currency.Code))</em></small>
+            </p>
+        </div>
+        <div class="col-sm-3">
+            @if (Model.Context.UserListingAction != null)
+            {
+                <p>
+                    @Html.LocalCurrency(Model.Context.UserListingAction.ProxyAmount.Value, Model.Currency.Code)
+                </p>
+            }
+            <p>
+                @Html.LocalDTTM(Model.EndDTTM.Value, "G")
+            </p>
+        </div>
+    </div>
+</div>

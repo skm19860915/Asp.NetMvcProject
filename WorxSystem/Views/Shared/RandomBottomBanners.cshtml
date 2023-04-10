@@ -1,0 +1,41 @@
+﻿@model List<Category>
+@{
+    bool hideBannersOnMobile = bool.Parse(SiteClient.Settings["HideBannersOnMobile"]);
+    string cssDisplayClass = "col-xs-12 banner bottom";
+    if (hideBannersOnMobile)
+    {
+        cssDisplayClass += " hidden-xs";
+    }
+    int numberOfBanners = int.Parse(SiteClient.Settings[RainWorx.FrameWorx.Strings.SiteProperties.BottomBannersToDisplay]);
+    if (numberOfBanners > 0)
+    {
+        List<Banner> banners = SiteClient.GetRandomBanners("BOTTOM", numberOfBanners, Model);
+        if (banners.Count > 0)
+        {
+
+                <div class="@cssDisplayClass">
+                    @foreach (Banner banner in banners)
+                    {
+                        //Load Media
+                        IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(banner.Media.Loader);
+                        Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, banner.Media.Context);
+                        switch (banner.Media.Type)
+                        {
+                            case "RainWorx.FrameWorx.Providers.MediaAsset.NativeImage":
+                                string currentImageSource = mediaLoader.Load(loaderProviderSettings, banner.Media, banner.Media.DefaultVariationName);
+                                <a href="@banner.LinkURI" target="_blank"><img class="img-responsive" src="@currentImageSource" alt="" /></a>
+                                break;
+                            case "RainWorx.FrameWorx.Providers.MediaAsset.NativeHTML":
+                                string htmlText = mediaLoader.Load(loaderProviderSettings, banner.Media, banner.Media.DefaultVariationName);
+                                @htmlText.ToMvcHtmlString()
+                                break;
+                            default:
+                            <text>[Unknown Type: @banner.Media.Type]</text>
+                                break;
+                        }
+                    }
+                </div>
+                
+        }
+    }
+}

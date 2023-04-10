@@ -1,0 +1,287 @@
+﻿@model Page<Listing>
+
+@{
+    bool categorySelected = false;
+    if (string.IsNullOrEmpty((string)ViewData["PageTitle"]))
+    {
+        if (string.IsNullOrEmpty((string)ViewData["CategoryName"]))
+        {
+            ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle];
+        }
+        else
+        {
+            ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " + (string)ViewData["CategoryName"];
+            categorySelected = true;
+        }
+    }
+    else
+    {
+        ViewBag.SiteTitle = (string)ViewData["PageTitle"];
+        if (!string.IsNullOrEmpty((string)ViewData["CategoryName"]))
+        {
+            categorySelected = true;
+        }
+    }
+
+    //determine if inline bidding is enabled
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool quickBidForListViewsEnabled = false;
+    var quickBidForListViewsProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidForListViewsEnabled);
+    if (quickBidForListViewsProp != null)
+    {
+        bool.TryParse(quickBidForListViewsProp.Value, out quickBidForListViewsEnabled);
+    }
+    bool auctionsEnabled = false;
+    var auctionsEnabledProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.Enabled);
+    if (auctionsEnabledProp != null)
+    {
+        bool.TryParse(auctionsEnabledProp.Value, out auctionsEnabled);
+    }
+    quickBidForListViewsEnabled = quickBidForListViewsEnabled && auctionsEnabled;
+
+}
+
+@section metaContent {
+    @{
+        string keyWords = (string)ViewData["MetaKeywords"];
+        string description = (string)ViewData["MetaDescription"];
+
+        string parentCatnames = "";
+        string childCatnames = "";
+
+        if (!string.IsNullOrEmpty(keyWords) || !string.IsNullOrEmpty(description))
+        {
+            childCatnames = keyWords ?? string.Empty;
+            parentCatnames = description ?? string.Empty;
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty((string)ViewContext.RouteData.Values["breadcrumbs"]))
+            {
+                string[] categoryIDs = ((string)ViewContext.RouteData.Values["breadcrumbs"]).Split('-');
+                string[] extraStuff = ((string)ViewContext.RouteData.Values["extra"]).Split('-');
+
+                //Category cat = CommonClient.GetCategoryByID(int.Parse(categoryIDs[(categoryIDs.Length - 1)].Substring(1)));
+                //List<Category> children = CommonClient.GetChildCategories(cat.ID);
+                for (int i = 0; i < categoryIDs.Length; i++)
+                {
+                    Category cat = CommonClient.GetCategoryByID(int.Parse(categoryIDs[i].Substring(1)));
+                    if (cat == null) { continue; }
+                    parentCatnames += cat.Name;
+                    if (i < categoryIDs.Length - 1)
+                    {
+                        parentCatnames += ", ";
+                    }
+                }
+
+                int catId = int.Parse(categoryIDs[(categoryIDs.Length - 1)].Substring(1));
+                List<Category> children = CommonClient.GetChildCategories(catId, includeRelatedCustomFields: false);
+
+                foreach (Category c in children)
+                {
+                    childCatnames += c.Name + ", ";
+                }
+            }
+            else
+            {
+                parentCatnames = SiteClient.Settings["MetaDescription"];
+                childCatnames = SiteClient.Settings["MetaKeywords"];
+            }
+        }
+    }
+    <meta name="description" content="@parentCatnames" />
+    <meta name="keywords" content="@childCatnames" />
+}
+@if (quickBidForListViewsEnabled)
+{
+    @section head{
+        
+        <style>
+            @@media (max-width: 450px) {
+                .listing {
+                    min-height: 190px;
+                }
+            }
+        </style>
+        }
+}
+@Html.Partial("RandomTopBanners", ViewData["BannerCats"])
+
+<div class="row">
+    <div class="col-xs-12 col-md-3 categories">
+        <div class="panel panel-default hidden-xs hidden-sm">
+            <div class="panel-heading">@Html.GlobalResource("Categories")</div>
+            <ul class="nav nav-pills nav-stacked">
+                @Html.Partial("CategoryNavigator", ViewData["CategoryNavigator"])
+            </ul>
+        </div>
+        <div class="dropdown visible-sm visible-xs">
+            <button class="dropdown-toggle btn btn-default btn-block" data-toggle="dropdown">
+                @Html.GlobalResource(categorySelected ? "SubCategoryMenu" : "CategoryMenu")&nbsp;<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                @Html.Partial("CategoryNavigator", ViewData["CategoryNavigator"])
+            </ul>
+        </div>
+        @if (bool.Parse(SiteClient.Settings[SiteProperties.EnableRegions]))
+        {
+            <div class="panel panel-default hidden-xs hidden-sm">
+                <div class="panel-heading">@Html.GlobalResource("Regions")</div>
+                <ul class="nav nav-pills nav-stacked">
+                    @Html.Partial("RegionNavigator", ViewData["RegionNagivator"])
+                </ul>
+            </div>
+            <div class="dropdown visible-sm visible-xs">
+                <button class="dropdown-toggle btn btn-default btn-block" data-toggle="dropdown">
+                    @Html.GlobalResource("RegionMenu")&nbsp;<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    @Html.Partial("RegionNavigator", ViewData["RegionNagivator"])
+                </ul>
+            </div>
+        }
+        @Html.Partial("RandomLeftBanners", ViewData["BannerCats"])
+    </div>
+    <div class="col-xs-12 col-md-9">
+        <div class="row">
+            <div class="col-xs-12">
+                @Html.Partial("BreadCrumbNavigator")
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty((string)ViewData["PageContent"]))
+        {
+            @(((string)ViewData["PageContent"]).ToMvcHtmlString())
+        }
+        <script>
+            $(document).ready(function () {
+
+                $("#ShowListView").click(function (event) {
+                    event.preventDefault();
+                    if ($(this).hasClass("btn-primary")) {
+                        $("input[name=ViewStyle]").val("grid");
+                    } else {
+                        $("input[name=ViewStyle]").val("list");
+                    }
+                    $(this).parents("form").submit();
+                });
+
+                $("#ShowGridView").click(function (event) {
+                    event.preventDefault();
+                    if ($(this).hasClass("btn-primary")) {
+                        $("input[name=ViewStyle]").val("list");
+                    } else {
+                        $("input[name=ViewStyle]").val("grid");
+                    }
+                    $(this).parents("form").submit();
+                });
+
+                $("#Status_IncludeActive").click(function (event) {
+                    event.preventDefault();
+                    var newValue = "";
+                    if ($("#Status_IncludeCompleted").hasClass("btn-primary")) {
+                        newValue = "active_only";
+                    }
+                    $("input[name=StatusFilter]").val(newValue);
+                    $(this).parents("form").submit();
+                });
+
+                $("#Status_IncludeCompleted").click(function (event) {
+                    event.preventDefault();
+                    var newValue = "";
+                    if ($("#Status_IncludeActive").hasClass("btn-primary")) {
+                        newValue = "completed_only";
+                    }
+                    else if ($("#Status_IncludeCompleted").hasClass("btn-primary")) {
+                        newValue = "completed_only";
+                    }
+                    $("input[name=StatusFilter]").val(newValue);
+                    $(this).parents("form").submit();
+                });
+
+                $("select#@MVC.SortFilterOptions").change(function () {
+                    $("input#submitDropDown").click();
+                });
+
+                $("select#@Fields.ListingType").change(function () {
+                    $("input#submitDropDown").click();
+                });
+
+            });
+        </script>
+        <div class="well well-sm section-title">
+            @using (Html.BeginForm(MVC.BrowseAction, MVC.ListingController, FormMethod.Get, new { @class = "form-inline text-right" }))
+            {
+                List<string> queryString = HttpContext.Current.Request.QueryString.AllKeys.Where(k => k != null && !k.StartsWith("SortFilterOptions")).ToList();
+                string listViewCss = "grid".Equals(ViewData["ViewStyle"]) ? "btn-default" : "btn-primary";
+                string gridViewCss = "grid".Equals(ViewData["ViewStyle"]) ? "btn-primary" : "btn-default";
+                string includeActiveCss;
+                string includeCompletedCss;
+                if ("completed_only".Equals(ViewData["StatusFilter"]))
+                {
+                    includeActiveCss = "btn-default";
+                    includeCompletedCss = "btn-primary";
+                }
+                else // "active_only" (default)
+                {
+                    includeActiveCss = "btn-primary";
+                    includeCompletedCss = "btn-default";
+                }
+                foreach (string key in queryString.Where(key => key.ToLower() != "viewstyle"
+                                                                && key.ToLower() != "statusfilter"
+                                                                && key.ToLower() != "sortfilteroptions"
+                                                                && key.ToLower() != "listingtype"
+                                                                && key.ToLower() != "page"))
+                {
+                    @Html.Hidden(key, HttpContext.Current.Request.QueryString[key])
+                }
+                @Html.Hidden("ViewStyle")
+                @Html.Hidden("StatusFilter")
+                <div class="form-group">
+                    <div class="btn-group">
+                        <button id="ShowListView" type="button" class="btn btn-sm @listViewCss"><span id="ToggleIcon" class="glyphicon glyphicon-list"></span></button>
+                        <button id="ShowGridView" type="button" class="btn btn-sm @gridViewCss"><span id="ToggleIcon" class="glyphicon glyphicon-th-large"></span></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="btn-group">
+                        <button id="Status_IncludeActive" class="btn btn-sm @includeActiveCss">@Html.GlobalResource("Active")</button>
+                        <button id="Status_IncludeCompleted" class="btn btn-sm @includeCompletedCss">@Html.GlobalResource("Completed")</button>
+                    </div>
+                </div>
+                if (ListingClient.ListingTypes.Count(lt => lt.Enabled) > 1)
+                {
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label class="input-group-addon" for="@Fields.ListingType">@Html.GlobalResource("Filter")</label>
+                            @Html.DropDownList(Fields.ListingType, null, new { @class = "form-control input-sm", placeholder = Html.GlobalResourceString("All") })
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-addon" for="@MVC.SortFilterOptions">@Html.GlobalResource("Sort")</label>
+                        @Html.DropDownList(MVC.SortFilterOptions, null, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+                <input type="submit" id="submitDropDown" class="awe-hidden" />
+            }
+        </div>
+        @if (Model == null || Model.TotalItemCount == 0)
+        {
+            @Html.GetSiteContent("NoSearchResults")
+        }
+        else if ("grid".Equals(ViewData["ViewStyle"]))
+        {
+            @Html.Partial("PageOfListing_Grid")
+        }
+        else
+        {
+            @Html.Partial("PageOfListing")
+        }
+        @Html.Partial("RandomBottomBanners", ViewData["BannerCats"])
+    </div>
+</div>
+@if (quickBidForListViewsEnabled)
+{
+    @Html.Partial("AuctionInlineBidding_Includes")
+}

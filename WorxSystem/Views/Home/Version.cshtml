@@ -1,0 +1,85 @@
+﻿@model dynamic
+@using System.Reflection
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            Version Information
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Model/View/Controller (MVC) - Loaded Assemblies</h4>
+            </div>
+            <div class="panel-body">
+                @{
+                    Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    int baseBuildVersion = loadedAssemblies.Single(a => a.GetName().Name == "RainWorx.FrameWorx.BLL").GetName().Version.Build;
+                    int baseRevisionVersion = loadedAssemblies.Single(a => a.GetName().Name == "RainWorx.FrameWorx.BLL").GetName().Version.Revision;
+                    foreach (Assembly assembly in loadedAssemblies)
+                    {
+                        if (assembly.FullName != null && assembly.FullName.Contains("RainWorx"))
+                        {
+                            var assemblyName = assembly.GetName();
+                            if (assemblyName.Version.Build != baseBuildVersion || (assemblyName.Version.Build == baseBuildVersion && Math.Abs(assemblyName.Version.Revision - baseRevisionVersion) > 50))
+                            {
+                                <strong>&middot;&nbsp;@(assemblyName.Name.Replace("RainWorx.FrameWorx.", string.Empty)), Version=@(assemblyName.Version)</strong><br />
+                            }
+                            else
+                            {
+                                <strong>&middot;</strong>@:&nbsp;@(assemblyName.Name.Replace("RainWorx.FrameWorx.", string.Empty)), Version=@(assemblyName.Version)<br />
+                        }
+
+                        }
+                    }
+                }
+            </div>
+        </div>
+
+        @{
+            Dictionary<string, string> assemblyInfo = CommonClient.GetVersionInfo();
+            string baseBuildString = "." + baseBuildVersion.ToString() + ".";
+        }
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Business Logic Layer (BLL) - Loaded Assemblies</h4>
+            </div>
+            <div class="panel-body">
+                @foreach (var item in assemblyInfo)
+            {
+                if (!item.Key.Equals("dbversion") && item.Value != null && item.Value.Contains("RainWorx"))
+                {
+                    if (!item.Value.Contains(baseBuildString))
+                    {
+                            <strong>&middot;&nbsp;@item.Value.Substring(0, item.Value.IndexOf(',', item.Value.IndexOf(',') + 1)).Replace("RainWorx.FrameWorx.", string.Empty)</strong><br />
+                        }
+                        else
+                        {
+                            <strong>&middot;</strong>@:&nbsp;@item.Value.Substring(0, item.Value.IndexOf(',', item.Value.IndexOf(',') + 1)).Replace("RainWorx.FrameWorx.", string.Empty)<br />
+                    }
+                }
+            }
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Data Access Layer (DAL) - Version</h4>
+            </div>
+            <div class="panel-body">
+                @foreach (var item in assemblyInfo)
+            {
+                if (item.Key.Equals("dbversion"))
+                {
+                        <strong>&middot;</strong>@:&nbsp;Database Version = @item.Value<br />
+                }
+            }
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Edition</h4>
+            </div>
+            <div class="panel-body">
+                <strong>&middot;</strong>@(SiteClient.EnableEvents ? "Events" : "Enterprise")
+            </div>
+        </div>
+    </div>
+</div>

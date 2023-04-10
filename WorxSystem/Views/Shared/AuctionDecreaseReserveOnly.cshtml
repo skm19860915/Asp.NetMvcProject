@@ -1,0 +1,68 @@
+﻿@model Listing
+@{
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool reserveEnabled = bool.Parse(auctionProperties.Single(ap => ap.Field.Name == SiteProperties.EnableReserve).Value);
+    string existingReserveValue = (string)ViewData[Fields.ReservePrice];
+    if (existingReserveValue == null)
+    {
+        var reserveModelState = ViewData.ModelState[Fields.ReservePrice];
+        if (reserveModelState != null && reserveModelState.Value != null)
+        {
+            existingReserveValue = reserveModelState.Value.AttemptedValue;
+        }
+    }
+    decimal existingReserveAmount = 0.0M;
+    decimal.TryParse(existingReserveValue, out existingReserveAmount);
+}
+@if (!string.IsNullOrWhiteSpace(existingReserveValue) || reserveEnabled)
+{
+    MvcHtmlString lowerReserveHelpText = Html.ResourceOrDefault("AuctionListing, LowerReservePrice_Help");
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            @Html.Resource("AuctionListing, ReservePrice")
+        </label>
+        <div class="col-sm-6">
+            <div class="control-readonly-value">@Html.LocalCurrency(existingReserveAmount, Model.Currency.Code)</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            @Html.Resource("AuctionListing, NextBidMeetsReserve")
+        </label>
+        <div class="col-sm-8">
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBox(Fields.NextBidMeetsReserve, null)
+                    @Html.Resource("AuctionListing, LowerReservePrice")
+                </label>
+                @if (lowerReserveHelpText != null)
+                {
+                    @:&nbsp;
+                    @Html.ToolTipButton("LowerReservePrice_Help")
+                }
+            </div>
+        </div>
+    </div>
+    if (lowerReserveHelpText != null)
+    {
+        @Html.ToolTipContent("LowerReservePrice_Help", lowerReserveHelpText)
+    }
+}
+@if (!SiteClient.BoolSetting(SiteProperties.HideTaxFields))
+{
+    <div class="form-group">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-8">
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBox(Fields.IsTaxable, null)
+                    @Html.Resource("FixedPriceListing, IsTaxable")
+                </label>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @Html.Hidden(Fields.IsTaxable, MVC.FalseValue)
+}

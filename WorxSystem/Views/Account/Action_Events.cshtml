@@ -1,0 +1,218 @@
+﻿@model Event
+@{ 
+    string returnUrl = Request.Url.PathAndQuery;
+    int? page = ViewData.ContainsKey(MVC.PageIndex) ? (int?)ViewData[MVC.PageIndex] : null;
+    int? SortFilterOptions = ViewData.ContainsKey(MVC.SortFilterOptions) ? (int?)((SelectList)ViewData[MVC.SortFilterOptions]).SelectedValue : null;
+    string ViewFilterOption = ViewData.ContainsKey(MVC.ViewFilterOption) ? (string)((SelectList)ViewData[MVC.ViewFilterOption]).SelectedValue : null;
+    Dictionary<int, int> draftLotCounts = ViewData.ContainsKey("DraftLotCounts") ? (Dictionary<int, int>)ViewData["DraftLotCounts"] : null;
+    bool showProcessPaymentsLink = Html.SellerTakesCreditCardPayments(Html.FBOUserName());
+}
+<div class="btn-group pull-right">
+    <a href="#@Model.ID" role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle pull-right"><span class="glyphicon glyphicon-cog"></span></a>
+    <ul class="dropdown-menu">
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Summary"), MVC.EventSummaryAction, MVC.AccountController,
+                     new { id = Model.ID }, null)
+        </li>
+        <li role="separator" class="divider"></li>
+        @if (Model.Status == AuctionEventStatuses.AwaitingPayment)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("ManageLots"), MVC.LotsByEventAction, MVC.AccountController,
+                     new { id = Model.ID }, null)
+            </li>
+            <li role="separator" class="divider"></li>
+        }
+        @if (Model.Status == AuctionEventStatuses.Draft ||
+                Model.Status == AuctionEventStatuses.Preview ||
+                Model.Status == AuctionEventStatuses.Scheduled ||
+                Model.Status == AuctionEventStatuses.Active ||
+                Model.Status == AuctionEventStatuses.Closing)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController,
+                    new { EventID = Model.ID },null)
+            </li>
+            <li role="separator" class="divider"></li>
+        }
+        @if (Model.Status == AuctionEventStatuses.Draft ||
+                Model.Status == AuctionEventStatuses.Preview ||
+                Model.Status == AuctionEventStatuses.Scheduled ||
+                Model.Status == AuctionEventStatuses.Active)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("ManageLotOrder"), MVC.ClosingGroupsAction, MVC.AccountController,
+                    new { id = Model.ID }, new { @class = "" })
+            </li>
+            <li>
+                @Html.ActionLink(Html.GlobalResource("ManageSoftClosingGroups"), MVC.SoftClosingGroupsAction, MVC.AccountController,
+                    new { id = Model.ID }, new { @class = "" })
+            </li>
+            <li role="separator" class="divider"></li>
+        }
+        @if (Model.Status == AuctionEventStatuses.Draft ||
+                Model.Status == AuctionEventStatuses.Preview ||
+                Model.Status == AuctionEventStatuses.Scheduled ||
+                Model.Status == AuctionEventStatuses.Active ||
+                Model.Status == AuctionEventStatuses.Closing)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("ValidateAllDraftLots"), MVC.LotsByEventAction, MVC.AccountController,
+                    new { id = Model.ID, startvalidation = "true" }, null)
+            </li>
+        }
+        @if (Model.Status.Equals(AuctionEventStatuses.Draft))
+        {
+
+            if (User.IsInRole("Admin"))
+            {
+                if (draftLotCounts[Model.ID] > 0)
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.LotsByEventAction, MVC.AccountController,
+                                 new { id = Model.ID, ViewFilterOption = "Draft" }, new { @class = "awe-cant-publish" })
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.PublishEventAction, MVC.EventController,
+                                 new { id = Model.ID }, new { @class = "awe-confirm-publish" })
+                    </li>
+                }
+            }
+            else
+            {
+                if (draftLotCounts[Model.ID] > 0)
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.LotsByEventAction, MVC.AccountController,
+                                 new { id = Model.ID, ViewFilterOption = "Draft" }, new { @class = "awe-cant-publish", data_target_event_id = Model.ID })
+                    </li>
+                }
+                else if (SiteClient.BoolSetting(SiteProperties.RequireAdminToPublishEvent))
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.RequestPublishEventAction, MVC.EventController,
+                                 new { id = Model.ID }, null)
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.PublishEventAction, MVC.EventController,
+                                 new { id = Model.ID }, new { @class = "awe-confirm-publish" })
+                    </li>
+                }
+            }
+            <li role="separator" class="divider"></li>
+        }
+
+        <li>
+            @Html.ActionLink(Html.GlobalResource("View"), MVC.DetailsAction, MVC.EventController,
+                new { id = Model.ID }, null)
+        </li>
+
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditAction, MVC.EventController,
+                new { id = Model.ID, returnUrl }, null)
+        </li>
+
+        @if (Model.Status == AuctionEventStatuses.Preview ||
+             Model.Status == AuctionEventStatuses.Scheduled)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("StartEarly"), MVC.StartEventEarlyAction, MVC.EventController,
+                    new { id = Model.ID, returnUrl }, null)
+            </li>
+        }
+
+        @if (Model.Status == AuctionEventStatuses.Preview ||
+             Model.Status == AuctionEventStatuses.Scheduled ||
+             Model.Status == AuctionEventStatuses.Active ||
+             Model.Status == AuctionEventStatuses.Closing)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("EndEarly"), MVC.EndEventEarlyAction, MVC.EventController,
+                    new { id = Model.ID, returnUrl }, new { @class = "awe-end-early-link" })
+            </li>
+        }
+
+        @if (Model.Status == AuctionEventStatuses.Closed)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Archive"), MVC.SetEventsArchivedAction, MVC.AccountController,
+                    new { EventIDs = Model.ID, archived = true, page, SortFilterOptions, ViewFilterOption }, null)
+            </li>
+        }
+
+        @if (Model.Status == AuctionEventStatuses.Archived)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Restore"), MVC.SetEventsArchivedAction, MVC.AccountController,
+                    new { EventIDs = Model.ID, archived = false, page, SortFilterOptions, ViewFilterOption }, null)
+            </li>
+        }
+
+        @if ((Model.Status == AuctionEventStatuses.Draft ||
+                Model.Status == AuctionEventStatuses.Closed ||
+                Model.Status == AuctionEventStatuses.Archived)
+            || Context.User.IsInRole("Admin"))
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteEventAction, MVC.EventController,
+                    new { id = Model.ID, returnUrl }, new { @class = "awe-delete-link" })
+            </li>
+        }
+        @if (Model.Status == AuctionEventStatuses.Active ||
+                        Model.Status == AuctionEventStatuses.Closing ||
+                        Model.Status == AuctionEventStatuses.Closed ||
+                        Model.Status == AuctionEventStatuses.Archived)
+        {
+            <li role="separator" class="divider"></li>
+            <li>
+                @Html.ActionLink(Html.GlobalResource("SalesReport"), MVC.EventSalesTransactionReportAction, MVC.AccountController,
+                    new { eventID = Model.ID }, null)
+            </li>
+            <li role="separator" class="divider"></li>
+            <li>
+                @Html.ActionLink(Html.GlobalResource("ViewInvoices"), MVC.InvoiceEventSalesAction, MVC.AccountController,
+                    new { EventID = Model.ID }, null)
+            </li>
+        }
+        @if (Model.Status == AuctionEventStatuses.Closed)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("CreateAllInvoices"), MVC.CreateAllInvoicesAction, MVC.AccountController,
+                        new { eventID = Model.ID, returnUrl }, null)
+            </li>
+            <li>
+                @Html.ActionLink(Html.GlobalResource("EmailAllInvoices"), MVC.EmailAllEventInvoicesAction, MVC.AccountController,
+                    new { @id = Model.ID }, null)
+            </li>
+            <li>
+                @Html.ActionLink(Html.GlobalResource("PrintAllInvoices"), MVC.PrintMultipleInvoicesAction, MVC.AccountController,
+                    new { @EventID = Model.ID }, new { @class = "PrintAllInvoices" })
+            </li>
+            if (showProcessPaymentsLink)
+            {
+                <li role="separator" class="divider"></li>
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("ProcessPayments"), MVC.PayAllInvoicesAction, MVC.AccountController,
+                        new { @EventID = Model.ID, returnUrl }, new { @class = "ProcessPayments" })
+                </li>
+            }
+        }
+
+    </ul>
+</div>
+@if (Model.Status != AuctionEventStatuses.AwaitingPayment)
+{
+    @Html.ActionLink(Html.GlobalResource("ManageLots"), MVC.LotsByEventAction, MVC.AccountController,
+        new { id = Model.ID }, new { @class = "btn btn-primary pull-right" })
+}
+else
+{
+    @Html.ActionLink(Html.GlobalResource("PayFees"), MVC.FeesAction, MVC.AccountController, 
+        null, new { @class = "btn btn-primary pull-right" })
+}

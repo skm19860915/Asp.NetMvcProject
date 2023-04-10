@@ -1,0 +1,48 @@
+﻿@model Listing
+@{
+    var offers = (List<Offer>)ViewData["Offers"];
+    string returnUrl = Request.Url.PathAndQuery;
+}
+@if (offers != null)
+{
+    var showUserNames = SiteClient.BoolSetting(SiteProperties.ShowBidHistoryUserNames);
+    bool isAdmin = false;
+    if (User.Identity.IsAuthenticated)
+    {
+        isAdmin = User.IsInRole("Admin");
+    }
+    if (isAdmin && User.Identity.Name == Html.FBOUserName())
+    {
+        showUserNames = true;
+    }
+
+    Offer acceptedOffer = offers.FirstOrDefault(o => o.Status == OfferStatuses.Accepted);
+    if (acceptedOffer != null)
+    {
+        <div class="alert alert-success history__offer">
+            <div class="history__offer__DTTM">@Html.LocalDTTM(acceptedOffer.UpdatedDTTM, "G")</div>
+            @Html.GlobalResource("AcceptedOffer")
+            <hr />
+            <div class="text-center">
+                @if (showUserNames)
+                {
+                    <p> 
+                        @if (acceptedOffer.ListingOwnerUsername == Html.FBOUserName() && SiteClient.UserMessagingEnabled)
+                        {
+                            @Html.ActionLink(acceptedOffer.BuyingUser, MVC.SendListingMessageAction, MVC.AccountController,
+                                new { receiver = acceptedOffer.BuyingUser, template = Templates.AskBuyerQuestion, listingID = Model.ID, returnUrl },
+                                new { @title = Html.GlobalResourceString("ContactUser") })
+                        }
+                        else
+                        {
+                            @acceptedOffer.BuyingUser
+                        }
+                    </p>
+                }
+                <p>
+                    <strong>@Html.LocalCurrency(acceptedOffer.Amount, Model.Currency.Code)</strong>
+                </p>
+            </div>
+        </div>
+    }
+}

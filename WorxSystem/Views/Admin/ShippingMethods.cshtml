@@ -1,0 +1,167 @@
+﻿@model List<ShippingMethod>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource(SiteClient.EnableEvents ? "LineageString_ShippingMethods_Events" : "LineageString_ShippingMethods");
+}
+
+@section head {
+    <script>
+        $(document).ready(function () {
+            $("#SaveShippingSettings").click(function () {
+                $(this).parents("form").first().submit();
+                return false;
+            });
+        });
+    </script>
+}
+
+@using (Html.BeginForm(MVC.UpdateShippingPropertiesAction, MVC.AdminController))
+{
+    @Html.Partial("PropertyGroup", ViewData[MVC.ViewData_ShippingSiteProperties])
+    <p>
+        <button class="btn btn-success" id="SaveShippingSettings">@Html.AdminResource("SaveShippingOptions")</button>
+    </p>
+}
+<div class="sub-header">
+    @Html.AdminResource("AvailableShippingMethods")
+</div>
+<div class="row">
+    <div class="col-xs-12 col-md-6">
+
+
+        @using (Html.BeginForm())
+        {
+            <div class="panel panel-default">
+                @Html.Partial("ShippingMethodEditor")
+            </div>
+            <p>
+                <input type="submit" class="btn btn-success" value="@Html.AdminResource("SaveShippingServices")" name="Save" id="Save" />
+            </p>
+        }
+
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <p>
+            @Html.AdminResource("AddShippingService_Help") <button type="button" class="btn btn-default btn-xs" data-target="#AddShippingOptions" data-toggle="modal">@Html.AdminResource("FullList")</button>
+        </p>
+        <p>@Html.ActionLink(Html.AdminResource("AddDomesticUPSOptions"), "AddStandardShippingMethods", new { subset = "ups-d" })</p>
+        <p>@Html.ActionLink(Html.AdminResource("AddInternationalUPSOptions"), "AddStandardShippingMethods", new { subset = "ups-i" })</p>
+        <p>@Html.ActionLink(Html.AdminResource("AddDomesticFedexOptions"), "AddStandardShippingMethods", new { subset = "fedex-d" })</p>
+        <p>@Html.ActionLink(Html.AdminResource("AddInternationalFedexOptions"), "AddStandardShippingMethods", new { subset = "fedex-i" })</p>
+        <p>@Html.ActionLink(Html.AdminResource("AddDomesticUSPSOptions"), "AddStandardShippingMethods", new { subset = "usps-d" })</p>
+        <p>@Html.ActionLink(Html.AdminResource("AddInternationalUSPSOptions"), "AddStandardShippingMethods", new { subset = "usps-i" })</p>
+        <p>@Html.ActionLink(Html.AdminResource("AddDomesticDHLOptions"), "AddStandardShippingMethods", new { subset = "dhl-d" })</p>
+        <p>@Html.ActionLink(Html.AdminResource("AddInternationalDHLOptions"), "AddStandardShippingMethods", new { subset = "dhl-i" })</p>
+    </div>
+</div>
+
+<div class="modal fade" id="AddShippingOptions">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+               <div class="panel panel-default">
+                   <div class="panel-heading">
+                       @Html.AdminResource("DomesticUPSOptions")
+                   </div>
+                   <div class="panel-body">
+                       @Html.Resource("ShippingOptions, UPSNDA") <br />
+                       @Html.Resource("ShippingOptions, UPSNDE") <br />
+                       @Html.Resource("ShippingOptions, UPSNDAS") <br />
+                       @Html.Resource("ShippingOptions, UPSNDS") <br />
+                       @Html.Resource("ShippingOptions, UPS2DE") <br />
+                       @Html.Resource("ShippingOptions, UPS2ND") <br />
+                       @Html.Resource("ShippingOptions, UPS3DS") <br />
+                       @Html.Resource("ShippingOptions, UPSGND")                    
+                   </div>
+               </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.AdminResource("InternationalUPSOptions")
+                    </div>
+                    <div class="panel-body">
+                        @Html.Resource("ShippingOptions, UPSCAN") <br />
+                        @Html.Resource("ShippingOptions, UPSWEX") <br />
+                        @Html.Resource("ShippingOptions, UPSWSV") <br />
+                        @Html.Resource("ShippingOptions, UPSWEP")
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.AdminResource("DomesticFedexOptions")
+                    </div>
+                    <div class="panel-body">
+                        @Html.Resource("ShippingOptions, FDX2D") <br />
+                        @Html.Resource("ShippingOptions, FDXES") <br />
+                        @Html.Resource("ShippingOptions, FDXFO") <br />
+                        @Html.Resource("ShippingOptions, FDXPO") <br />
+                        @Html.Resource("ShippingOptions, FDXPOS") <br />
+                        @Html.Resource("ShippingOptions, FDXSO") <br />
+                        @Html.Resource("ShippingOptions, FDXGND") <br />
+                        @Html.Resource("ShippingOptions, FDXHD")
+                        
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.AdminResource("InternationalFedexOptions")
+                    </div>
+                    <div class="panel-body">
+                        @Html.Resource("ShippingOptions, FDXIGND") <br />
+                        @Html.Resource("ShippingOptions, FDXIE") <br />
+                        @Html.Resource("ShippingOptions, FDXIF") <br />
+                        @Html.Resource("ShippingOptions, FDXIP")
+                        </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.AdminResource("DomesticUSPSOptions")
+                    </div>
+                    <div class="panel-body">
+                        @Html.Resource("ShippingOptions, USPFC") <br />
+                        @Html.Resource("ShippingOptions, USPEXP") <br />
+                        @Html.Resource("ShippingOptions, USPBPM") <br />
+                        @Html.Resource("ShippingOptions, USPLIB") <br />
+                        @Html.Resource("ShippingOptions, USPMM") <br />
+                        @Html.Resource("ShippingOptions, USPPM") <br />
+                        @Html.Resource("ShippingOptions, USPPP")
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.AdminResource("InternationalUSPSOptions")
+                    </div>
+                    <div class="panel-body">
+                        @Html.Resource("ShippingOptions, USPFCI") <br />
+                        @Html.Resource("ShippingOptions, USPPMI") <br />
+                        @Html.Resource("ShippingOptions, USPEMI") <br />
+                        @Html.Resource("ShippingOptions, USPGXG")
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.AdminResource("DomesticDHLOptions")
+                    </div>
+                    <div class="panel-body">
+                        @Html.Resource("ShippingOptions, DHL2D") <br />
+                        @Html.Resource("ShippingOptions, DHLEXA") <br />
+                        @Html.Resource("ShippingOptions, DHLEXM") <br />
+                        @Html.Resource("ShippingOptions, DHLEXP") <br />
+                        @Html.Resource("ShippingOptions, DHLGND")
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.AdminResource("InternationalDHLOptions")
+                    </div>
+                    <div class="panel-body">
+                        @Html.Resource("ShippingOptions, DHLWPE")
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Html.AdminResource("Close")</button>
+            </div>
+</div>
+</div>
+</div>

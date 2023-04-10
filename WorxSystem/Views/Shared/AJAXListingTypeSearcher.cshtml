@@ -1,0 +1,59 @@
+﻿
+<script>
+    function GetListingTypes(categoryID) {
+        var retVal = null;
+        $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#listingtypes");
+        Proxy.invoke("GetListingTypes", { categoryID: categoryID },
+        function (result) {
+            //draw radio buttons
+            if (result.length > 0) {
+                var queryStringItems = getQueryStrings(); // get all query string kvp's in order to pre-fill generated inputs with previously specified values from the query string
+                var allSelectedValues = '';
+                if (queryStringItems["ListingType"]) {
+                    allSelectedValues = queryStringItems["ListingType"];
+                }
+                $("#listingtypes").empty();
+                for (listingtype in result) {
+                    var thisOptChecked = ' ';
+                    if (allSelectedValues.indexOf(result[listingtype].Name) > -1) {
+                        thisOptChecked = ' checked="checked" ';
+                    }
+                    $("#listingtypes").append(
+                        '<div class="checkbox">'
+                        + '<label>'
+                        + '<input type="checkbox" name="ListingType" id="ListingType_' + result[listingtype].Name + '" value="' + result[listingtype].Name + '" ' + thisOptChecked + '/>'
+                        + result[listingtype].DisplayName
+                        + '</label>'
+                        + '</div>');
+                }
+            } else {
+                $("#listingtypes").html(defaultListingTypeOptions);
+            }
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    var defaultListingTypeOptions = '';
+
+    $(document).ready(function () {
+        $("input#CategoryID").change(function () {
+            GetListingTypes($(this).val());
+        });
+        defaultListingTypeOptions = $("#listingtypes").html();
+    });
+
+</script>
+<div class="col-md-6" id="listingtypes">
+    @foreach (ListingType listingType in ListingClient.ListingTypes.Where(lt => lt.Enabled))
+    {
+        var checkedTag = " ";
+        if (Request.QueryString.AllKeys.Contains("ListingType") && Request.QueryString["ListingType"].ToString().Contains(listingType.Name))
+        {
+            checkedTag = " checked = \"checked\" ";
+        }
+        <div class="checkbox">
+            <label><input type="checkbox" name="ListingType" id="ListingType_@listingType.Name" value="@listingType.Name" @checkedTag />@Html.GlobalResource(listingType.Name)</label>
+        </div>
+    }
+</div>

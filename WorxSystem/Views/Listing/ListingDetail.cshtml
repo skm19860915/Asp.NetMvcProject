@@ -1,0 +1,581 @@
+﻿@using System.Configuration
+@model Listing
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+
+    bool temp1;
+    bool rwx_HighlightCheckoutButtonForBuyNow = false;
+    if (bool.TryParse(ConfigurationManager.AppSettings["HighlightCheckoutButtonForBuyNow"], out temp1))
+    {
+        rwx_HighlightCheckoutButtonForBuyNow = temp1;
+    }
+    bool rwx_AutoCheckoutForBuyNow = false;
+    if (bool.TryParse(ConfigurationManager.AppSettings["AutoCheckoutForBuyNow"], out temp1))
+    {
+        rwx_AutoCheckoutForBuyNow = temp1;
+    }
+}
+<script>
+    $(document).ready(function () {
+        //global reasoncodes
+        contextMessageDictionary["Failure"] = "@Html.GlobalResource("Failure").ToJavascriptSafeString()";
+        contextMessageDictionary["ListingNotExist"] = "@Html.GlobalResource("ListingNotExist").ToJavascriptSafeString()";
+        contextMessageDictionary["ListingNotActive"] = "@Html.GlobalResource("ListingNotActive").ToJavascriptSafeString()";
+        contextMessageDictionary["ListerPerformingAction"] = "@Html.GlobalResource("ListerPerformingAction").ToJavascriptSafeString()";
+        contextMessageDictionary["Success"] = "@Html.GlobalResource("Success").ToJavascriptSafeString()";
+        contextMessageDictionary["BuyNowNotAvailable"] = "@Html.GlobalResource("BuyNowNotAvailable").ToJavascriptSafeString()";
+        contextMessageDictionary["ProxyBeatingNewBid"] = "@Html.GlobalResource("ProxyBeatingNewBid").ToJavascriptSafeString()";
+        contextMessageDictionary["CantLowerProxyBid"] = "@Html.GlobalResource("CantLowerProxyBid").ToJavascriptSafeString()";
+        contextMessageDictionary["BidAmountTooLow"] = "@Html.GlobalResource("BidAmountTooLow").ToJavascriptSafeString()";
+        contextMessageDictionary["ListingChangedDuringProcessing"] = "@Html.GlobalResource("ListingChangedDuringProcessing").ToJavascriptSafeString()";
+        contextMessageDictionary["QuantityTooHigh"] = "@Html.GlobalResource("QuantityTooHigh").ToJavascriptSafeString()";
+        contextMessageDictionary["LicenceInvalid"] = "@Html.ValidationResource("LicenceInvalid").ToJavascriptSafeString()";
+        contextMessageDictionary["ActingUserIsNotAuthorized"] = "@Html.GlobalResource("ActingUserIsNotAuthorized").ToJavascriptSafeString()";
+
+        var ownerAllowsInstantCheckout = @Model.OwnerAllowsInstantCheckout().ToString().ToLower();
+        var autoGenerateInvoices = @SiteClient.BoolSetting(SiteProperties.AutoGenerateInvoices).ToString().ToLower();
+        var highlightCheckoutButtonForBuyNow = @rwx_HighlightCheckoutButtonForBuyNow.ToString().ToLower();
+        var autoCheckoutForBuyNow = @rwx_AutoCheckoutForBuyNow.ToString().ToLower();
+
+        $(document).on("SignalR_UpdateListingAction", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            RefreshListingContextualStatus(data.ListingID);
+        });
+
+        //show the latest Context message for this acting user
+        $(document).on("SignalR_ListingActionResponse", function (event, data) {
+            //console.log("SignalR_ListingActionResponse DATA:", data);
+            if ($.inArray(data.Action_ListingID, interestingListings) >= 0) {
+                var message = "";
+                var systemMessage = "";
+                var cssClass = "";
+                if (data.Context_IsFilled) {
+                    //Context is not null, prepare Context message
+                    if (!data.Context_Disregard) {
+                        if (!contextMessageDictionary[data.Context_Status]) {
+                            console.log("Dev Error: contextMessageDictionary['" + data.Context_Status + "'] is not defined.");
+                            message = "Unknown Status";
+                        } else {
+                            message = contextMessageDictionary[data.Context_Status].format(data.Context_Parameters);
+                        }
+                        switch (data.Context_Disposition) {
+                            case 0:
+                                cssClass = "alert alert-success";
+                                break;
+                            case 1:
+                                cssClass = "alert alert-warning";
+                                break;
+                            case 2:
+                                cssClass = "alert alert-danger";
+                                break;
+                        }
+                        //if Context message wasn't already visible, show it
+                        $(".ContextualStatus").each(function () {
+                            $(this).html("<div class='" + cssClass + "'>" + message + "</div>");
+                            if (!$(this).is(":visible")) {
+                                $(this).fadeTo(1000, 1, function () {
+                                    $(this).slideDown(500);
+                                });
+                            }
+                        });
+                    }
+                    if (data.Accepted) {
+                        //prepare success system message
+                        systemMessage = "<div class='alert alert-success'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + contextMessageDictionary["ActionSuccess"] + "</div>";
+                        if (!$(".awe-rt-ListingActionMessage").is(":visible") || $(".awe-rt-ListingActionMessage").html() == "") {
+                            $(".awe-rt-ListingActionMessage").hide();
+                            $(".awe-rt-ListingActionMessage").html(systemMessage);
+                            $(".awe-rt-ListingActionMessage").slideDown();
+                        } else {
+                            $(".awe-rt-ListingActionMessage").fadeOut(200, function () {
+                                $(this).html(systemMessage);
+                                $(this).fadeIn(200);
+                            });
+                        }
+                        //render checkout button if a lineitem was returned
+                        if ((autoGenerateInvoices || ownerAllowsInstantCheckout) && data.LineItemID) {
+                            var checkoutUrl = '@SiteClient.TextSetting(SiteProperties.SecureURL)/Account/Checkout?lineitemid=' + data.LineItemID;
+                            checkoutUrl += '&returnUrl=@(Server.UrlEncode(returnUrl).ToMvcHtmlString().ToJavascriptSafeString())';
+
+                            if (autoCheckoutForBuyNow) {
+                                window.location = checkoutUrl;
+                            }
+
+                            var checkoutHtml =
+                                '<div class="detail__checkout">'
+                                + '<a href="' + checkoutUrl + '" class="btn__detail__checkout detail__option-menu__link">'
+                                + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                                + '<path d="M0 0h24v24H0z" fill="none" />'
+                                + '<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />'
+                                + '</svg></span>'
+                                + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("Checkout").ToJavascriptSafeString()' + '</span>'
+                                + '</a>'
+                                + '</div>';
+                            if ($(".detail__context-menu").find(".btn__detail__checkout").length == 0) {
+                                $(".detail__context-menu").prepend(checkoutHtml).show();
+                            } else {
+                                jslog("skipped rendering checkout button because one already exists.");
+                            }
+                        }
+
+                        if (data.LineItemID && !highlightCheckoutButtonForBuyNow) {
+                            //render contact seller button if one does not already exist
+                            if (@(SiteClient.BoolSetting(SiteProperties.UserMessagingEnabled).ToString().ToLower()) && $("a.btn__detail__contactuser").length == 0) {
+                                var contactSellerUrl = '@Url.Action(MVC.SendListingMessageAction, MVC.AccountController, new { receiver = Model.OwnerUserName, template = Templates.AskListingQuestion, listingID = Model.ID, returnUrl = Model.GetDetailUrl() }).ToJavascriptSafeString()';
+                                var contactSellerHtml =
+                                    '<div class="detail__contactuser">'
+                                    + '<a href="' + contactSellerUrl + '" class="btn__detail__contactuser detail__option-menu__link">'
+                                    + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                                    + '<path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />'
+                                    + '<path d="M0 0h24v24H0z" fill="none" />'
+                                    + '</svg></span>'
+                                    + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("MessageSeller").ToJavascriptSafeString()' + '</span>'
+                                    + '</a>'
+                                    + '</div>';
+                                $(".detail__context-menu").append(contactSellerHtml).show();
+                                jslog("contact button rendered for line item #" + data.LineItemID);
+                            }
+                            //render feedback button if one does not already exist
+                            if (@(SiteClient.BoolSetting(SiteProperties.FeedbackEnabled).ToString().ToLower()) && $("a.btn__detail__feedback").length == 0) {
+                                var feedbackUrl = '@Url.Action("SubmitFeedback", "Account", new { ListingID = Model.ID, Sender = Html.FBOUserName(), Receiver = Model.OwnerUserName }).ToJavascriptSafeString()';
+                                var feedbackHtml =
+                                    '<div class="detail__feedback">'
+                                    + '<a href="' + feedbackUrl + '" class="btn__detail__feedback detail__option-menu__link">'
+                                    + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                                    + '<path d="M0 0h24v24H0zm15.35 6.41l-1.77-1.77c-.2-.2-.51-.2-.71 0L6 11.53V14h2.47l6.88-6.88c.2-.19.2-.51 0-.71z" fill="none" />'
+                                    + '<path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2.47l6.88-6.88c.2-.2.51-.2.71 0l1.77 1.77c.2.2.2.51 0 .71L8.47 14H6zm12 0h-7.5l2-2H18v2z" />'
+                                    + '</svg></span>'
+                                    + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("Feedback").ToJavascriptSafeString()' + '</span>'
+                                    + '</a>'
+                                    + '</div>';
+                                $(".detail__context-menu").append(feedbackHtml).show();
+                                jslog("feedback button rendered for line item #" + data.LineItemID);
+                            }
+                        }
+
+                    } else {
+                        //ReasonString is populated, prepare a Negative System message
+                        if (contextMessageDictionary[data.ReasonString]) {
+                            systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + contextMessageDictionary[data.ReasonString] + "</div>";
+                        } else {
+                            systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + data.ReasonString + "</div>";
+                        }
+                        if (!$(".awe-rt-ListingActionMessage").is(":visible") || $(".awe-rt-ListingActionMessage").html() == "") {
+                            $(".awe-rt-ListingActionMessage").hide();
+                            $(".awe-rt-ListingActionMessage").html(systemMessage);
+                            $(".awe-rt-ListingActionMessage").slideDown();
+                        } else {
+                            $(".awe-rt-ListingActionMessage").fadeOut(200, function () {
+                                $(this).html(systemMessage);
+                                $(this).fadeIn(200);
+                            });
+                        }
+                    }
+                } else {
+                    //Context is null, but ReasonString is populated, prepare a Negative System message
+                    if (contextMessageDictionary[data.ReasonString]) {
+                        systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + contextMessageDictionary[data.ReasonString] + "</div>";
+                    } else {
+                        systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + data.ReasonString + "</div>";
+                    }
+                    if (!$(".awe-rt-ListingActionMessage").is(":visible") || $(".awe-rt-ListingActionMessage").html() == "") {
+                        $(".awe-rt-ListingActionMessage").hide();
+                        $(".awe-rt-ListingActionMessage").html(systemMessage);
+                        $(".awe-rt-ListingActionMessage").slideDown();
+                    } else {
+                        $(".awe-rt-ListingActionMessage").fadeOut(200, function () {
+                            $(this).html(systemMessage);
+                            $(this).fadeIn(200);
+                        });
+                    }
+                }
+            }
+        });
+
+        //render checkout button if the listing ends successfully and the winner is viewing
+        $(document).on("SignalR_UpdateListingStatus", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            if (autoGenerateInvoices || ownerAllowsInstantCheckout) {
+                if (data.Status == "@ListingStatuses.Successful" && data.LineItemID && data.LineItemPayerUN == "@Html.FBOUserName()") {
+                    var checkoutUrl = '@SiteClient.TextSetting(SiteProperties.SecureURL)/Account/Checkout?lineitemid=' + data.LineItemID;
+                    checkoutUrl += '&returnUrl=@(Server.UrlEncode(returnUrl))';
+                    var checkoutHtml =
+                        '<div class="detail__checkout">'
+                        + '<a href="' + checkoutUrl + '" class="btn__detail__checkout detail__option-menu__link">'
+                        + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                        + '<path d="M0 0h24v24H0z" fill="none" />'
+                        + '<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />'
+                        + '</svg></span>'
+                        + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("Checkout").ToJavascriptSafeString()' + '</span>'
+                        + '</a>'
+                        + '</div>';
+                    if ($(".detail__context-menu").find(".btn__detail__checkout").length == 0) {
+                        $(".detail__context-menu").prepend(checkoutHtml).show();
+                    } else {
+                        jslog("skipped rendering checkout button because one already exists.");
+                    }
+                }
+                if (data.Status == "@ListingStatuses.Successful" && data.LineItemID && data.LineItemPayerUN == "@Html.FBOUserName()") {
+                    //render contact seller button if one does not already exist
+                    if (@(SiteClient.BoolSetting(SiteProperties.UserMessagingEnabled).ToString().ToLower()) && $("a.btn__detail__contactuser").length == 0) {
+                        //"/Account/SendListingMessage?receiver=tester1&amp;template=ask_listing_question&amp;listingID=166614&amp;returnUrl=%2FListing%2FDetails%2F166614%2Ftest-item-J"
+                        var contactSellerUrl = '@Url.Action(MVC.SendListingMessageAction, MVC.AccountController, new { receiver = Model.OwnerUserName, template = Templates.AskListingQuestion, listingID = Model.ID, returnUrl = Model.GetDetailUrl() }).ToJavascriptSafeString()';
+                        var contactSellerHtml =
+                            '<div class="detail__contactuser">'
+                            + '<a href="' + contactSellerUrl + '" class="btn__detail__contactuser detail__option-menu__link">'
+                            + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                            + '<path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />'
+                            + '<path d="M0 0h24v24H0z" fill="none" />'
+                            + '</svg></span>'
+                            + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("MessageSeller").ToJavascriptSafeString()' + '</span>'
+                            + '</a>'
+                            + '</div>';
+                        $(".detail__context-menu").append(contactSellerHtml).show();
+                        jslog("contact button rendered for line item #" + data.LineItemID);
+                    }
+                    //render feedback button if one does not already exist
+                    if (@(SiteClient.BoolSetting(SiteProperties.FeedbackEnabled).ToString().ToLower()) && $("a.btn__detail__feedback").length == 0) {
+                        var feedbackUrl = '@Url.Action("SubmitFeedback", "Account", new { ListingID = Model.ID, Sender = Html.FBOUserName(), Receiver = Model.OwnerUserName }).ToJavascriptSafeString()';
+                        var feedbackHtml =
+                            '<div class="detail__feedback">'
+                            + '<a href="' + feedbackUrl + '" class="btn__detail__feedback detail__option-menu__link">'
+                            + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                            + '<path d="M0 0h24v24H0zm15.35 6.41l-1.77-1.77c-.2-.2-.51-.2-.71 0L6 11.53V14h2.47l6.88-6.88c.2-.19.2-.51 0-.71z" fill="none" />'
+                            + '<path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2.47l6.88-6.88c.2-.2.51-.2.71 0l1.77 1.77c.2.2.2.51 0 .71L8.47 14H6zm12 0h-7.5l2-2H18v2z" />'
+                            + '</svg></span>'
+                            + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("Feedback").ToJavascriptSafeString()' + '</span>'
+                            + '</a>'
+                            + '</div>';
+                        $(".detail__context-menu").append(feedbackHtml).show();
+                        jslog("feedback button rendered for line item #" + data.LineItemID);
+                    }
+                }
+            }
+        });
+
+        $(document).on("SignalR_UpdateInvoiceStatus", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            jslog("SignalR_UpdateInvoiceStatus (listing, invoice, status, payer): " + data.ListingID + ", " + data.InvoiceID + ", " + data.InvoiceStatus + ", " + data.InvoicePayerUN);
+
+            //show "View Invoice" or "Checkout" button if applicable
+            if (data.InvoicePayerUN == aweUserName) {
+                //get result of /RealTime/IsInvoicePayable?invoiceId=nnnnnn
+                var promise = Proxy.invokeAsync("IsInvoicePayable", { invoiceId: data.InvoiceID },
+                    function(result) {
+                        var checkoutUrl = '@SiteClient.TextSetting(SiteProperties.SecureURL)/Account/Invoice/' + data.InvoiceID;
+                        checkoutUrl += '?returnUrl=@Server.UrlEncode(returnUrl).ToMvcHtmlString().ToJavascriptSafeString()';
+                        if (result.isPayable) {
+                            //invoice is payable
+
+                            if (autoCheckoutForBuyNow) {
+                                window.location = checkoutUrl;
+                            }
+
+                            if ($("a.btn__detail__checkout").length == 0) {
+                                //render checkout button if one does not already exist
+                                var checkoutHtml =
+                                    '<div class="detail__checkout">'
+                                    + '<a href="' + checkoutUrl + '" class="btn__detail__checkout detail__option-menu__link">'
+                                    + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                                    + '<path d="M0 0h24v24H0z" fill="none" />'
+                                    + '<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />'
+                                    + '</svg></span>'
+                                    + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("Checkout").ToJavascriptSafeString()' + '</span>'
+                                    + '</a>'
+                                    + '</div>';
+                                $(".detail__context-menu").prepend(checkoutHtml).show();
+                                jslog("checkout button rendered for invoice #" + data.InvoiceID);
+                            }
+                        } else {
+                            //the invoice is not payable, so instead of 'checkout' button, render 'view invoice' button if one does not already exist
+                            if ($("a.btn__detail__invoices").length == 0) {
+                                var viewInvoiceHtml =
+                                    '<div class="detail__invoices">'
+                                    + '<a href="' + checkoutUrl + '" class="btn__detail__invoices detail__option-menu__link">'
+                                    + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                                    + '<path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />'
+                                    + '<path d="M0 0h24v24H0z" fill="none" />'
+                                    + '</svg></span>'
+                                    + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("ViewInvoice").ToJavascriptSafeString()' + '</span>'
+                                    + '</a>'
+                                    + '</div>';
+                                $(".detail__context-menu").append(viewInvoiceHtml).show();
+                                jslog("view invoice button rendered for invoice #" + data.InvoiceID);
+                            }
+                        }
+                        //only render the contact and/or feedback buttons if either
+                        //   a) the web.config setting HighlightCheckoutButtonForBuyNow is set to False, or
+                        //   b) the invoice is not payable
+                        if (!highlightCheckoutButtonForBuyNow || !result.isPayable) {
+                            //render contact seller button if one does not already exist
+                            if (@(SiteClient.BoolSetting(SiteProperties.UserMessagingEnabled).ToString().ToLower()) && $("a.btn__detail__contactuser").length == 0) {
+                                var contactSellerUrl = '@Url.Action(MVC.SendListingMessageAction, MVC.AccountController, new { receiver = Model.OwnerUserName, template = Templates.AskListingQuestion, listingID = Model.ID, returnUrl = Model.GetDetailUrl() }).ToMvcHtmlString().ToJavascriptSafeString()';
+                                var contactSellerHtml =
+                                    '<div class="detail__contactuser">'
+                                    + '<a href="' + contactSellerUrl + '" class="btn__detail__contactuser detail__option-menu__link">'
+                                    + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                                    + '<path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />'
+                                    + '<path d="M0 0h24v24H0z" fill="none" />'
+                                    + '</svg></span>'
+                                    + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("MessageSeller").ToJavascriptSafeString()' + '</span>'
+                                    + '</a>'
+                                    + '</div>';
+                                $(".detail__context-menu").append(contactSellerHtml).show();
+                                jslog("contact button rendered for invoice #" + data.InvoiceID);
+                            }
+                            //render feedback button if one does not already exist
+                            if (@(SiteClient.BoolSetting(SiteProperties.FeedbackEnabled).ToString().ToLower()) && $("a.btn__detail__feedback").length == 0) {
+                                var feedbackUrl = '@Url.Action("SubmitFeedback", "Account", new { ListingID = Model.ID, Sender = Html.FBOUserName(), Receiver = Model.OwnerUserName }).ToMvcHtmlString().ToJavascriptSafeString()';
+                                var feedbackHtml =
+                                    '<div class="detail__feedback">'
+                                    + '<a href="' + feedbackUrl + '" class="btn__detail__feedback detail__option-menu__link">'
+                                    + '<span class="detail__option-menu__icon"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'
+                                    + '<path d="M0 0h24v24H0zm15.35 6.41l-1.77-1.77c-.2-.2-.51-.2-.71 0L6 11.53V14h2.47l6.88-6.88c.2-.19.2-.51 0-.71z" fill="none" />'
+                                    + '<path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2.47l6.88-6.88c.2-.2.51-.2.71 0l1.77 1.77c.2.2.2.51 0 .71L8.47 14H6zm12 0h-7.5l2-2H18v2z" />'
+                                    + '</svg></span>'
+                                    + '<span class="detail__option-menu__label">' + '@Html.GlobalResourceString("Feedback").ToJavascriptSafeString()' + '</span>'
+                                    + '</a>'
+                                    + '</div>';
+                                $(".detail__context-menu").append(feedbackHtml).show();
+                                jslog("feedback button rendered for invoice #" + data.InvoiceID);
+                            }
+                        }
+                    },
+                    function(error) {
+                        jslog("Error retrieving invoice status (1): " + error);
+                    }
+                );
+                promise.fail(function (jqXHR, textStatus) {
+                    jslog("Error retrieving invoice status (2): " + textStatus);
+                });
+            }
+        });
+
+    });
+    @*//this will execute if the browser supports the Page Visibility API, was switched to a background tab for some amount of time, and has just become the active tab again
+    function StalePageHandler(timeSinceLastVisibleMS) {
+
+        var listingId = @Model.ID;
+
+        //first, see how much time is actually left before this listing ends...
+        var promise = Proxy.invokeAsync("GetTimeRemaining", {
+            listingId: listingId
+        }, function (data) {
+            //got result
+            if (data.error == "") {
+                if (data.secondsRemaining < 0) {
+                    //the EndDTTM of this lot is in the past, so a refresh may be needed...
+                    if ($(".awe-rt-BuyBox:visible").length > 0) {
+                        //the bid/purchse form is still visible, so this must be a stale page that missed or failed to process the "Listing Ended" SignalR message...
+                        //reload this page
+                        location.reload(true);
+                    }
+                }
+            } else {
+                jslog("error (1b) retrieving EndDTTM for #" + listingId + ": " + data.error);
+            }
+        }, function (error) {
+            jslog("error (2b) retrieving EndDTTM for #" + listingId);
+        });
+        promise.fail(function (jqXHR, textStatus) {
+            jslog("error (3b) retrieving EndDTTM for #" + listingId);
+        });
+    }*@
+</script>
+@{
+    bool makeOfferAvailable = false;
+}
+@if (Model.Properties.Any(lp => lp.Field.Name == Fields.MakeOfferAvailable && bool.TryParse(lp.Value, out makeOfferAvailable) && makeOfferAvailable))
+{
+    @Html.Partial("MakeOfferForm")
+}
+<div class="row">
+    <div class="col-xs-12 col-md-7 detail__title__wrapper">
+        <span class="detail__status-label awe-rt-ColoredStatus">
+            @Html.Partial("Listing_StatusLabel")
+        </span>
+        <h3 class="detail__title">@Model.Title <img src="Content/Images/exclamation.png" class="awe-hidden awe-refresh-alert" onclick="location.reload(true);" title="@Html.GlobalResource("RefreshAlert")" /></h3>
+        @if (Model.Subtitle.Length > 0)
+        {
+            <h4 class="detail__subtitle">@Model.Subtitle</h4>
+        }
+        @Html.Partial("OptionsMenu")
+    </div>
+    <div class="col-xs-12 col-md-5">
+        <div class="panel panel-default">
+            <div class="detail__context-wrapper ContextualStatus" id="ContextualStatus1">
+                @Html.Partial("ContextualStatus")
+            </div>
+            @Html.Partial("ContextMenu")
+
+            @{
+                IEnumerable<Media> medias = Model.Media.Where(m => m.Variations.ContainsKey(SiteClient.ThumbnailType));
+                Media image = Model.Media.Where(m => m.Variations.ContainsKey("FullSize")).FirstOrDefault();
+            }
+            @{IEnumerable<Media> nonImageMedia = Model.Media.Where(m => !m.Variations.ContainsKey(SiteClient.ThumbnailType));}
+
+            @if (image != null)
+            {
+                @Html.Partial(image.Type + "_FullSize", image)
+                if (medias.Count() <= 1)
+                {
+                    @Html.Partial(image.Type + "_FullSizeLightbox", image)
+                }
+            }
+            else
+            {
+                @Html.Partial("NoPhoto")
+            }
+
+            @if ((medias.Count() > 1) || (nonImageMedia.Where(m => m.Type.Contains("YouTube")).Count() > 0))
+            {
+                <div id="ListingImageThumbsCarousel" class="everslider">
+                    <ul class="es-slides">
+                        @if (nonImageMedia.Count() > 0)
+                        {
+                            foreach (Media media in nonImageMedia.Where(m => m.Type.Contains("YouTube")))
+                            {
+
+                                <li style="width: 100px; height: 100px; margin-right: 10px;">
+                                    <a href="#YouTube-modal" data-toggle="modal" data-target="#YouTube-modal" title="@Html.GlobalResource("WatchVideo"): @Model.Title">
+                                        <img src="~/Content/Images/YouTube-icon-full_color.png" />
+                                    </a>
+                                </li>
+                            }
+                        }
+                        @foreach (Media media in medias)
+                        {
+                            @Html.Partial(media.Type + "_" + SiteClient.ThumbnailType + "_for_ListingDetail", media)
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (nonImageMedia.Count() > 0)
+            {
+                if (nonImageMedia.Where(m => !m.Type.Contains("YouTube")).Count() > 0)
+                {
+                    <div class="detail__documents">
+                        @Html.GlobalResource("AdditionalDocuments")
+                    </div>
+                }
+                foreach (Media media in nonImageMedia.Where(m => !m.Type.Contains("YouTube")))
+                {
+                    @Html.Partial(media.Type + "_" + media.DefaultVariationName, media)<br />
+                }
+            }
+            @Html.GetSiteContent("Literal_SocialNetworking")
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-7">
+        <div class="awe-rt-ListingActionMessage"></div>
+        @if (Model.Status == ListingStatuses.Preview)
+        {
+            <div class="awe-rt-hideable awe-rt-ShowStatusPreview">
+                @Html.Partial(Model.Type.Name + "PreviewBox", Model)
+            </div>
+        }
+        @if (Model.Status == ListingStatuses.Active || Model.Status == ListingStatuses.Preview || Model.Status == ListingStatuses.Pending)
+        {
+            @Html.Partial("Action_BuyBox")
+        }
+        @Html.Partial(Model.Type.Name + "Details", Model)
+    </div>
+</div>
+@{
+    List<CustomProperty> properties = Model.Properties.Where(p => p.Field.Group.Equals("Item") &&
+        !string.IsNullOrEmpty(p.Value)).OrderBy(cp => cp.Field.DisplayOrder).ToList();
+}
+<div class="row">
+    <div class="col-xs-12 col-md-5">
+        <div class="panel panel-default detail__data-panel">
+            <div class="panel-heading">
+                @Html.GlobalResource("Details")
+            </div>
+
+            <div class="row">
+                @if (properties.Count > 0)
+                {
+                    <div class="col-xs-12">
+                        <ul class="detail__custom-fields list-unstyled">
+                            @foreach (CustomProperty property in properties)
+                            {
+                                <li>
+                                    <span class="detail__field-name">@Html.CustomFieldResource(property.Field.Name)</span>
+                                    <span class="detail__field-value">
+                                        @switch (property.Field.Type)
+                                        {
+                                            case CustomFieldType.Boolean:
+                                                @(bool.Parse(property.Value) ? Html.GlobalResource("Yes") : Html.GlobalResource("No"));
+                                                break;
+                                            case CustomFieldType.Decimal:
+                                                @(decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo()));
+                                                break;
+                                            case CustomFieldType.Int:
+                                                @(int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo()));
+                                                break;
+                                            case CustomFieldType.DateTime:
+                                                @(DateTime.Parse(property.Value).ToString("D", Html.GetCurrentCultureInfo()));
+                                                break;
+                                            case CustomFieldType.Enum:
+                                                @Html.CustomFieldResource(property.Value);
+                                                break;
+                                            default:
+                                                @property.Value;
+                                                break;
+                                        }
+                                    </span>
+                                    @{MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));}
+                                    @if (helpText != null)
+                                    {
+                                        <span class="default__field-help">
+                                            @Html.ToolTipButton(property.Field.Name + "_Help")
+                                        </span>
+                                    }
+                                    @if (helpText != null)
+                                    {
+                                        <div>
+                                            @Html.ToolTipContent(property.Field.Name + "_Help", helpText)
+                                        </div>
+                                    }
+                                </li>
+                            }
+
+                        </ul>
+                        <hr />
+                    </div>
+                }
+                <div class="col-xs-12">
+                    @Html.Partial("ListingDetail_GeneralData")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-md-7">
+        <div class="panel panel-default detail__description-panel">
+            <div class="panel-heading">
+                @Html.GlobalResource("Description")
+            </div>
+            <div class="panel-body description">
+                @MvcHtmlString.Create(Model.Description) @*note: this string is expected to have safe html code*@
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        @Html.Partial("PublicQandA")
+    </div>
+</div>
+
+@if (nonImageMedia.Count() > 0)
+{
+    foreach (Media media in nonImageMedia.Where(m => m.Type.Contains("YouTube")))
+    {
+        @Html.Partial(media.Type + "_" + media.DefaultVariationName, media)
+    }
+}

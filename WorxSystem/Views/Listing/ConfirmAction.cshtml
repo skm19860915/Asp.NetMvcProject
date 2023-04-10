@@ -1,0 +1,45 @@
+﻿@model Listing
+
+<div class="col-sm-6">
+    <div class="well well-sm section-title">@Html.GlobalResource("Confirm")</div>
+    <div class="panel panel-default">
+        @using (Html.BeginForm("Action", "Listing", FormMethod.Get))
+        {
+            <div class="panel-body">
+                @Html.Partial(Model.Type.Name + "BuyerFees", Model)
+                <p class="text-success">
+                    <strong>
+                        @Html.Partial(Model.Type.Name + "ActionConfirmationBox", Model)
+                    </strong>
+                </p>
+            </div>
+            @Html.Hidden("ListingID", Model.ID)            
+            @Html.Hidden("ListingType", Model.Type.Name)
+            <div class="panel-footer">
+                @if (Context.User.Identity.IsAuthenticated)
+                {
+                    <input type="submit" class="btn btn-success" value="@Html.GlobalResource("Submit")" />
+                    @:&nbsp;&nbsp;@Html.GlobalResource("Or")&nbsp;&nbsp;
+                }
+
+                @(Html.ButtonLink(Html.GlobalResource("Cancel"), "Details", "Listing",
+                    new { id = Model.ID, extra = Model.Title.SimplifyForURL("-") }, new { @class = "btn btn-default" }))
+            </div>
+        }
+    </div>
+</div>
+<div class="col-sm-6">
+    @Html.LocalizedValidationSummary()
+    @if (!Context.User.Identity.IsAuthenticated)
+    {
+        using (Html.BeginForm(MVC.LogOnAction, MVC.AccountController))
+        {
+            <div class="well well-sm section-title">
+                @Html.GlobalResource("Logon")
+            </div>
+            @Html.Hidden("returnUrl", Context.Request.RawUrl)
+            @Html.Partial("LogOnBox")
+
+        }
+    }
+</div>

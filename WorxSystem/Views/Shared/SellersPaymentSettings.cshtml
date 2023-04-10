@@ -1,0 +1,58 @@
+﻿@model User
+@{
+    Category paymentSettingsCategory = CommonClient.GetCategoryByID(44902);
+    List<CustomProperty> paymentSettings = Html.PruneUserCustomFieldsForVisbilityOnly(
+        UserClient.Properties(Context.User.Identity.Name, Model.UserName).WhereContainsFields(
+            paymentSettingsCategory.CustomFieldIDs), Model.UserName);
+}
+@foreach (CustomProperty property in paymentSettings)
+{
+    <li class="list-group-item">
+        @{MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));}
+        @if (helpText != null)
+        {
+            @Html.ToolTipContent(property.Field.Name + "_Help", helpText)
+        }
+        <strong>@Html.CustomFieldResource(property.Field.Name):</strong>&nbsp;
+        @if (string.IsNullOrEmpty(property.Value))
+        {
+            @Html.GlobalResource("CustomValueNotSet")
+        }
+        else if (property.Field.Encrypted)
+        {
+            @Fields.MaskedFieldValue
+        }
+        else
+        {
+            switch (property.Field.Type)
+            {
+                case CustomFieldType.Decimal:
+                    @(decimal.Parse(property.Value).ToString("0.##", Html.GetCurrentCultureInfo()))
+                    break;
+                case CustomFieldType.Int:
+                    @(int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo()))
+                    break;
+                case CustomFieldType.DateTime:
+                    @(DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo()))
+                    break;
+                case CustomFieldType.Boolean:
+                    if (bool.Parse(property.Value))
+                    {
+                        <strong class="text-success">@Html.GlobalResource("Yes")</strong>
+                    }
+                    else
+                    {
+                        <strong class="text-danger">@Html.GlobalResource("No")</strong>
+                    }
+                    break;
+                default:
+                    @property.Value
+                    break;
+            }
+        }
+        @if (helpText != null)
+        {
+            @Html.ToolTipButton(property.Field.Name + "_Help")
+        }
+    </li>
+}

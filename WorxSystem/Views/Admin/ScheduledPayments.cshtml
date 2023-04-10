@@ -1,0 +1,200 @@
+﻿@model List<CustomProperty>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = ViewData[MVC.LineageString];
+}
+
+@section head {
+    <script>
+        function updateInputs() {
+            switch ($("#BatchPaymentPeriod").val()) {
+                case "NEVER":
+                    $("#DayOfWeek").hide();
+                    $("#DayOfMonth").hide();
+                    $("#TimeOfDay").hide();
+                    break;
+                case "DAILY":
+                    $("#DayOfWeek").hide();
+                    $("#DayOfMonth").hide();
+                    $("#TimeOfDay").show();
+                    break;
+                case "WEEKLY":
+                    $("#DayOfWeek").show();
+                    $("#DayOfMonth").hide();
+                    $("#TimeOfDay").show();
+                    break;
+                case "MONTHLY":
+                    $("#DayOfWeek").hide();
+                    $("#DayOfMonth").show();
+                    $("#TimeOfDay").show();
+                    break;
+            }
+        };
+
+        $(document).ready(function () {
+            $("#BatchPaymentPeriod").change(function () {
+                updateInputs();
+            });
+
+            //[Process Payment(s)] button click
+            $(".AttemptBatchPaymentButton").click(function () {
+                $(this).html('@Html.AdminResource("BatchProcessingQueued")')
+                    .attr("disabled", "disabled");
+                DemandBatchProcessing();
+                return false;
+            });
+
+            updateInputs();
+
+        });
+    </script>
+}
+<div class="form-horizontal">
+    @{
+        using (Html.BeginForm())
+        {
+            CustomProperty property = null;
+            property = Model.Single(p => p.Field.Name == "BatchPaymentProvider");
+            MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">@Html.CustomFieldResource("BatchPaymentProvider")</label>
+                <div class="col-xs-10 col-sm-6">
+                    @{ Html.RenderCustomField_Admin(property.Field); }
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </div>
+                @{
+                    if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                    {
+                        <div class="col-xs-2">
+                            @Html.ToolTipButton(property.Field.Name + "_Help")
+                        </div>
+                        <div class="col-xs-12">@Html.ToolTipContent(property.Field.Name + "_Help", helpText)</div>
+                    }
+                }
+            </div>
+            property = Model.Single(p => p.Field.Name == "BatchPaymentPeriod");
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource("BatchPaymentPeriod")
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @{ Html.RenderCustomField_Admin(property.Field); }
+                </div>
+                @if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                {
+                    <div class="col-xs-2">
+                        @Html.ToolTipButton(property.Field.Name + "_Help")
+                    </div>
+                    <div class="col-xs-12">@Html.ToolTipContent(property.Field.Name + "_Help", helpText)</div>
+                }
+            </div>
+            <div class="form-group" id="TimeOfDay">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource("BatchPaymentTime")
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @Html.TextBox("BatchTime", null, new { @class = "form-control input-sm" })
+                </div>
+                @{
+                    helpText = Html.CustomFieldResourceOrDefault(string.Concat("BatchPaymentTime", "_Help"));
+                    if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                    {
+                        <div class="col-xs-2">
+                            @Html.ToolTipButton("helpText")
+                        </div>
+                        <div class="col-xs-12">@Html.ToolTipContent("helpText", helpText)</div>
+                    }
+                }
+            </div>
+            property = Model.Single(p => p.Field.Name == "BatchPaymentDay");
+            <div class="form-group" id="DayOfWeek">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource(property.Field.Name)
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @{ Html.RenderCustomField_Admin(property.Field); }
+                </div>
+                @{
+                    helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+                    if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                    {
+                        <div class="col-xs-2">
+                            @Html.ToolTipButton("helpText")
+                        </div>
+                        <div class="col-xs-12">@Html.ToolTipContent("helpText", helpText)</div>
+                    }
+                }
+            </div>
+            property = Model.Single(p => p.Field.Name == "BatchPaymentDate");
+            <div class="form-group" id="DayOfMonth">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource(property.Field.Name)
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <strong class="Required">*</strong>
+                    }
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @{ Html.RenderCustomField_Admin(property.Field); }
+
+                </div>
+                @{
+                    helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+                    if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                    {
+                        <div class="col-xs-2">
+                            @Html.ToolTipButton("helpText")
+                        </div>
+                        <div class="col-xs-12">@Html.ToolTipContent("helpText", helpText)</div>
+                    }
+                }
+            </div>
+            <div class="group">
+                <p>
+                    @Html.CustomFieldResource("NextBatchPayment") -
+                    <strong>
+                        @ViewData["NextAttemptDTTM"]
+                    </strong>
+                </p>
+                <hr />
+                @if (!SiteClient.DemoEnabled)
+                {
+                    <button class="btn btn-default AttemptBatchPaymentButton" type="button">@Html.AdminResource("ManualChargeButtonText")</button>
+                    <span>@Html.AdminResource("ManualChargeButton_Help")</span>
+                }
+                else
+                {
+                    <button class="btn btn-default disabled AttemptBatchPaymentButton" type="button" disabled="disabled">@Html.AdminResource("ManualChargeButtonText")</button>
+                    <span>@Html.AdminResource("ManualChargeButton_Help")</span>
+                    <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+            </div>
+            <div class="action-panel">
+                @if (!SiteClient.DemoEnabled)
+                {
+                    <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+                }
+                else
+                {
+                    <input type="submit" class="btn btn-success disabled" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" disabled="disabled" />
+                }
+            </div>
+        }
+    }
+</div>

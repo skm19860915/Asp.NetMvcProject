@@ -1,0 +1,1495 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AcceptAMEX" xml:space="preserve">
+    <value>Accept AMEX</value>
+  </data>
+  <data name="AcceptDiscover" xml:space="preserve">
+    <value>Accept Discover</value>
+  </data>
+  <data name="AcceptMastercard" xml:space="preserve">
+    <value>Accept Mastercard</value>
+  </data>
+  <data name="AcceptVisa" xml:space="preserve">
+    <value>Accept Visa</value>
+  </data>
+  <data name="AdministratorEmail" xml:space="preserve">
+    <value>Administrator Email</value>
+  </data>
+  <data name="AllowInstantCheckout" xml:space="preserve">
+    <value>Allow Instant Checkout</value>
+  </data>
+  <data name="Auction_EnableProxyBidding" xml:space="preserve">
+    <value>Enable Proxy Bidding</value>
+  </data>
+  <data name="AuthorizeNet_Enabled" xml:space="preserve">
+    <value>Authorize.NET Enabled</value>
+  </data>
+  <data name="AuthorizeNet_MerchantLoginID" xml:space="preserve">
+    <value>Site Fee Merchant Login ID</value>
+  </data>
+  <data name="AuthorizeNet_PostUrl" xml:space="preserve">
+    <value>Post URL</value>
+  </data>
+  <data name="AuthorizeNet_TestMode" xml:space="preserve">
+    <value>Test Mode</value>
+  </data>
+  <data name="AuthorizeNet_TransactionKey" xml:space="preserve">
+    <value>Site Fee Transaction Key</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="DurationDaysList" xml:space="preserve">
+    <value>Duration Days List</value>
+  </data>
+  <data name="EnableMultipleCultures" xml:space="preserve">
+    <value>Enable Multiple Cultures</value>
+  </data>
+  <data name="EnableMultipleCurrencies" xml:space="preserve">
+    <value>Enable Multiple Currencies</value>
+  </data>
+  <data name="EnableRegions" xml:space="preserve">
+    <value>Enable Regions</value>
+  </data>
+  <data name="EnableShipping" xml:space="preserve">
+    <value>Enable Shipping</value>
+  </data>
+  <data name="ExteriorColor" xml:space="preserve">
+    <value>Exterior Color</value>
+  </data>
+  <data name="Fax" xml:space="preserve">
+    <value>Fax</value>
+  </data>
+  <data name="FeedbackEnabled" xml:space="preserve">
+    <value>Feedback Enabled</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="FreeFormProvider_Enabled" xml:space="preserve">
+    <value>Free Form Provider Enabled</value>
+  </data>
+  <data name="FriendlySiteName" xml:space="preserve">
+    <value>Friendly Site Name</value>
+  </data>
+  <data name="ImageX" xml:space="preserve">
+    <value>Image X</value>
+  </data>
+  <data name="ImageY" xml:space="preserve">
+    <value>Image Y</value>
+  </data>
+  <data name="InteriorColor" xml:space="preserve">
+    <value>Interior Color</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="LegalSiteName" xml:space="preserve">
+    <value>Legal Site Name</value>
+  </data>
+  <data name="ListingDurationOptions" xml:space="preserve">
+    <value>Listing Duration Options</value>
+  </data>
+  <data name="MaxHomePageFeatured" xml:space="preserve">
+    <value>Max Home Page Items</value>
+  </data>
+  <data name="MaxImagesPerItem" xml:space="preserve">
+    <value>Max Images Per Item</value>
+  </data>
+  <data name="MaxResultsPerPage" xml:space="preserve">
+    <value>Max Results Per Page</value>
+  </data>
+  <data name="MetaDescription" xml:space="preserve">
+    <value>Meta Description</value>
+  </data>
+  <data name="MetaKeywords" xml:space="preserve">
+    <value>Meta Keywords</value>
+  </data>
+  <data name="Mileage" xml:space="preserve">
+    <value>Mileage</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NumberBathrooms" xml:space="preserve">
+    <value>Number of Bathrooms</value>
+  </data>
+  <data name="NumberBedrooms" xml:space="preserve">
+    <value>Number of Bedrooms</value>
+  </data>
+  <data name="PayPal_CancelReturnURL" xml:space="preserve">
+    <value>Cancel Return URL</value>
+  </data>
+  <data name="PayPal_Email" xml:space="preserve">
+    <value>PayPal Email</value>
+  </data>
+  <data name="PayPal_Email_Help" xml:space="preserve">
+    <value>User’s email address associated with the PayPal account that will receive payments.</value>
+  </data>
+  <data name="PayPal_Enabled" xml:space="preserve">
+    <value>PayPal Enabled</value>
+  </data>
+  <data name="PayPal_FeesEmail" xml:space="preserve">
+    <value>Fees Email</value>
+  </data>
+  <data name="PayPal_IPNURL" xml:space="preserve">
+    <value>IPN URL</value>
+  </data>
+  <data name="PayPal_PostURL" xml:space="preserve">
+    <value>Post URL</value>
+  </data>
+  <data name="PayPal_ReturnToMerchantText" xml:space="preserve">
+    <value>Return To Merchant Text</value>
+  </data>
+  <data name="PayPal_SuccessReturnURL" xml:space="preserve">
+    <value>Success Return URL</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="ProcessingEnabled" xml:space="preserve">
+    <value>Processing Enabled</value>
+  </data>
+  <data name="RestrictOutsideSellers" xml:space="preserve">
+    <value>Restrict Outside Sellers</value>
+  </data>
+  <data name="SecureURL" xml:space="preserve">
+    <value>Secure URL</value>
+  </data>
+  <data name="ShowBidHistoryUserNames" xml:space="preserve">
+    <value>Show Bid History User Names</value>
+  </data>
+  <data name="ShowCategoryCounts" xml:space="preserve">
+    <value>Show Category Counts</value>
+  </data>
+  <data name="ShowZeroCountCategories" xml:space="preserve">
+    <value>Show Zero Count Categories</value>
+  </data>
+  <data name="SiteTitle" xml:space="preserve">
+    <value>Site Title</value>
+  </data>
+  <data name="SquareFootage" xml:space="preserve">
+    <value>Square Footage</value>
+  </data>
+  <data name="StateRegion" xml:space="preserve">
+    <value>State/Region</value>
+  </data>
+  <data name="Street1" xml:space="preserve">
+    <value>Street 1</value>
+  </data>
+  <data name="Street2" xml:space="preserve">
+    <value>Street 2</value>
+  </data>
+  <data name="SystemEmailAddress" xml:space="preserve">
+    <value>System Email Address</value>
+  </data>
+  <data name="SystemEmailName" xml:space="preserve">
+    <value>System Email Name</value>
+  </data>
+  <data name="ThumbX" xml:space="preserve">
+    <value>Thumb X</value>
+  </data>
+  <data name="ThumbY" xml:space="preserve">
+    <value>Thumb Y</value>
+  </data>
+  <data name="URL" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="UserMessagingEnabled" xml:space="preserve">
+    <value>User Messaging Enabled</value>
+  </data>
+  <data name="VerifyUserEmail" xml:space="preserve">
+    <value>Verify User Email</value>
+  </data>
+  <data name="VIN" xml:space="preserve">
+    <value>VIN</value>
+  </data>
+  <data name="ZipPostal" xml:space="preserve">
+    <value>Zip/Postal</value>
+  </data>
+  <data name="AcceptPayPal" xml:space="preserve">
+    <value>Accept PayPal</value>
+  </data>
+  <data name="PaymentInstructions" xml:space="preserve">
+    <value>Payment Instructions</value>
+  </data>
+  <data name="EnableProxyBidding" xml:space="preserve">
+    <value>Enable Proxy Bidding</value>
+  </data>
+  <data name="ListingDurationOptions_Help" xml:space="preserve">
+    <value>&lt;p&gt;Start Date &amp; Duration – Schedule a start date and time and select the number of days (duration) the listing will be active.&lt;/p&gt;
+&lt;p&gt;Start Date &amp; End Date – Specify both a starting and ending date and time.&lt;/p&gt;
+&lt;p&gt;Duration Only – Listing becomes active right away and ends after the number of days selected.&lt;/p&gt;
+&lt;p&gt;End Date Only – Listing becomes active immediately and ends at the specified end date and time.&lt;/p&gt;</value>
+  </data>
+  <data name="SniperProtectionSeconds" xml:space="preserve">
+    <value>Sniper Protection Seconds</value>
+  </data>
+  <data name="AuthorizeNet_PaymentDescription" xml:space="preserve">
+    <value>Payment Description</value>
+  </data>
+  <data name="BottomBannersToDisplay" xml:space="preserve">
+    <value>Bottom Banners To Display</value>
+  </data>
+  <data name="LeftBannersToDisplay" xml:space="preserve">
+    <value>Left Banners To Display</value>
+  </data>
+  <data name="TopBannersToDisplay" xml:space="preserve">
+    <value>Top Banners To Display</value>
+  </data>
+  <data name="Duration_Only" xml:space="preserve">
+    <value>Duration Only</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="End_Only" xml:space="preserve">
+    <value>End Date Only</value>
+  </data>
+  <data name="Start_And_Duration" xml:space="preserve">
+    <value>Start Date &amp; Duration</value>
+  </data>
+  <data name="Start_And_End" xml:space="preserve">
+    <value>Start Date &amp; End Date</value>
+  </data>
+  <data name="ShowShippingInfoOnItemLists" xml:space="preserve">
+    <value>Show Shipping Info On Item Lists</value>
+  </data>
+  <data name="ShowShippingInfoOnItemLists_Help" xml:space="preserve">
+    <value>If Enabled: The least expensive shipping option will be shown below the title in "Browse" and "Search" listing result lists</value>
+  </data>
+  <data name="ShowSellerLocationOnListingDetails" xml:space="preserve">
+    <value>Show Seller Location on Detail Page</value>
+  </data>
+  <data name="CreditCardsEnabled" xml:space="preserve">
+    <value>Stored Credit Cards</value>
+  </data>
+  <data name="UserApprovalRequired" xml:space="preserve">
+    <value>User Approval Required</value>
+  </data>
+  <data name="ChargeFeesWhenRelisting" xml:space="preserve">
+    <value>Charge Fees When Relisting</value>
+  </data>
+  <data name="MaxAutoRelists" xml:space="preserve">
+    <value>Max Auto Relists</value>
+  </data>
+  <data name="EnableGTC" xml:space="preserve">
+    <value>Enable Good 'Til Canceled</value>
+  </data>
+  <data name="EnableGTC_Help" xml:space="preserve">
+    <value>Gives the listing agent the option to have their listing remain open until sold out or manually canceled.</value>
+  </data>
+  <data name="TestDecimal" xml:space="preserve">
+    <value>Test Decimal</value>
+  </data>
+  <data name="RequireCreditCardOnRegistration" xml:space="preserve">
+    <value>Require Credit Card on Registration</value>
+  </data>
+  <data name="ShowSellerOnListingRow" xml:space="preserve">
+    <value>Show Seller Name in Search Results</value>
+  </data>
+  <data name="UsejQueryTimePicker" xml:space="preserve">
+    <value>Use jQuery Time Picker</value>
+  </data>
+  <data name="ProcessingEnabled_Help" xml:space="preserve">
+    <value>&lt;p&gt;If Enabled: The following background processes are enabled:&lt;/p&gt;
+&lt;ul style="list-style-type:circle;margin-left:20px;"&gt;
+&lt;li&gt;&lt;b&gt;Starting Listings&lt;/b&gt; - Activates listings set to begin in the future&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Listing Resolution&lt;/b&gt; - Ends and resolves listings &lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Fee Refresher&lt;/b&gt; - Calculates fees owed &lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Notifier&lt;/b&gt; - Manages sending emails&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If this option is not enabled, the above processes do not run.  The results are: listings never start or end, no system emails, and no fee invoicing.&lt;/p&gt;</value>
+  </data>
+  <data name="RequireAuthentication" xml:space="preserve">
+    <value>Require Authentication</value>
+  </data>
+  <data name="ShowPendingListings" xml:space="preserve">
+    <value>Show Scheduled Listings</value>
+  </data>
+  <data name="EnableNotifications" xml:space="preserve">
+    <value>Email Notifications Enabled</value>
+  </data>
+  <data name="EnableNotifications_Help" xml:space="preserve">
+    <value>&lt;p&gt;When Email Notifications Enabled is checked, the system processes and sends email notifications to buyers and sellers indicating activity with their listings, etc.&lt;/p&gt;
+&lt;p&gt;If this is unchecked, emails are not queued and are not sent.&lt;/p&gt;</value>
+  </data>
+  <data name="RequireAuthentication_Help" xml:space="preserve">
+    <value>If Enabled: Users must be registered and signed in to view any listing details.</value>
+  </data>
+  <data name="DisplayListingType" xml:space="preserve">
+    <value>Display Listing Type in Search Results</value>
+  </data>
+  <data name="AllowSellerEditDuration" xml:space="preserve">
+    <value>Allow Changes To Listing End Date / Duration</value>
+  </data>
+  <data name="AllowSellerEditDuration_Help" xml:space="preserve">
+    <value>Note: For Auctions, this only applies to listings with no bids.</value>
+  </data>
+  <data name="RequireAddressOnRegistration" xml:space="preserve">
+    <value>Require Address on Registration</value>
+  </data>
+  <data name="AuthorizeNetAIM" xml:space="preserve">
+    <value>Authorize.NET</value>
+  </data>
+  <data name="BatchPaymentDate" xml:space="preserve">
+    <value>Day of Month</value>
+  </data>
+  <data name="BatchPaymentDate_Help" xml:space="preserve">
+    <value>If a month does not have the selected day then the system will choose the last day of that month.  &lt;br/&gt;
+(Example: Day 30 is selected and the month is February) 
+&lt;p&gt;
+Consequently, choosing "31" will always run on "the last day of the month."
+&lt;/p&gt;</value>
+  </data>
+  <data name="BatchPaymentDay" xml:space="preserve">
+    <value>Day of Week</value>
+  </data>
+  <data name="BatchPaymentPeriod" xml:space="preserve">
+    <value>Recurrence</value>
+  </data>
+  <data name="BatchPaymentPeriod_Help" xml:space="preserve">
+    <value>Set to "Never" to disable scheduled payments.  Otherwise, choose how often scheduled payments should be attempted.</value>
+  </data>
+  <data name="BatchPaymentProvider" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="BatchPaymentTime" xml:space="preserve">
+    <value>Time of Day</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="Friday" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="Monday" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="NextBatchPayment" xml:space="preserve">
+    <value>Next Batch Payment Attempt</value>
+  </data>
+  <data name="Saturday" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="Sunday" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="Thursday" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="Tuesday" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="Wednesday" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="AllowSellerEditStartDate" xml:space="preserve">
+    <value>Allow Edit of Start Date for Scheduled Listings</value>
+  </data>
+  <data name="AllowSellerEditStartDate_Help" xml:space="preserve">
+    <value>This only applies to listings which have not yet started (Scheduled Listings).</value>
+  </data>
+  <data name="DisableBuyNowAfterWinningBids" xml:space="preserve">
+    <value>Disable Buy Now After Winning Bids</value>
+  </data>
+  <data name="DisableBuyNowAfterWinningBids_Help" xml:space="preserve">
+    <value>If checked (disabled), the Buy Now option will disappear as soon as the first winning bid is placed.  Checked or unchecked, the Buy Now option will remain available if the Reserve Price is not met.</value>
+  </data>
+  <data name="EnableProxyBidding_Help" xml:space="preserve">
+    <value>If Enabled: Bids are automatically entered on behalf of the bidder for the lowest amount required to win the item. &lt;p&gt; Otherwise, the proxy system will not be used and the maximum bid will always be placed immediately.&lt;/p&gt;</value>
+  </data>
+  <data name="ProxyBiddingBelowReserve" xml:space="preserve">
+    <value>Proxy Bidding Below Reserve</value>
+  </data>
+  <data name="ProxyBiddingBelowReserve_Help" xml:space="preserve">
+    <value>If Enabled: Proxy bidding will function the same regardless of whether the Reserve Price has been met or not, which will result in the auction ending unsuccessfully if there is only one bidder (even if their maximum proxy bid is greater than the Reserve Price).  Otherwise (if disabled), the proxy system will automatically increase the bid level to meet the Reserve Price if possible.</value>
+  </data>
+  <data name="AcceptCreditCard" xml:space="preserve">
+    <value>Accept Credit Card</value>
+  </data>
+  <data name="DefaultSalesInvoiceComment" xml:space="preserve">
+    <value>Default Invoice Comment</value>
+  </data>
+  <data name="DefaultSalesInvoiceComment_Help" xml:space="preserve">
+    <value>This text will be automatically inserted into the Comments field of your new sales invoices.</value>
+  </data>
+  <data name="FeedbackEnabled_Help" xml:space="preserve">
+    <value>If Enabled: The transaction feedback and rating system is available to users.</value>
+  </data>
+  <data name="FriendlySiteName_Help" xml:space="preserve">
+    <value>Appears in invoices.</value>
+  </data>
+  <data name="LegalSiteName_Help" xml:space="preserve">
+    <value>Appears within the copyright information.</value>
+  </data>
+  <data name="SecureURL_Help" xml:space="preserve">
+    <value>Example: https://www.xyz.com
+&lt;p&gt;
+If you do not have an SSL certificate installed for your website, the secure URL should match the above URL. &lt;/p&gt;</value>
+  </data>
+  <data name="URL_Help" xml:space="preserve">
+    <value>Example: http://www.xyz.com
+&lt;p&gt;
+The full URL, including http://, for use in generating the internal software links and links within the email templates. &lt;/p&gt;</value>
+  </data>
+  <data name="UserMessagingEnabled_Help" xml:space="preserve">
+    <value>If Enabled: Users are allowed to message other users. If allowing classified ads, this setting should be enabled to allow users to contact the ad owner.</value>
+  </data>
+  <data name="UseAggregateFinalPercentageFees" xml:space="preserve">
+    <value>Use Aggregate Final Percentage Fees</value>
+  </data>
+  <data name="ShowCurrencyCodes" xml:space="preserve">
+    <value>Show Currency Codes</value>
+  </data>
+  <data name="HideTaxFields" xml:space="preserve">
+    <value>Hide All Tax Fields</value>
+  </data>
+  <data name="ThumbCrop" xml:space="preserve">
+    <value>Cropped</value>
+  </data>
+  <data name="ThumbFit" xml:space="preserve">
+    <value>Scaled to Fit</value>
+  </data>
+  <data name="ThumbnailType" xml:space="preserve">
+    <value>Thumbnail Type</value>
+  </data>
+  <data name="ShowCurrencySymbol" xml:space="preserve">
+    <value>Show Currency Symbol</value>
+  </data>
+  <data name="AcceptAMEX_Help" xml:space="preserve">
+    <value>If Enabled: "American Express" will be made available as a card type option for credit card payments.</value>
+  </data>
+  <data name="AcceptDiscover_Help" xml:space="preserve">
+    <value>If Enabled: "Discover" will be made available as a card type option for credit card payments.</value>
+  </data>
+  <data name="AcceptMastercard_Help" xml:space="preserve">
+    <value>If Enabled: "Mastercard" will be made available as a card type option for credit card payments.</value>
+  </data>
+  <data name="AcceptVisa_Help" xml:space="preserve">
+    <value>If Enabled: "Visa" will be made available as a card type option for credit card payments.</value>
+  </data>
+  <data name="AdministratorEmail_Help" xml:space="preserve">
+    <value>Administration contact email address.</value>
+  </data>
+  <data name="AuthorizeNet_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: The software will connect to your Authorize.net account and "Checkout with Credit Card" will be available as a checkout option. This payment method allows users to submit credit card payments without leaving the website. Note: This payment method also requires "Stored Credit Cards" to be enabled.</value>
+  </data>
+  <data name="AuthorizeNet_MerchantLoginID_Help" xml:space="preserve">
+    <value>Your Authorize.Net API login for use with site fee invoices.</value>
+  </data>
+  <data name="AuthorizeNet_PaymentDescription_Help" xml:space="preserve">
+    <value>Used to describe the transaction between the Administrator and the Merchant.</value>
+  </data>
+  <data name="AuthorizeNet_PostUrl_Help" xml:space="preserve">
+    <value>Specifies the URL used by the Authorize.Net payment provider to post payment transactions. Generally, this value should not be changed except for testing or troubleshooting purposes.</value>
+  </data>
+  <data name="AuthorizeNet_TestMode_Help" xml:space="preserve">
+    <value>When checked, payments will be posted as test transactions. No money will actually be transferred.
+&lt;p&gt;Test credit card numbers (expiration date must be set to the present date or later):&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;American Express Test Card: 370000000000002&lt;/li&gt;
+&lt;li&gt;Discover Test Card: 6011000000000012&lt;/li&gt;
+&lt;li&gt;Visa Test Card: 4007000000027&lt;/li&gt;
+&lt;li&gt;Second Visa Test Card: 4012888818888&lt;/li&gt;
+&lt;/ul&gt;</value>
+  </data>
+  <data name="AuthorizeNet_TransactionKey_Help" xml:space="preserve">
+    <value>Your Authorize.Net transaction key for use with site fee invoices.</value>
+  </data>
+  <data name="BottomBannersToDisplay_Help" xml:space="preserve">
+    <value>The number of randomly selected banners to display at the bottom of certain pages.</value>
+  </data>
+  <data name="ChargeFeesWhenRelisting_Help" xml:space="preserve">
+    <value>If Enabled: Associated listing fees will be charged to the seller when an item is re-listed.</value>
+  </data>
+  <data name="CreditCardsEnabled_Help" xml:space="preserve">
+    <value>If Enabled: All associated credit card data forms will appear to the users.  Credit card data can be saved on your website for future purchases.</value>
+  </data>
+  <data name="DisplayListingType_Help" xml:space="preserve">
+    <value>If Enabled: The listing type will be displayed on the Listing Results page for both Browse and Search.</value>
+  </data>
+  <data name="DurationDaysList_Help" xml:space="preserve">
+    <value>Enter the number of 'day' options to be presented to sellers for their listings.</value>
+  </data>
+  <data name="EnableMultipleCultures_Help" xml:space="preserve">
+    <value>If Enabled: The software will allow multiple languages features that you elect to support.</value>
+  </data>
+  <data name="EnableMultipleCurrencies_Help" xml:space="preserve">
+    <value>If Enabled: The software will allow currencies and conversions that you elect to support.</value>
+  </data>
+  <data name="EnableShipping_Help" xml:space="preserve">
+    <value>If Enabled: Sellers may specify flat shipping cost details when creating or editing listings.</value>
+  </data>
+  <data name="HideTaxFields_Help" xml:space="preserve">
+    <value>If Enabled: Tax functionality will be removed site wide - including the "My Account" area, "Create Listing" area and on Invoices.</value>
+  </data>
+  <data name="LeftBannersToDisplay_Help" xml:space="preserve">
+    <value>The number of randomly selected banners to display on the left side of certain pages.</value>
+  </data>
+  <data name="MaxAutoRelists_Help" xml:space="preserve">
+    <value>The maximum number of times an item will automatically re-list if it does not sell.</value>
+  </data>
+  <data name="MaxHomePageFeatured_Help" xml:space="preserve">
+    <value>The maximum number of items that appear at one time on the homepage.</value>
+  </data>
+  <data name="MaxImagesPerItem_Help" xml:space="preserve">
+    <value>The maximum number of images a seller can upload for each listing.</value>
+  </data>
+  <data name="MaxResultsPerPage_Help" xml:space="preserve">
+    <value>The maximum number of individual listings that will appear on each page.</value>
+  </data>
+  <data name="MetaDescription_Help" xml:space="preserve">
+    <value>This is used by search engines when displaying search results containing a link to your site.</value>
+  </data>
+  <data name="MetaKeywords_Help" xml:space="preserve">
+    <value>These are used by search engines for ranking your site.</value>
+  </data>
+  <data name="PayPal_CancelReturnURL_Help" xml:space="preserve">
+    <value>The URL to which PayPal will redirect the user if payment fails or is canceled by the user.</value>
+  </data>
+  <data name="PayPal_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: PayPal's "Website Payments Standard" service is available as a checkout option. This payment method redirects users to paypal's website to complete the payment and then redirects back to your website afterwards.</value>
+  </data>
+  <data name="PayPal_FeesEmail_Help" xml:space="preserve">
+    <value>The email address associated with the PayPal account that will be receiving site fee payments.</value>
+  </data>
+  <data name="PayPal_IPNURL_Help" xml:space="preserve">
+    <value>The URL to which PayPal will report the outcome of payment attempts. This value should generally not be changed, except for testing, troubleshooting or advanced customizations.</value>
+  </data>
+  <data name="PayPal_PostURL_Help" xml:space="preserve">
+    <value>The URL used by the PayPal payment provider to post payment transactions. This value should generally not be changed, except for testing, troubleshooting or advanced customizations.</value>
+  </data>
+  <data name="PayPal_ReturnToMerchantText_Help" xml:space="preserve">
+    <value>Specifies the link text shown on PayPal pages for the link back to the auction website (The Cancel Return URL).</value>
+  </data>
+  <data name="PayPal_SuccessReturnURL_Help" xml:space="preserve">
+    <value>The URL to which PayPal will redirect the user upon successful submission of a payment. This value should generally not be changed, except for testing, troubleshooting or advanced customizations.</value>
+  </data>
+  <data name="RequireAddressOnRegistration_Help" xml:space="preserve">
+    <value>If Enabled: The user will be required to enter their address information during the registration process.</value>
+  </data>
+  <data name="RequireCreditCardOnRegistration_Help" xml:space="preserve">
+    <value>If Enabled: The user will be required to enter their credit card information during the registration process.</value>
+  </data>
+  <data name="RestrictOutsideSellers_Help" xml:space="preserve">
+    <value>If Enabled: New users will only be granted Buyer privileges when they register, rather than Buyer and Seller privileges.</value>
+  </data>
+  <data name="ShowBidHistoryUserNames_Help" xml:space="preserve">
+    <value>If Enabled: Usernames are displayed in listing purchase history or bid history reports.</value>
+  </data>
+  <data name="ShowCategoryCounts_Help" xml:space="preserve">
+    <value>If Enabled: A count of how many active listings exist under each category (including all subcategories) is displayed in parenthesis next to the category name on pages that contain the category navigation.</value>
+  </data>
+  <data name="ShowCurrencyCodes_Help" xml:space="preserve">
+    <value>If Enabled: The currency code is displayed next to all prices throughout the site.</value>
+  </data>
+  <data name="ShowCurrencySymbol_Help" xml:space="preserve">
+    <value>If Enabled: The currency symbol is displayed next to all prices throughout the site.</value>
+  </data>
+  <data name="ShowPendingListings_Help" xml:space="preserve">
+    <value>If Enabled: Listings that are scheduled to begin in the future will be displayed on the home page, browse pages and in search results.</value>
+  </data>
+  <data name="ShowSellerLocationOnListingDetails_Help" xml:space="preserve">
+    <value>If Enabled: The seller's City, State/Region and Country from their "Primary Address" will be displayed on the detail page</value>
+  </data>
+  <data name="ShowSellerOnListingRow_Help" xml:space="preserve">
+    <value>If Enabled: The seller's username is displayed below the listing title and subtitle when displayed in search result lists.</value>
+  </data>
+  <data name="ShowZeroCountCategories_Help" xml:space="preserve">
+    <value>If Enabled: Category navigation will include all categories in the tier, even if they contain zero active listings. Otherwise (if disabled), only categories with at least one active listing existing under them will be displayed in the category navigation. </value>
+  </data>
+  <data name="SiteTitle_Help" xml:space="preserve">
+    <value>Used as the standard prefix for all page titles (the title displayed in the title bar of most web browsers).</value>
+  </data>
+  <data name="SniperProtectionSeconds_Help" xml:space="preserve">
+    <value>If a bid is placed within the set number of seconds before the item ends, the auction will be automatically extended this number of seconds.</value>
+  </data>
+  <data name="SystemEmailAddress_Help" xml:space="preserve">
+    <value>Email address that automated system emails originate from.</value>
+  </data>
+  <data name="SystemEmailName_Help" xml:space="preserve">
+    <value>Name that appears in the 'From' field for emails sent by the system.</value>
+  </data>
+  <data name="ThumbnailType_Help" xml:space="preserve">
+    <value>&lt;p&gt;&lt;b&gt;Cropped:&lt;/b&gt;&amp;nbsp;The image will be cropped to a square to fit the image display area.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Scaled to Fit:&lt;/b&gt;&amp;nbsp;The image will be scaled down until the width fits the image display area.&lt;/p&gt;</value>
+  </data>
+  <data name="TopBannersToDisplay_Help" xml:space="preserve">
+    <value>The number of randomly selected banners to display at the top of all pages.</value>
+  </data>
+  <data name="UsejQueryTimePicker_Help" xml:space="preserve">
+    <value>If Enabled: The jQuery Time Picker will be available on the Create Listing page 2 of 2.</value>
+  </data>
+  <data name="UserApprovalRequired_Help" xml:space="preserve">
+    <value>If Enabled: All new user registrations will require manual approval before the user will be able to use the website services.</value>
+  </data>
+  <data name="VerifyUserEmail_Help" xml:space="preserve">
+    <value>If Enabled: New users will not be able to sign in until they verify their email address.  Verification requires entering a randomly generated verification code which is delivered via email.</value>
+  </data>
+  <data name="BuyersPremiumPercent" xml:space="preserve">
+    <value>Buyer's Premium (%)</value>
+  </data>
+  <data name="BuyersPremiumPercent_Help" xml:space="preserve">
+    <value>This amount will be automatically added to your new sales invoices.</value>
+  </data>
+  <data name="EnableBuyersPremium" xml:space="preserve">
+    <value>Enable Buyer's Premium</value>
+  </data>
+  <data name="EnableWebAPI" xml:space="preserve">
+    <value>Enable Web API</value>
+  </data>
+  <data name="EnableWebAPI_Help" xml:space="preserve">
+    <value>The Web API allows specified users to access certain site functionality through an API to perform actions outside of the AuctionWorx website, through a web service.  When checked, enables the Web API.  When unchecked, completely disables the Web API.</value>
+  </data>
+  <data name="ShowLanguageRegionOptions" xml:space="preserve">
+    <value>Show Regional Language Options</value>
+  </data>
+  <data name="ShowLanguageRegionOptions_Help" xml:space="preserve">
+    <value>If Enabled: With "Enable Multiple Cultures" also set, the footer language dropdown will show regional language options (e.g. "English (United States)" in addition to basic language options (e.g. "English")</value>
+  </data>
+  <data name="test_bool1_Help" xml:space="preserve">
+    <value>some help text -- pretty helpful, eh!?</value>
+  </data>
+  <data name="test_date1_Help" xml:space="preserve">
+    <value>some help text -- pretty helpful, eh!?</value>
+  </data>
+  <data name="test_decimal1_Help" xml:space="preserve">
+    <value>some help text -- pretty helpful, eh!?</value>
+  </data>
+  <data name="test_enum1_Help" xml:space="preserve">
+    <value>some help text -- pretty helpful, eh!?</value>
+  </data>
+  <data name="test_enum2_Help" xml:space="preserve">
+    <value>some help text -- pretty helpful, eh!?</value>
+  </data>
+  <data name="test_int1_Help" xml:space="preserve">
+    <value>some help text -- pretty helpful, eh!?</value>
+  </data>
+  <data name="test_string1_Help" xml:space="preserve">
+    <value>some help text -- pretty helpful, eh!?</value>
+  </data>
+  <data name="EnableBuyersPremium_Help" xml:space="preserve">
+    <value>If Enabled: Sellers can choose to add a percentage premium to the final cost of a listing.&lt;br &gt;&lt;br &gt;Note: This feature can be used independently from the Buyer Final Fee, which adds a line item to the buyer’s Site Fee Invoice for each sale.</value>
+  </data>
+  <data name="ListingOption_Bold_Enabled" xml:space="preserve">
+    <value>Enable "Bold" listing option</value>
+  </data>
+  <data name="ListingOption_Bold_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to select the "Bold" listing option</value>
+  </data>
+  <data name="ListingOption_Featured_Enabled" xml:space="preserve">
+    <value>Enable "Featured" listing option</value>
+  </data>
+  <data name="ListingOption_Featured_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to select the "Featured" listing option</value>
+  </data>
+  <data name="ListingOption_Highlight_Enabled" xml:space="preserve">
+    <value>Enable "Highlight" listing option</value>
+  </data>
+  <data name="ListingOption_Highlight_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to select the "Highlight" listing option</value>
+  </data>
+  <data name="ListingOption_Sunburst_Enabled" xml:space="preserve">
+    <value>Enable "SALE" banner listing option.</value>
+  </data>
+  <data name="ListingOption_Sunburst_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to select the "Sale Badge" listing option</value>
+  </data>
+  <data name="ShowHomepageDecorations" xml:space="preserve">
+    <value>Show Homepage Decorations</value>
+  </data>
+  <data name="ShowHomepageDecorations_Help" xml:space="preserve">
+    <value>If Enabled: Listings displayed on the homepage will include any listing options selected by the seller.</value>
+  </data>
+  <data name="Theme_SolidBlack" xml:space="preserve">
+    <value>Basic Black</value>
+  </data>
+  <data name="CssTheme" xml:space="preserve">
+    <value>CSS Theme</value>
+  </data>
+  <data name="Theme_Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Square" xml:space="preserve">
+    <value>Square</value>
+  </data>
+  <data name="Theme_DropShadow" xml:space="preserve">
+    <value>Drop-Shadow</value>
+  </data>
+  <data name="CssTheme_Help" xml:space="preserve">
+    <value>A few themes have been included for your convenience to be used as-is or as a starting point for your own custom Bootstrap CSS theme design.</value>
+  </data>
+  <data name="DataCleanup_DeleteFeeInvoices_DaysOld" xml:space="preserve">
+    <value>Delete Fee Invoices Days Old</value>
+  </data>
+  <data name="DataCleanup_DeleteFeeInvoices_Enabled" xml:space="preserve">
+    <value>Delete Fee Invoices Enabled</value>
+  </data>
+  <data name="DataCleanup_DeleteFeeInvoices_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Fee invoices older than the specified number of days will automatically be removed from the system.</value>
+  </data>
+  <data name="DataCleanup_DeleteFeeInvoices_IncludeUnpaid" xml:space="preserve">
+    <value>Delete Fee Invoices Include Unpaid</value>
+  </data>
+  <data name="DataCleanup_DeleteFeeInvoices_IncludeUnpaid_Help" xml:space="preserve">
+    <value>If Enabled: Unpaid fee invoices will also be removed automatically.&lt;br/&gt;
+If Disabled: Only paid fee invoices will be removed automatically.</value>
+  </data>
+  <data name="DataCleanup_DeleteListings_DaysOld" xml:space="preserve">
+    <value>Delete Listings Days Old</value>
+  </data>
+  <data name="DataCleanup_DeleteListings_Enabled" xml:space="preserve">
+    <value>Delete Listings Enabled</value>
+  </data>
+  <data name="DataCleanup_DeleteListings_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Listings older than the specified number of days will automatically be removed from the system.</value>
+  </data>
+  <data name="DataCleanup_DeleteListings_IncludeSuccessful" xml:space="preserve">
+    <value>Delete Listings Include Successful</value>
+  </data>
+  <data name="DataCleanup_DeleteListings_IncludeSuccessful_Help" xml:space="preserve">
+    <value>If Enabled: Listings that ended successfully will also be removed.</value>
+  </data>
+  <data name="DataCleanup_DeleteSaleInvoices_DaysOld" xml:space="preserve">
+    <value>Delete Sale Invoices Days Old</value>
+  </data>
+  <data name="DataCleanup_DeleteSaleInvoices_Enabled" xml:space="preserve">
+    <value>Delete Sale Invoices Enabled</value>
+  </data>
+  <data name="DataCleanup_DeleteSaleInvoices_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Sale invoices older than the specified number of days will automatically be removed from the system.</value>
+  </data>
+  <data name="DataCleanup_DeleteSaleInvoices_IncludeUnpaid" xml:space="preserve">
+    <value>Delete Sale Invoices Include Unpaid</value>
+  </data>
+  <data name="DataCleanup_DeleteSaleInvoices_IncludeUnpaid_Help" xml:space="preserve">
+    <value>If Enabled: Unpaid sale invoices will also be removed automatically.&lt;br/&gt;
+If Disabled: Only paid sale invoices will be removed automatically.</value>
+  </data>
+  <data name="DataCleanup_Enabled" xml:space="preserve">
+    <value>Data Cleanup Enabled</value>
+  </data>
+  <data name="DataCleanup_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: Listings and/or invoices older than the specified number of days will automatically be removed from the system periodically.&lt;br/&gt;
+Note: Disabling this option will also disable all other options on this page.</value>
+  </data>
+  <data name="RestrictCustomFieldEdits" xml:space="preserve">
+    <value>Restrict Custom Field Edits</value>
+  </data>
+  <data name="RestrictCustomFieldEdits_Help" xml:space="preserve">
+    <value>If Enabled: when bids are placed this will disallow the custom fields from being changed</value>
+  </data>
+  <data name="EnableRecaptchaForContactUs" xml:space="preserve">
+    <value>Enable Recaptcha For Contact Us</value>
+  </data>
+  <data name="EnableRecaptchaForContactUs_Help" xml:space="preserve">
+    <value>If Enabled, requires the user to pass a Captcha test before submitting the Contact Us page.</value>
+  </data>
+  <data name="EnableRecaptchaForRegistration" xml:space="preserve">
+    <value>Enable Recaptcha For Registration</value>
+  </data>
+  <data name="EnableRecaptchaForRegistration_Help" xml:space="preserve">
+    <value>If Enabled, required the user to pass a Captcha test before submitting the Registration page.</value>
+  </data>
+  <data name="RecaptchaPrivateKey" xml:space="preserve">
+    <value>Recaptcha Private Key</value>
+  </data>
+  <data name="RecaptchaPrivateKey_Help" xml:space="preserve">
+    <value>The Recaptcha Private Key assigned to you by Google.</value>
+  </data>
+  <data name="RecaptchaPublicKey" xml:space="preserve">
+    <value>Recaptcha Public Key</value>
+  </data>
+  <data name="RecaptchaPublicKey_Help" xml:space="preserve">
+    <value>The Recaptcha Public Key assigned to you by Google.</value>
+  </data>
+  <data name="Theme_GallerySimple" xml:space="preserve">
+    <value>Gallery-Simple</value>
+  </data>
+  <data name="SiteTimeZone" xml:space="preserve">
+    <value>Site Time Zone</value>
+  </data>
+  <data name="SiteTimeZone_Help" xml:space="preserve">
+    <value>The Time Zone to display all date/times in.&lt;br&gt;Note: All names and abbreviations can be changed in TimeZones.resx</value>
+  </data>
+  <data name="TimeZoneLabel" xml:space="preserve">
+    <value>Time Zone Label</value>
+  </data>
+  <data name="TimeZoneLabel_Help" xml:space="preserve">
+    <value>Optional text label that will be displayed after all date/time values throughout the site</value>
+  </data>
+  <data name="MaintenanceMode" xml:space="preserve">
+    <value>Under Construction Mode</value>
+  </data>
+  <data name="MaintenanceMode_Help" xml:space="preserve">
+    <value>If Enabled: the home page will show the contents of the Under Construction Mode CMS and a "login" link.  Additionally, only admins will be allowed to login.</value>
+  </data>
+  <data name="ManagerName" xml:space="preserve">
+    <value>Manager Name</value>
+  </data>
+  <data name="PaginateHomepageEvents" xml:space="preserve">
+    <value>Paginate Homepage Events</value>
+  </data>
+  <data name="PaginateHomepageEvents_Help" xml:space="preserve">
+    <value>If Enabled: Up to "Max Home Page Items" events will be shown on the homepage, with page links for the rest.&lt;br&gt;If Disabled: All eligible events will be shown on the homepage in one list.</value>
+  </data>
+  <data name="DefaultBrowseSort" xml:space="preserve">
+    <value>Default Browse Sort</value>
+  </data>
+  <data name="DefaultBrowseSort_Help" xml:space="preserve">
+    <value>Select which sort option is selected by default when browsing listings</value>
+  </data>
+  <data name="EndingSoon" xml:space="preserve">
+    <value>Ending Soon</value>
+  </data>
+  <data name="Newest" xml:space="preserve">
+    <value>Newest</value>
+  </data>
+  <data name="EnableRegions_Help" xml:space="preserve">
+    <value>If Enabled: Browse and search results can be filtered by Region and all listings will provide an optional "Region" selection in addition to a listing category when created.</value>
+  </data>
+  <data name="ShowTimeZoneLabel" xml:space="preserve">
+    <value>Show Time Zone Label</value>
+  </data>
+  <data name="ShowTimeZoneLabel_Help" xml:space="preserve">
+    <value>If Enabled: All date/time values will be displayed with the time zone abbreviation (e.g. Eastern Time (US &amp; Canada) would show "ET" after all times)</value>
+  </data>
+  <data name="Theme_Bootstrap3" xml:space="preserve">
+    <value>Unstyled Bootstrap Framework</value>
+  </data>
+  <data name="Theme_Classic_Dark_00" xml:space="preserve">
+    <value>Classic - Dark (No Background Image)</value>
+  </data>
+  <data name="Theme_Classic_Dark_01" xml:space="preserve">
+    <value>Classic - Dark (Light Wood Background Image)</value>
+  </data>
+  <data name="Theme_Classic_Light_00" xml:space="preserve">
+    <value>Classic - Light (No Background Image)</value>
+  </data>
+  <data name="Theme_Classic_Light_01" xml:space="preserve">
+    <value>Classic - Light (Light Wood Background Image)</value>
+  </data>
+  <data name="Theme_Minima_00" xml:space="preserve">
+    <value>Minima</value>
+  </data>
+  <data name="Theme_Default_01" xml:space="preserve">
+    <value>AuctionWorx Default (Grey Background)</value>
+  </data>
+  <data name="DefaultLotNumberDigits" xml:space="preserve">
+    <value>Default Lot Number Format</value>
+  </data>
+  <data name="DefaultLotNumberDigits_Help" xml:space="preserve">
+    <value>&lt;p&gt;If a seller does not enter a lot number, one will be automatically assigned.  The number assigned will be formatted with the number of characters entered in this setting.  &lt;/p&gt;&lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt;&lt;br&gt;When the default lot number digits is set to "1", the lots will be assigned a lot number starting with "1".&lt;br&gt;&amp;nbsp;&lt;br&gt;When the default number format is set to "3" the lots will be assigned a lot number starting with "001"</value>
+  </data>
+  <data name="EnableEventDescription" xml:space="preserve">
+    <value>Enable Description</value>
+  </data>
+  <data name="EnableEventDescription_Help" xml:space="preserve">
+    <value>If Enabled: a "Description" field will be available when creating or editing an event</value>
+  </data>
+  <data name="EnableEventManagedBy" xml:space="preserve">
+    <value>Enable Managed By</value>
+  </data>
+  <data name="EnableEventManagedBy_Help" xml:space="preserve">
+    <value>If Enabled: a "Managed By" field will be available when creating or editing an event</value>
+  </data>
+  <data name="EnableEventShippingInfo" xml:space="preserve">
+    <value>Enable Shipping Info</value>
+  </data>
+  <data name="EnableEventShippingInfo_Help" xml:space="preserve">
+    <value>If Enabled: a "Shipping Info" field will be available when creating or editing an event</value>
+  </data>
+  <data name="EnableEventSummary" xml:space="preserve">
+    <value>Enable Summary</value>
+  </data>
+  <data name="EnableEventSummary_Help" xml:space="preserve">
+    <value>If Enabled: a "Summary" field will be available when creating or editing an event</value>
+  </data>
+  <data name="EnableEventTermsAndConditions" xml:space="preserve">
+    <value>Enable Terms &amp; Conditions</value>
+  </data>
+  <data name="EnableEventTermsAndConditions_Help" xml:space="preserve">
+    <value>If Enabled: a "Terms &amp; Conditions" field will be available when creating or editing an event</value>
+  </data>
+  <data name="Theme_Classic_Dark_02" xml:space="preserve">
+    <value>Classic - Dark (Subtle Graphic Birch Tree Background)</value>
+  </data>
+  <data name="Theme_Classic_Light_02" xml:space="preserve">
+    <value>Classic - Light (Subtle Graphic Birch Tree Background)</value>
+  </data>
+  <data name="Theme_Default_02" xml:space="preserve">
+    <value>AuctionWorx Default (Neutral/Tan Background)</value>
+  </data>
+  <data name="PayPal_BackupPaymentCurrency" xml:space="preserve">
+    <value>Backup Payment Currency</value>
+  </data>
+  <data name="PayPal_BackupPaymentCurrency_Help" xml:space="preserve">
+    <value>&lt;strong&gt;If Enabled:&lt;/strong&gt; Invoices in a currency not accepted by PayPal will be converted to the selected currency before the payment request is sent to PayPal.&lt;br&gt;&lt;br&gt;
+&lt;strong&gt;If Disabled:&lt;/strong&gt; Invoices in a currency not accepted by PayPal will not show PayPal as a payment method.</value>
+  </data>
+  <data name="HomepageCategories" xml:space="preserve">
+    <value>Show Categories/Regions on HomePage</value>
+  </data>
+  <data name="HomepageCategories_Help" xml:space="preserve">
+    <value>Categores and Regions will appear on the homepage to the left of the homepage featured listings.</value>
+  </data>
+  <data name="HomepageRowDisplayNumber" xml:space="preserve">
+    <value>Homepage Featured Per Row</value>
+  </data>
+  <data name="HomepageRowDisplayNumber_Help" xml:space="preserve">
+    <value>The number of homepage featured listings to display horizontally for all devices with a viewing area larger than 1200px.  The more listings across, the smaller each image will be.</value>
+  </data>
+  <data name="Across2" xml:space="preserve">
+    <value>2 Across</value>
+  </data>
+  <data name="Across3" xml:space="preserve">
+    <value>3 Across</value>
+  </data>
+  <data name="Across4" xml:space="preserve">
+    <value>4 Across</value>
+  </data>
+  <data name="Across6" xml:space="preserve">
+    <value>6 Across</value>
+  </data>
+  <data name="AuthorizeNet_EnableForSellers" xml:space="preserve">
+    <value>Enable for Third Party Sellers</value>
+  </data>
+  <data name="AuthorizeNet_EnableForSellers_Help" xml:space="preserve">
+    <value>When checked, sellers will be allowed to enter their own Authorize.Net credentials for accepting sales payments.&lt;br&gt;&lt;br&gt;If un-checked, only Admin users will be able to accept credit cards for sales payments of their own listings.</value>
+  </data>
+  <data name="AuthorizeNet_SellerMerchantLoginID" xml:space="preserve">
+    <value>Authorize.Net Merchant Login ID</value>
+  </data>
+  <data name="AuthorizeNet_SellerMerchantLoginID_Help" xml:space="preserve">
+    <value>Your Authorize.Net API login</value>
+  </data>
+  <data name="AuthorizeNet_SellerTransactionKey" xml:space="preserve">
+    <value>Authorize.Net Transaction Key</value>
+  </data>
+  <data name="AuthorizeNet_SellerTransactionKey_Help" xml:space="preserve">
+    <value>Your Authorize.Net transaction key</value>
+  </data>
+  <data name="SalesTaxEnabled" xml:space="preserve">
+    <value>Sales Tax</value>
+  </data>
+  <data name="SalesTaxEnabled_Help" xml:space="preserve">
+    <value>Sales tax will be optionally charged based on buyer's location and tax rates specified by each seller</value>
+  </data>
+  <data name="VatAppliesToBuyersPremium" xml:space="preserve">
+    <value>VAT applies to Buyer's Premium</value>
+  </data>
+  <data name="VatAppliesToBuyersPremium_Help" xml:space="preserve">
+    <value>VAT on sale invoices will include buyer's premiums</value>
+  </data>
+  <data name="VatAppliesToShipping" xml:space="preserve">
+    <value>VAT applies to Shipping Fees</value>
+  </data>
+  <data name="VatAppliesToShipping_Help" xml:space="preserve">
+    <value>VAT on sale invoices will include shipping costs</value>
+  </data>
+  <data name="VatAppliesToSiteFees" xml:space="preserve">
+    <value>VAT applies to Site Fee Invoices</value>
+  </data>
+  <data name="VatAppliesToSiteFees_Help" xml:space="preserve">
+    <value>apply VAT to site fee invoices</value>
+  </data>
+  <data name="VATEnabled" xml:space="preserve">
+    <value>VAT</value>
+  </data>
+  <data name="VATEnabled_Help" xml:space="preserve">
+    <value>VAT tax will be charged on all sale invoices and site fee invoices as configured by admin preferences</value>
+  </data>
+  <data name="VatRate" xml:space="preserve">
+    <value>VAT Rate</value>
+  </data>
+  <data name="VatRate_Help" xml:space="preserve">
+    <value>This percentage tax will be added to invoices as configured below</value>
+  </data>
+  <data name="TimeRemainingStyle" xml:space="preserve">
+    <value>Time Remaining Style</value>
+  </data>
+  <data name="TimeRemainingStyle_Active" xml:space="preserve">
+    <value>Active, e.g. "10 Days 19:33:10 remaining"</value>
+  </data>
+  <data name="TimeRemainingStyle_Classic" xml:space="preserve">
+    <value>Classic, e.g. "10 Days, 19 Hours remaining"&lt;br&gt;</value>
+  </data>
+  <data name="TimeRemainingStyle_Help" xml:space="preserve">
+    <value>This setting determines the formatting of the remaining time when shown on the homepage, browse/search pages and listing/lot detail pages</value>
+  </data>
+  <data name="EnableBuyNow" xml:space="preserve">
+    <value>Enable Buy Now</value>
+  </data>
+  <data name="EnableBuyNow_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to specify a Buy Now Price for Auction listings</value>
+  </data>
+  <data name="EnablePDFAttachments" xml:space="preserve">
+    <value>Enable PDF Attachments</value>
+  </data>
+  <data name="EnablePDFAttachments_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to attach one or more PDF documents to their listings</value>
+  </data>
+  <data name="EnableReserve" xml:space="preserve">
+    <value>Enable Reserve</value>
+  </data>
+  <data name="EnableReserve_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to specify a Reserve Price for Auction listings</value>
+  </data>
+  <data name="EnableYoueTubeVideos" xml:space="preserve">
+    <value>Enable YouTube Videos</value>
+  </data>
+  <data name="EnableYoueTubeVideos_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be able to attach a youtube video to their listings</value>
+  </data>
+  <data name="EnablePublicQandA" xml:space="preserve">
+    <value>Enable Public Q &amp; A</value>
+  </data>
+  <data name="EnablePublicQandA_Help" xml:space="preserve">
+    <value>If Enabled: authenticated users can post questions publicly on any Active or Preview listing</value>
+  </data>
+  <data name="EnableWatchCount" xml:space="preserve">
+    <value>Enable Watch Count</value>
+  </data>
+  <data name="EnableWatchCount_Help" xml:space="preserve">
+    <value>If Enabled: Listing/Lot detail page will display a count of the number of users currently watching</value>
+  </data>
+  <data name="FullImage" xml:space="preserve">
+    <value>Full Image</value>
+  </data>
+  <data name="GalleryType" xml:space="preserve">
+    <value>Homepage Gallery Display Type</value>
+  </data>
+  <data name="GalleryType_Help" xml:space="preserve">
+    <value>Select from smaller thumbnail images or full size images.  Full size image display best displayed in 3 or 4 across with Homepage Categories disabled.</value>
+  </data>
+  <data name="Thumbnail" xml:space="preserve">
+    <value>Thumbnail</value>
+  </data>
+  <data name="StripeConnect_ClientId" xml:space="preserve">
+    <value>Client Id</value>
+  </data>
+  <data name="StripeConnect_ClientId_Help" xml:space="preserve">
+    <value>This value can be found under the "Your Account &gt; Connect &gt; Settings &gt; Platform Settings" section on stripe.com after you register your website as a platform.&lt;br&gt;&lt;br&gt;
+Note: Enter a Redirect URI as “http(s)://(your website)/Stripe/HandleStripeConnectResponse”</value>
+  </data>
+  <data name="StripeConnect_Enabled" xml:space="preserve">
+    <value>Stripe Enabled</value>
+  </data>
+  <data name="StripeConnect_EnabledForSellers" xml:space="preserve">
+    <value>Enabled For Sellers</value>
+  </data>
+  <data name="StripeConnect_EnabledForSellers_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be allowed to connect their Stripe account for accepting sales payments.&lt;br&gt;&lt;br&gt;
+Note: If you enable this option you must also add a Connect endpoint on your stripe account. Go to "Your Account &gt; API &gt; Webhooks &gt; Endpoints receiving events from your account &gt; Add endpoint", enter the URL as "http(s)://(your website)/Stripe/WebHookHandler" and choose Live events.</value>
+  </data>
+  <data name="StripeConnect_Enabled_Help" xml:space="preserve">
+    <value>If Enabled: The software will connect to your Stripe account using the Connect API and "Checkout with Credit Card" will be available as a checkout option. This payment method allows users to submit credit card payments without leaving the website. Note: this payment method allows credit cards to be saved remotely on stripe.com for use with future purchases.</value>
+  </data>
+  <data name="StripeConnect_SiteFeesPublishableApiKey" xml:space="preserve">
+    <value>Site Fees Publishable API Key</value>
+  </data>
+  <data name="StripeConnect_SiteFeesPublishableApiKey_Help" xml:space="preserve">
+    <value>This value can be found under the "Your Account &gt; API" section on stripe.com.</value>
+  </data>
+  <data name="StripeConnect_SiteFeesSecretApiKey" xml:space="preserve">
+    <value>Site Fees Secret API Key</value>
+  </data>
+  <data name="StripeConnect_SiteFeesSecretApiKey_Help" xml:space="preserve">
+    <value>This value can be found under the "Your Account &gt; API" section on stripe.com.</value>
+  </data>
+  <data name="StripeConnect_SellerAccountConnected" xml:space="preserve">
+    <value>Stripe Credentials</value>
+  </data>
+  <data name="AcceptCreditCard_Help" xml:space="preserve">
+    <value>If Enabled: The "Checkout with Credit Card" option will be available at checkout. This option requires Authorize.Net credentials.</value>
+  </data>
+  <data name="AcceptPayPal_Help" xml:space="preserve">
+    <value>If Enabled: The "Checkout with PayPal" option will be available at checkout. This option requires a PayPal email address.</value>
+  </data>
+  <data name="AllowInstantCheckout_Help" xml:space="preserve">
+    <value>If Enabled: Buyers will be able to checkout immediately after purchase.&lt;br&gt;
+If Disabled: You will be able to make adjustments to all invoices (e.g. updating shipping, tax, buyer's premium) before the buyer can complete checkout.</value>
+  </data>
+  <data name="PaymentInstructions_Help" xml:space="preserve">
+    <value>This information will be displayed to all users when viewing the details of your listings.  This information will also appear on unpaid invoices if no other payment options are available.</value>
+  </data>
+  <data name="TaxExempt" xml:space="preserve">
+    <value>Tax Exempt</value>
+  </data>
+  <data name="TaxExempt_Help" xml:space="preserve">
+    <value>If Enabled: Taxes will be excluded from all invoices where this user is the payer</value>
+  </data>
+  <data name="DefaultBrowseStyle" xml:space="preserve">
+    <value>Default Browse Style</value>
+  </data>
+  <data name="DefaultBrowseStyle_grid" xml:space="preserve">
+    <value>Grid, a gallery format with larger images</value>
+  </data>
+  <data name="DefaultBrowseStyle_Help" xml:space="preserve">
+    <value>This setting determines the default style to display results on the browse/search pages</value>
+  </data>
+  <data name="DefaultBrowseStyle_list" xml:space="preserve">
+    <value>List, one listing per row with more text&lt;br&gt;</value>
+  </data>
+  <data name="HomepageContent" xml:space="preserve">
+    <value>Homepage Content</value>
+  </data>
+  <data name="HomepageContent_browse" xml:space="preserve">
+    <value>Browse, all listings&lt;br&gt;</value>
+  </data>
+  <data name="HomepageContent_browse_Events" xml:space="preserve">
+    <value>Browse, all lots&lt;br&gt;</value>
+  </data>
+  <data name="HomepageContent_default" xml:space="preserve">
+    <value>Default, featured listings&lt;br&gt;</value>
+  </data>
+  <data name="HomepageContent_default_Events" xml:space="preserve">
+    <value>Default, list of events&lt;br&gt;</value>
+  </data>
+  <data name="HomepageContent_Help" xml:space="preserve">
+    <value>This setting controls what content is displayed on the home page</value>
+  </data>
+  <data name="HomepageContent_none" xml:space="preserve">
+    <value>No listings</value>
+  </data>
+  <data name="HomepageContent_none_Events" xml:space="preserve">
+    <value>No events</value>
+  </data>
+  <data name="EnableNonAuctionListingsForEvents" xml:space="preserve">
+    <value>Enable Non-Auction listings</value>
+  </data>
+  <data name="EnableNonAuctionListingsForEvents_Help" xml:space="preserve">
+    <value>If Enabled: Sellers will be allowed to create Fixed Price and/or Classified listings separate from Auction Lots/Events&lt;br&gt;NOTE: You must also enable either or both of these listing types before they can be used.</value>
+  </data>
+  <data name="CenterLogo" xml:space="preserve">
+    <value>Center Logo Position</value>
+  </data>
+  <data name="CenterLogo_Help" xml:space="preserve">
+    <value>Default logo position for PC and Tablets is left aligned.  Enable this setting to center the logo on the page.  For all devices where the viewing area is less than 768px wide (i.e. mobile devices) the logo will be centered automatically.</value>
+  </data>
+  <data name="EnableMakeOffer" xml:space="preserve">
+    <value>Enable Make Offer</value>
+  </data>
+  <data name="EnableMakeOffer_Help" xml:space="preserve">
+    <value>If Enabled: Buyers may submit offers with alternate price, quantity and terms to the seller</value>
+  </data>
+  <data name="AllowMultipleOffers" xml:space="preserve">
+    <value>Allow Multiple Offers</value>
+  </data>
+  <data name="AllowMultipleOffers_Help" xml:space="preserve">
+    <value>If Enabled: buyers may submit more than one offer on the same list/lot before the first offer has been accepted, declined or countered by the seller.</value>
+  </data>
+  <data name="OfferNotificationsEnabled" xml:space="preserve">
+    <value>Enable Make Offer Notifications</value>
+  </data>
+  <data name="OfferNotificationsEnabled_Help" xml:space="preserve">
+    <value>If Enabled: buyers and sellers will receive email notifications when offers are sent, received, accepted, declined or countered.&lt;br&gt;Note: each individual notification type can be enabled or disabled from the CMS &gt; Email Templates area.</value>
+  </data>
+  <data name="OfferTimeLimitHours" xml:space="preserve">
+    <value>Make Offer Expiration Hours</value>
+  </data>
+  <data name="OfferTimeLimitHours_Help" xml:space="preserve">
+    <value>When buyer's make an offer to a seller, the offer expires in this number of hours, or when the lot/listing ends, whichever comes first.</value>
+  </data>
+  <data name="HeadingColor" xml:space="preserve">
+    <value>Heading Color</value>
+  </data>
+  <data name="HeadingColor_help" xml:space="preserve">
+    <value>Select and set the color that will be applied to the site heading.  Use the color picking utility or enter the 6 character HEX code.  All HEX codes must be preceded by a HASH '#' symbol.</value>
+  </data>
+  <data name="SellerUsernameDetailPage" xml:space="preserve">
+    <value>Show Seller Information On Detail Page</value>
+  </data>
+  <data name="SellerUsernameDetailPage_Help" xml:space="preserve">
+    <value>Show or Hide the seller information on the listing/lot detail page.  This includes the username, location, and feedback star rating.</value>
+  </data>
+  <data name="RequireAdminToPublishEvent" xml:space="preserve">
+    <value>Require Admin to Publish Event</value>
+  </data>
+  <data name="RequireAdminToPublishEvent_Help" xml:space="preserve">
+    <value>If Enabled: non-Admin sellers will not be able to publish event immediately. Instead, when the “Publish Event” option is clicked by a non admin an email notification is sent to the address configured in the “Site Preferences &gt; Contact --Administrator Email” field with links to publish or view the event.  The admin can also publish the event at any time by impersonating the seller and clicking the “Publish Event” dropdown option.</value>
+  </data>
+  <data name="FollowAuctionLiveEnabled" xml:space="preserve">
+    <value>Enable Follow Auction Live</value>
+  </data>
+  <data name="FollowAuctionLiveEnabled_Help" xml:space="preserve">
+    <value>&lt;p&gt;As an auction event begins closing, users will have the option to "Follow Auction Live" which automatically redirects them to the next Lot closing in the current event as each lot ends.&lt;/p&gt;
+&lt;p&gt;* If enabled, every event will have its own setting to enable or disable the ability for users to “Follow Auction Live”.&lt;/p&gt;
+&lt;p&gt;Note: When enabled for an event, the system will automatically add all lots to the same auto-extend group so that each lot will close one at a time and in the proper lot order.&lt;/p&gt;</value>
+  </data>
+  <data name="SalesTaxAppliesToBuyersPremium" xml:space="preserve">
+    <value>Sales Tax applies to Buyer's Premium</value>
+  </data>
+  <data name="SalesTaxAppliesToBuyersPremium_Help" xml:space="preserve">
+    <value>Sales Tax on sale invoices will include buyer's premiums</value>
+  </data>
+  <data name="MaxEventsPerPage" xml:space="preserve">
+    <value>Max Events Per Page</value>
+  </data>
+  <data name="MaxEventsPerPage_Help" xml:space="preserve">
+    <value>The maximum number of events that appear on each page.</value>
+  </data>
+  <data name="QuickBidEnabled" xml:space="preserve">
+    <value>Enable Quick Bid</value>
+  </data>
+  <data name="QuickBidEnabled_Help" xml:space="preserve">
+    <value>If Enabled: a "Quick Bid" button will be available on the item detail page, and will attempt to submit the current minimum bid amount if clicked.&lt;br&gt;
+Note: This setting does not affect the "Enable Inline Bidding (Quick Bid)" setting.</value>
+  </data>
+  <data name="EventHomeCategories" xml:space="preserve">
+    <value>Show Categories/Regions on Event Homepage</value>
+  </data>
+  <data name="EventHomeCategories_Help" xml:space="preserve">
+    <value>Categories and Regions will appear on the event detail page to the left of the lots.</value>
+  </data>
+  <data name="LargeBidConfirmationEnabled" xml:space="preserve">
+    <value>Enable Large Bid Confirmation</value>
+  </data>
+  <data name="LargeBidConfirmationEnabled_Help" xml:space="preserve">
+    <value>If Enabled: If a user attempts to place a bid for 100 times higher (or more) than the minimum acceptable bid amount then an extra popup modal will be displayed to confirm if they meant, e.g. "$100.00" or "$10,000.00", in case the bidder mistakenly forgot a decimal point.</value>
+  </data>
+  <data name="RollingLotUpdatesEnabled" xml:space="preserve">
+    <value>Rolling Lot Updates</value>
+  </data>
+  <data name="RollingLotUpdatesEnabled_Help" xml:space="preserve">
+    <value>Lots will automatically disappear from the auction event detail page as they close. New lots will automatically appear at the bottom of the list to replace them.</value>
+  </data>
+  <data name="PleaseSelect_DropDownEmptyOptionLabel" xml:space="preserve">
+    <value>Please Select...</value>
+  </data>
+  <data name="Consignor" xml:space="preserve">
+    <value>Consignor</value>
+  </data>
+  <data name="Consignor_Help" xml:space="preserve">
+    <value>(Optional) Use this field to specify the name or ID of the consignor for this lot, if applicable. Sales transactions can be exported with this data for post auction CSV export.</value>
+  </data>
+  <data name="QuickBidForListViewsEnabled" xml:space="preserve">
+    <value>Enable Inline Bidding (Quick Bid)</value>
+  </data>
+  <data name="QuickBidForListViewsEnabled_Help" xml:space="preserve">
+    <value>If Enabled: a "Quick Bid" button will be available for each auction item, and will attempt to submit the current minimum bid amount if clicked. 
+This includes: Browse/Search results, Watch List, and My Bidding list.</value>
+  </data>
+  <data name="QuickBidForListViewsEnabled_EventsHelp" xml:space="preserve">
+    <value>If Enabled: a "Quick Bid" button will be available on each auction item, and will attempt to submit the current minimum bid amount if clicked. This includes: Browse/Search results, Event Detail page (Auction Sale Catalog), Watch List, Bidding List.</value>
+  </data>
+  <data name="LogAdminRequestStats" xml:space="preserve">
+    <value>Log admin request stats</value>
+  </data>
+  <data name="LogFrontEndRequestStats" xml:space="preserve">
+    <value>Log front end request stats</value>
+  </data>
+  <data name="LogQueuestats" xml:space="preserve">
+    <value>Log Queuing Stats</value>
+  </data>
+  <data name="LogSignalrConnectionIssues" xml:space="preserve">
+    <value>Log SignalR connections</value>
+  </data>
+  <data name="LogSignalrStats" xml:space="preserve">
+    <value>Log SignalR stats</value>
+  </data>
+  <data name="LogWebApiStats" xml:space="preserve">
+    <value>Log Web API request stats</value>
+  </data>
+  <data name="DataCleanup_DeleteArchivedEvents_Help" xml:space="preserve">
+    <value>If Enabled: Archived Auction Events older than the specified number of days will automatically be removed from the system.</value>
+  </data>
+  <data name="AutoChargeCCs" xml:space="preserve">
+    <value>Auto Charge Credit Cards</value>
+  </data>
+  <data name="AutoChargeCCs_Help_EN" xml:space="preserve">
+    <value>&lt;b&gt;Off&lt;/b&gt;: Credit cards will NOT be automatically charged.&lt;br&gt;
+&lt;b&gt;Immediately&lt;/b&gt;: The card on file will automatically be charged when the invoice is automatically created.&lt;br&gt;
+&lt;b&gt;Daily&lt;/b&gt;: Once per day the card on file will be charged for each unpaid sales invoice, at the specified time.</value>
+  </data>
+  <data name="AutoChargeCCs_Help_EV" xml:space="preserve">
+    <value>&lt;b&gt;Off&lt;/b&gt;: Credit cards will NOT be automatically charged.&lt;br&gt;
+&lt;b&gt;When Event Closes&lt;/b&gt;: The card on file will automatically be charged when the associated event closes.&lt;br&gt;
+&lt;b&gt;Daily&lt;/b&gt;: Once per day the card on file will be charged for each unpaid sales invoice, at the specified time.</value>
+  </data>
+  <data name="AutoGenerateInvoices" xml:space="preserve">
+    <value>Auto Generate Invoices</value>
+  </data>
+  <data name="AutoGenerateInvoices_Help" xml:space="preserve">
+    <value>&lt;b&gt;If Enabled&lt;/b&gt;: The sale will immediately be added to a new or existing invoice when a purchase, an accepted offer or a winning bid is finalized. When enabled, the Allow Instant Checkout setting that individual sellers set from their &lt;b&gt;My Account &gt; Listing Preferences &gt; Payment&lt;/b&gt; page will be disabled as an option; as soon as an invoice is automatically generated, a buyer can checkout with any payment service the seller account has configured.</value>
+  </data>
+  <data name="Immediately" xml:space="preserve">
+    <value>Immediately</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="RequireCreditCardForBuyers" xml:space="preserve">
+    <value>Require Credit Card for Buyers</value>
+  </data>
+  <data name="RequireCreditCardForBuyers_Help" xml:space="preserve">
+    <value>If Enabled: Buyers will be required to have an unexpired credit card on file before placing bids, making purchases or submitting offers.</value>
+  </data>
+  <data name="RequireCreditCardForSellers" xml:space="preserve">
+    <value>Require Credit Card for Sellers</value>
+  </data>
+  <data name="RequireCreditCardForSellers_Help" xml:space="preserve">
+    <value>If Enabled: Seller will be required to have an unexpired credit card on file before creating new listings or lots.</value>
+  </data>
+  <data name="WhenEventCloses" xml:space="preserve">
+    <value>When Event Closes</value>
+  </data>
+  <data name="MaxSellerFinalFee" xml:space="preserve">
+    <value>Maximum Fee</value>
+  </data>
+  <data name="MaxSellerFinalFee_Help" xml:space="preserve">
+    <value>If the calculated fee is more than this value, use this value instead.</value>
+  </data>
+  <data name="MinSellerFinalFee" xml:space="preserve">
+    <value>Minimum Fee</value>
+  </data>
+  <data name="MinSellerFinalFee_Help" xml:space="preserve">
+    <value>If the calculated fee is less than this value, use this value instead.</value>
+  </data>
+  <data name="CreditCardRequiredExempt" xml:space="preserve">
+    <value>Credit Card Required Exempt</value>
+  </data>
+  <data name="CreditCardRequiredExempt_Help" xml:space="preserve">
+    <value>When enabled for user, they will be able to place bids or create listings/lots/events without entering in a CC, even if “Require Credit Card for Buyers and/or Sellers” is turned on.</value>
+  </data>
+  <data name="NewletterOptInByDefault" xml:space="preserve">
+    <value>Newsletter Opt-In By Default</value>
+  </data>
+  <data name="NewletterOptInByDefault_Help" xml:space="preserve">
+    <value>If Enabled: the "Newsletter" checkbox will be checked by default on the user registration form</value>
+  </data>
+  <data name="HideBannersOnMobile" xml:space="preserve">
+    <value>Hide CMS Banners On Mobile</value>
+  </data>
+  <data name="HideBannersOnMobile_Help" xml:space="preserve">
+    <value>Top, side, and bottom banners (if configured) will be hidden on devices with a viewing area smaller than 768px wide.</value>
+  </data>
+</root>

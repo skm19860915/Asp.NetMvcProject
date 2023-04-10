@@ -1,0 +1,77 @@
+﻿@section head
+{
+    <script>
+        $(document).ready(function () {
+            var totalSucceeded = 0;
+            var totalFailed = 0;
+            var lastFailedId = 0;
+            var abort = false;
+
+            $("#StartProcessing").on("click", function (event) {
+                event.preventDefault();
+                $("#StartProcessing").prop("disabled", true); //disable start button
+                $("#AbortLink").prop("disabled", false); // enable abort link
+                $("#CurrentStatus").html('Processing... <img src="Content/Images/progress-wheel.gif" style="height: 16px" />');
+                DoBatch();
+            });
+
+            $("#AbortLink").on("click", function (event) {
+                event.preventDefault();
+                $("#CurrentStatus").html('Stopping...');
+                $("#AbortLink").prop("disabled", true); // disable abort link
+                abort = true;
+            });
+            function DoBatch() {
+                $.post('Account/UpgradeUsers_Batch', {
+                    totalSucceeded: totalSucceeded,
+                    totalFailed: totalFailed,
+                    lastFailedId: lastFailedId
+                }).done(function (data) {
+                    //console.log("batch result: ", data);
+                    totalSucceeded = data.totalSucceeded;
+                    totalFailed = data.totalFailed;
+                    lastFailedId = data.lastFailedId;
+                    $("#TotalConverted").html(totalSucceeded);
+                    $("#TotalFailed").html(totalFailed);
+                    $("#RemainingCount").html(data.remaining);
+                    if (data.keepGoing && !abort) {
+                        DoBatch();
+                    } else {
+                        if (abort) {
+                            $("#CurrentStatus").html('Stopped.');
+                        } else {
+                            $("#CurrentStatus").html('Completed.');
+                            $("#RemainingCount").html(0);
+                        }
+                        abort = false;
+                        $("#AbortLink").prop("disabled", true); // disable abort link
+                        $("#StartProcessing").prop("disabled", false); //enable start button
+                    }
+                });
+            }
+        });
+    </script>
+}
+    <div class="col-xs-12">
+        <h1>User Upgrade Utility</h1>
+        <p>
+            Total Converted:
+            <span id="TotalConverted"></span>
+        </p>
+        <p>
+            Total Failed:
+            <span id="TotalFailed"></span>
+        </p>
+        <p>
+            Remaining:
+            <span id="RemainingCount"></span>
+        </p>
+        <p>
+            Status:
+            <span id="CurrentStatus">Not Started.</span>
+        </p>
+        <p>
+            <button id="StartProcessing" class="btn btn-success">Start</button>
+            <button id="AbortLink" class="btn btn-danger btn-sm" disabled>Stop</button>
+        </p>
+    </div>

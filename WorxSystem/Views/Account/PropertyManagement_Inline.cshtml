@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="Content/css/stripe.css">
+
+@Html.SystemMessages()
+@Html.LocalizedValidationSummary()
+<div class="alert alert-info">@Html.GlobalResource("NoteSettingsApplyToAllListings")</div>
+@using (Html.BeginForm())
+{
+    @Html.Partial("PropertyGroup")
+    <div class="form-group">
+        <input type="submit" class="btn btn-default" value="@Html.GlobalResource("Save")" name="Save" id="Save" />
+    </div>
+}
+<script>
+    $(window).ready(function () {
+        $(window.parent).ready(function () {
+            //if a success result was received, close the modal
+            if ($(".alert-success").length > 0) {
+                window.parent.closePaymentSettingsModal();
+            }
+        });
+    });
+</script>

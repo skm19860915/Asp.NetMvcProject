@@ -1,0 +1,220 @@
+﻿@model Lot
+@{ string returnUrl = Request.Url.PathAndQuery; }
+<script>
+    $(document).ready(function () {
+        $(".awe-end-early-link").click(function () {
+            var jsEndEarlyConfirmMsg = //"Really end this lot early?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("EndEarlyLotWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("EndEarlyWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("EndEarlyConfirmationTitle").ToJavascriptSafeString()',
+                message: jsEndEarlyConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("EndEarly").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+        $(".awe-delete-listing-link").click(function () {
+            var jsDeleteConfirmMsg = //"Really delete this lot?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("DeleteLotWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                message: jsDeleteConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        //initial update Listing "Options" dropdown
+        @*  $('[data-listingid="@(Model.ID)"] .awe-rt-hideable').each(function () {
+            $(this).hide();
+        });*@
+        $('[data-listingid="@(Model.Listing.ID)"] .awe-rt-ShowStatus@(Model.Listing.Status)').each(function () {
+            $(this).show();
+        });
+    });
+</script>
+@{
+    bool theSeller = Html.FBOUserName() == Model.Listing.OwnerUserName;
+    bool anAdmin = User.IsInRole("Admin");
+}
+@if (theSeller || anAdmin)
+{
+    <div class="detail__option-menu">
+        <a href="@Url.Action(MVC.ValidateDraftLotAction, MVC.EventController, new { id = Model.ID, returnUrl })" class="detail__option-menu__link awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusFailedValidation">
+            <span class="detail__option-menu__icon">
+                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                </svg>
+            </span>
+            <span class="detail__option-menu__label">
+                @Html.GlobalResource("Validate")
+            </span>
+        </a>
+        @if (anAdmin)
+        {
+            <a href="@Url.Action(MVC.EditLotAction, MVC.EventController, new { id = Model.ID })" class="detail__option-menu__link awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusValidated awe-rt-ShowStatusAwaitingPayment awe-rt-ShowStatusPreview awe-rt-ShowStatusPending awe-rt-ShowStatusActive">
+                <span class="detail__option-menu__icon">
+                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                        <path d="M0 0h24v24H0z" fill="none" />
+                    </svg>
+                </span>
+                <span class="detail__option-menu__label">
+                    @Html.GlobalResource("Edit")
+                </span>
+            </a>
+        }
+        else //theSeller can't edit when awaiting payment - managed using awe-rt-* classes
+        {
+            <a href="@Url.Action(MVC.EditLotAction, MVC.EventController, new { id = Model.ID })" class="detail__option-menu__link awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusValidated awe-rt-ShowStatusPreview awe-rt-ShowStatusPending awe-rt-ShowStatusActive">
+                <span class="detail__option-menu__icon">
+                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                        <path d="M0 0h24v24H0z" fill="none" />
+                    </svg>
+                </span>
+                <span class="detail__option-menu__label">
+                    @Html.GlobalResource("Edit")
+                </span>
+            </a>
+        }
+        <a href="@Url.Action(MVC.EndLotEarlyAction, MVC.EventController, new { id = Model.ID })" class="detail__option-menu__link awe-end-early-link awe-rt-hideable awe-rt-ShowStatusActive">
+            <span class="detail__option-menu__icon">
+                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0z" fill="none" />
+                    <path d="M19.04 4.55l-1.42 1.42C16.07 4.74 14.12 4 12 4c-1.83 0-3.53.55-4.95 1.48l1.46 1.46C9.53 6.35 10.73 6 12 6c3.87 0 7 3.13 7 7 0 1.27-.35 2.47-.94 3.49l1.45 1.45C20.45 16.53 21 14.83 21 13c0-2.12-.74-4.07-1.97-5.61l1.42-1.42-1.41-1.42zM15 1H9v2h6V1zm-4 8.44l2 2V8h-2v1.44zM3.02 4L1.75 5.27 4.5 8.03C3.55 9.45 3 11.16 3 13c0 4.97 4.02 9 9 9 1.84 0 3.55-.55 4.98-1.5l2.5 2.5 1.27-1.27-7.71-7.71L3.02 4zM12 20c-3.87 0-7-3.13-7-7 0-1.28.35-2.48.95-3.52l9.56 9.56c-1.03.61-2.23.96-3.51.96z" />
+                </svg>
+            </span>
+            <span class="detail__option-menu__label">
+                @Html.GlobalResource("EndEarly")
+            </span>
+        </a>
+
+        <a href="@Url.Action(MVC.EndLotEarlyAction, MVC.EventController, new { id = Model.ID })" class="detail__option-menu__link awe-end-early-link awe-rt-hideable awe-rt-hideable awe-rt-ShowStatusPending awe-rt-ShowStatusPreview">
+            <span class="detail__option-menu__icon">
+                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0z" fill="none" />
+                    <path d="M19.04 4.55l-1.42 1.42C16.07 4.74 14.12 4 12 4c-1.83 0-3.53.55-4.95 1.48l1.46 1.46C9.53 6.35 10.73 6 12 6c3.87 0 7 3.13 7 7 0 1.27-.35 2.47-.94 3.49l1.45 1.45C20.45 16.53 21 14.83 21 13c0-2.12-.74-4.07-1.97-5.61l1.42-1.42-1.41-1.42zM15 1H9v2h6V1zm-4 8.44l2 2V8h-2v1.44zM3.02 4L1.75 5.27 4.5 8.03C3.55 9.45 3 11.16 3 13c0 4.97 4.02 9 9 9 1.84 0 3.55-.55 4.98-1.5l2.5 2.5 1.27-1.27-7.71-7.71L3.02 4zM12 20c-3.87 0-7-3.13-7-7 0-1.28.35-2.48.95-3.52l9.56 9.56c-1.03.61-2.23.96-3.51.96z" />
+                </svg>
+            </span>
+            <span class="detail__option-menu__label">
+                @Html.GlobalResource("Cancel")
+            </span>
+        </a>
+        @* "Start Now" is n/a for lots *@
+        @*<a href="@Url.Action("StartNow", "Listing", new { id = Model.Listing.ID })" class="detail__option-menu__link awe-rt-hideable awe-rt-ShowStatusPending awe-rt-ShowStatusPreview">
+            <span class="detail__option-menu__icon material-icons">
+                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+                </svg>
+            </span>
+            <span class="detail__option-menu__label">
+                @Html.GlobalResource("StartNow")
+            </span>
+        </a>*@
+        @if (theSeller)
+        {
+            <a href="@Url.Action(MVC.CreateLotPage1Action, MVC.EventController, new { SimilarLotID = Model.ID })" class="detail__option-menu__link">
+                <span class="detail__option-menu__icon">
+                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                    </svg>
+                </span>
+                <span class="detail__option-menu__label">
+                    @Html.GlobalResource("Clone")
+                </span>
+            </a>
+        }
+        @if (anAdmin) // admin can always delete a listing
+        {
+            <a href="@Url.Action(MVC.DeleteLotAction, MVC.EventController, new { id = Model.ID })" class="detail__option-menu__link awe-delete-listing-link">
+                <span class="detail__option-menu__icon">
+                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z" />
+                        <path d="M0 0h24v24H0z" fill="none" />
+                    </svg>
+                </span>
+                <span class="detail__option-menu__label">
+                    @Html.GlobalResource("Delete")
+                </span>
+            </a>
+        }
+        else // theSeller can only delete listings/lots with certain statuses
+        {
+            <a href="@Url.Action(MVC.DeleteLotAction, MVC.EventController, new { id = Model.ID })" class="detail__option-menu__link awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusValidated awe-rt-ShowStatusSuccessful awe-rt-ShowStatusUnsuccessful awe-rt-ShowStatusEnded">
+                <span class="detail__option-menu__icon material-icons">
+                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z" />
+                        <path d="M0 0h24v24H0z" fill="none" />
+                    </svg>
+                </span>
+                <span class="detail__option-menu__label">
+                    @Html.GlobalResource("Delete")
+                </span>
+            </a>
+        }
+        @* relist is n/a for lots *@
+        @*<a href="@Url.Action("Relist", "Account", new { id = Model.Listing.ID })" class="detail__option-menu__link awe-rt-hideable awe-rt-ShowStatusUnsuccessful awe-rt-ShowStatusEnded">
+            <span class="detail__option-menu__icon">
+                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
+                </svg>
+            </span>
+            <span class="detail__option-menu__label">
+                @Html.GlobalResource("Relist")
+            </span>
+        </a>*@
+        @if (anAdmin && !Model.Listing.IsGoodTilCanceled())
+        {
+            @* Note: This function will only extend this exact lot by 10 minutes; it will not affect any other lots in the same closing group. *@
+            <a href="@Url.Action(MVC.Extend10MinutesAction, MVC.AdminController, new { id = Model.Listing.ID })" class="detail__option-menu__link awe-rt-hideable awe-rt-ShowStatusActive">
+                <span class="detail__option-menu__icon">
+                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path d="M7.88 3.39L6.6 1.86 2 5.71l1.29 1.53 4.59-3.85zM22 5.72l-4.6-3.86-1.29 1.53 4.6 3.86L22 5.72zM12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V9z" />
+                    </svg>
+                </span>
+                <span class="detail__option-menu__label">
+                    @Html.GlobalResource("Add10m")
+                </span>
+            </a>
+        }
+    </div>
+}

@@ -1,0 +1,109 @@
+﻿@model RainWorx.FrameWorx.DTO.User
+@{
+    bool hideTaxFields = SiteClient.BoolSetting(SiteProperties.HideTaxFields);
+    bool salesTaxEnabled = SiteClient.BoolSetting(SiteProperties.SalesTaxEnabled);
+    bool vatEnabled = SiteClient.BoolSetting(SiteProperties.VATEnabled);
+}
+<script>
+    $(document).ready(function () {
+
+        function ReloadPaymentAndTaxDetails() {
+            var paymentDetails = "";
+            var taxDetails = "";
+            var waitForTaxDetails = false;
+            var taxDetailsLoaded = false;
+            var paymentDetailsLoaded = false;
+
+            @if (salesTaxEnabled)
+            {
+                <text>
+            waitForTaxDetails = true;
+            $("#temp2").load("Account/MyTaxRates_Inline #Contents", function (response) {
+                taxDetails = $("#temp2").find("#Contents").html();
+                taxDetailsLoaded = true;
+                if (paymentDetailsLoaded) {
+                    $("#PaymentAndTaxDetails").html(paymentDetails + taxDetails);
+                }
+            });
+                </text>
+            }
+            
+            $("#temp1").load("Account/MyPaymentSettings_Inline #Contents", function (response) {
+                paymentDetails = $("#temp1").find("#Contents").html();
+                paymentDetailsLoaded = true;
+                if (!waitForTaxDetails || taxDetailsLoaded) {
+                    $("#PaymentAndTaxDetails").html(paymentDetails + taxDetails);
+                }
+            });
+        }
+
+        $("#EditPaymentSettings").on('hidden.bs.modal', function () {
+            ReloadPaymentAndTaxDetails();
+        });
+
+        $("#EditTaxSettings").on('hidden.bs.modal', function () {
+            ReloadPaymentAndTaxDetails();
+        });
+
+        window.closePaymentSettingsModal = function () {
+            $('#EditPaymentSettings').modal("hide");
+        };
+
+    });
+</script>
+<div id="temp1" class="awe-hidden"></div>
+<div id="temp2" class="awe-hidden"></div>
+<ul class="list-group" id="PaymentAndTaxDetails">
+    @Html.Partial("SellersPaymentSettings")
+    @if (salesTaxEnabled)
+    {
+        @Html.Partial("SellersTaxRates")
+    }
+</ul>
+<div class="panel-footer">
+    <button class="btn btn-link" type="button" data-toggle="modal" data-target="#EditPaymentSettings">
+        @Html.GlobalResource("EditPaymentSettings")
+    </button>
+
+    <div class="modal fade" id="EditPaymentSettings" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">@Html.GlobalResource("PaymentPreferencesManagement")</h4>
+                </div>
+                <div class="modal-body">
+                    <iframe src="Account/PropertyManagement_Inline/44902" style='width:99%; height: 500px; border: 0px;'></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    @if (salesTaxEnabled)
+    {
+        @:&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="btn btn-link" type="button"  data-toggle="modal" data-target="#EditTaxSettings">
+        @Html.GlobalResource("EditTaxSettings")
+    </button>
+
+        <div class="modal fade" id="EditTaxSettings" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">@Html.GlobalResource("SalesTaxManagement")</h4>
+                    </div>
+                    <div class="modal-body">
+                        <iframe src="Account/SalesTaxManagement_Inline" style='width:99%; height: 500px; border: 0px;'></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    }
+
+</div>

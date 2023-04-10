@@ -1,0 +1,25 @@
+﻿@model Media
+
+@{
+    //Load Media
+    IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(Model.Loader);
+    Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, Model.Context);
+    string uri = mediaLoader.Load(loaderProviderSettings, Model, "ThumbCrop");
+    string bigURI = mediaLoader.Load(loaderProviderSettings, Model, "FullSize");
+
+    //jQuery LightBox
+    string uriLarge = bigURI;
+    if (Model.Variations.ContainsKey("LargeSize"))
+    {
+        uriLarge = mediaLoader.Load(loaderProviderSettings, Model, "LargeSize");
+    }
+    int imgWidth = int.Parse(Model.Variations["ThumbCrop"].Asset.MetaData["Width"]);
+    int imgHeight = int.Parse(Model.Variations["ThumbCrop"].Asset.MetaData["Height"]);
+}
+<li style="width: 100px; height: 100px; margin-right: 10px;">
+    <div class="awe-carousel-img-container">
+        @* important: width, height & margin style properties are REQUIRED for proper carousel functionality --> *@
+        <img class="img-thumbnail" src="@uri" height="@(imgHeight)" width="@(imgWidth)" data-full-size-src="@bigURI" alt="@Html.GlobalResource("ListingImage")" />
+        <a data-lightbox="lightbox" class="awe-hidden" href="@uriLarge"></a>
+    </div>
+</li>

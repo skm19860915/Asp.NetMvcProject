@@ -1,0 +1,55 @@
+﻿@model Listing
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+    var listingActiveOfferStatuses = (Dictionary<int, string>)ViewData["ActiveOfferListings"];
+}
+<div class="btn-group">
+    @if (Model.Properties != null && Model.Properties.Any(p =>
+                    p.Field.Name == Fields.MakeOfferAllowed && !string.IsNullOrWhiteSpace(p.Value) && bool.Parse(p.Value)))
+    {
+        if (listingActiveOfferStatuses != null && listingActiveOfferStatuses[Model.ID] == "ResponseNeeded")
+        {
+            @Html.ActionLink(Html.GlobalResource("PendingOffers"), MVC.ManageOffersAction, MVC.ListingController,
+                new { ListingID = Model.ID, returnUrl }, new { @class = "btn btn-success" })
+        }
+        else if (listingActiveOfferStatuses != null && listingActiveOfferStatuses[Model.ID] == "AwaitingResponse")
+        {
+            @Html.ActionLink(Html.GlobalResource("AwaitingResponse"), MVC.ManageOffersAction, MVC.ListingController,
+                new { ListingID = Model.ID, returnUrl }, new { @class = "btn btn-warning" })
+        }
+        else
+        {
+            @Html.ActionLink(Html.GlobalResource("OfferHistory"), MVC.ManageOffersAction, MVC.ListingController,
+                new { ListingID = Model.ID, returnUrl }, new { @class = "btn btn-warning" })
+        }
+    }
+    <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="glyphicon glyphicon-cog"></span></a>
+    <ul class="dropdown-menu dropdown-menu-right">
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ViewListing"), MVC.DetailsAction, MVC.ListingController,
+            new { id = Model.ID }, null)
+        </li>
+        @if (Html.IsEditable(Model))
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditAction, MVC.ListingController,
+                new { id = Model.ID, returnUrl }, null)
+            </li>
+        }
+        <li>
+            @Html.ActionLink(Html.GlobalResource("EndEarly"), MVC.EndEarlyAction, MVC.ListingController,
+            new { id = Model.ID, returnUrl }, new { @class = "awe-end-early-link" })
+        </li>
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateListingPage1Action, MVC.ListingController,
+            new { SimilarListingID = Model.ID, returnUrl }, null)
+        </li>
+        @if (Context.User.IsInRole("Admin"))
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteAction, MVC.ListingController,
+                new { id = Model.ID, returnUrl }, new { @class = "awe-delete-listing-link" })
+            </li>
+        }
+    </ul>
+</div>

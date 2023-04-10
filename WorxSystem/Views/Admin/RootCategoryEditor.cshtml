@@ -1,0 +1,111 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h3 class="h3row">@Html.AdminResource("CategoryEditor")</h3>
+<script>
+    var childSpanName = null;
+    var indicator = null;
+
+    function GetCategories(parentCategoryID) {
+        var retVal = null;
+        Proxy.invoke("GetChildCategories", { parentCategoryID: parentCategoryID },
+        function (result) {
+            indicator.remove();
+            //draw select box
+            if (result.length > 0) {
+                $("span#" + childSpanName).append("<select class='SelectorDisplay' name='selectFor" + parentCategoryID + "' id='selectFor" + parentCategoryID + "'></select>");
+                //render any child divs
+                $("span#" + childSpanName).append("<span id='spanFor" + parentCategoryID + "'></span>");
+                childSpanName = "spanFor" + parentCategoryID;
+
+                $("select#selectFor" + parentCategoryID).hide();
+                $("select#selectFor" + parentCategoryID).attr("size", 6);
+
+                //fill select box
+                for (category in result) {
+                    $("select#selectFor" + parentCategoryID).append("<option value='" + result[category].ID + "'>" + result[category].Name + "</option>");
+                }
+
+                //attach change handler for select box
+                $("select#selectFor" + parentCategoryID).change(function () {
+                    //var catID = $(this).attr("id");
+                    //catID = catID.substring(9);
+                    $("input#CategoryID").val($(this).val());
+                    //GetFields($(this).val());
+                    //GetListingTypes($(this).val());
+                    $("span#spanFor" + parentCategoryID).fadeOut("fast");
+                    $("span#spanFor" + parentCategoryID).remove();
+                    $("select#selectFor" + parentCategoryID).after("<span id='spanFor" + parentCategoryID + "'></span>");
+                    childSpanName = "spanFor" + parentCategoryID;
+                    indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+                    GetCategories($("select#selectFor" + parentCategoryID).val());
+                });
+
+                $("select#selectFor" + parentCategoryID).fadeIn("fast");
+            }
+
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function AddMultipleCategories(parentCategoryID, names) {
+        var retVal = null;
+        indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+        Proxy.invoke("AddMultipleCategories", { parentCategoryID: parentCategoryID, names: names },
+        function (result) {
+            $("select option[value=" + parentCategoryID + "]").change();
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function DeleteCategory(categoryID) {
+        var retVal = null;
+        indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+        Proxy.invoke("DeleteCategory", { categoryID: categoryID },
+        function (result) {
+            $("select option[value=" + categoryID + "]").parent().parent().parent().children("select").change();
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    $(document).ready(function () {
+        var catRenderState = $("input#CategoryRendererState").val();
+        childSpanName = "catlistboxes";
+        $("input#CategoryID").val("50");
+        indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+        GetCategories(50);
+
+        //        $("#Add").click(function () {
+        //            AddCategory($("#CategoryID").val(), $("#Name").val());
+        //        });
+
+        $("#AddMultiple").click(function () {
+            AddMultipleCategories($("#CategoryID").val(), $("#Names").val());
+        });
+
+        $("#Delete").click(function () {
+            DeleteCategory($("#CategoryID").val());
+        });
+    });
+
+</script>
+
+<span id="catlistboxes"></span>
+
+<br />
+<font color="red">@ViewData["Message"]</font>
+
+@Html.TextArea("Names")
+<input type="submit" class="DefaultButton" id="AddMultiple" value="@Html.AdminResource("Add")" />
+
+<input type="submit" class="DefaultButton" id="Delete" value="@Html.AdminResource("Delete")" />
+
+@using (Html.BeginForm("CategoryDetail", "Admin"))
+{
+    @Html.Hidden("CategoryID")
+    <input type="submit" class="DefaultButton" id="Edit" value="@Html.AdminResource("Edit")" />
+}

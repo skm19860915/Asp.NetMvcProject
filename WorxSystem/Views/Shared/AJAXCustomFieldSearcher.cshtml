@@ -1,0 +1,265 @@
+﻿
+<script>
+    function GetFields(categoryID, location) {
+        var retVal = null;
+        location.append("<img src='Content/images/General/refresh-animated.gif' />");
+        Proxy.invoke("GetFields", { categoryID: categoryID },
+        function (result) {
+            //draw fields
+            location.empty();
+            if (result.length > 0) {
+                $("div#FieldBox").show();
+
+                var $table = $('<div/>');
+                //location.append('<table id="test">');
+
+                var queryStringItems = getQueryStrings(); // get all query string kvp's in order to pre-fill generated inputs with previously specified values from the query string
+
+                for (customfield in result) {
+                    var renderThisField = true;
+                    var $tRow = $('<div class="form-group"></div>');
+
+                    $tRow.append('<label class="col-md-3 control-label">' + result[customfield].DisplayName + '</label>');
+
+                    var cell = '';
+                    switch (result[customfield].Type) {
+                        case 3: //Bool
+                            var boolKey = result[customfield].Name;
+                            var boolVal = '';
+                            if (queryStringItems[boolKey]) {
+                                boolVal = replaceAll(queryStringItems[boolKey], '"', '&quot;');
+                            }
+                            var allChecked = ' ';
+                            var yesChecked = ' ';
+                            var noChecked = ' ';
+                            if (boolVal === 'true') {
+                                yesChecked = ' checked="checked" ';
+                            } else if (boolVal === 'false') {
+                                noChecked = ' checked="checked" ';
+                            } else {
+                                allChecked = ' checked="checked" ';
+                            }
+                            cell += '<div class="col-md-6">';
+                            cell += '    <div class="radio">';
+                            cell += '        <label for="' + result[customfield].Name + '_Any">';
+                            cell += '        <input type="radio" id="' + boolKey + '_Any" name="' + boolKey + '" value=""' + allChecked + '/> ';
+                            cell += '        @Html.GlobalResource("Any").ToJavascriptSafeString()';
+                            cell += '        </label> ';
+                            cell += '    </div>';
+                            cell += '    <div class="radio">';
+                            cell += '        <label for="' + result[customfield].Name + '_Yes">';
+                            cell += '        <input type="radio" id="' + result[customfield].Name + '_Yes" name="' + result[customfield].Name + '" value="true"' + yesChecked + '/> ';
+                            cell += '        @Html.GlobalResource("Yes").ToJavascriptSafeString()';
+                            cell += '        </label> ';
+                            cell += '    </div>';
+                            cell += '    <div class="radio">';
+                            cell += '        <label for="' + result[customfield].Name + '_No">';
+                            cell += '        <input type="radio" id="' + result[customfield].Name + '_No" name="' + result[customfield].Name + '" value="false"' + noChecked + '/> ';
+                            cell += '        @Html.GlobalResource("No").ToJavascriptSafeString()';
+                            cell += '        </label> ';
+                            cell += '    </div>';
+                            cell += '</div>';
+                            break;
+                        case 2: //Int
+                            var minIntKey = result[customfield].Name + '_Min';
+                            var minIntVal = '';
+                            if (queryStringItems[minIntKey]) {
+                                minIntVal = replaceAll(queryStringItems[minIntKey], '"', '&quot;');
+                            }
+                            var minIntCss = "form-control";
+                            if ($("ul.validation-summary-errors li[data-input-key='" + minIntKey + "']").length > 0) {
+                                minIntCss += " input-validation-error";
+                            }
+                            cell += '<div class="col-md-3">';
+                            cell += '    <input class="' + minIntCss + '" type="text" id="' + minIntKey + '" name="' + minIntKey + '" placeholder="@Html.GlobalResource("From").ToJavascriptSafeString()" value="' + minIntVal + '" />';
+                            cell += '</div>';
+                            var maxIntKey = result[customfield].Name + '_Max';
+                            var maxIntVal = '';
+                            if (queryStringItems[maxIntKey]) {
+                                maxIntVal = replaceAll(queryStringItems[maxIntKey], '"', '&quot;');
+                            }
+                            var maxIntCss = "form-control";
+                            if ($("ul.validation-summary-errors li[data-input-key='" + maxIntKey + "']").length > 0) {
+                                maxIntCss += " input-validation-error";
+                            }
+                            cell += '<div class="col-md-3">';
+                            cell += '    <input class="' + maxIntCss + '" type="text" id="' + maxIntKey + '" name="' + maxIntKey + '" placeholder="@Html.GlobalResource("To").ToJavascriptSafeString()" value="' + maxIntVal + '" />';
+                            cell += '</div>';
+                            break;
+                        case 4: //Decimal
+                            var minDecKey = result[customfield].Name + '_Min';
+                            var minDecVal = '';
+                            if (queryStringItems[minDecKey]) {
+                                minDecVal = replaceAll(queryStringItems[minDecKey], '"', '&quot;');
+                            }
+                            var minDecCss = "form-control";
+                            if ($("ul.validation-summary-errors li[data-input-key='" + minDecKey + "']").length > 0) {
+                                minDecCss += " input-validation-error";
+                            }
+                            cell += '<div class="col-md-3">';
+                            cell += '    <input class="' + minDecCss + '" type="text" id="' + minDecKey + '" name="' + minDecKey + '" placeholder="@Html.GlobalResource("From").ToJavascriptSafeString()" value="' + minDecVal + '" />';
+                            cell += '</div>';
+                            var maxDecKey = result[customfield].Name + '_Max';
+                            var maxDecVal = '';
+                            if (queryStringItems[maxDecKey]) {
+                                maxDecVal = replaceAll(queryStringItems[maxDecKey], '"', '&quot;');
+                            }
+                            var maxDecCss = "form-control";
+                            if ($("ul.validation-summary-errors li[data-input-key='" + maxDecKey + "']").length > 0) {
+                                maxDecCss += " input-validation-error";
+                            }
+                            cell += '<div class="col-md-3">';
+                            cell += '    <input class="' + maxDecCss + '" type="text" id="' + maxDecKey + '" name="' + maxDecKey + '" placeholder="@Html.GlobalResource("To").ToJavascriptSafeString()" value="' + maxDecVal + '" />';
+                            cell += '</div>';
+                            break;
+                        case 5: //DateTime
+                            var minDtmKey = result[customfield].Name + '_Min';
+                            var minDtmVal = '';
+                            if (queryStringItems[minDtmKey]) {
+                                minDtmVal = replaceAll(queryStringItems[minDtmKey], '"', '&quot;');
+                            }
+                            var minDtmCss = "ListingDateInput form-control";
+                            if ($("ul.validation-summary-errors li[data-input-key='" + minDtmKey + "']").length > 0) {
+                                minDtmCss += " input-validation-error";
+                            }
+                            cell += '<div class="col-md-3">';
+                            cell += '    <input type="text" class="' + minDtmCss + '" id="' + minDtmKey + '" name="' + minDtmKey + '" placeholder="@Html.GlobalResource("From").ToJavascriptSafeString()" value="' + minDtmVal + '" />';
+                            cell += '</div>';
+                            var maxDtmKey = result[customfield].Name + '_Max';
+                            var maxDtmVal = '';
+                            if (queryStringItems[maxDtmKey]) {
+                                maxDtmVal = replaceAll(queryStringItems[maxDtmKey], '"', '&quot;');
+                            }
+                            var maxDtmCss = "ListingDateInput form-control";
+                            if ($("ul.validation-summary-errors li[data-input-key='" + maxDtmKey + "']").length > 0) {
+                                maxDtmCss += " input-validation-error";
+                            }
+                            cell += '<div class="col-md-3">';
+                            cell += '    <input type="text" class="' + maxDtmCss + '" id="' + maxDtmKey + '" name="' + maxDtmKey + '" placeholder="@Html.GlobalResource("To").ToJavascriptSafeString()" value="' + maxDtmVal + '" />';
+                            cell += '</div>';
+                            break;
+                        case 6: //Enumeration
+                            renderThisField = false;
+                            var enumKey = result[customfield].Name;
+                            var enumVal = '';
+                            if (queryStringItems[enumKey]) {
+                                enumVal = replaceAll(queryStringItems[enumKey], '"', '&quot;');
+                            }
+                            cell += '<div class="col-md-3">';
+                            if (result[customfield].Enumeration.length > 3) {
+                                cell += '<select class="form-control" multiple="true" id="' + enumKey + '" name="' + enumKey + '">';
+                                for (enumtype in result[customfield].Enumeration) {
+                                    var enumOptVal = result[customfield].Enumeration[enumtype].Value;
+                                    if (enumOptVal != '') {
+                                        renderThisField = true;
+                                        var thisOptSelected = ' ';
+                                        if (enumVal.indexOf(enumOptVal) > -1) {
+                                            thisOptSelected = ' selected="selected" ';
+                                        }
+                                        cell += '<option value="' + enumOptVal + '"' + thisOptSelected + '>' + result[customfield].Enumeration[enumtype].DisplayName + '</option>';
+                                    }
+                                }
+                                cell += '</select>'
+                            } else {
+                                for (enumtype in result[customfield].Enumeration) {
+                                    var enumOptVal = result[customfield].Enumeration[enumtype].Value;
+                                    if (enumOptVal != '') {
+                                        renderThisField = true;
+                                        var thisOptChecked = ' ';
+                                        if (enumVal.indexOf(enumOptVal) > -1) {
+                                            thisOptChecked = ' checked="checked" ';
+                                        }
+                                        cell += '<div class="checkbox">';
+                                        cell += '<label><input type="checkbox" id="' + result[customfield].Name + '_' + result[customfield].Enumeration[enumtype].Name + '" name="' + result[customfield].Name + '" value="' + result[customfield].Enumeration[enumtype].Value + '"' + thisOptChecked + '/>';
+                                        //cell += '<label for="' + result[customfield].Name + '_' + result[customfield].Enumeration[enumtype].Name + '">' + result[customfield].Enumeration[enumtype].DisplayName + '</label>';
+                                        cell += result[customfield].Enumeration[enumtype].DisplayName + '</label>';
+                                        cell += '</div>';
+                                    }
+                                }
+                            }
+                            cell += '</div>';
+                            break;
+                        default:
+                            var txtKey = result[customfield].Name;
+                            var txtVal = '';
+                            if (queryStringItems[txtKey]) {
+                                txtVal = replaceAll(queryStringItems[txtKey], '"', '&quot;');
+                            }
+                            cell += '<div class="col-md-6">';
+                            cell += '    <input class="form-control" type="text" id="' + txtKey + '" name="' + txtKey + '" placeholder="@Html.GlobalResource("EnterKeywords").ToJavascriptSafeString()" value="' + txtVal + '" />';
+                            cell += '</div>';
+                            break;
+                    };
+
+                    if (result[customfield].DisplayHelp != "") {
+                        cell += '<div class="awe-help-button pull-left hidden-sm">';
+                        cell += '    <button class="btn btn-default btn-xs" type="button" onclick="$(\'.' + result[customfield].Name + '_Help\').show()">';
+                        cell += '        <strong>?</strong>';
+                        cell += '    </button>';
+                        cell += ' </div>';
+                    }
+
+                    $tRow.append(cell);
+
+                    if (renderThisField) {
+                        $table.append($tRow);
+                        if (result[customfield].DisplayHelp != "") {
+                            var tooltip = '';
+
+                            tooltip += '    <div class="form-group ' + result[customfield].Name + '_Help awe-hidden">';
+                            tooltip += '        <label class="col-md-3">&nbsp;</label>';
+                            tooltip += '        <div class="help-tip alert alert-info ' + result[customfield].Name + '_Help col-md-6 awe-hidden">';
+                            tooltip += '            <a class="close" onclick="$(\'.' + result[customfield].Name + '_Help\').hide()">&times;</a>';
+                            tooltip += '            ' + result[customfield].DisplayHelp;
+                            tooltip += '        </div>';
+                            tooltip += '    </div>';
+                            $table.append($(tooltip));
+                        }
+                    }
+
+                }
+
+                location.append($table);
+
+                ApplyDatePicker($(".ListingDateInput"), '@Html.GetCookie("culture")', '@SiteClient.SiteCulture');
+
+            } else {
+                $("div#FieldBox").hide();
+            }
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    $(document).ready(function () {
+        $("input#CategoryID").change(function () {
+            $("#customfields").empty();
+            GetFields($(this).val(), $("#customfields"));
+        });
+        GetFields(9, $("#customfields"));
+
+        $(".open-tooltip").on("click", function () {
+            if ($("#" + $(this).data("tooltipid") + ":visible").length > 0) {
+                $("#" + $(this).data("tooltipid")).hide();
+            } else {
+                $("#" + $(this).data("tooltipid")).show();
+            }
+            return false;
+        });
+
+        $(".close-tooltip").on("click", function () {
+            $("#" + $(this).data("tooltipid")).hide();
+            return false;
+        });
+
+    });
+
+</script>
+
+<div id="FieldBox" class="awe-hidden">
+    <div class="well well-sm section-title">
+        @Html.GlobalResource("CustomFields")
+    </div>
+    <div id="customfields">
+    </div>
+</div>

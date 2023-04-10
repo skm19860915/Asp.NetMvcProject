@@ -1,0 +1,293 @@
+﻿@model Page<Listing>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+}
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Listings_Ended")
+</div>
+@Html.LocalizedValidationSummary()
+<script>
+    $(document).ready(function () {
+        $('.checkall').click(function () {
+            $(".row-selection-checkbox").prop("checked", this.checked);
+        });
+
+        $(".CopySelected").on("click", function (e) {
+            e.preventDefault();
+            if ($(".row-selection-checkbox:checked").length == 0) {
+                //alert('@Html.GlobalResourceString("YouMustSelectAtLeastOneListingToProceed")');
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                    message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneListingToProceed").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+            $(this).parents("form").first().attr("method", "post").attr("action", "@Url.Action(MVC.CopyListingsAction)").submit();
+            return false;
+        });
+
+        $(".DeleteSelected").on("click", function () {
+            var selectedRowCount = $(".row-selection-checkbox:checked").length;
+            if (selectedRowCount == 0) {
+                //alert('@Html.GlobalResourceString("YouMustSelectAtLeastOneListingToProceed")');
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                    message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneListingToProceed").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+            else
+            {
+                var jsDeleteConfirmMsg = //"Really delete this listing?\nTHIS ACTION CANNOT BE UNDONE"
+                    '@Html.GlobalResourceString("DeleteWarning_Really").ToJavascriptSafeString()' + '\n'
+                        + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+                if (selectedRowCount > 1)
+                {
+                    jsDeleteConfirmMsg = //"Really delete these listings?\nTHIS ACTION CANNOT BE UNDONE"
+                    '@Html.GlobalResourceString("DeleteMultipleListingsWarning_Really").ToJavascriptSafeString()' + '\n'
+                        + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+                }
+                var targetHref = "@Html.GetActionUrl(MVC.DeleteListingsAction, MVC.AccountController)";
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                    message: jsDeleteConfirmMsg,
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                            cssClass: 'btn-danger',
+                            action: function () {
+                                //window.location = $.htmlDecode(targetHref);
+                                $(".DeleteSelected").parents("form").first()
+                                    .attr("action", targetHref)
+                                    .submit();
+                            }
+                        }, {
+                            label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+
+            }
+
+            return false;
+        });
+
+        $(".awe-end-early-link").click(function () {
+            var jsEndEarlyConfirmMsg = //"Really end this listing early?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("EndEarlyWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("EndEarlyWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("EndEarlyConfirmationTitle").ToJavascriptSafeString()',
+                message: jsEndEarlyConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("EndEarly").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $(".awe-delete-listing-link").click(function () {
+            var jsDeleteConfirmMsg = //"Really delete this listing?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("DeleteWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                message: jsDeleteConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+        //[Filter] - click
+        $("#ToggleFilterOptions").click(function (event) {
+            event.preventDefault();
+            if ($("#ToggleIcon").hasClass("glyphicon-plus-sign")) {
+                //show filter opts
+                $("#ToggleIcon").addClass("glyphicon-minus-sign").removeClass("glyphicon-plus-sign");
+
+            } else {
+                //clear out input values
+                $("#SearchTerm").val("");
+
+                //hide filter opts
+                $("#ToggleIcon").addClass("glyphicon-plus-sign").removeClass("glyphicon-minus-sign");
+
+                if (filtersApplied) {
+                    //since one or more filters have been applied submit the form to unfilter the results
+                    $(this).parents("form").first().submit();
+                }
+            }
+        });
+        //[Clear Filter] click
+        $("#ClearFilter").click(function (event) {
+            event.preventDefault();
+            $("#SearchTerm").val("");
+            if (filtersApplied) {
+                $(this).parents("form").first().submit();
+            }
+        });
+        //if any keywords have already been specified...
+        var filtersApplied = $("#SearchTerm").val() != "";
+        if (filtersApplied) {
+            //show filter opts
+            $("#ToggleFilterOptions").addClass("awe-hidden")
+            $("#ClearFilter").removeClass("awe-hidden");
+        }
+
+    });
+</script>
+<div class="panel panel-default">
+    @using (Html.BeginForm(MVC.ListingsEndedAction, MVC.AccountController, new { page = 0 }, FormMethod.Get))
+    {
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">@Html.GlobalResource("Sort")</div>
+                        @Html.DropDownList(MVC.SortFilterOptions, (SelectList)ViewData[MVC.SortFilterOptionList], new { @class = "form-control" })
+                    </div>
+                    <input type="submit" id="submitDropDown" class="awe-hidden" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a id="ToggleFilterOptions" href="#FilterOptions" class="btn btn-default pull-right" data-toggle="collapse">
+                    <span id="ToggleIcon" class="glyphicon text-default glyphicon-plus-sign"></span>
+                    &nbsp;@(Html.GlobalResource("Filter"))
+                </a>
+                <button id="ClearFilter" class="btn btn-default pull-right awe-hidden">
+                    <span id="ToggleIcon" class="glyphicon text-default glyphicon-remove"></span>
+                    &nbsp;@(Html.GlobalResource("ClearFilter"))
+                </button>
+            </div>
+            <div id="FilterOptions" class="col-xs-12 collapse">
+                <div class="form-inline filter">
+                    <label>@Html.GlobalResource("FilterBy")</label>
+                    @Html.RadioButton(Fields.SearchType, "User", true, new { @id = "SearchType_User" })
+                    <label for="SearchType_User">@Html.GlobalResource("User")</label>
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SearchType, "ListingTitle", false, new { @id = "SearchType_ListingTitle" })
+                        </label>
+                    </div>
+                    <label for="SearchType_ListingTitle">@Html.GlobalResource("Title")</label>
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SearchType, "ListingID", false, new { @id = "SearchType_ListingID" })
+                        </label>
+                    </div>
+                    <label for="SearchType_ListingID">@Html.GlobalResource("ListingNum")</label>
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SearchType, "InvoiceID", false, new { @id = "SearchType_InvoiceID" })
+                        </label>
+                    </div>
+                    <label for="SearchType_InvoiceID">@Html.GlobalResource("InvoiceNum")</label>
+                    @Html.TextBox(Fields.SearchTerm, null, new { @class = "form-control", @placeholder = Html.GlobalResourceString("EnterKeywords") })
+                    <button class="btn btn-info" id="ApplyFilter">@Html.GlobalResource("ApplyFilter")</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @using (Html.BeginForm(MVC.CopyListingsAction, MVC.AccountController, FormMethod.Post))
+    {
+        @Html.Hidden("returnUrl", returnUrl)
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <button class="btn btn-default CopySelected">@Html.GlobalResource("CopySelected")</button>
+                    <button class="btn btn-danger DeleteSelected">@Html.GlobalResource("DeleteSelected")</button>
+                </div>
+            </div>
+        </div>
+        <div class="heading">
+            <div class="row">
+                <div class="col-xs-1">
+                    <input type="checkbox" class="checkall" />
+                </div>
+                <div class="col-sm-2 hidden-xs">
+                    <!-- Image container -->
+                </div>
+                <div class="col-sm-9">
+                    @Html.GlobalResource("Title") <em>(@Html.GlobalResource("ListingID"))</em>
+                    <br />
+                    @Html.GlobalResource("EndDTTM")
+                    <br />
+                    @Html.GlobalResource("Status")
+                </div>
+            </div>
+        </div>
+        foreach (Listing listing in Model.List)
+        {
+            @Html.Partial("Listing_SellerEndedRow", listing)
+        }
+        if (Model.TotalItemCount == 0)
+        {
+            <p class="no-history">
+                @Html.GlobalResource("NoEndedListings")
+            </p>
+        }
+        <button class="btn btn-default CopySelected">@Html.GlobalResource("CopySelected")</button>
+        <button class="btn btn-danger DeleteSelected">@Html.GlobalResource("DeleteSelected")</button>
+    }
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

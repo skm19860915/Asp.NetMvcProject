@@ -1,0 +1,59 @@
+﻿@model Offer
+
+@{
+    Layout = "~/Views/Shared/_NoLayout.cshtml";
+    bool CCRequired = ((bool?)ViewData["CCRequired"]) ?? false;
+}
+
+@if (!Context.User.Identity.IsAuthenticated)
+{
+    <text>LOGON_NEEDED</text>
+}
+else if (CCRequired)
+{
+    <text>CC_NEEDED</text>
+}
+else if (Model == null)
+{
+    @Html.LocalizedValidationSummary()
+    <button id="modalCancelOfferButton" class="btn btn-default">@Html.GlobalResource("Cancel")</button>
+}
+else
+{
+    using (Html.BeginForm("ConfirmAction", "Listing", FormMethod.Get, new { id = "ConfirmOfferForm" }))
+    {
+        @*<div class="panel panel-default">
+            <div class="panel-heading">@Html.Resource(Model.Listing.Type.Name + "Listing, ReviewAndConfirmOffer")</div>
+            <div class="panel-body">*@
+        @Html.LocalizedValidationSummary()
+        @Html.Hidden(Fields.ListingID, Model.Listing.ID)
+        @Html.Hidden(Fields.Amount, Html.LocalDecimal(Model.Amount))
+        @Html.Hidden(Fields.Quantity, Model.Quantity)
+        @Html.Hidden(Fields.OfferMessage, Model.OfferMessage)
+
+        @Html.Partial(Model.Listing.Type.Name + "BuyerFees", Model.Listing)
+        <p>
+            <label for="@Fields.Amount">@Html.Resource(Model.Listing.Type.Name + "Listing, YourOffer")</label>
+            <div>@Html.LocalCurrency(Model.Amount, Model.Listing.Currency.Code)</div>
+            <hr />
+        </p>
+        if (Model.Quantity > 1)
+        {
+            <p>
+                <label for="@Fields.Quantity">@Html.Resource(Model.Listing.Type.Name + "Listing, Quantity")</label>
+                <div>@Model.Quantity</div>
+                <hr />
+            </p>
+        }
+        <p>
+            <label for="@Fields.OfferMessage">@Html.Resource(Model.Listing.Type.Name + "Listing, OfferMessage")</label>
+            <div>@Model.OfferMessage</div>
+        </p>
+        @* </div>
+            </div>*@
+        <div class="modal-footer">
+            <button id="modalCancelOfferButton" class="btn btn-link">@Html.GlobalResource("Cancel")</button>
+            <button id="modalMakeOfferSubmitButton" class="btn btn-success">@Html.GlobalResource("SubmitOffer")</button>
+        </div>
+    }
+}

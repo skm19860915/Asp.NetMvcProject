@@ -1,0 +1,23 @@
+﻿@model Page<Listing>
+@{
+    bool showEventCategories = SiteClient.BoolSetting(SiteProperties.EventHomeCategories);
+    string galleryColumns = "col-xs-6 col-lg-4";
+
+    if (SiteClient.EnableEvents && !showEventCategories)
+    {
+        galleryColumns = "col-xs-6 col-md-4 col-lg-3";
+    }
+
+}
+<div class="galleryContainer clearfix">
+    @foreach (Listing listing in Model.List)
+    {
+        <div class="@galleryColumns galleryUnit" data-listingid="@listing.ID">
+            @Html.Partial(listing.Type.Name + "Thumbnail", listing)
+        </div>
+    }
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

@@ -1,0 +1,67 @@
+﻿@model Page<Invoice>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_SiteFeesReportPaid");
+}
+
+<script>
+    $(document).ready(function () {
+        //when sort dropdown is changed, submit the form
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+    });
+</script>
+<div class="group">
+    @using (Html.BeginForm(new { page = 0 }))
+    {
+        <div class="form-inline clearfix">
+            <div class="dual-input addon">
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </div>
+                @{ Html.RenderDateInput(Fields.FromDate, null, new { @class = "form-control", @placeholder= Html.AdminResource("FromDate") }); }
+                
+                    @{ Html.RenderDateInput(Fields.ToDate, null, new { @class = "form-control" , @placeholder = Html.AdminResource("ToDate") }); }
+            </div>
+
+            <input type="submit" class="btn btn-default" id="submitDropDown" value="@Html.AdminResource("Go")" />
+            <div class="input-group pull-right">
+                <label class="input-group-addon">
+                    @Html.AdminResource("Sort")
+                </label>
+                @Html.DropDownList(MVC.SortFilterOptions, null, new { @class = "form-control" })
+                </div>
+            </div>
+            }
+        </div>
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <tr>
+            <th>@Html.AdminResource("InvoiceID")</th>
+            <th>@Html.AdminResource("DatePaid")</th>
+            <th>@Html.AdminResource("UserName")</th>
+            <th>@Html.AdminResource("Total")</th>
+        </tr>
+
+        @{
+            foreach (Invoice invoice in Model.List)
+            {
+                <tr>
+                    <td>@Html.ActionLink(Html.AdminResource("View") + " " + invoice.ID.ToString(), "InvoiceDetail", new { id = invoice.ID }, new { @class = "btn btn-default btn-xs" })</td>
+                    <td>@Html.LocalDTTM(invoice.PaidDTTM.Value, "g")</td>
+                    <td>@invoice.Payer.UserName</td>
+                    <td>@Html.LocalCurrency(invoice.Total, invoice.Currency)</td>
+                </tr>
+            }
+        }
+    </table>
+    @if (Model.TotalItemCount == 0)
+    {
+        <p class="no-history">
+            @Html.AdminResource("NoResults")
+        </p>
+    }
+    </div>
+    @if (Model.TotalPageCount > 1) { Html.RenderPageNumberLinks(Model); }

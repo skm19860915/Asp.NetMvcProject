@@ -1,0 +1,347 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+@section head {
+    <script>
+        $(document).ready(function () {
+            $("#ImportUsers").click(function () {
+
+                //gather input values
+                batchSize = Number($("#BatchSize").val());
+                dupUsers = $("input[name='DupUsernameAction']:checked").val();
+                verbose = $("#Verbose").prop("checked");
+                homePhoneCustomField = $("#HomePhoneCustomField").val();
+                workPhoneCustomField = $("#WorkPhoneCustomField").val();
+                companyCustomField = $("#CompanyCustomField").val();
+
+                //disable all inputs
+                DisableUserImportInputs()
+
+                //set starting values
+                nextBatchIndex = 0;
+                usersAddedCount = 0;
+                usersUpdatedCount = 0;
+                usersSkippedCount = 0;
+                $("#Progress_Completed").css("width", "4px").html("&nbsp;");
+                $("#Progress_Remaining").css("width", "396px").html("0%");
+                $("#ErrorsContainer").val("");
+                importCancelled = false;
+
+                $("#ErrorsContainer").val($("#ErrorsContainer").val() + "" + "@Html.AdminResourceString("ImportStarted").ToJavascriptSafeString()" + "\n\n");
+
+                ImportNextBatch();
+
+                return false;
+            });
+
+            function DisableUserImportInputs() {
+                $("#ImportSettings").find("input").prop("disabled", true);
+                $("#ImportSettings").find("select").prop("disabled", true);
+                $("#ImportUsers").prop("disabled", true).addClass("DisabledButton").removeClass("DefaultButton");
+                $("#CancelUserImport").prop("disabled", false).addClass("DefaultButton").removeClass("DisabledButton");
+            }
+
+            function EnableUserImportInputs() {
+                $("#ImportSettings").find("input").prop("disabled", false);
+                $("#ImportSettings").find("select").prop("disabled", false);
+                $("#ImportUsers").prop("disabled", false).addClass("DefaultButton").removeClass("DisabledButton");
+                $("#CancelUserImport").prop("disabled", true).addClass("DisabledButton").removeClass("DefaultButton");
+            }
+
+            function ImportNextBatch() {
+                $.post('@Html.GetActionUrl("ImportUsers_ImportBatch")', {
+                    DupUsernameAction: dupUsers,
+                    BatchSize: batchSize,
+                    BatchIndex: nextBatchIndex,
+                    Verbose: verbose,
+                    HomePhoneCustomField: homePhoneCustomField,
+                    WorkPhoneCustomField: workPhoneCustomField,
+                    CompanyCustomField: companyCustomField
+
+                },
+                function (data) {
+
+                    //increment batch index
+                    nextBatchIndex++;
+
+                    //parse return values
+                    dataParts = data.split("{dat}");
+
+                    usersAddedCount += Number(dataParts[0]);
+                    usersUpdatedCount += Number(dataParts[1]);
+                    usersSkippedCount += Number(dataParts[2]);
+
+                    var errorsThisBatch = dataParts[3].split("{err}");
+
+                    //update totals
+                    $("#UsersAddedCount").html(usersAddedCount);
+                    $("#UsersUpdatedCount").html(usersUpdatedCount);
+                    $("#UsersSkippedCount").html(usersSkippedCount);
+
+                    //update progress bar
+                    var completedPercentage = parseInt(batchSize / usersFoundCount * nextBatchIndex * 100);
+                    if (completedPercentage > 100) completedPercentage = 100;
+
+                    var completedWidth = 4 * completedPercentage;
+                    var remainingWidth = 400 - completedWidth;
+
+                    $("#Progress_Completed").css("width", completedWidth + "px");
+                    $("#Progress_Remaining").css("width", remainingWidth + "px");
+                    if (completedPercentage < 50) {
+                        $("#Progress_Completed").html("&nbsp;");
+                        $("#Progress_Remaining").html(completedPercentage + "%");
+                    } else {
+                        $("#Progress_Completed").html(completedPercentage + "%");
+                        $("#Progress_Remaining").html("&nbsp;");
+                    }
+
+                    //display errors
+                    for (var i = 0; i < errorsThisBatch.length; i++) {
+                        if (errorsThisBatch[i] != "") {
+                            $("#ErrorsContainer").val($("#ErrorsContainer").val() + errorsThisBatch[i] + "\n");
+                        }
+                    }
+
+                    if (importCancelled) {
+                        $("#ErrorsContainer").val($("#ErrorsContainer").val() + "\n" + "@Html.AdminResourceString("ImportCancelled").ToJavascriptSafeString()" + "\n");
+                        EnableUserImportInputs()
+                    } else if ((nextBatchIndex) * batchSize > usersFoundCount) {
+                        //done - re-enable inputs
+                        $("#ErrorsContainer").val($("#ErrorsContainer").val() + "\n" + "@Html.AdminResourceString("ImportCompleted").ToJavascriptSafeString()" + "\n");
+                        EnableUserImportInputs()
+
+                        //set progress bar to 100%
+                        $("#Progress_Remaining").hide();
+                    } else {
+                        ImportNextBatch();
+                    }
+
+                });
+            }
+
+            $("#CancelUserImport").click(function () {
+                importCancelled = true;
+                $(this).prop("disabled", true).addClass("DisabledButton").removeClass("DefaultButton");
+                return false;
+            });
+
+            var dupUsers = "skip";
+            var batchSize = 50;
+            var verbose = false;
+            var homePhoneCustomField = "";
+            var workPhoneCustomField = "";
+            var companyCustomField = "";
+
+            var nextBatchIndex = 0;
+            var usersFoundCount = 0;
+            var usersAddedCount = 0;
+            var usersUpdatedCount = 0;
+            var usersSkippedCount = 0;
+
+            var importCancelled = false;
+
+            //get count as soon as page loads, now that conn str is pulled from web.config
+            //make ajax call to get total users count
+            $.post('@Html.GetActionUrl("ImportUsers_GetCount")', function (data) {
+                var reg = /^\d+$/;
+                if (reg.test(data)) {
+                    usersFoundCount = Number(data);
+                    $("#UsersFoundCount").html(usersFoundCount);
+                }
+                else {
+                    $("#ErrorsContainer").append('ERROR: ' + data);
+                }
+                //ImportNextBatch();
+            }).fail(function () {
+                $("#ErrorsContainer").append('ERROR: Please check the connection details and try again.  A connection string with key "db_connection_rw7" is required in web.config.');
+                EnableUserImportInputs()
+            });
+
+        });
+    </script>
+    <style>
+        #ImportUsersContainer label {
+            margin-top: 0px;
+        }
+
+        .SettingsLabel {
+            width: 175px;
+        }
+
+        .TextInputBox {
+            width: 200px;
+        }
+
+        .RadioButtonInput {
+            vertical-align: middle; /*margin-top: .8em; margin-bottom: .8em;*/
+            margin-bottom: 2px;
+        }
+
+        .RadioInputLabel {
+            vertical-align: middle; /*margin-top: .8em; margin-bottom: .8em;*/
+        }
+
+        #ProgressBar1 {
+            width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            clear: both;
+        }
+
+        #Progress_Completed {
+            width: 4px;
+            background: #009;
+            color: #fff;
+            font-weight: bold;
+            font-size: 125%;
+            text-align: center;
+            border-top: 1px solid #000;
+            border-right: 1px solid #009;
+            border-bottom: 1px solid #000;
+            border-left: 1px solid #000;
+            overflow: hidden;
+            float: left;
+        }
+
+        #Progress_Remaining {
+            width: 396px;
+            background: #fff;
+            color: #009;
+            font-weight: bold;
+            font-size: 125%;
+            text-align: center;
+            border-top: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            border-left: 1px solid #009;
+            overflow: hidden;
+            float: left;
+        }
+
+        .ProgressLabel {
+            vertical-align: middle;
+            width: 150px;
+        }
+
+        .ProgressValue {
+            vertical-align: middle;
+        }
+
+        #ErrorsContainer {
+            color: #900;
+            width: 600px;
+            height: 200px;
+            font-family: Arial;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        #ErrorsLabel {
+            vertical-align: top;
+            padding-top: 3px;
+        }
+
+        .InfoOnly {
+            color: #000;
+            font-weight: normal;
+        }
+
+        #ImportUsersContainer h4 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+}
+<h3 class="h3row">
+    @Html.AdminResource("LineageString_ImportUsers")
+</h3>
+<div id="ImportUsersContainer">
+    <h4>@Html.AdminResource("ImportUsersMainBlurb")</h4>
+    <div id="ImportSettings">
+        <table>
+            @Html.Hidden("BatchSize")
+            <tr>
+                <td class="SettingsLabel">
+                    @(Html.AdminResource("DuplicateUsernames")):
+                </td>
+                <td>
+                    @Html.RadioButton("DupUsernameAction", "skip", true, new { @id = "DupUsernameAction_Ignore", @class = "RadioButtonInput" })
+                    <label for="DupUsernameAction_Ignore" class="RadioInputLabel">@Html.AdminResource("Skip")</label>
+                    <br />
+                    @Html.RadioButton("DupUsernameAction", "overwrite", false, new { @id = "DupUsernameAction_Overwrite", @class = "RadioButtonInput" })
+                    <label for="DupUsernameAction_Overwrite" class="RadioInputLabel">@Html.AdminResource("Overwrite")</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="SettingsLabel">
+                    @(Html.AdminResource("VerboseOutput")):
+                </td>
+                <td>
+                    @Html.CheckBox("Verbose")
+                </td>
+            </tr>
+            <tr>
+                <td class="SettingsLabel">
+                    @(Html.AdminResource("HomePhoneCustomField")):
+                </td>
+                <td>
+                    @Html.DropDownList("HomePhoneCustomField")
+                </td>
+            </tr>
+            <tr>
+                <td class="SettingsLabel">
+                    @(Html.AdminResource("WorkPhoneCustomField")):
+                </td>
+                <td>
+                    @Html.DropDownList("WorkPhoneCustomField")
+                </td>
+            </tr>
+            <tr>
+                <td class="SettingsLabel">
+                    @(Html.AdminResource("CompanyCustomField")):
+                </td>
+                <td>
+                    @Html.DropDownList("CompanyCustomField")
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="DefaultButton" id="ImportUsers">@Html.AdminResource("ImportUsers")</button>
+                    <button class="DisabledButton" id="CancelUserImport" disabled="disabled">@Html.AdminResource("Cancel")</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="ImportResults">
+        <table>
+            <tr>
+                <td class="ProgressLabel">@Html.AdminResource("ImportProgress"):</td>
+                <td>
+                    <div id="Progress_Completed">&nbsp;</div>
+                    <div id="Progress_Remaining">0%</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("UsersFound")):</td>
+                <td class="ProgressValue" id="UsersFoundCount">0</td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("UsersAdded")):</td>
+                <td class="ProgressValue" id="UsersAddedCount">0</td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("UsersUpdated")):</td>
+                <td class="ProgressValue" id="UsersUpdatedCount">0</td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("UsersSkipped")):</td>
+                <td class="ProgressValue" id="UsersSkippedCount">0</td>
+            </tr>
+            <tr>
+                <td id="ErrorsLabel">@(Html.AdminResource("Errors")):</td>
+                <td><textarea id="ErrorsContainer"></textarea></td>
+            </tr>
+        </table>
+    </div>
+</div>

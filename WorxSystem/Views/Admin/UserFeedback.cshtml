@@ -1,0 +1,43 @@
+﻿@model Page<Feedback>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    User targetUser = (User)ViewData["User"];
+    ViewBag.PageName = Html.AdminResource("LineageString_UserManagement");
+}
+
+@section PageName{
+    &gt; @targetUser.UserName (@targetUser.ID)
+}
+
+@Html.Partial("UserManagementTopNav", "feedback")
+<div class="user-details panel panel-default">
+    <div class="panel-body">
+        @if ((bool)ViewData["FeedbackForOthers"])
+        {
+            <ul class="nav nav-pills">
+                <li>@Html.ActionLink(Html.AdminResource("FeedbackReceivedFromOthers"), MVC.UserFeedbackAction, new { @id = targetUser.ID, forOthers = false, backUrl = ViewData["backUrl"] })</li>
+                <li class="active"><a>@Html.AdminResource("FeedbackLeftForOthers")</a></li>
+            </ul>
+        }
+        else
+        {
+            <ul class="nav nav-pills">
+                <li class="active"><a>@Html.AdminResource("FeedbackReceivedFromOthers")</a></li>
+                <li>@Html.ActionLink(Html.AdminResource("FeedbackLeftForOthers"), MVC.UserFeedbackAction, new { @id = targetUser.ID, forOthers = true, backUrl = ViewData["backUrl"] })
+        </li>
+            </ul>
+           
+                }           
+
+                    @if ((bool)ViewData["FeedbackForOthers"])
+                    {
+                        @Html.Partial("UserFeedbackList_ToOthers")
+                    }
+                    else
+                    {
+                        @Html.Partial("UserFeedbackList_FromOthers")
+                    }
+               
+            </div>
+        </div>

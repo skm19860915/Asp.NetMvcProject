@@ -1,0 +1,19 @@
+﻿@model List<CustomProperty>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource(SiteClient.EnableEvents ? "LineageString_AuctionLotSettings_Events" : "LineageString_AuctionLotSettings");
+}
+
+@using (Html.BeginForm())
+{
+    @Html.Partial("PropertyGroup")
+    <div class="action-panel">
+        <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+    </div>
+    foreach (var property in (List<CustomProperty>)ViewData["HiddenAuctionProperties"])
+    {
+        @Html.Hidden(property.Field.Name, property.Value)
+    }
+}
+@Html.Partial("ListingTypeBidIncrements", ListingClient.ListingTypes.Single(lt => lt.Name == ListingTypes.Auction))

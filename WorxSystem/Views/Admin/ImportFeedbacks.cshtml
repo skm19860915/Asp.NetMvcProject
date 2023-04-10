@@ -1,0 +1,278 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+@section head {
+    <script>
+        $(document).ready(function () {
+            $("#ImportFeedbacks").click(function () {
+
+                //gather input values
+                batchSize = Number($("#BatchSize").val());
+
+                //disable all inputs
+                DisableImportInputs()
+
+                //set starting values
+                nextBatchIndex = 0;
+                addedCount = 0;
+                skippedCount = 0;
+                $("#Progress_Completed").css("width", "4px").html("&nbsp;");
+                $("#Progress_Remaining").css("width", "396px").html("0%");
+                $("#ErrorsContainer").val("");
+                importCancelled = false;
+
+                $("#ErrorsContainer").val($("#ErrorsContainer").val() + "" + "@Html.AdminResourceString("ImportStarted").ToJavascriptSafeString()" + "\n\n");
+
+                ImportNextBatch();
+
+                return false;
+            });
+
+            function DisableImportInputs() {
+                $("#ImportFeedbacks").prop("disabled", true).addClass("DisabledButton").removeClass("DefaultButton");
+                $("#CancelImport").prop("disabled", false).addClass("DefaultButton").removeClass("DisabledButton");
+            }
+
+            function EnableImportInputs() {
+                $("#ImportFeedbacks").prop("disabled", false).addClass("DefaultButton").removeClass("DisabledButton");
+                $("#CancelImport").prop("disabled", true).addClass("DisabledButton").removeClass("DefaultButton");
+            }
+
+            function ImportNextBatch() {
+                $.post('@Html.GetActionUrl("ImportFeedbacks_ImportBatch")', {
+                    BatchSize: batchSize,
+                    BatchIndex: nextBatchIndex
+                },
+                function (data) {
+
+                    //increment batch index
+                    nextBatchIndex++;
+
+                    addedCount += data.addedCount;
+                    skippedCount += data.skippedCount;
+
+                    var errorsThisBatch = data.errors;
+                    errorCount += errorsThisBatch.length;
+
+                    //update totals
+                    $("#addedCount").html(addedCount);
+                    $("#skippedCount").html(skippedCount);
+                    $("#errorCount").html(errorCount);
+
+                    //update progress bar
+                    var completedPercentage = parseInt(batchSize / fbsFoundCount * nextBatchIndex * 100);
+                    if (completedPercentage > 100) completedPercentage = 100;
+
+                    var completedWidth = 4 * completedPercentage;
+                    var remainingWidth = 400 - completedWidth;
+
+                    $("#Progress_Completed").css("width", completedWidth + "px");
+                    $("#Progress_Remaining").css("width", remainingWidth + "px");
+                    if (completedPercentage < 50) {
+                        $("#Progress_Completed").html("&nbsp;");
+                        $("#Progress_Remaining").html(completedPercentage + "%");
+                    } else {
+                        $("#Progress_Completed").html(completedPercentage + "%");
+                        $("#Progress_Remaining").html("&nbsp;");
+                    }
+
+                    //display errors
+                    for (var i = 0; i < errorsThisBatch.length; i++) {
+                        if (errorsThisBatch[i] != "") {
+                            $("#ErrorsContainer").val($("#ErrorsContainer").val() + errorsThisBatch[i] + "\n");
+                        }
+                    }
+
+                    if (importCancelled) {
+                        $("#ErrorsContainer").val($("#ErrorsContainer").val() + "\n" + "@Html.AdminResourceString("ImportCancelled").ToJavascriptSafeString()" + "\n");
+                        EnableImportInputs()
+                    } else if ((nextBatchIndex) * batchSize > fbsFoundCount) {
+                        //done - re-enable inputs
+                        $("#ErrorsContainer").val($("#ErrorsContainer").val() + "\n" + "@Html.AdminResourceString("ImportCompleted").ToJavascriptSafeString()" + "\n");
+                        EnableImportInputs()
+
+                        //set progress bar to 100%
+                        $("#Progress_Remaining").hide();
+                    } else {
+                        ImportNextBatch();
+                    }
+
+                });
+            }
+
+            $("#CancelImport").click(function () {
+                importCancelled = true;
+                $(this).prop("disabled", true).addClass("DisabledButton").removeClass("DefaultButton");
+                return false;
+            });
+
+            var batchSize = 25;
+
+            var nextBatchIndex = 0;
+            var fbsFoundCount = 0;
+            var addedCount = 0;
+            var skippedCount = 0;
+            var errorCount = 0;
+            var importCancelled = false;
+
+            //get count as soon as page loads, now that conn str is pulled from web.config
+            //make ajax call to get total categories count
+            $.post('@Html.GetActionUrl("ImportFeedbacks_GetCount")', function (data) {
+                var reg = /^\d+$/;
+                if (reg.test(data)) {
+                    fbsFoundCount = Number(data);
+                    $("#fbsFoundCount").html(fbsFoundCount);
+                }
+                else {
+                    $("#ErrorsContainer").append('ERROR: ' + data);
+                }
+                //ImportNextBatch();
+            }).fail(function () {
+                $("#ErrorsContainer").append('ERROR: Please check the connection details and try again.  A connection string with key "db_connection_rw7" is required in web.config.');
+                EnableImportInputs()
+            });
+
+        });
+</script>
+    <style>
+        #ImportContainer label {
+            margin-top: 0px;
+        }
+
+        .SettingsLabel {
+            width: 175px;
+        }
+
+        .TextInputBox {
+            width: 200px;
+        }
+
+        .RadioButtonInput {
+            vertical-align: middle; /*margin-top: .8em; margin-bottom: .8em;*/
+            margin-bottom: 2px;
+        }
+
+        .RadioInputLabel {
+            vertical-align: middle; /*margin-top: .8em; margin-bottom: .8em;*/
+        }
+
+        #ProgressBar1 {
+            width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            clear: both;
+        }
+
+        #Progress_Completed {
+            width: 4px;
+            background: #009;
+            color: #fff;
+            font-weight: bold;
+            font-size: 125%;
+            text-align: center;
+            border-top: 1px solid #000;
+            border-right: 1px solid #009;
+            border-bottom: 1px solid #000;
+            border-left: 1px solid #000;
+            overflow: hidden;
+            float: left;
+        }
+
+        #Progress_Remaining {
+            width: 396px;
+            background: #fff;
+            color: #009;
+            font-weight: bold;
+            font-size: 125%;
+            text-align: center;
+            border-top: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            border-left: 1px solid #009;
+            overflow: hidden;
+            float: left;
+        }
+
+        .ProgressLabel {
+            vertical-align: middle;
+            width: 150px;
+        }
+
+        .ProgressValue {
+            vertical-align: middle;
+        }
+
+        #ErrorsContainer {
+            color: #900;
+            width: 600px;
+            height: 200px;
+            font-family: Arial;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        #ErrorsLabel {
+            vertical-align: top;
+            padding-top: 3px;
+        }
+
+        .InfoOnly {
+            color: #000;
+            font-weight: normal;
+        }
+
+        #ImportContainer h4 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+}
+<h3 class="h3row">
+    @Html.AdminResource("LineageString_ImportFeedbacks")
+</h3>
+<div id="ImportContainer">
+    <h4>@Html.AdminResource("ImportFeedbacksMainBlurb")</h4>
+    <div id="ImportSettings">
+        <table>
+            @Html.Hidden("BatchSize")
+            <tr>
+                <td colspan="2">
+                    <button class="DefaultButton" id="ImportFeedbacks">@Html.AdminResource("ImportFeedbacks")</button>
+                    <button class="DisabledButton" id="CancelImport" disabled="disabled">@Html.AdminResource("Cancel")</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="ImportResults">
+        <table>
+            <tr>
+                <td class="ProgressLabel">@Html.AdminResource("ImportProgress"):</td>
+                <td>
+                    <div id="Progress_Completed">&nbsp;</div>
+                    <div id="Progress_Remaining">0%</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("FeedbacksFound")):</td>
+                <td class="ProgressValue" id="fbsFoundCount">0</td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("FeedbacksAdded")):</td>
+                <td class="ProgressValue" id="addedCount">0</td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("FeedbacksSkipped")):</td>
+                <td class="ProgressValue" id="skippedCount">0</td>
+            </tr>
+            <tr>
+                <td class="ProgressLabel">@(Html.AdminResource("Errors")):</td>
+                <td class="ProgressValue" id="errorCount">0</td>
+            </tr>
+            <tr>
+                <td id="ErrorsLabel">@(Html.AdminResource("ErrorDetails")):</td>
+                <td><textarea id="ErrorsContainer"></textarea></td>
+            </tr>
+        </table>
+    </div>
+</div>

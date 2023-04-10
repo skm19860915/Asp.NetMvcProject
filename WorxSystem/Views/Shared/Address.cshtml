@@ -1,0 +1,15 @@
+﻿@model Address
+<div class="text-left">
+    <strong>
+        @Model.Description
+    </strong><br />
+    @Model.FirstName @Model.LastName<br />
+    @Model.Street1<br />
+    @if (!string.IsNullOrEmpty(Model.Street2))
+    {
+        @Model.Street2<br />
+    }
+    @Model.City, @Model.StateRegion @Model.ZipPostal<br />
+    @Html.LocalizeCountry(@Model.Country.Name)
+
+</div>

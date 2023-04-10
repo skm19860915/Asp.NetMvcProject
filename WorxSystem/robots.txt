@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /aspnet_client/
+Disallow: /bin/
+Disallow: /App_GlobalResources/
+Disallow: /signalr/
+Allow: /Account/Register
+Disallow: /Account/
+Disallow: /RealTime/
+Disallow: /Listing/CreateListingPage1
+Disallow: /Listing/AddWatch
+Disallow: /Listing/History
+Disallow: /Listing/Action
+# leave this line blank
+#Sitemap: http://[YourDomainName]/sitemap.xml

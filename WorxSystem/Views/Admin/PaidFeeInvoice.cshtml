@@ -1,0 +1,97 @@
+﻿@model Invoice
+@{
+    string currentController = Request.RequestContext.RouteData.Values["controller"].ToString();
+    bool payerIsTaxExempt = Model.Payer.Properties.Any(up => up.Field.Name == StdUserProps.TaxExempt && up.Value != null)
+        ? bool.Parse(Model.Payer.Properties.First(up => up.Field.Name == StdUserProps.TaxExempt).Value) : false;
+}
+<div class="group">
+    <div class="pull-right">
+        @(Html.ButtonLink(Html.GlobalResource("MarkNotPaid"), MVC.SetInvoicePaidAction, currentController,
+        new { id = Model.ID, paid = false, returnUrl = ViewData[Fields.ReturnUrl] }, new { @class = "btn btn-default" }))
+        <script>
+            $(document).ready(function () {
+                $("#PrintInvoice").click(function () {
+                    window.open('@Html.GetActionUrl("PrintInvoice", new { id = Model.ID }).ToMvcHtmlString().ToJavascriptSafeString()', '_blank', 'width=980,height=600');
+                    return false;
+                });
+            });
+        </script>
+        <button id="PrintInvoice" class="btn btn-default">@Html.GlobalResource("PrintInvoice")</button>
+    </div>
+    @Html.Partial("BackButton")
+
+</div>
+
+<div class="panel panel-default">
+    <table class="table">
+        <tr>
+            <td><strong>@Html.AdminResource("DateCreated"):</strong> @Html.LocalDTTM(Model.CreatedDTTM, "g")</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>
+                <strong>@SiteClient.Settings[SiteProperties.FriendlySiteName]</strong>
+                <br />
+                @Model.OwnerName
+                <br />
+                @Model.OwnerStreet1
+                <br />
+                @Model.OwnerStreet2
+                <br />
+                @Model.OwnerCity, @Model.OwnerStateRegion @Model.OwnerZipPostal @Model.OwnerCountry
+            </td>
+            <td>
+                <strong>@Html.AdminResource("BillingAddress")</strong><br />
+                @if (!string.IsNullOrEmpty(Model.BillingCountry))
+                {
+                    @(string.Format("{0} {1}", Model.BillingFirstName, Model.BillingLastName))<br />
+                    @Model.BillingStreet1<br />
+                    if (!string.IsNullOrEmpty(Model.BillingStreet2))
+                    {
+                        @Model.BillingStreet2<br />
+                    }
+                    @Model.BillingCity@:, @Model.BillingStateRegion @Model.BillingZipPostal @Model.BillingCountry
+                }
+                else
+                {
+                    <div class="no-address">@Html.GlobalResource("AddressNotDefined")</div>
+                }
+            </td>
+        </tr>
+
+    </table>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="alert alert-success">
+            @if (SiteClient.BoolSetting(SiteProperties.VATEnabled))
+            {
+                @Html.GlobalResource("Subtotal")<text>:&nbsp;&nbsp;</text>
+                <strong>@Html.LocalCurrency(Model.Subtotal, Model.Currency)</strong><text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                @Html.GlobalResource("VAT")<text>:&nbsp;&nbsp;</text>
+                if (!payerIsTaxExempt)
+                {
+                    <strong>@Html.LocalCurrency(Model.SalesTax, Model.Currency)</strong><text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                }
+                else
+                {
+                    <strong>@Html.GlobalResource("TaxExempt")</strong><text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                }
+            }
+            @Html.AdminResource("Total"):&nbsp;&nbsp;
+            <strong>@Html.LocalCurrency(Model.Total, Model.Currency)</strong>
+        </div>
+    </div>
+    <table class="table table-condensed">
+        @Html.Partial("PageOfFees", ViewData["PageOfLineitems"])
+    </table>
+</div>
+
+@{var pageOfLineItems = (Page<LineItem>)ViewData["PageOfLineitems"];}
+@if (pageOfLineItems.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(pageOfLineItems);
+}
+@Html.Partial("PaymentHistory")

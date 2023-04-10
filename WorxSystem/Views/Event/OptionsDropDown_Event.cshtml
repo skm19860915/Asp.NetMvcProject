@@ -1,0 +1,310 @@
+﻿@model Event
+@if (User.Identity.IsAuthenticated)
+{
+    string returnUrl = Request.Url.PathAndQuery;
+    bool theSeller = Html.FBOUserName() == Model.OwnerUserName;
+    bool anAdmin = User.IsInRole("Admin");
+    string publishUrl = (anAdmin || !SiteClient.BoolSetting(SiteProperties.RequireAdminToPublishEvent))
+        ? Html.GetActionUrl(MVC.PublishEventAction, MVC.EventController, new { id = Model.ID })
+        : Html.GetActionUrl(MVC.RequestPublishEventAction, MVC.EventController, new { id = Model.ID });
+    bool showProcessPaymentsLink = Html.SellerTakesCreditCardPayments(Model.OwnerUserName);
+    if (theSeller || anAdmin)
+    {
+        <script>
+            $(document).ready(function () {
+
+                $(".awe-end-early-link").click(function () {
+                    var jsEndEarlyConfirmMsg = //"Really end this event early?\nTHIS ACTION CANNOT BE UNDONE"
+                        '@Html.GlobalResourceString("EndEarlyEventWarning_Really").ToJavascriptSafeString()' + '\n'
+                            + '@Html.GlobalResourceString("EndEarlyWarning_CantBeUndone").ToJavascriptSafeString()';
+                    var targetHref = $(this).attr("href");
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("EndEarlyConfirmationTitle").ToJavascriptSafeString()',
+                        message: jsEndEarlyConfirmMsg,
+                        buttons: [
+                            {
+                                label: '@Html.GlobalResourceString("EndEarly").ToJavascriptSafeString()',
+                                cssClass: 'btn-danger',
+                                action: function () {
+                                    window.location = $.htmlDecode(targetHref);
+                                }
+                            }, {
+                                label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                    return false;
+                });
+
+                $(".awe-delete-link").click(function () {
+                    var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                        '@Html.GlobalResourceString("DeleteEventWarning_Really").ToJavascriptSafeString()' + '\n'
+                            + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+                    var targetHref = $(this).attr("href");
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                        message: jsDeleteConfirmMsg,
+                        buttons: [
+                            {
+                                label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                                cssClass: 'btn-danger',
+                                action: function () {
+                                    window.location = $.htmlDecode(targetHref);
+                                }
+                            }, {
+                                label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                    return false;
+                });
+
+                $(".awe-confirm-publish").on("click", function () {
+                    var jsPublishEventMessage = //"Really publish his event?\nTHIS ACTION CANNOT BE UNDONE"
+                        '@Html.GlobalResourceString("PublishEvent_Really").ToJavascriptSafeString()' + '\n'
+                        + '@Html.GlobalResourceString("PublishEvent_CantBeUndone").ToJavascriptSafeString()';
+                    var jsPublishConfTitle = //
+                        '@Html.GlobalResourceString("PublishEvent_ConfirmationTitle").ToJavascriptSafeString()';
+                    var targetHref = $(this).attr("href");
+                    BootstrapDialog.show({
+                        type: 'type-primary',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; ' + jsPublishConfTitle,
+                        message: jsPublishEventMessage,
+                        buttons: [
+                            {
+                                label: '@Html.GlobalResourceString("PublishEvent").ToJavascriptSafeString()',
+                                cssClass: 'btn-primary',
+                                action: function () {
+                                    window.location = $.htmlDecode(targetHref);
+                                }
+                            }, {
+                                label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                    return false;
+                });
+
+                $(".awe-cant-publish").click(function () {
+                    var targetHref = $(this).attr("href");
+                    $.post('RealTime/GetDraftLotCount', { eventId: @Model.ID }).done(function (data) {
+                        if (data.DraftLotCount > 0) {
+                            var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                                '@MvcHtmlString.Create(Html.GlobalResourceString("CantPublishEventsWithDraftLotsMessage")).ToJavascriptSafeString()';
+                            BootstrapDialog.show({
+                                type: 'type-danger',
+                                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("CantPublishEventsWithDraftLotsTitle").ToJavascriptSafeString()',
+                                message: jsDeleteConfirmMsg,
+                                buttons: [
+                                    {
+                                        label: '@Html.GlobalResourceString("ViewDraftLots").ToJavascriptSafeString()',
+                                        cssClass: 'btn-info',
+                                        action: function () {
+                                            window.location = $.htmlDecode(targetHref);
+                                        }
+                                    }, {
+                                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        }
+                                    }
+                                ]
+                            });
+                        } else {
+                            //publish the event
+                            var publishUrl = "@publishUrl.ToJavascriptSafeString()";
+                            window.location = $.htmlDecode(publishUrl);
+                        }
+                    });
+                    return false;
+                });
+
+                //[Print All Invoices] - click
+                $(".PrintAllInvoices").click(function (event) {
+                    event.preventDefault();
+                    window.open($(this).attr("href"), '_blank', 'width=600,height=600,scrollbars=yes');
+                    return false;
+                });
+
+                //[Process Payments]
+                $(".ProcessPayments").on("click", function (event) {
+                    event.preventDefault();
+                    var targetUrl = $.htmlDecode($(this).attr("href"));
+                    $(this).attr('disabled', 'disabled');
+                    $(this).fadeTo(0, 0.5);
+                    window.location.assign(targetUrl);
+                });
+
+                //initial update Listing "Options" dropdown
+                $('[data-eventid="@(Model.ID)"] .awe-rt-hideable').each(function () {
+                    $(this).hide();
+                });
+                $('[data-eventid="@(Model.ID)"] .awe-rt-ShowStatus@(Model.Status)').each(function () {
+                    $(this).show();
+                });
+            });
+        </script>
+
+        <div class="form-group dropdown pull-right">
+            <button type="button" class="btn btn-default dropdown-toggle" id="EventLotsOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @Html.GlobalResource("EventOptions") <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="EventLotsOptions">
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Summary"), MVC.EventSummaryAction, MVC.AccountController,
+                        new { id = Model.ID }, null)
+                </li>
+                <li role="separator" class="divider"></li>
+                @if (theSeller)
+                {
+                    if (SiteClient.PayToProceed && Model.Status != AuctionEventStatuses.AwaitingPayment)
+                    {
+                        bool hasLotsAwaitingPayment = EventClient.GetLotCountByListingStatus(User.Identity.Name, Model.ID, ListingStatuses.AwaitingPayment) > 0;
+                        if (hasLotsAwaitingPayment)
+                        {
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("PayFees"), MVC.FeesAction, MVC.AccountController)
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="awe-rt-hideable awe-rt-ShowStatusAwaitingPayment">
+                                @Html.ActionLink(Html.GlobalResource("PayFees"), MVC.FeesAction, MVC.AccountController)
+                            </li>
+                        }
+                    }
+                    <li class="awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusPreview awe-rt-ShowStatusScheduled awe-rt-ShowStatusActive awe-rt-ShowStatusClosing">
+                        @Html.ActionLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController,
+                            new { EventID = Model.ID }, null)
+                    </li>
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("ManageLots"), MVC.LotsByEventAction, MVC.AccountController,
+                            new { id = Model.ID }, null)
+                    </li>
+                    <li class="awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusPreview awe-rt-ShowStatusScheduled awe-rt-ShowStatusActive">
+                        @Html.ActionLink(Html.GlobalResource("ManageLotOrder"), MVC.ClosingGroupsAction, MVC.AccountController,
+                            new { id = Model.ID }, new { @class = "" })
+                    </li>
+                    <li class="awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusPreview awe-rt-ShowStatusScheduled awe-rt-ShowStatusActive">
+                        @Html.ActionLink(Html.GlobalResource("ManageSoftClosingGroups"), MVC.SoftClosingGroupsAction, MVC.AccountController,
+                            new { id = Model.ID }, new { @class = "" })
+                    </li>
+                    <li role="separator" class="divider"></li>
+
+                    <li class="awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusPreview awe-rt-ShowStatusScheduled awe-rt-ShowStatusActive awe-rt-ShowStatusClosing">
+                        @Html.ActionLink(Html.GlobalResource("ValidateAllDraftLots"), MVC.LotsByEventAction, MVC.AccountController,
+                            new { id = Model.ID, startvalidation = "true" }, null)
+                    </li>
+                    if (Model.Status.Equals(AuctionEventStatuses.Draft))
+                    {
+                        if (EventClient.GetLotCountByListingStatus(User.Identity.Name, Model.ID, ListingStatuses.Draft) > 0)
+                        {
+                            <li class="awe-rt-hideable awe-rt-ShowStatusDraft">
+                                @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.LotsByEventAction, MVC.AccountController,
+                                    new { id = Model.ID, ViewFilterOption = "Draft" }, new { @class = "awe-cant-publish" })
+                            </li>
+                        }
+                        else if (!anAdmin && SiteClient.BoolSetting(SiteProperties.RequireAdminToPublishEvent))
+                        {
+                            <li class="awe-rt-hideable awe-rt-ShowStatusDraft">
+                                @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.RequestPublishEventAction, MVC.EventController,
+                                                new { id = Model.ID }, null)
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="awe-rt-hideable awe-rt-ShowStatusDraft">
+                                @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.PublishEventAction, MVC.EventController,
+                                    new { id = Model.ID }, new { @class = "awe-confirm-publish" })
+                            </li>
+                        }
+                    }
+                }
+
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditAction, MVC.EventController,
+                        new { id = Model.ID, returnUrl }, null)
+                </li>
+
+                <li class="awe-rt-hideable awe-rt-ShowStatusPreview awe-rt-ShowStatusScheduled">
+                    @Html.ActionLink(Html.GlobalResource("StartEarly"), MVC.StartEventEarlyAction, MVC.EventController,
+                        new { id = Model.ID, returnUrl }, null)
+                </li>
+
+                <li class="awe-rt-hideable awe-rt-ShowStatusPreview awe-rt-ShowStatusScheduled awe-rt-ShowStatusActive awe-rt-ShowStatusClosing">
+                    @Html.ActionLink(Html.GlobalResource("EndEarly"), MVC.EndEventEarlyAction, MVC.EventController,
+                        new { id = Model.ID, returnUrl }, new { @class = "awe-end-early-link" })
+                </li>
+
+                <li class="awe-rt-hideable awe-rt-ShowStatusClosed">
+                    @Html.ActionLink(Html.GlobalResource("Archive"), MVC.SetEventsArchivedAction, MVC.AccountController,
+                        new { EventIDs = Model.ID, archived = true, returnUrl }, null)
+                </li>
+
+                <li class="awe-rt-hideable awe-rt-ShowStatusArchived">
+                    @Html.ActionLink(Html.GlobalResource("UnArchive"), MVC.SetEventsArchivedAction, MVC.AccountController,
+                        new { EventIDs = Model.ID, archived = false, returnUrl }, null)
+                </li>
+
+                @if (anAdmin)
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteEventAction, MVC.EventController,
+                            new { id = Model.ID, returnUrl }, new { @class = "awe-delete-link" })
+                    </li>
+                }
+                else
+                {
+                    <li class="awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusClosed awe-rt-ShowStatusArchived">
+                        @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteEventAction, MVC.EventController,
+                            new { id = Model.ID, returnUrl }, new { @class = "awe-delete-link" })
+                    </li>
+                }
+                @if (theSeller)
+                {
+                    <li role="separator" class="divider awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusClosing awe-rt-ShowStatusClosed awe-rt-ShowStatusArchived"></li>
+                    <li class="awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusClosing awe-rt-ShowStatusClosed awe-rt-ShowStatusArchived">
+                        @Html.ActionLink(Html.GlobalResource("SalesReport"), MVC.EventSalesTransactionReportAction, MVC.AccountController,
+                            new { eventID = Model.ID }, null)
+                    </li>
+                    <li role="separator" class="divider awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusClosing awe-rt-ShowStatusClosed awe-rt-ShowStatusArchived"></li>
+                    <li class="awe-rt-hideable awe-rt-ShowStatusActive awe-rt-ShowStatusClosing awe-rt-ShowStatusClosed awe-rt-ShowStatusArchived">
+                        @Html.ActionLink(Html.GlobalResource("ViewInvoices"), MVC.InvoiceEventSalesAction, MVC.AccountController,
+                            new { EventID = Model.ID }, null)
+                    </li>
+                    <li class="awe-rt-hideable awe-rt-ShowStatusClosed">
+                        @Html.ActionLink(Html.GlobalResource("CreateAllInvoices"), MVC.CreateAllInvoicesAction, MVC.AccountController,
+                            new { eventID = Model.ID, returnUrl }, null)
+                    </li>
+                    <li class="awe-rt-hideable awe-rt-ShowStatusClosed">
+                        @Html.ActionLink(Html.GlobalResource("EmailAllInvoices"), MVC.EmailAllEventInvoicesAction, MVC.AccountController,
+                            new { @id = Model.ID }, null)
+                    </li>
+                    <li class="awe-rt-hideable awe-rt-ShowStatusClosed">
+                        @Html.ActionLink(Html.GlobalResource("PrintAllInvoices"), MVC.PrintMultipleInvoicesAction, MVC.AccountController,
+                            new { @EventID = Model.ID }, new { @class = "PrintAllInvoices" })
+                    </li>
+                    if (showProcessPaymentsLink)
+                    {
+                        <li role="separator" class="divider awe-rt-hideable awe-rt-ShowStatusClosed"></li>
+                        <li class="awe-rt-hideable awe-rt-ShowStatusClosed">
+                            @Html.ActionLink(Html.GlobalResource("ProcessPayments"), MVC.PayAllInvoicesAction, MVC.AccountController,
+                                new { @EventID = Model.ID, returnUrl }, new { @class = "ProcessPayments" })
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+}

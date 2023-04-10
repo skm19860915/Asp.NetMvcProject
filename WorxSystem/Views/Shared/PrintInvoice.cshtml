@@ -1,0 +1,46 @@
+﻿@model Invoice
+
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+@section scripts {
+    <script>$(document).ready(function () { window.print(); });</script>
+}
+
+<div class="col-xs-12">
+    @if (Model == null)
+    {
+        @Html.LocalizedValidationSummary()
+    }
+    else if (Model.Type == "Fee")
+    {
+        if (Model.Status == "Paid")
+        {
+            @Html.Partial("PaidFeeInvoice_ForPrinting", Model)
+        }
+        else if (Model.Status == "Pending")
+        {
+            @Html.Partial("PendingFeeInvoice_ForPrinting", Model)
+        }
+        else
+        {
+            @Html.Partial("UnpaidFeeInvoice_ForPrinting", Model)
+        }
+    }
+    else
+    {
+        if (Model.Status == "Paid")
+        {
+            @Html.Partial("PaidListingInvoice_ForPrinting", Model)
+        }
+        else if (Model.Status == "Pending")
+        {
+            @Html.Partial("PendingListingInvoice_ForPrinting", Model)
+        }
+        else
+        {
+            @Html.Partial("UnpaidListingInvoice_ForPrinting", Model)
+        }
+    }
+</div>

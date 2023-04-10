@@ -1,0 +1,189 @@
+﻿@model Listing
+@{
+    bool showDecorations = ViewData.ContainsKey("ShowDecorations") ? (bool)ViewData["ShowDecorations"] : true;
+    string containerCssClasses = "panel panel-default";
+    if (showDecorations && Model.Decorations.Any(d => d.Name == DecorationNames.Highlight))
+    {
+        containerCssClasses += " highlight";
+    }
+    bool boldDecoration = showDecorations && Model.Decorations.Any(d => d.Name == DecorationNames.Bold);
+    //determine if inline bidding is enabled
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool quickBidForListViewsEnabled = false;
+    var quickBidForListViewsProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidForListViewsEnabled);
+    if (quickBidForListViewsProp != null)
+    {
+        bool.TryParse(quickBidForListViewsProp.Value, out quickBidForListViewsEnabled);
+    }
+    if (ViewBag.BlockInlineBidding ?? false)
+    {
+        quickBidForListViewsEnabled = false;
+    }
+}
+<div class="@containerCssClasses">
+    @if (showDecorations && Model.Decorations.Any(d => d.Name == "Sunburst"))
+    {
+        <div class="listing-badge"></div>
+    }
+    <div class="galleryImage">
+        @{
+            if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+            {
+                @Model.BeginDetailLink()
+                @Html.Partial("NoPhoto")
+                @Model.EndDetailLink()
+            }
+            else
+            {
+                string uri = string.Format(Model.PrimaryImageURI, "FullSize".ToLower());
+                @Model.BeginDetailLink()
+                <img src="@uri" alt="@Model.Title" class="img-responsive" />
+                @Model.EndDetailLink()
+            }
+        }
+    </div>
+
+    <h1 class="galleryTitle">
+        @Model.BeginDetailLink()
+        @if (SiteClient.EnableEvents)
+        {
+            <span class="small">&nbsp;</span>
+            <br />
+        }
+        @if (boldDecoration)
+        {
+            <strong>@Model.Title</strong>
+        }
+        else
+        {
+            @Model.Title
+        }
+        @Model.EndDetailLink()
+    </h1>
+
+    @if (Model.Status.Equals(ListingStatuses.Preview))
+    {
+        <p class="galleryData--title">
+            @if (Model.CurrentPrice.HasValue)
+            {
+                @Html.Resource("ClassifiedListing, AskingPrice")
+            }
+            &nbsp;
+            @if (!Model.IsGoodTilCanceled())
+            {
+                <span class="timeLabel">@Html.Resource("ClassifiedListing,PreviewUntil")</span>
+            }
+        </p>
+        <p class="galleryData--values">
+            <span class="galleryPrice">
+                @if (Model.CurrentPrice.HasValue)
+                {
+                    <span class="awe-rt-CurrentPrice">
+                        @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                    </span>
+                }
+                &nbsp;
+            </span>
+            <span class="galleryTime--active">
+                &nbsp;
+                @if (!Model.IsGoodTilCanceled())
+                {
+                    <span data-epoch="starting"
+                          data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnStart"
+                          data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnStart"
+                          data-action-time="@Html.CultureInvariantLocalDTTM(Model.StartDTTM.Value)">
+                        @*Leave Empty, autofilled by SignalR*@
+                    </span>
+                    <span class="awe-rt-Remaining awe-hidden" data-epoch="ending"
+                          data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"
+                          data-end-value="@Html.GlobalResource("Ended")">
+                        @*Leave Empty, autofilled by SignalR*@
+                    </span>
+                }
+            </span>
+        </p>
+        if (quickBidForListViewsEnabled)
+        {
+            <div class="gallery-quickbid">
+                <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="btn btn-primary btn-block">
+                    <span class="awe-rt-HideOnStart">@Html.GlobalResource("Preview") </span>
+                    <span class="awe-rt-ShowOnStart awe-rt-HideOnEnd awe-hidden">@Html.GlobalResource("View") </span>
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
+        }
+    }
+    else if (Model.Status.Equals(ListingStatuses.Active))
+    {
+        <p class="galleryData--title">
+            @if (Model.CurrentPrice.HasValue)
+            {
+                @Html.Resource("ClassifiedListing, AskingPrice")
+            }
+            &nbsp;
+            @if (!Model.IsGoodTilCanceled())
+            {
+                <span class="timeLabel">@Html.GlobalResource("TimeRemaining")</span>
+            }
+        </p>
+        <p class="galleryData--values">
+            <span class="galleryPrice">
+                @if (Model.CurrentPrice.HasValue)
+                {<span class="awe-rt-CurrentPrice">
+                        @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                    </span>
+                }
+                &nbsp;
+            </span>
+            <span class="galleryTime--active">
+                &nbsp;
+                @if (!Model.IsGoodTilCanceled())
+                {
+                    <span data-epoch="ending"
+                          data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd"
+                          data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"
+                          data-end-value="@Html.GlobalResource("Ended")">
+                        @*Leave Empty, autofilled by SignalR*@
+                    </span>
+                }
+            </span>
+        </p>
+        if (quickBidForListViewsEnabled)
+        {
+            <div class="gallery-quickbid">
+                <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="btn btn-primary btn-block">
+                    <span class="awe-rt-ShowOnStart awe-rt-HideOnEnd">@Html.GlobalResource("View") </span>
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
+        }
+    }
+    else if (Model.Status.Equals(ListingStatuses.Ended))
+    {
+        <p class="galleryData--title">
+            @Html.GlobalResource("Ended")
+
+        </p>
+        <p class="galleryData--values">
+            @if (Model.CurrentPrice.HasValue)
+            {
+                <span class="awe-rt-CurrentPrice galleryPrice--ended">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span> @Html.Resource("ClassifiedListing, OriginalAskingPrice")
+            }
+            else
+            {
+                @:&nbsp;
+            }
+            <span class="galleryDate--ended awe-date-only awe-rt-endingDTTM" data-initial-dttm="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)"></span>
+        </p>
+        if (SiteClient.DisplayListingType)
+        {
+            <div class="listingTypeIcon">
+                <svg fill="rgba(0,0,0,.3)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z">
+                        <title>@Html.Resource("ClassifiedListing, TypeIconAlt")</title>
+                    </path>
+                </svg>
+            </div>
+        }
+    }
+</div>

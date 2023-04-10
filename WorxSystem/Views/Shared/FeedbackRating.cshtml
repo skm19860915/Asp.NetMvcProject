@@ -1,0 +1,10 @@
+﻿@model User
+
+@if (SiteClient.FeedbackEnabled)
+{
+    FeedbackRating rating = UserClient.GetFeedbackRating(Context.User.Identity.Name, Model.UserName, true);
+    <div class="detail__feedback-rating stars-off"><div class="stars-on" style="width:@Math.Round(rating.AverageTotal * 16,0)px"></div></div>
+    @:&nbsp;
+    @Html.ActionLink(rating.TotalCount.ToString(), MVC.ViewFeedbackAction, MVC.AccountController, new { @userid = Model.ID }, null)
+}
+

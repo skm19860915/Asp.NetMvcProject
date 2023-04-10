@@ -1,0 +1,15 @@
+﻿@model Listing
+
+@Html.Hidden("MessageSubject", Html.Resource("ClassifiedListing, Subject", Html.FBOUserName(), Model.ID))
+@Html.Hidden("MessageBody", ViewData["MessageBody"])
+@Html.Hidden("Send", "YES")
+
+@Html.Resource("ClassifiedListing, ConfirmMessage")
+
+@Html.Resource("ClassifiedListing, Subject", string.IsNullOrEmpty(Html.FBOUserName()) ? Html.Resource("ClassifiedListing, AnonymousUser").ToString() : Html.FBOUserName(), Model.ID):
+<p>
+    @ViewData["MessageBody"] 
+</p>
+
+
+

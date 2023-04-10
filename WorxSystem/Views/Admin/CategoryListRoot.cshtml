@@ -1,0 +1,214 @@
+﻿@model List<Hierarchy<int, Category>>
+@using System.Configuration;
+@{
+    bool? allowAuctionListingsAndLots = null;
+    if (SiteClient.EnableEvents)
+    {
+        bool tempBool1;
+        if (bool.TryParse(ConfigurationManager.AppSettings["AllowAuctionListingsAndLots"], out tempBool1))
+        {
+            allowAuctionListingsAndLots = tempBool1;
+        }
+    }
+    string customAdminReports = ConfigurationManager.AppSettings["CustomAdminReports"] ?? string.Empty;
+    bool enableNavCollapse = false;
+    bool tempBool2;
+    if (bool.TryParse(ConfigurationManager.AppSettings["EnableAdminNavCollapse"], out tempBool2))
+    {
+        enableNavCollapse = tempBool2;
+    }
+}
+@foreach (Hierarchy<int, Category> categoryTree in Model.OrderBy(c => c.Current.DisplayOrder))
+{
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.RolesAllowed))
+    {
+        if (!Context.User.IsInRole(categoryTree.Current.RolesAllowed)) { continue; }
+    }
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.EnabledCustomProperty))
+    {
+        if (allowAuctionListingsAndLots.HasValue && categoryTree.Current.ID == 22203) //"Auction" admin nav cat
+        {
+            if (!allowAuctionListingsAndLots.Value) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("#"))
+        {
+            if (!bool.Parse(categoryTree.Current.EnabledCustomProperty.Substring(1))) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.Contains("&&") ||
+                 categoryTree.Current.EnabledCustomProperty.Contains("||"))
+        {
+            if (!Html.EvaluateComplexEnabledCustomProperty(categoryTree.Current.EnabledCustomProperty)) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_!"))
+        {
+            //render this category if no listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(8);
+            bool skip = false;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = true;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_"))
+        {
+            //render this category if any listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(7);
+            bool skip = true;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = false;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("!"))
+        {
+            if (bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty.Substring(1)])) { continue; }
+        }
+        else
+        {
+            if (!bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty]))
+            {
+                continue;
+            }
+        }
+    }
+
+    string unlocalizedCategoryName = categoryTree.Current.Name;
+    if (categoryTree.Current.ID == 18 && SiteClient.EnableEvents)
+    {
+        unlocalizedCategoryName = "Auctions";
+    }
+    if (string.IsNullOrEmpty(categoryTree.Current.MVCAction))
+    {
+        <li class="section" data-section-id="@categoryTree.Current.ID">@Html.GlobalResource(unlocalizedCategoryName)</li>
+    }
+    else
+    {
+        <li>
+            @Html.ActionLink(Html.GlobalResource(unlocalizedCategoryName), categoryTree.Current.MVCAction)
+        </li>
+    }
+    @Html.Partial("CategoryList", categoryTree.ChildHierarchies)
+    if (!string.IsNullOrWhiteSpace(customAdminReports) && unlocalizedCategoryName == "Reports")
+    {
+        string thisUrl = Request.Url.PathAndQuery.ToLower();
+        foreach (string reportName in customAdminReports.Split(','))
+        {
+
+            if (thisUrl.Contains("/admin/reports/") && thisUrl.Contains(reportName.Trim().ToLower()))
+            {
+                <li class="active">
+                    @Html.ActionLink(Html.AdminResourceString(reportName), MVC.ReportsAction, MVC.AdminController, new { @id = reportName }, null)
+                </li>
+            }
+            else
+            {
+                <li>
+                    @Html.ActionLink(Html.AdminResourceString(reportName), MVC.ReportsAction, MVC.AdminController, new { @id = reportName }, null)
+                </li>
+            }
+        }
+    }
+}
+
+@if (enableNavCollapse)
+{
+    <script>
+        $(document).ready(function () {
+
+            function LoadNavState() {
+                //load current visiblity state for each nav section
+                var currentState = $.cookie("AcpCollapsePrefs");
+                console.log("currentState (loaded from cookie): ", currentState);
+                var sections = $("li.section");
+                if (!currentState) {
+                    currentState = new Array(sections.length + 1).join('C');
+                    $.cookie('AcpCollapsePrefs', currentState, { expires: 365 });
+                    console.log("currentState cookie set to: ", currentState);
+                };
+
+                var sectIndex = 0;
+                sections.each(function () {
+                    var sectionState = currentState.substring(sectIndex, sectIndex + 1);
+                    var sectionId = $(this).attr("data-section-id");
+                    if (sectionState == "C") {
+                        $(this).addClass("sub-nav-collapsed").append('<small class="toggle-sub-nav glyphicon glyphicon-plus"></small>');
+                        $("li[data-parent-id='" + sectionId + "']").hide();
+                    } else {
+                        $(this).append('<small class="toggle-sub-nav glyphicon glyphicon-minus"></small>');
+                        $("li[data-parent-id='" + sectionId + "']").show();
+                    }
+                    sectIndex++;
+                });
+            }
+
+            function SaveNavState() {
+                var currentState = "";
+                var sections = $("li.section");
+                sections.each(function () {
+                    if ($(this).hasClass("sub-nav-collapsed")) {
+                        currentState += "C";
+                    } else {
+                        currentState += "E";
+                    }
+                });
+                $.cookie('AcpCollapsePrefs', currentState, { expires: 365 });
+                console.log("currentState cookie set to: ", currentState);
+            }
+
+            $(document).on("click", "li.section", function () {
+                var sectionContainer = $(this)
+                var toggleIcon = $(this).find("small");
+                var sectionId = sectionContainer.attr("data-section-id");
+                if (sectionContainer.hasClass("sub-nav-collapsed")) {
+                    toggleIcon.removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                    sectionContainer.removeClass("sub-nav-collapsed");
+                    $("li[data-parent-id='" + sectionId + "']").show();
+                } else {
+                    toggleIcon.removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                    sectionContainer.addClass("sub-nav-collapsed");
+                    $("li[data-parent-id='" + sectionId + "']").hide();
+                }
+                SaveNavState();
+            });
+
+            //initial setup
+            var firstNavSectionLi = $("li.section").first();
+            var currentSectionId = "top";//firstNavSectionLi.attr("data-section-id");
+            var navSectionsContainer = firstNavSectionLi.parent();
+            navSectionsContainer.children().each(function () {
+                if ($(this).hasClass("section")) {
+                    currentSectionId = $(this).attr("data-section-id");
+                } else {
+                    $(this).attr("data-parent-id", currentSectionId);
+                }
+            });
+
+            LoadNavState();
+        });
+    </script>
+    <style>
+        .toggle-sub-nav {
+            float: right;
+            cursor: pointer;
+            color: rgb(235, 235, 235);
+        }
+        li.section {
+            margin-bottom: 1px;
+        }
+    </style>
+    <span class="gli"></span>
+}

@@ -1,0 +1,41 @@
+﻿@if (SiteClient.MaxHomePageFeatured > 0)
+{
+    int pageIndex = (int)ViewData[MVC.PageIndex];
+    string fillLevel = string.Empty;
+    int pageSize = SiteClient.MaxHomePageFeatured;
+    string viewFilter = (string)ViewData["ViewFilter"];
+    var pageOfEvents = EventClient.GetHomepageAuctionEventsWithFillLevel(User.Identity.Name, viewFilter, pageIndex, pageSize, fillLevel);
+    <ul class="nav nav-pills nav-justified eFilter">
+        <li class="filter-option@(viewFilter == "Current" ? " active" : "")">
+            @Html.ActionLinkNoEncoding(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-time\"></span>", Html.GlobalResourceString("CurrentAuctions")),
+                MVC.IndexAction, MVC.HomeController, new { ViewFilter = "Current" }, null)
+        </li>
+        <li class="filter-option@(viewFilter == "Preview" ? " active" : "")">
+            @Html.ActionLinkNoEncoding(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-calendar\"></span>", Html.GlobalResourceString("UpcomingAuctions")),
+                MVC.IndexAction, MVC.HomeController, new { ViewFilter = "Preview" }, null)
+        </li>
+        <li class="filter-option@(viewFilter == "Closed" ? " active" : "")">
+            @Html.ActionLinkNoEncoding(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-lock\"></span>", Html.GlobalResourceString("ClosedAuctions")),
+                MVC.IndexAction, MVC.HomeController, new { ViewFilter = "Closed" }, null)
+        </li>
+    </ul>
+
+    if (pageOfEvents.List.Count <= 0)
+    {
+        @Html.GetSiteContent("EmptyHomePage")
+    }
+    bool showCategories = bool.Parse(SiteClient.Settings["HomepageCategories"]);
+    int numberOfBanners = int.Parse(SiteClient.Settings[RainWorx.FrameWorx.Strings.SiteProperties.LeftBannersToDisplay]);
+
+    foreach (var auctionEvent in pageOfEvents.List)
+    {
+        <div data-eventid="@auctionEvent.ID">
+            @Html.Partial("Event_Row", auctionEvent)
+        </div>
+    }
+
+    if (pageOfEvents.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(pageOfEvents);
+    }
+}

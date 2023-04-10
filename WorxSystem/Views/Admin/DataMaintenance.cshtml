@@ -1,0 +1,185 @@
+﻿@model List<CustomProperty>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_DataManagement_Maintenance");
+    var demoEnabled = SiteClient.DemoEnabled;
+    MvcHtmlString helpText;
+
+}
+@section head {
+    <style>
+        .DaysInput {
+            width: 45px;
+            text-align: center;
+        }
+
+        .InputSection {
+            margin-bottom: 20px;
+        }
+
+        .InputGroup {
+            float: left;
+            margin-right: 10px;
+        }
+
+        .ToolTipGroup {
+            width: 25px;
+            float: left;
+        }
+
+        .DemoDisabledIcon {
+            float: left;
+        }
+
+        .InputSubSection {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            function ToggleAllOtherInputs() {
+                if ($("#@SiteProperties.DataCleanup_Enabled").prop("checked")) {
+                    $("#AllOtherDataOptions").find("input").prop("disabled", false);
+                } else {
+                    $("#AllOtherDataOptions").find("input").prop("disabled", true);
+                }
+            }
+            $("#@SiteProperties.DataCleanup_Enabled").click(function () { ToggleAllOtherInputs(); });
+            ToggleAllOtherInputs();
+            $(".ToolTipGroup").on("mouseover", function () { $(this).addClass("ToolTip2_Hover").removeClass("ToolTip2"); });
+            $(".ToolTipGroup").on("mouseout", function () { $(this).addClass("ToolTip2").removeClass("ToolTip2_Hover"); });
+
+            if ($(".DemoDisabledIcon").length > 0) {
+                $("input").prop("disabled", true);
+                $("#Save").addClass("disabled");
+            }
+        });
+    </script>
+}
+<div class="form-horizontal">
+    @using (Html.BeginForm())
+    {
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("AutomaticallyRemoveOldData")</label>
+            <div class="col-xs-10 col-sm-6">
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_Enabled).Field);}
+            </div>
+            <div class="col-xs-2">
+                @Html.ToolTipButton(SiteProperties.DataCleanup_Enabled)
+            </div>
+            <div class="col-xs-12">
+                @Html.ToolTipContent(SiteProperties.DataCleanup_Enabled, Html.CustomFieldResource("DataCleanup_Enabled_Help"))
+            </div>
+        </div>
+
+        if (demoEnabled)
+        {
+            <img class="DemoDisabledIcon" src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+        }
+        <div style="clear:both;"></div>
+        <div id="AllOtherDataOptions">
+            <div class="InputSection">
+                <h2>note -- &quot;delete old listings&quot; settings moved to &quot;Advanced > Maintenance&quot;</h2>
+                @*<div class="InputGroup">
+                        @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_Enabled).Field);}
+                        @Html.AdminResource("DeleteListingsClosedMoreThan")
+                        @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_DaysOld).Field, new { @class = "DaysInput" });}
+                        @Html.AdminResource("Days_No_Period")
+                    </div>
+                    <div class="ToolTipGroup ToolTip2">
+                        <img src="Content/images/General/HelpTip.png" />
+                        <span>@Html.CustomFieldResource(SiteProperties.DataCleanup_DeleteListings_Enabled + "_Help")</span>
+                    </div>
+                    @if (demoEnabled)
+                    {
+                        <img class="DemoDisabledIcon" src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                    }
+                    <div style="clear:both;"></div>
+                    <div class="InputSubSection">
+                        <div class="InputGroup">
+                            @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful).Field);}
+                            @Html.AdminResource("IncludeSuccessfulListings")
+                        </div>
+                        <div class="ToolTipGroup ToolTip2">
+                            <img src="Content/images/General/HelpTip.png" />
+                            <span>@Html.CustomFieldResource(SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful + "_Help")</span>
+                        </div>
+                        @if (demoEnabled)
+                        {
+                            <img class="DemoDisabledIcon" src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                        }
+                        <div style="clear:both;"></div>
+                    </div>*@
+            </div>
+            <div class="InputSection">
+                <div class="InputGroup">
+                    @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteSaleInvoices_Enabled).Field);}
+                    @Html.AdminResource("DeleteSaleInvoicesOlderThan")
+                    @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteSaleInvoices_DaysOld).Field, new { @class = "DaysInput" });}
+                    @Html.AdminResource("Days_No_Period")
+                </div>
+                <div class="ToolTipGroup ToolTip2">
+                    <img src="Content/images/General/HelpTip.png" />
+                    <span>@Html.CustomFieldResource(SiteProperties.DataCleanup_DeleteSaleInvoices_Enabled + "_Help")</span>
+                </div>
+                @if (demoEnabled)
+                {
+                    <img class="DemoDisabledIcon" src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+                <div style="clear:both;"></div>
+                <div class="InputSubSection">
+                    <div class="InputGroup">
+                        @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteSaleInvoices_IncludeUnpaid).Field);}
+                        @Html.AdminResource("IncludeUnpaidInvoices")
+                    </div>
+                    <div class="ToolTipGroup ToolTip2">
+                        <img src="Content/images/General/HelpTip.png" />
+                        <span>@Html.CustomFieldResource(SiteProperties.DataCleanup_DeleteSaleInvoices_IncludeUnpaid + "_Help")</span>
+                    </div>
+                    @if (demoEnabled)
+                    {
+                        <img class="DemoDisabledIcon" src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                    }
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+            <div class="InputSection">
+                <div class="InputGroup">
+                    @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteFeeInvoices_Enabled).Field);}
+                    @Html.AdminResource("DeleteFeeInvoicesOlderThan")
+                    @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteFeeInvoices_DaysOld).Field, new { @class = "DaysInput" });}
+                    @Html.AdminResource("Days_No_Period")
+                </div>
+                <div class="ToolTipGroup ToolTip2">
+                    <img src="Content/images/General/HelpTip.png" />
+                    <span>@Html.CustomFieldResource(SiteProperties.DataCleanup_DeleteFeeInvoices_Enabled + "_Help")</span>
+                </div>
+                @if (demoEnabled)
+                {
+                    <img class="DemoDisabledIcon" src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+                <div style="clear:both;"></div>
+                <div class="InputSubSection">
+                    <div class="InputGroup">
+                        @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteFeeInvoices_IncludeUnpaid).Field);}
+                        @Html.AdminResource("IncludeUnpaidInvoices")
+                    </div>
+                    <div class="ToolTipGroup ToolTip2">
+                        <img src="Content/images/General/HelpTip.png" />
+                        <span>@Html.CustomFieldResource(SiteProperties.DataCleanup_DeleteFeeInvoices_IncludeUnpaid + "_Help")</span>
+                    </div>
+                    @if (demoEnabled)
+                    {
+                        <img class="DemoDisabledIcon" src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                    }
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="InputSection">
+            <input type="submit" class="DefaultButton" value="@Html.AdminResource("Save")" name="Save" id="Save" />
+        </div>
+    }
+</div>

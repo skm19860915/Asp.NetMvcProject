@@ -1,0 +1,16 @@
+﻿@model Invoice
+
+@using (Html.BeginForm())
+{
+    @Html.Hidden(MVC.Field_Provider, ViewData["ProviderName"])
+    <div class="panel panel-default">
+        <div class="panel-heading">@Html.GlobalResource("ToPayWithUnlistedMethodClickSend")</div>
+        <div class="form-group">
+            <div class="col-sm-6">@Html.TextArea(Fields.Description, new { @class = "form-control" })</div>
+            <div class="col-sm-6">
+                <button class="btn btn-default pull-left">@Html.GlobalResource("Send")</button>
+            </div>
+        </div>
+    </div>
+}
+

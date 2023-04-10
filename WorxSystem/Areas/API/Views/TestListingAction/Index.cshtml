@@ -1,0 +1,109 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">RainWorx AuctionWorx ASP.NET Web API</a></p>
+        </div>
+    </div>
+</header>
+<div id="body">    
+    <div id="TestResults"></div>    
+</div>
+@section scripts
+{
+    <script>
+        function DisplayTestResult(testName, disposition, status, detail) {
+            var now = new Date();
+            var testResults = $("#TestResults");
+            var testResult = $("<div class='testresult'></div>").appendTo(testResults);
+            $("<span>" + testName + " @@ " + now + ": </span>").appendTo(testResult);
+            if (disposition == "SUCCESS") {
+                $("<span class='successResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            } else {
+                $("<span class='failureResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            }
+            $("<div class='detailResult'>" + JSON.stringify(detail) + "</div>").appendTo(testResult);
+        }
+
+        function Test(testName, url, method, expectation) {
+            $.ajax({
+                url: url,
+                type: method,
+                //data: JSON.stringify(newTitle),
+                contentType: "application/json",
+                processData: false,
+                async: false
+            }).always(function (data) {
+                if (expectation == data.status) {
+                    DisplayTestResult(testName, "SUCCESS", data.status, data.detail);
+                } else {
+                    DisplayTestResult(testName, "FAIL", data.status, data.detail);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            //Create Listing Action
+            Test('Create Listing Action with No Auth', 'TestListingAction/CreateListingAction?listingID=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&bidAmount=200', 'POST', 401);
+            Test('Create Listing Action with User that doesn\'t exist', 'TestListingAction/CreateListingAction?auth=nouser&listingID=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&bidAmount=200', 'POST', 401);
+            Test('Create Listing Action with Existing User, but bad key', 'TestListingAction/CreateListingAction?auth=badkey&listingID=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&bidAmount=200', 'POST', 401);
+            Test('Create Listing Action with Buyer User', 'TestListingAction/CreateListingAction?auth=nonadmin&listingID=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&bidAmount=200000', 'POST', 201);
+        });
+
+       // $(document).ready(function () {
+
+            //Create Listing Action
+            //            Test('Create Category with No Auth', 'TestCategory/CreateCategory', 'POST', 401);
+            //            Test('Create Category with User that doesn\'t exist', 'TestCategory/CreateCategory?auth=nouser', 'POST', 401);
+            //            Test('Create Category with Existing User, but bad key', 'TestCategory/CreateCategory?auth=badkey', 'POST', 401);
+            //Test('Create Category with Buyer User', 'TestListingAction/CreateListingAction?auth=nonadmin&listingID=176081&bidAmount=110.00', 'POST', 201);
+            //            Test('Create Category with Admin User', 'TestCategory/CreateCategory?auth=admin', 'POST', 201);
+
+            ///////////////////////
+
+//            //get root category
+//            Test('Category Get ROOT Category with No Auth', 'TestCategory/GetRoot', 'POST', 200);
+//            Test('Category Get ROOT Category with User that doesn\'t exist', 'TestCategory/GetRoot?auth=nouser', 'POST', 401);
+//            Test('Category Get ROOT Category with Existing User, but bad key', 'TestCategory/GetRoot?auth=badkey', 'POST', 401);
+//            Test('Category Get ROOT Category with Any User', 'TestCategory/GetRoot?auth=nonadmin', 'POST', 200);
+
+//            //get category
+//            Test('Category Get with No Auth', 'TestCategory/GetCategory?id=1', 'POST', 200);
+//            Test('Category Get with User that doesn\'t exist', 'TestCategory/GetCategory?id=1&auth=nouser', 'POST', 401);
+//            Test('Category Get with Existing User, but bad key', 'TestCategory/GetCategory?id=1&auth=badkey', 'POST', 401);
+//            Test('Category Get with any User', 'TestCategory/GetCategory?id=1&auth=nonadmin', 'POST', 200);
+//            Test('Category Get that doesn\'t exist with No Auth', 'TestCategory/GetCategory?id=-1', 'POST', 404);
+
+//            //Get Child Categories
+//            Test('Category Get Child Categories with No Auth', 'TestCategory/GetChildCategories?id=50', 'POST', 200);
+//            Test('Category Get Child Categories with User that doesn\'t exist', 'TestCategory/GetChildCategories?id=50&auth=nouser', 'POST', 401);
+//            Test('Category Get Child Categories with Existing User, but bad key', 'TestCategory/GetChildCategories?id=50&auth=badkey', 'POST', 401);
+//            Test('Category Get Child Categories with Any User', 'TestCategory/GetChildCategories?id=50&auth=nonadmin', 'POST', 200);
+//            Test('Category Get Child Categories whose parent doesn\'t exist with No Auth', 'TestCategory/GetChildCategories?id=-1', 'POST', 404);
+
+//            //create category
+//            Test('Create Category with No Auth', 'TestCategory/CreateCategory', 'POST', 401);
+//            Test('Create Category with User that doesn\'t exist', 'TestCategory/CreateCategory?auth=nouser', 'POST', 401);
+//            Test('Create Category with Existing User, but bad key', 'TestCategory/CreateCategory?auth=badkey', 'POST', 401);
+//            Test('Create Category with Unauthorized User', 'TestCategory/CreateCategory?auth=nonadmin', 'POST', 403);
+//            Test('Create Category with Admin User', 'TestCategory/CreateCategory?auth=admin', 'POST', 201);
+
+//            //Update Category
+//            Test('Update Category with No Auth', 'TestCategory/UpdateCategory', 'POST', 401);
+//            Test('Update Category with User that doesn\'t exist', 'TestCategory/UpdateCategory?auth=nouser', 'POST', 401);
+//            Test('Update Category with Existing User, but bad key', 'TestCategory/UpdateCategory?auth=badkey', 'POST', 401);
+//            Test('Update Category with Unauthorized User', 'TestCategory/UpdateCategory?auth=nonadmin', 'POST', 403);
+//            Test('Update Category with Admin User', 'TestCategory/UpdateCategory?auth=admin', 'POST', 204);
+
+
+//            //Delete Category
+//            Test('Category Delete with No Auth', 'TestCategory/DeleteCategory?id=-1', 'POST', 401);
+//            Test('Category Delete with User that doesn\'t exist', 'TestCategory/DeleteCategory?id=-1&auth=nouser', 'POST', 401);
+//            Test('Category Delete with Existing User, but bad key', 'TestCategory/DeleteCategory?id=-1&auth=badkey', 'POST', 401);
+//            Test('Category Delete with Unauthorized User', 'TestCategory/DeleteCategory?id=-1&auth=nonadmin', 'POST', 403);
+//            Test('Category Delete with Admin User', 'TestCategory/DeleteCategory?id=-1&auth=admin', 'POST', 204);
+
+       // });                
+        
+    </script>
+}

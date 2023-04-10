@@ -1,0 +1,383 @@
+﻿@using System.Configuration
+@{
+    string demoReCaptchaPublicKey = ConfigurationManager.AppSettings["DemoReCaptchaPublicKey"];
+}
+@section head {
+    @if (!SiteClient.BoolSetting(SiteProperties.RequireCreditCardOnRegistration) || !SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled))
+    {
+        <script>
+            $(document).ready(function () {
+                $("input[type='submit']").click(function (event) {
+                    //prevent form submission temporarily
+                    event.preventDefault();
+                    //disable submit button
+                    $(this).prop("disabled", true);
+                    //submit container form
+                    $(this).parents("form").first().submit();
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+            $(document).ready(function () {
+
+                @* v3 implementation *@
+                var stripe = null;
+                var elements = null;
+                var card = null;
+
+                var existingToken = $("#@Fields.StripeToken").val();
+                if (existingToken == null || existingToken == "") {
+                    stripe = Stripe('@SiteClient.TextSetting(SiteProperties.StripeConnect_SiteFeesPublishableApiKey).ToJavascriptSafeString()');
+                    elements = stripe.elements();
+
+                    // Create an instance of the card UI component
+                    //var card = elements.create('card');
+                    card = elements.create('card', {
+                        'style': {
+                            'base': {
+                                'fontFamily': '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                'fontSize': '16px',
+                                'color': '#555',
+                            }
+                        }
+                    });
+
+                    // Add an instance of the card UI component into the `card-element` <div>
+                    card.mount('#card-element');
+                } else {
+                    //cc info already validated, do not show the cc info fields and instead show a label indicating card info entered
+                    $("#stripe-card-info-container").removeClass("row").html($('<div class="alert alert-success stripeError">@Html.GlobalResource("CardInfoEntered").ToJavascriptSafeString()</div>'));
+                }
+
+                function stripeTokenHandler(token) {
+
+                    // Insert the token ID into the form so it gets submitted to the server
+                    var hiddenInput = document.getElementById('@Fields.StripeToken');
+                    hiddenInput.setAttribute('value', token.id);
+
+                    // Submit the form
+                    form.submit();
+                }
+
+                function createToken() {
+                    stripe.createToken(card).then(function (result) {
+                        if (result.error) {
+                            // Inform the user if there was an error
+                            var errorElement = document.getElementById('card-errors');
+                            errorElement.textContent = result.error.message;
+
+                            $form.find("#CompleteRegistrationButton").prop("disabled", false);
+                        } else {
+                            // Send the token to your server
+                            stripeTokenHandler(result.token);
+                        }
+                    });
+                };
+
+                // Create a token when the form is submitted.
+                var form = document.getElementById('RegistrationForm');
+                var $form = $(form);
+                form.addEventListener('submit', function (e) {
+                    if (card != null) {
+                        e.preventDefault();
+
+                        // Disable the submit button to prevent repeated clicks:
+                        $form.find("#CompleteRegistrationButton").prop("disabled", true);
+
+                        // Request a token from Stripe:
+                        createToken();
+
+                        // Prevent the form from being submitted:
+                        return false;
+                    }
+                });
+
+                if (card != null) {
+                    card.addEventListener('change', function (event) {
+                        var displayError = document.getElementById('card-errors');
+                        if (event.error) {
+                            displayError.textContent = event.error.message;
+                        } else {
+                            displayError.textContent = '';
+                        }
+                    });
+                }
+
+            });
+        </script>
+    }
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            @Html.GlobalResource("CreateAnAccount")
+        </div>
+        <div id="Form_Registration">
+            @Html.LocalizedValidationSummary()
+            @using (Html.BeginForm(MVC.RegisterAction, MVC.AccountController, FormMethod.Post, new { @id = "RegistrationForm" }))
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.GlobalResource("CreateLogin")
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="Username" class="required col-sm-3 control-label">@Html.GlobalResource("Username")</label>
+                                <div class="col-sm-6">
+                                    @Html.TextBox("UserName", "", new { @class = "form-control" })
+                                    <span class="help-block">@Html.GlobalResource("NewUserNameHelpText")</span>
+                                </div>
+                            </div>
+
+                            @if (string.IsNullOrWhiteSpace((string)ViewData[Fields.ExternalProvider]) ||
+                                 string.IsNullOrWhiteSpace((string)ViewData[Fields.ExternalUserID]))
+                            {
+                                <div class="form-group">
+                                    <label for="Password" class="required col-sm-3 control-label">@Html.GlobalResource("Password")</label>
+                                    <div class="col-sm-6">
+                                        @Html.Password("Password", "", new { @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirmPassword" class="required col-sm-3 control-label">@Html.GlobalResource("ConfirmPassword")</label>
+                                    <div class="col-sm-6">
+                                        @Html.Password("confirmPassword", "", new { @class = "form-control" })
+                                        <span class="help-block">
+                                            @Html.GlobalResource("PasswordRequirements")
+                                            @Html.GlobalResource("PasswordsCaseSensitive")
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                if (SiteClient.Settings["EnableSecurityQuestionAndAnswer"].Equals("True"))
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("SecurityQuestion")
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="PasswordQuestion" class="col-sm-3 control-label">@Html.GlobalResource("CreateASecurityQuestion")</label>
+                                    <div class="col-sm-6">
+                                        @Html.TextBox("PasswordQuestion", "", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="PasswordAnswer" class="col-sm-3 control-label">@Html.GlobalResource("AnswerToSecurityQuestion")</label>
+                                    <div class="col-sm-6">
+                                        @Html.TextBox("PasswordAnswer", "", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.GlobalResource("YourContactInformation")
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="Email" class="required col-sm-3 control-label">@Html.GlobalResource("Email")</label>
+                                <div class="col-sm-6">
+                                    @Html.TextBox("Email", "", new { @class = "form-control", @type = "email" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmEmail" class="required col-sm-3 control-label">@Html.GlobalResource("ConfirmEmail")</label>
+                                <div class="col-sm-6">
+                                    @Html.TextBox("confirmEmail", "", new { @class = "form-control", @type = "email" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                List<CustomField> userFields = (List<CustomField>)ViewData[Fields.UserCustomFields];
+                if (userFields.Count > 0)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("AdditionalInformation")
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                @foreach (CustomField customField in userFields.OrderBy(ucf => ucf.DisplayOrder))
+                                {
+                                    string customFieldCss = (customField.Type != CustomFieldType.Boolean && customField.Required)
+                                        ? "required col-sm-3 control-label"
+                                        : "col-sm-3 control-label";
+                                    <div class="form-group">
+                                        <label for="@customField.Name" class="@customFieldCss">
+                                            @Html.CustomFieldResource(customField.Name)
+                                        </label>
+                                        <div class="col-sm-6">
+                                            @{ Html.RenderCustomField(customField, new { @class = "form-control" }, true); }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                if (SiteClient.BoolSetting(SiteProperties.RequireAddressOnRegistration))
+                {
+                    @Html.Partial("InitialAddress", new Address())
+
+                    //Address needed for credit card
+                    if (SiteClient.BoolSetting(SiteProperties.RequireCreditCardOnRegistration))
+                    {
+                        if (SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled))
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    @Html.GlobalResource("CreditCardInformation")
+                                </div>
+                                <div class="panel-body">
+                                    @*@Html.Hidden(Fields.StripeToken)*@
+                                    <input type="hidden" id="@Fields.StripeToken" name="@Fields.StripeToken" />
+                                    <div id="card-errors" class="payment-errors stripeError alert alert-danger" role="alert"></div>
+                                    @* v3 implementation *@
+                                    @if (true)
+                                    {
+                                        <div class="row" id="stripe-card-info-container">
+                                            <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                                                <div class="allfieldsrequired">@Html.GlobalResource("allfieldsrequired")</div>
+
+                                                <div id="card-element" class="stripeForm__container">
+                                                    <!-- a Stripe Element will be inserted here. -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    @Html.GlobalResource("CreditCardInformation")
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-horizontal">
+                                        <div class="form-group">
+                                            <label for="@Fields.CardType" class="required col-sm-3 control-label">@Html.GlobalResource("CardType")</label>
+                                            <div class="col-sm-6">
+                                                @Html.DropDownList("CardType", (IEnumerable<SelectListItem>)ViewData[Fields.CreditCardTypes], Html.GlobalResourceString("SelectACreditCardType"), new { @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="@Fields.CardNumber" class="required col-sm-3 control-label">@Html.GlobalResource("CardNumber")</label>
+                                            <div class="col-sm-6">
+                                                @Html.TextBox(Fields.CardNumber, null, new { @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="@Fields.ExpirationMonth" class="required col-sm-3 control-label">@Html.GlobalResource("ExpirationMonth")</label>
+                                            <div class="col-sm-3">
+                                                @Html.MonthDropDownList(Fields.ExpirationMonth, string.Empty, new { @class = "form-control", placeholder = @Html.GlobalResource("Month") })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="@Fields.ExpirationYear" class="required col-sm-3 control-label">@Html.GlobalResource("Year")</label>
+                                            <div class="col-sm-3">
+                                                @Html.YearDropDownList(Fields.ExpirationYear, string.Empty, new { @class = "form-control", placeholder = @Html.GlobalResource("Year") })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.GlobalResource("Agreements")
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBox("agreements") <label for="agreements" class="required">&nbsp;<a href="#TermsAndConditions" data-toggle="modal">@Html.GlobalResource("IAgreeToTheTermsAndConditions", Html.GlobalResource("TermsAndConditions"))</a></label>
+                                </label>
+                                <div class="modal fade" id="TermsAndConditions" tabindex="-1" role="dialog" aria-labelledby="TermsAndConditions" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title">
+                                                    @Html.GlobalResource("TermsAndConditions")
+                                                </h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                @Html.GetSiteContent("TermsAndConditions")
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBox(Fields.Newsletter, SiteClient.BoolSetting(SiteProperties.NewsletterOptInByDefault))
+                                    <label for="Newsletter">&nbsp;@Html.GlobalResource("ReceiveNewsletter")</label>
+                                </label>
+                            </div>
+                        </div>
+                        @if (SiteClient.BoolSetting("EnableRecaptchaForRegistration") || !string.IsNullOrWhiteSpace(demoReCaptchaPublicKey))
+                        {
+                            <div class="form-group">
+                                <label class="required">@Html.GlobalResource("RecaptchaSecurity")</label>
+                                @Html.RenderCaptcha()
+                            </div>
+                        }
+                    </div>
+                    <div class="col-xs-12">
+                        @Html.GetSiteContent("RegistrationCopy")
+                    </div>
+                    <div class="panel-footer">
+                        <div class="pull-right hidden-xs">@Html.GlobalResource("RequiredFields", "<span class=\"required\"></span>")</div>
+                        <input type="submit" id="CompleteRegistrationButton" class="btn btn-success" value="@Html.GlobalResource("CompleteRegistration")" />
+                    </div>
+                </div>
+                @Html.Hidden(Fields.ExternalUserID)
+                @Html.Hidden(Fields.ExternalProvider)
+            }
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    $(document).on("click tap keypress mousemove", function () {
+        if ($.trim($("#card-errors").text()).length) {
+            $("#card-errors").show();
+        }
+        else {
+            $("#card-errors").hide();
+        }
+    });
+</script>

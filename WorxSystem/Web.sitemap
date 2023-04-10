@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<siteMap>
+  <mvcSiteMapNode title="Home" controller="Home" action="Index" isDynamic="true" dynamicParameters="*">
+    <mvcSiteMapNode title="Browse" controller="Listing" action="Browse" isDynamic="true" dynamicParameters="*" sitemapDisplayColumn="1">
+      <mvcSiteMapNode key="ListingCategories" title="Categories" controller="Listing" action="BrowseCategories" _url="Browse/#Categories" visibility="InSiteMapPathOnly" />
+      <mvcSiteMapNode key="ListingRegions" title="Regions" controller="Listing" action="BrowseRegions" _url="Browse/#Regions" visibility="InSiteMapPathOnly" />
+    </mvcSiteMapNode>
+    <mvcSiteMapNode title="Search" controller="Listing" action="Search" sitemapDisplayColumn="1" />
+    <mvcSiteMapNode key="CreateEvent" title="CreateEvent" controller="Event" action="CreateEvent" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode key="CreateListing" title="CreateListing" controller="Listing" action="CreateListingPage1" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode key="CreateLot" title="CreateLot" controller="Event" action="CreateLotPage1" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode title="Account" controller="Account" action="Default" _url="Account/#" sitemapDisplayColumn="2">
+      <mvcSiteMapNode key="Register" title="Register" controller="Account" action="Register" />
+      <mvcSiteMapNode title="SignIn" controller="Account" action="LogOn" />
+      <mvcSiteMapNode key="UserVerification" title="UserVerification" controller="Account" action="UserVerification" />
+      <mvcSiteMapNode key="ForgotPassword" title="ForgotPassword" controller="Account" action="ForgotPassword" />
+    </mvcSiteMapNode>
+    <mvcSiteMapNode title="ContactUs" controller="Home" action="Contact" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode title="About" controller="Home" action="About" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode title="TermsAndConditions" controller="Home" action="Terms" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode title="PrivacyPolicy" controller="Home" action="PrivacyPolicy" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode title="Sitemap" controller="Home" action="Sitemap" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode title="Help" controller="Home" action="Help" sitemapDisplayColumn="2" />
+    <mvcSiteMapNode key="MyAccount" title="MyAccount" controller="Account" action="Index" sitemapDisplayColumn="3">
+      <mvcSiteMapNode title="Summary" controller="Account" action="Summary" />
+      <mvcSiteMapNode key="MyAccount_Events" title="Events" controller="Account" action="Events" _url="Account/#Events">
+        <mvcSiteMapNode title="Drafts" controller="Account" action="EventsDrafts" />
+        <mvcSiteMapNode title="Published" controller="Account" action="EventsPublished" />
+        <mvcSiteMapNode title="Closed" controller="Account" action="EventsClosed" />
+        <mvcSiteMapNode title="Archived" controller="Account" action="EventsArchived" />
+        <mvcSiteMapNode title="SalesReport" controller="Account" action="EventSalesTransactionReport" />
+        <mvcSiteMapNode key="EventSaleInvoices" title="Invoices" controller="Account" action="EventSaleInvoices" />
+      </mvcSiteMapNode>
+      <mvcSiteMapNode key="MyAccount_Listing" title="Listings" controller="Account" action="Listing" _url="Account/#Listing">
+        <mvcSiteMapNode title="Drafts" controller="Account" action="ListingsDrafts" />
+        <mvcSiteMapNode title="Active" controller="Account" action="ListingsActive" />
+        <mvcSiteMapNode title="Scheduled" controller="Account" action="ListingsPending" />
+        <mvcSiteMapNode title="Successful" controller="Account" action="ListingsSuccessful" />
+        <mvcSiteMapNode title="Unsuccessful" controller="Account" action="ListingsUnsuccessful" />
+        <mvcSiteMapNode title="Ended" controller="Account" action="ListingsEnded" />
+        <mvcSiteMapNode title="SalesReport" controller="Account" action="SalesTransactionReport" />
+        <mvcSiteMapNode key="Invoices_Sales" title="Invoices" controller="Account" action="InvoiceSales" />
+      </mvcSiteMapNode>
+      <mvcSiteMapNode key="MyAccount_Bidding" title="Bidding" controller="Account" action="Bidding" _url="Account/#Bidding">
+        <mvcSiteMapNode title="Watching" controller="Account" action="BiddingWatching" />
+        <mvcSiteMapNode title="Active" controller="Account" action="BiddingActive" />
+        <mvcSiteMapNode title="Won" controller="Account" action="BiddingWon" />
+        <mvcSiteMapNode title="NotWon" controller="Account" action="BiddingNotWon" />
+        <mvcSiteMapNode key="Invoices_Purchases" title="Invoices" controller="Account" action="InvoicePurchases" />
+        <mvcSiteMapNode key="EventPurchaseInvoices" title="Invoices" controller="Account" action="EventPurchaseInvoices" />
+      </mvcSiteMapNode>
+      <mvcSiteMapNode title="SiteFees" controller="Account" action="SiteFees" _url="Account/#SiteFees">
+        <mvcSiteMapNode title="Current" controller="Account" action="Fees" />
+        <mvcSiteMapNode title="Past" controller="Account" action="HistoricalFees" />
+      </mvcSiteMapNode>
+      <mvcSiteMapNode title="Account" controller="Account" action="Settings" _url="Account/#Admin">
+        <mvcSiteMapNode title="Details" controller="Account" action="AccountSettings" _url="Account/PropertyManagement/38" />
+        <mvcSiteMapNode title="AddressBook" controller="Account" action="AddressManagement" />
+        <mvcSiteMapNode title="CreditCards" controller="Account" action="CreditCards" />
+        <mvcSiteMapNode key="Password" title="Password" controller="Account" action="ChangePassword" />
+      </mvcSiteMapNode>
+      <mvcSiteMapNode key="Messaging" title="Messaging" controller="Account" action="Messaging" _url="Account/#Messaging">
+        <mvcSiteMapNode title="Inbox" controller="Account" action="Inbox" />
+        <mvcSiteMapNode title="Outbox" controller="Account" action="Outbox" />
+      </mvcSiteMapNode>
+      <mvcSiteMapNode key="Feedback" title="Feedback" controller="Account" action="FeedbackIndex">
+        <mvcSiteMapNode title="Summary" controller="Account" action="Feedback" />
+        <mvcSiteMapNode key="Feedback_Buyer" title="Buyer" controller="Account" action="BuyerFeedback" />
+        <mvcSiteMapNode key="Feedback_Seller" title="Seller" controller="Account" action="SellerFeedback" />
+      </mvcSiteMapNode>
+      <mvcSiteMapNode key="ListingPreferences" title="ListingPreferences" controller="Account" action="ListingPreferences" _url="Account/#ListingPreferences">
+        <mvcSiteMapNode title="Payment" controller="Account" action="PaymentPreferences" _url="Account/PropertyManagement/44902" />
+        <mvcSiteMapNode title="Taxes" controller="Account" action="SalesTaxManagement" />
+      </mvcSiteMapNode>
+    </mvcSiteMapNode>
+  </mvcSiteMapNode>
+</siteMap>

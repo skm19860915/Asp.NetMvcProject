@@ -1,0 +1,7 @@
+﻿@model Listing
+@{ string returnUrl = Request.Url.PathAndQuery; }
+@if (SiteClient.UserMessagingEnabled)
+{
+    @Html.ButtonLink(Html.GlobalResource("ContactSeller"), MVC.SendListingMessageAction, MVC.AccountController,
+        new { receiver = Model.OwnerUserName, template = Templates.AskListingQuestion, listingID = Model.ID, returnUrl }, new { @class = "btn btn-default btn-block contact" });
+}

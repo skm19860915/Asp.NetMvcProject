@@ -1,0 +1,178 @@
+﻿@using System.Globalization
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_CurrencyManagement");
+}
+
+<script>
+    $(document).ready(function () {
+        //ensure that when a row is selected as the default is also enabled
+        $(".DefaultCurrencyRadio").click(function () {
+            var relatedCheckbox = $(this).parents("tr").first().find(".EnableCurrencyCheckbox").first();
+            if (!relatedCheckbox.checked) {
+                relatedCheckbox.attr("checked", "checked");
+            }
+            RebuildConversionDropdowns();
+            return true;
+        });
+
+        //ensure that when a row is disabled it is not selected as the default
+        $(".EnableCurrencyCheckbox").click(function () {
+            var relatedRadioChecked = $(this).parents("tr").first().find(".DefaultCurrencyRadio:checked").first();
+            if (!this.checked && relatedRadioChecked.length > 0) {
+                var firstEnabledCheckbox = $(".EnableCurrencyCheckbox:checked").first();
+                if (firstEnabledCheckbox.length > 0) {
+                    var firstEnabledRelatedRadio = firstEnabledCheckbox.parents("tr").first().find(".DefaultCurrencyRadio").first();
+                    firstEnabledCheckbox.attr("checked", "checked");
+                    firstEnabledRelatedRadio.attr("checked", "checked");
+                } else {
+                    this.checked = true;
+                }
+            } else {
+                var relatedRateBox = $(this).parents("tr").first().find(".OneUsdBox").first();
+                if (relatedRateBox.val() == "") {
+                    relatedRateBox.val("1");
+                }
+            }
+            RebuildConversionDropdowns();
+            return true;
+        });
+
+        //[Save] button - click
+        $(".SaveButton").click(function () {
+            $(this).parents("form").first().submit();
+            return false;
+        });
+
+        //[Try It] button - click
+        $("#ConvertButton").click(function () {
+            $("#ConversionResult").removeClass("hidden");
+            TryConversion();
+            return false;
+        });
+        //Hide Results
+        $("#HideConversionResults").click(function () {
+            if ($('#ConversionResult').hasClass('hidden') === false) {
+                $('#ConversionResult').addClass('hidden');
+            }
+        });
+        
+        function TryConversion() {
+            //collect input from html form elements
+            $("#ConvertFromCurrency").removeClass("input-validation-error");
+            $("#ConvertAmount").removeClass("input-validation-error");
+            $("#ConvertToCurrency").removeClass("input-validation-error");
+            var amountToConvert = $("#ConvertAmount").val();
+            var fromCurrencyCode = $("#ConvertFromCurrency").val();
+            var toCurrencyCode = $("#ConvertToCurrency").val();
+
+            //call out to /RealTime/ConvertAmount and display the results
+            $("#CurrencyConversionResult").html("<img src='Content/images/General/refresh-animated.gif' />");
+            var convertActionUrl = "@Html.GetActionUrl(MVC.ConvertAmountAction, MVC.RealTimeController).ToMvcHtmlString().ToJavascriptSafeString()";
+            $.post(convertActionUrl,
+                { amount: amountToConvert, fromCurrency: fromCurrencyCode, toCurrency: toCurrencyCode },
+                function (data) {
+                    //if the result contains an error, add the validation class to the text box
+                    var containsErrorRegExp = /validation.summary.errors/
+                    //show the attempted conversion result
+                    $("#CurrencyConversionResult").html(data);
+                    var errDiv = $("#CurrencyConversionResult").find(".validation-summary-errors").first();
+                    if (errDiv.length > 0) {
+                        errKey = errDiv.attr("errorKey");
+                        $("#" + errKey).addClass("input-validation-error");
+                    }
+                }
+            );
+        }
+
+        function RebuildConversionDropdowns() {
+            $("#ConvertFromCurrency").html("");
+            $("#FromCurrencySymbol").html("");
+            $(".EnableCurrencyCheckbox:checked").each(function () {
+                var currencyName = $(this).parents("tr").first().find(".CurrencyName").html();
+                var currencySymbol = $(this).parents("tr").first().find(".CurrencySymbol").html();
+                var currencyCode = $(this).val();
+                $("#ConvertFromCurrency").append("<option value=\"" + currencyCode + "\">" + currencyName + " (" + currencyCode + ") " + currencySymbol + "</option>");
+            });
+            $("#ConvertToCurrency").html($("#ConvertFromCurrency").html());
+        }
+
+        RebuildConversionDropdowns();
+    });
+</script>
+
+<div class="group clearfix">
+    <label class="control-label col-xs-12 col-sm-2">@Html.AdminResource("Convert")</label>
+    <div class="col-xs-3 col-sm-2">
+        <input type="text" id="ConvertAmount" class="form-control" placeholder="###"/>
+        </div>
+    <div class="col-xs-9 col-sm-3">
+        <select id="ConvertFromCurrency" class="form-control"></select>
+    </div>
+    <label class="control-label col-xs-3 col-sm-1 text-center">
+        @Html.AdminResource("To")
+        </label>
+    <div class="col-xs-6 col-sm-3">
+        <select id="ConvertToCurrency" class="form-control"></select>
+        </div>
+    <div class="col-xs-3 col-sm-1">
+        <button class="btn btn-default" id="ConvertButton">@Html.AdminResource("TryIt")</button>
+    </div>
+        <div class="col-xs-12 hidden" id="ConversionResult">
+            <div class="alert alert-success text-center">
+                @Html.AdminResource("ResultLabel")
+                <strong><span id="CurrencyConversionResult"></span></strong>
+                <button class="close" id="HideConversionResults"><span class="glyphicon glyphicon-remove"></span></button>
+        </div>
+        </div>
+    </div>
+<div class="panel panel-default">
+    @using (Html.BeginForm())
+    {
+        <input type="hidden" id="Save" name="Save" value="1" />
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>@Html.AdminResource("CurrencyCode")&nbsp;&nbsp;</th>
+                    <th>@Html.AdminResource("CurrencyName")</th>
+                    <th>@Html.AdminResource("OneUsdEquals")</th>
+                    <th>@Html.AdminResource("CurrencySymbol")</th>
+                    <th>@Html.AdminResource("EnabledQuestion")</th>
+                    <th>@Html.AdminResource("DefaultQuestion")</th>
+                </tr>
+            </thead>
+            @{
+                List<Currency> enabledCurrencies = (List<Currency>)ViewData["EnabledCurrencies"];
+                string rowClass = string.Empty;
+            }
+            @foreach (CustomCurrency ri in (List<CustomCurrency>)ViewData["AllCurrencyRegions"])
+            {
+                
+                bool currencyIsDefault = ri.ISOCurrencySymbol == SiteClient.Settings[SiteProperties.SiteCurrency];
+                bool currencyIsEnabled = false;
+                string oneUsdRate = string.Empty;
+                Currency thisCurrency = enabledCurrencies.Where(c => c.Code == ri.ISOCurrencySymbol).FirstOrDefault();
+                if (thisCurrency != null)
+                {
+                    currencyIsEnabled = true;
+                    oneUsdRate = Html.LocalDecimal(thisCurrency.ConversionToUSD);
+                }
+                <tr>
+                    <td>@ri.ISOCurrencySymbol</td>
+                    <td><span class="CurrencyName">@ri.CurrencyEnglishName</span></td>
+                    <td>@Html.TextBox(MVC.CurrencyRatePrefix + ri.ISOCurrencySymbol, oneUsdRate, new { @class = "OneUsdBox input-sm form-control" })</td>
+                    <td style="text-align: center;"><span class="CurrencySymbol">@ri.CurrencySymbol</span></td>
+                    <td style="text-align: center;">
+                        <input class="EnableCurrencyCheckbox" type="checkbox" name="Currencies" value="@ri.ISOCurrencySymbol" checked="@currencyIsEnabled" />
+                    </td>
+                    <td style="text-align: center;">
+                        <input class="DefaultCurrencyRadio" type="radio" name="DefaultCurrency" value="@ri.ISOCurrencySymbol" checked="@currencyIsDefault" />
+                    </td>
+                </tr>
+            }
+        </table>
+        <div class="action-panel"><button class="btn btn-success SaveButton confirm-before-leaving" id="SaveButton1">@Html.AdminResource("SaveConfiguration")</button></div>
+                }
+</div>

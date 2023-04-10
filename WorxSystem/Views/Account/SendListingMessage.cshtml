@@ -1,0 +1,76 @@
+﻿@model Listing
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("ContactUser")
+</div>
+@Html.LocalizedValidationSummary()
+@if (SiteClient.UserMessagingEnabled)
+{
+    using (Html.BeginForm(new
+    {
+        sender = ViewData[Fields.Sender],
+        receiver = ViewData[Fields.Receiver],
+        template = ViewData[Fields.Template],
+        listingID = Model.ID,
+        returnUrl = ViewData[Fields.ReturnUrl]
+    }))
+    {
+        <div class="panel panel-default">
+
+            <div class="form-group">
+                <strong>@Html.GlobalResource("To")</strong>&nbsp;&nbsp;&nbsp;@ViewData["Receiver"]
+            </div>
+            <div class="form-group">
+                <strong>@Html.GlobalResource("Listing")</strong>&nbsp;&nbsp;&nbsp;@Model.Title
+                <small>
+                    @if (Model.Lot != null)
+                    {
+                        @:(@Model.Lot.LotNumber)
+                    }
+                    else
+                    {
+                        @:(@Model.ID)
+                    }
+                </small>
+
+            </div>
+            <div class="form-group">
+                <label class="required">@Html.GlobalResource("Subject")</label>
+                @Html.TextBox("Subject", "", new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label class="required">@Html.GlobalResource("Message")</label>
+                @Html.TextArea("Body", "", 8, 45, new { @class = "form-control" })
+            </div>
+
+            @{
+                string returnUrl = (ViewData.ContainsKey(Fields.ReturnUrl)) ? (string)ViewData[Fields.ReturnUrl] : string.Empty;
+                if (string.IsNullOrEmpty(returnUrl))
+                {
+                    returnUrl = Html.GetActionUrl(MVC.DetailsAction, MVC.ListingController,
+                                                    new { id = Model.ID });
+                }
+            }
+            <script>
+                $(document).ready(function () {
+                    //[Cancel] Button
+                    $("#CancelButton").click(function () {
+                        var targetUrl = '@returnUrl.ToJavascriptSafeString()';
+                        //alert('redirecting to:' + $.htmlDecode(targetUrl));
+                        document.location = $.htmlDecode(targetUrl);
+                        return false;
+                    });
+                });
+            </script>
+            <div class="panel-footer">
+                <button class="btn btn-link" id="CancelButton">@Html.GlobalResource("Cancel")</button>
+
+                <input type="submit" class="btn btn-default" name="Send" id="Submit1" value="@Html.GlobalResource("Send")" />
+            </div>
+        </div>
+    }
+}

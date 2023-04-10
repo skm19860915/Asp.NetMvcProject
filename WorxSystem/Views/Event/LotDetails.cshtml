@@ -1,0 +1,160 @@
+﻿@model Lot
+
+@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " + Model.Listing.Title;
+}
+
+@section metaContent {
+    @* http://ogp.me/ meta tags *@
+    <meta property="og:site_name" content="@SiteClient.Settings[SiteProperties.SiteTitle]" />
+    <meta property="og:title" content="@Model.Listing.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@Request.Url.FormatAbsoluteUrl(Model.GetDetailUrl())" />
+    @{
+        string primaryImageUrl = null;
+        Media image = Model.Listing.Media.Where(m => m.Variations.ContainsKey("FullSize")).FirstOrDefault();
+        if (image != null)
+        {
+            IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(image.Loader);
+            Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, image.Context);
+            primaryImageUrl = mediaLoader.Load(loaderProviderSettings, image, "FullSize");
+            if (!primaryImageUrl.StartsWith("http"))
+            {
+                primaryImageUrl = Html.Base() + primaryImageUrl;
+            }
+        }
+
+        string primaryImgHeight = null;
+        string primaryImgWidth = null;
+        if (!string.IsNullOrEmpty(primaryImageUrl))
+        {
+            try
+            {
+                primaryImgHeight = image.Variations["FullSize"].Asset.MetaData.ContainsKey("Height") ? image.Variations["FullSize"].Asset.MetaData["Height"] : null;
+                primaryImgWidth = image.Variations["FullSize"].Asset.MetaData.ContainsKey("Width") ? image.Variations["FullSize"].Asset.MetaData["Width"] : null;
+            }
+            catch
+            {
+                /*silently ignore these errors*/
+            }
+            <meta property="og:image" content="@primaryImageUrl" />
+        }
+        if (!string.IsNullOrEmpty(primaryImgHeight))
+        {
+            <meta property="og:image:height" content="@primaryImgHeight" />
+        }
+        if (!string.IsNullOrEmpty(primaryImgHeight))
+        {
+            <meta property="og:image:width" content="@primaryImgWidth" />
+        }
+        string keyWords = Html.LocalizedCategoryLineageString(Model.Listing, ",");
+        string description = Model.Listing.Description.StripHtml();
+    }
+    <meta property="og:description" content="@description" />
+    <meta name="description" content="@description" />
+    <meta name="keywords" content="@keyWords" />
+}
+
+@section head {
+    @Styles.Render("~/bundles/lightbox/css")
+    @Scripts.Render("~/bundles/lightbox_js")
+    @Scripts.Render("~/bundles/jquery_everslider")
+    @Styles.Render("~/bundles/everslider/css")
+    <script>
+        $(document).ready(function () {
+            $("#previewimg").click(function () {
+                if ($("img[data-full-size-src='" + $("#previewimg").attr("src") + "'][class='img-thumbnail']").length != 0) {
+                    var previousImage = $("img[data-full-size-src='" + $("#previewimg").attr("src") + "'][class='img-thumbnail']");
+                    previousImage.next("a").click();
+                }
+                else if ($(this).next("a").length != 0) {
+                    $(this).next("a").click();
+                }
+            });
+
+            $("img.img-thumbnail").click(function () {
+                var thumb = this;
+                $('#previewimg').fadeOut("fast", function () {
+                    $("#previewimg").attr("src", $(thumb).attr("data-full-size-src"));
+                    $('#previewimg').fadeIn("fast");
+                });
+            });
+            @{
+            int biggestThumbHeight = 40; // disregard values less than 40px, which is necessary to properly render carousel controls
+            foreach (var media in Model.Listing.Media.Where(m => m.Variations.ContainsKey(SiteClient.ThumbnailType)))
+            {
+                int thumbHeight;
+                if (media.Variations.ContainsKey(SiteClient.ThumbnailType) &&
+                    media.Variations[SiteClient.ThumbnailType].Asset.MetaData.ContainsKey("Height") &&
+                    int.TryParse(media.Variations[SiteClient.ThumbnailType].Asset.MetaData["Height"], out thumbHeight))
+                {
+                    if (thumbHeight > biggestThumbHeight)
+                    {
+                        biggestThumbHeight = thumbHeight;
+                    }
+                }
+            }
+            }
+            //initialize carousel
+            $('#ListingImageThumbsCarousel').everslider({
+                mode: 'normal',
+                moveSlides: '1',
+                mouseWheel: true,
+                itemHeight: @biggestThumbHeight,
+                nextNav: '<span>@Html.GlobalResourceString("Next").ToJavascriptSafeString()</span>',
+                prevNav: '<span>@Html.GlobalResource("Previous").ToJavascriptSafeString()</span>'
+            });
+
+        });
+    </script>
+}
+
+<div data-listingid="@Model.Listing.ID"><!-- do not remove -- this container is necessary to enable all signalR functions for this listing -->
+    <div class="row">
+        <div class="col-xs-12  hidden-xs">
+            <ul class="breadcrumb">
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Home"), MVC.IndexAction, MVC.HomeController)
+                </li>
+                <li>
+                    @Model.Event.BeginDetailLink()@Model.Event.Title@Model.Event.EndDetailLink()
+                </li>
+                <li>
+                    @Html.EventCategoryLinks(Model.Event, CommonClient.GetCategoryPath(Model.Listing.PrimaryCategory.ID).Trees[Model.Listing.PrimaryCategory.ID], null, null, "</li><li>")
+                </li>
+                <li>
+                    @Model.Listing.Title&nbsp;<em>(@Model.ID)</em>
+                </li>
+            </ul>
+        </div>
+    </div>
+    @{
+        string visibilityClass = "awe-hidden";
+        if (Model.Listing.Status.Equals(ListingStatuses.Ended) || Model.Listing.Status.Equals(ListingStatuses.Unsuccessful) || Model.Listing.Status.Equals(ListingStatuses.Successful))
+        {
+            visibilityClass = string.Empty;
+        }
+    }
+    <div class="row">
+        <div class="col-xs-12">
+            <div @*data-listingid="@Model.Listing.ID"*@>
+                <div class="alert alert-warning awe-rt-ListingClosedMessage @visibilityClass">
+                    <a class="close" onclick="$(this).parents('div').first().slideUp();">×</a>
+                    @Html.Resource(Model.Listing.Type.Name + "Listing, ClosedMessage")
+                </div>
+            </div>
+        </div>
+        </div>
+        @Html.Partial("LotDetail")
+
+        @if (ViewData["EnableListingHitCounts"] != null && (bool)ViewData["EnableListingHitCounts"])
+        {
+            //Increment page view counter
+            ListingClient.IncrementHit(User.Identity.Name == string.Empty ? "Anonymous" : Html.FBOUserName(), Model.Listing.ID);
+        }
+        <div class="row">
+            <div class="col-sm-12">
+                @Html.Partial("RandomBottomBanners", ViewData["BannerCats"])
+            </div>
+        </div>
+    </div>

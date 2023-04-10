@@ -1,0 +1,57 @@
+﻿@model List<Invoice>
+
+@{
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+}
+
+@section scripts {
+    <script>$(document).ready(function () { window.print(); });</script>
+}
+
+@if (Model == null)
+{
+    <div class="col-xs-12" style="page-break-after: always;">
+        @Html.LocalizedValidationSummary()
+    </div>
+}
+else
+{
+    <div class="pages">
+        @foreach (var invoice in Model)
+        {
+            <div class="col-xs-12">
+                @if (invoice.Type == "Fee")
+                {
+                    if (invoice.Status == "Paid")
+                    {
+                        @Html.Partial("PaidFeeInvoice_ForPrinting", invoice)
+                    }
+                    else if (invoice.Status == "Pending")
+                    {
+                        @Html.Partial("PendingFeeInvoice_ForPrinting", invoice)
+                    }
+                    else
+                    {
+                        @Html.Partial("UnpaidFeeInvoice_ForPrinting", invoice)
+                    }
+                }
+                else
+                {
+                    if (invoice.Status == "Paid")
+                    {
+                        @Html.Partial("PaidListingInvoice_ForPrinting", invoice)
+                    }
+                    else if (invoice.Status == "Pending")
+                    {
+                        @Html.Partial("PendingListingInvoice_ForPrinting", invoice)
+                    }
+                    else
+                    {
+                        @Html.Partial("UnpaidListingInvoice_ForPrinting", invoice)
+                    }
+                }
+            </div>
+            <div class="page">&nbsp;</div>
+        }
+    </div>
+}

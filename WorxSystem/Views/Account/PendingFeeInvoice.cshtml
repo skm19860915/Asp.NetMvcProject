@@ -1,0 +1,95 @@
+﻿@model Invoice
+@{
+    bool payerIsTaxExempt = Model.Payer.Properties.Any(up => up.Field.Name == StdUserProps.TaxExempt && up.Value != null)
+        ? bool.Parse(Model.Payer.Properties.First(up => up.Field.Name == StdUserProps.TaxExempt).Value) : false;
+}
+<div class="well well-sm section-title">
+    @Html.GlobalResource("SiteFeeInvoice")
+    <div class="btn-group pull-right">
+        @Html.Partial("BackButton")
+        <script>
+            $(document).ready(function () {
+                $("#PrintInvoice").click(function () {
+                    window.open('@Html.GetActionUrl("PrintInvoice", new { id = Model.ID }).ToMvcHtmlString().ToJavascriptSafeString()', '_blank', 'width=600,height=600,scrollbars=yes');
+                    return false;
+                });
+            });
+        </script>
+        <button id="PrintInvoice" class="btn btn-xs btn-default">@Html.GlobalResource("PrintInvoice")</button>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-body">
+
+        <div class="alert alert-warning text-center"><strong>@Html.GlobalResource("AwaitingPaymentConfirmation")</strong></div>
+        <div class="col-sm-6">
+            <strong>@SiteClient.Settings[SiteProperties.FriendlySiteName]</strong>
+            <br />
+            @Html.GlobalResource("Username"): @Model.Payer.UserName
+            <br />
+            @Html.GlobalResource("InvoiceNumber"): @Model.ID
+            <br />
+            @Html.GlobalResource("DateCreated"): @Html.LocalDTTM(Model.CreatedDTTM, "g")
+            <p></p>
+            <strong>@SiteClient.Settings[SiteProperties.FriendlySiteName] @Html.GlobalResource("Address")</strong>
+            <p>
+                @Model.OwnerName
+                <br />
+                @Model.OwnerStreet1
+                <br />
+                @Model.OwnerStreet2
+                <br />
+                @Model.OwnerCity, @Model.OwnerStateRegion @Model.OwnerZipPostal @Model.OwnerCountry
+            </p>
+        </div>
+        <div class="col-sm-6">
+            <strong>@Html.GlobalResource("BillingAddress")</strong><br />
+            @if (!string.IsNullOrEmpty(Model.BillingCountry))
+            {
+                @(string.Format("{0} {1}", Model.BillingFirstName, Model.BillingLastName))<br />
+                    @Model.BillingStreet1<br />
+                if (!string.IsNullOrEmpty(Model.BillingStreet2))
+                {
+                    @Model.BillingStreet2<br />
+                }
+                @Model.BillingCity@:, @Model.BillingStateRegion @Model.BillingZipPostal @Model.BillingCountry
+            }
+            else
+            {
+                <div class="no-address">@Html.GlobalResource("AddressNotDefined")</div>
+            }
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="alert alert-info">
+            @if (SiteClient.BoolSetting(SiteProperties.VATEnabled))
+            {
+                @Html.GlobalResource("Subtotal")<text>:&nbsp;&nbsp;</text>
+                <strong>@Html.LocalCurrency(Model.Subtotal, Model.Currency)</strong><text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                @Html.GlobalResource("VAT")<text>:&nbsp;&nbsp;</text>
+                if (!payerIsTaxExempt)
+                {
+                    <strong>@Html.LocalCurrency(Model.SalesTax, Model.Currency)</strong><text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                }
+                else
+                {
+                    <strong>@Html.GlobalResource("TaxExempt")</strong><text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                }
+            }
+            @Html.GlobalResource("Total"):
+            <strong>@Html.LocalCurrency(Model.Total, Model.Currency)</strong>
+        </div>
+    </div>
+    <table class="table">
+        @Html.Partial("PageOfFees", ViewData["PageOfLineitems"])
+    </table>
+    <div class="panel-footer">
+        @{var pageOfLineItems = (Page<LineItem>)ViewData["PageOfLineitems"];}
+        @if (pageOfLineItems.TotalPageCount > 1)
+        {
+            Html.RenderPageNumberLinks(pageOfLineItems);
+        }
+    </div>
+</div>
+
+@Html.Partial("PaymentHistory")

@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PaymentResult.aspx.cs" Inherits="RainWorx.FrameWorx.MVC.PaymentResult" %>

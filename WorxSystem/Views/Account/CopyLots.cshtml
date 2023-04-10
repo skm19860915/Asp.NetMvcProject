@@ -1,0 +1,308 @@
+﻿@model Page<Listing>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    Event auctionEvent = (Event)ViewData["Event"];
+    string returnUrl = Request.Url.PathAndQuery;
+    string lotAction = ((string)ViewData["LotAction"]) ?? "Copy";
+    string retFromNewEventUrl = Html.GetActionUrl(MVC.CopyLotsAction, MVC.AccountController, new { FromEventID = auctionEvent.ID, lotAction = "Move", returnUrl });
+    string newEventUrl = Html.GetActionUrl(MVC.EventNeededAction, MVC.EventController, new { @returnUrl = retFromNewEventUrl });
+    var eligibleDestinationEvents = (SelectList)ViewData["ToEventID"];
+}
+
+@section head {
+    <script>
+        var bulkDeleteConfirmed = false;
+        $(document).ready(function () {
+
+            $('.checkall').click(function () {
+                $(".row-selection-checkbox").prop("checked", this.checked);
+            });
+
+            $("#BulkAction").on("change", function () {
+                UpdateLotAction($(this).val());
+            });
+            function UpdateLotAction(actionName) {
+                if (actionName == "Move") {
+                    if ($("#EventsDropdown option").length == 0) {
+                        document.location = '@newEventUrl.ToJavascriptSafeString()';
+                    }
+                    if ($("#@Fields.FromEventID").val() == $("#EventsDropdown").val()) {
+                        var firstValidOptionValue = $("#EventsDropdown option[value!='" + $("#@Fields.FromEventID").val() + "']").first().attr("value");
+                        $("#EventsDropdown").val(firstValidOptionValue);
+                    }
+                    $("#EventsDropdown").show();
+                    $("#SubmitButton").val('@Html.GlobalResourceString("MoveSelectedLots").ToJavascriptSafeString()')
+                        .addClass("btn-warning").removeClass("btn-primary").removeClass("btn-danger");
+                    $("#HeaderActionLabel").html('@Html.GlobalResourceString("MoveLots").ToJavascriptSafeString()');
+                    $("#BulkLotActionForm").attr("action", '@Html.GetActionUrl(MVC.MoveLotsAction)');
+                }
+                else if (actionName == "Delete") {
+                    $("#EventsDropdown").hide();
+                    $("#SubmitButton").val('@Html.GlobalResourceString("DeletedSelectedLots").ToJavascriptSafeString()')
+                        .addClass("btn-danger").removeClass("btn-warning").removeClass("btn-primary");
+                    $("#HeaderActionLabel").html('@Html.GlobalResourceString("DeleteLots").ToJavascriptSafeString()');
+                    $("#BulkLotActionForm").attr("action", '@Html.GetActionUrl(MVC.DeleteLotsAction)');
+                }
+                else { // (actionName == "Copy")
+                    if ($("#EventsDropdown option").length == 0) {
+                        document.location = '@newEventUrl.ToJavascriptSafeString()';
+                    }
+                    $("#EventsDropdown").show();
+                    $("#SubmitButton").val('@Html.GlobalResourceString("CopySelectedLots").ToJavascriptSafeString()')
+                        .addClass("btn-primary").removeClass("btn-warning").removeClass("btn-danger");
+                    $("#HeaderActionLabel").html('@Html.GlobalResourceString("CopyLots").ToJavascriptSafeString()');
+                    $("#BulkLotActionForm").attr("action", '@Html.GetActionUrl(MVC.CopyLotsAction)');
+                }
+            }
+            $("#BulkAction").val('@lotAction.ToJavascriptSafeString()').change();
+
+            function OpenDeleteWarningModal(confirmDeleteCallbackFunction) {
+                var jsDeleteConfirmMsg = //"Really delete these lot(s)?\nTHIS ACTION CANNOT BE UNDONE"
+                    '@Html.GlobalResourceString("DeleteLotsWarning_Really").ToJavascriptSafeString()' + '\n' +
+                    '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                    message: jsDeleteConfirmMsg,
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                            cssClass: 'btn-danger disable-on-submit',
+                            action: function () {
+                                bulkDeleteConfirmed = true;
+                                confirmDeleteCallbackFunction();
+                            }
+                        }, {
+                            label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                            cssClass: 'disable-on-submit',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+
+            function OpenCopyLotsWithLotNumberQuestionModal(confirmCopyLotNumbersCallbackFunction) {
+                var jsGenerateNewLotNumsMsg = //"Lots must be assigned a unique number within each Auction Event. Would you like the system to generate a new Lot Number for each copied Lot?"
+                    '@Html.GlobalResource("GenerateNewLotNumbers_Info").ToJavascriptSafeString()';
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("GenerateNewLotNumbers_title").ToJavascriptSafeString()',
+                    message: jsGenerateNewLotNumsMsg,
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("GenerateNewLotNumbers").ToJavascriptSafeString()',
+                            cssClass: 'btn-primary disable-on-submit',
+                            action: function () {
+                                $("#GenerateNewLotNumbers").val("true");
+                                confirmCopyLotNumbersCallbackFunction();
+                            }
+                        }, {
+                            label: '@Html.GlobalResourceString("CopyLotNumbers").ToJavascriptSafeString()',
+                            cssClass: 'btn-warning disable-on-submit',
+                            action: function () {
+                                $("#GenerateNewLotNumbers").val("false");
+                                confirmCopyLotNumbersCallbackFunction();
+                            }
+                        }, {
+                            label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                            cssClass: 'disable-on-submit',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+
+            $("#SubmitButton").on("click", function (event) {
+                event.preventDefault();
+                if ($(".row-selection-checkbox:checked").length == 0) {
+                    BootstrapDialog.show({
+                        type: 'type-warning',
+                        title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                        message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneLotToProceed").ToJavascriptSafeString()',
+                        buttons: [
+                            {
+                                label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                } else if (($("#BulkAction").val() == "Move" || $("#BulkAction").val() == "Copy") && $("#@Fields.FromEventID").val() != $("#EventsDropdown").val()) {
+                    OpenCopyLotsWithLotNumberQuestionModal(function () { $("#BulkLotActionForm").submit(); });
+                } else {
+                    if ($("#BulkLotActionForm").attr("action") == '@Html.GetActionUrl(MVC.DeleteLotsAction)' && bulkDeleteConfirmed == false) {
+                        OpenDeleteWarningModal(function () { $("#BulkLotActionForm").submit(); });
+                    } else {
+                        $("#BulkLotActionForm").submit();
+                    }
+                }
+                return false;
+            });
+
+            $("#BulkLotActionForm").on("submit", function () {
+                $(".disable-on-submit").prop("disabled", true);
+                return true;
+            });
+
+            $("#EventsDropdown").on("change", function () {
+                if ($(this).val() == $("#@Fields.FromEventID").val() && $("#BulkAction").val() == "Move") {
+                    $("#BulkAction").val("Copy");
+                    $("#BulkAction").change();
+                }
+            });
+        });
+    </script>
+    <style>
+        .dual-input select:first-of-type {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          float: left;
+          width: 40%;
+        }
+
+        .dual-input select:last-of-type {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+          float: left;
+          width: 60%;
+        }
+    </style>
+}
+
+<div class="well well-sm section-title">
+    <a href="@Url.Action(MVC.LotsByEventAction, new { @id = auctionEvent.ID })" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> @Html.GlobalResource("Back")</a>&nbsp;
+    <span>@Html.GlobalResource("LineageString_LotsByEvent", (string)ViewData["EventsSubsectionTitle"], auctionEvent.Title, auctionEvent.ID)</span>
+    <span>&nbsp;&gt;&nbsp;</span>
+    <span id="HeaderActionLabel">@Html.GlobalResource("CopyLots")</span>
+</div>
+@Html.LocalizedValidationSummary()
+<div class="panel panel-default">
+    <div class="row" data-eventid="@auctionEvent.ID">
+        <div class="col-xs-12">
+            <h1 class="event-title">
+                @auctionEvent.BeginDetailLink()
+                @auctionEvent.Title
+                @auctionEvent.EndDetailLink()
+                <span class="pull-right"><span class="awe-rt-ColoredStatus">@Html.Partial("Event_StatusLabel", auctionEvent)</span></span>
+            </h1>
+            @if (auctionEvent.StartDTTM.HasValue)
+            {
+                <span>@Html.LocalDTTM(auctionEvent.StartDTTM.Value, auctionEvent.TimeZone, "G") -</span>
+            }
+            else
+            {
+                <span>@Html.GlobalResource("FirstLotCloses"):</span>
+            }
+            @Html.LocalDTTM(auctionEvent.EndDTTM, auctionEvent.TimeZone, "G")
+        </div>
+    </div>
+    @using (Html.BeginForm(MVC.CopyLotsAction, MVC.AccountController, FormMethod.Post, new { @id = "BulkLotActionForm" }))
+    {
+        @Html.Hidden(Fields.FromEventID)
+        <div class="col-xs-12">
+            <hr />
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @if (auctionEvent.Status == AuctionEventStatuses.Draft && eligibleDestinationEvents.Count() > 1)
+                {
+                    //draft events can offer "Copy" (selected by default), "Move" or "Delete" actions
+                    <div class="form-group form-inline">
+                        <select id="BulkAction" class="form-control" name="BulkAction">
+                            <option value="Copy" selected>@Html.GlobalResource("CopyLotsToThisEvent")</option>
+                            <option value="Move">@Html.GlobalResource("MoveLotsToThisEvent")</option>
+                            <option value="Delete">@Html.GlobalResource("DeleteLots")</option>
+                        </select>
+                        @Html.DropDownList(Fields.ToEventID, eligibleDestinationEvents, new { @id = "EventsDropdown", @class = "form-control" })
+                        @Html.Hidden("GenerateNewLotNumbers", "true")
+                        <input type="submit" id="SubmitButton" class="form-control btn btn-primary disable-on-submit" value="@Html.GlobalResource("CopySelectedLots")" />
+                    </div>
+                }
+                else if (auctionEvent.Status == AuctionEventStatuses.Closed || auctionEvent.Status == AuctionEventStatuses.Archived || auctionEvent.Status == AuctionEventStatuses.Draft)
+                {
+                    //closed/archived events can offer "Copy" (selected by default) or "Delete" actions
+                    <div class="form-group form-inline">
+                        <select id="BulkAction" class="form-control" name="BulkAction">
+                            <option value="Copy" selected>@Html.GlobalResource("CopyLotsToThisEvent")</option>
+                            <option value="Delete">@Html.GlobalResource("DeleteLots")</option>
+                        </select>
+                        @Html.DropDownList(Fields.ToEventID, eligibleDestinationEvents, new { @id = "EventsDropdown", @class = "form-control" })
+                        @Html.Hidden("GenerateNewLotNumbers", "true")
+                        <input type="submit" id="SubmitButton" class="form-control btn btn-primary disable-on-submit" value="@Html.GlobalResource("CopySelectedLots")" />
+                    </div>
+                }
+                else
+                {
+                    //all other event statuses can only "Copy"
+                    <div class="form-group form-inline">
+                        <div class="input-group" id="EventsDropdownContainer">
+                            <label class="input-group-addon">
+                                <span class="hidden-xs" id="EventsDropdownVerboseLabel">@Html.GlobalResource("CopyLotsToThisEvent")</span>
+                                <span class="visible-xs">@Html.GlobalResource("ToEvent")</span>
+                            </label>
+                            @Html.DropDownList(Fields.ToEventID, eligibleDestinationEvents, new { @id = "EventsDropdown", @class = "form-control" })
+                            @Html.Hidden("GenerateNewLotNumbers", "true")
+                            @Html.Hidden("BulkAction", "Copy")
+                        </div>
+                        <div class="input-group">
+                            <input type="submit" id="SubmitButton" class="form-control btn btn-primary disable-on-submit" value="@Html.GlobalResource("CopySelectedLots")" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <hr />
+        </div>
+        <table class="table">
+            <tr class="active">
+                <th>
+                    <input type="checkbox" class="checkall" style="margin:5px;" />
+                </th>
+                <th>
+                    @Html.GlobalResource("Status")
+                    <div class="visible-xs">@Html.GlobalResource("CurrentPrice")</div>
+                </th>
+                <th class="hidden-xs">
+                    <!-- photo icon -->
+                    <span class="glyphicon glyphicon-picture" title="@Html.GlobalResource("LotImageStatus")"></span>
+                </th>
+                <th>
+                    @Html.GlobalResource("LotNumber")
+                </th>
+                <th>
+                    @Html.GlobalResource("Title")
+                </th>
+            </tr>
+            @foreach (Listing listing in Model.List)
+            {
+                <tr data-listingid="@listing.ID">
+                    <td><input type="checkbox" class="row-selection-checkbox" name="ListingIDs" id="ListingIDs_@listing.ID" value="@listing.ID" /></td>
+                    <td>
+                        <span class="awe-rt-ColoredStatus">@Html.Partial("Listing_StatusLabel_ForSeller", listing)</span>
+                    </td>
+                    <td class="hidden-xs">
+                        @if (string.IsNullOrEmpty(listing.PrimaryImageURI))
+                        {
+                            <span class="glyphicon glyphicon-ban-circle" title="@Html.GlobalResource("NoImage")"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-picture" title="@Html.GlobalResource("HasImage")"></span>
+                        }
+                    </td>
+                    <td>@listing.BeginDetailLink()@listing.Lot.LotNumber@listing.EndDetailLink()</td>
+                    <td>@listing.BeginDetailLink()@listing.Title@listing.EndDetailLink()</td>
+                </tr>
+            }
+        </table>
+    }
+</div>

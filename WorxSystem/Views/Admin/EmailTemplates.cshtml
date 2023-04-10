@@ -1,0 +1,222 @@
+﻿@using System.Globalization
+@model List<EmailTemplate>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_EmailTemplates");
+
+    var allNeutralCultures =
+        new List<CultureInfo>(
+            CultureInfo.GetCultures(CultureTypes.NeutralCultures).Where(c => c.Name != string.Empty).OrderBy(
+                c => c.EnglishName));
+    var enabledBaseCultures = new List<CultureInfo>(allNeutralCultures
+            .Where(c => SiteClient.SupportedLanguageCultures.ContainsKey(c.Name))
+            .OrderBy(c => c.EnglishName));
+    var allTemplateCultures = NotifierClient.GetEmailTemplateCultures();
+
+    var rowStatusClass = "";
+}
+<div class="panel panel-default">
+    @if (SiteClient.BoolSetting(SiteProperties.EnableMultipleCultures))
+    {
+        <table class="table">
+            <tr>
+                <th>@Html.AdminResource("EmailTemplateName")</th>
+                <th>@Html.AdminResource("Recipient")</th>
+                <th>@Html.AdminResource("SelectCultureToEdit") @Html.AdminResource("Template")</th>
+                <th style="width:155px;">@Html.AdminResource("Status")</th>
+            </tr>
+            @foreach (EmailTemplate template in Model.OrderByDescending(t => t.Name == "EmailHeader" || t.Name == "EmailFooter").ThenBy(t => t.ID))
+            {
+                rowStatusClass = (template.Enabled) ? "" : "danger";
+                <tr class="@rowStatusClass">
+                    <td>
+                        <strong>@Html.AdminResource("template_" + template.Name)</strong>
+                        <hr class="small" />
+                        <span class="text-muted">@Html.AdminResource("template_" + template.Name + "_Help")</span>
+                    </td>
+                    <td>
+                        <strong>@Html.AdminResource("template_" + template.Name + "_ToWhom")</strong>
+                    </td>
+                    <td>
+                        <!-- edit content button(s) -->
+                        @foreach (CultureInfo enabledLanguage in enabledBaseCultures)
+                        {
+                            string baseCultureCode = enabledLanguage.Name;
+                                @Html.ButtonLink(
+                                (enabledBaseCultures.Count > 1 || SiteClient.BoolSetting(SiteProperties.ShowLanguageRegionOptions))
+                                ? enabledLanguage.NativeName
+                                : Html.AdminResourceString("Edit"),
+                            MVC.EmailTemplateEditorAction, new { template = template.Name, culture = baseCultureCode }, new { @class = "btn btn-default btn-xs btn-sq" })
+                            if (SiteClient.BoolSetting(SiteProperties.ShowLanguageRegionOptions))
+                            {
+                                foreach (string cultureCode in allTemplateCultures
+                                    .Where(c => c.Length != baseCultureCode.Length && c.Left(baseCultureCode.Length) == baseCultureCode)
+                                    .OrderBy(c => c))
+                                {
+                                    CultureInfo regionalLanguage = SiteClient.SupportedCultures[cultureCode];
+                                    @Html.ButtonLink(regionalLanguage.NativeName,
+                                    MVC.EmailTemplateEditorAction, new { template = template.Name, culture = cultureCode }, new { @class = "btn btn-default btn-xs  btn-sq" })
+                                }
+                            }
+                        }
+
+                    </td>
+                    <td>
+
+                        @if (!template.Name.Equals("EmailHeader", StringComparison.OrdinalIgnoreCase) && !template.Name.Equals("EmailFooter", StringComparison.OrdinalIgnoreCase))
+                        {
+                                <strong>
+                                    @if (template.Enabled)
+                                    {<span class="text-success">@Html.AdminResource("Enabled")&nbsp;</span>}
+                                    else
+                                    {<span class="text-danger">@Html.AdminResource("Disabled")</span>}
+                                    &nbsp;&nbsp;
+                                </strong>
+
+                        <!-- enable/disable button -->
+                            if (template.Enabled)
+                            {
+                                @Html.ButtonLink(Html.AdminResource("Disable"), "SetEmailTemplateEnabled",
+                  new { id = template.ID, enabled = !template.Enabled }, new { @class = "TurnOffButton btn btn-default btn-sm" })
+                            }
+                            else
+                            {
+                                @Html.ButtonLink(Html.AdminResource("Enable"), "SetEmailTemplateEnabled",
+                  new { id = template.ID, enabled = !template.Enabled }, new { @class = "TurnOnButton btn btn-default btn-sm" })
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+        if (SiteClient.BoolSetting(SiteProperties.ShowLanguageRegionOptions))
+        {
+
+            <div class="sub-header">
+                @Html.AdminResource("AddRegionalLanguageOption")
+            </div>
+            <div class="panel-body">
+                <div class="group">
+                    <div class="row">
+                        @{
+                            var regionalOptsToAdd = Html.Cultures()
+                            .Where(si => !allTemplateCultures.Any(c => c == si.Value));
+                            if (regionalOptsToAdd.Count() > 0)
+                            {
+                                using (Html.BeginForm(MVC.AddEmailTemplateLanguageAction, MVC.AdminController))
+                                {
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="input-group">
+                                            <select id="addlang" name="lang" class="form-control input-sm">
+                                                <option value="" selected>&nbsp;</option>
+                                                @foreach (SelectListItem selectOption in regionalOptsToAdd)
+                            {
+                                                    <option value="@selectOption.Value">@selectOption.Text</option>
+                                                }
+                                            </select>
+                                            <span class="input-group-btn">
+                                                <input class="btn btn-success btn-sm" type="submit" value="@Html.AdminResource("AddRegionalLanguageOption")" />
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            var regionalOptsToRemove = Html.Cultures()
+                            .Where(si => allTemplateCultures.Any(c => c == si.Value) && !enabledBaseCultures.Any(ci => ci.Name == si.Value));
+                            if (regionalOptsToRemove.Count() > 0)
+                            {
+                                using (Html.BeginForm(MVC.RemoveEmailTemplateLanguageAction, MVC.AdminController))
+                                {
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="input-group">
+                                            <select id="remlang" name="lang" class="form-control input-sm">
+                                                <option value="" selected>&nbsp;</option>
+                                                @foreach (SelectListItem selectOption in regionalOptsToRemove)
+                            {
+                                                    <option value="@selectOption.Value">@selectOption.Text</option>
+                                                }
+                                            </select>
+                                            <span class="input-group-btn">
+                                                <input class="btn btn-warning btn-sm" type="submit" value="@Html.AdminResource("RemoveRegionalLanguageOption")" />
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        }
+                    </div>
+                </div>
+            </div>}
+
+                            }
+                            else
+                            {
+                                <table class="table">
+                                    <tr>
+                                        <th>@Html.AdminResource("Name")</th>
+                                        <th>@Html.AdminResource("Recipient")</th>
+                                        <th></th>
+                                        <th style="width:155px;">@Html.AdminResource("Status")</th>
+                                    </tr>
+                                    @foreach (EmailTemplate template in Model.OrderByDescending(t => t.Name == "EmailHeader" || t.Name == "EmailFooter").ThenBy(t => t.ID))
+                                    {
+                                        rowStatusClass = (template.Enabled) ? "" : "danger";
+                                        <tr class="@rowStatusClass">
+                                            <td>
+                                                <strong>@Html.AdminResource("template_" + template.Name)</strong>
+                                                <hr class="small" />
+                                                <span class="text-muted">@Html.AdminResource("template_" + template.Name + "_Help")</span>
+                                            </td>
+                                            <td>
+                                                <strong>@Html.AdminResource("template_" + template.Name + "_ToWhom")</strong>
+                                            </td>
+                                            <td> <!-- edit content button(s) -->
+                                                @{
+                                                    string cultureCode = SiteClient.TextSetting(SiteProperties.SiteCulture);
+                                                    if (!allTemplateCultures.Any(c => c == cultureCode))
+                                                    {
+                                                        cultureCode = cultureCode.Left(2);
+                                                    }
+                                                    if (!allTemplateCultures.Any(c => c == cultureCode))
+                                                    {
+                                                        cultureCode = "en";
+                                                    }
+                                                    var cultureInfo = CultureInfo.GetCultureInfo(cultureCode);
+                                                    @Html.ButtonLink("&nbsp;&nbsp;" + Html.AdminResourceString("Edit") + "&nbsp;&nbsp;", MVC.EmailTemplateEditorAction,
+                            new { template = template.Name, culture = cultureCode }, new { @class = "btn btn-default btn-sm" })
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!template.Name.Equals("EmailHeader", StringComparison.OrdinalIgnoreCase) && !template.Name.Equals("EmailFooter", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    <strong>
+                                                    @if (template.Enabled)
+                                                    {<span class="text-success">@Html.AdminResource("Enabled")&nbsp;</span>}
+                                                    else
+                                                    {<span class="text-danger">@Html.AdminResource("Disabled")</span>}
+                                                        &nbsp;&nbsp;
+                                                    </strong>
+                                                }
+
+                                                    <!-- enable/disable button -->
+                                                    @if (!template.Name.Equals("EmailHeader", StringComparison.OrdinalIgnoreCase) && !template.Name.Equals("EmailFooter", StringComparison.OrdinalIgnoreCase))
+                                                    {
+                                                        if (template.Enabled)
+                                                        {
+                                                            @Html.ButtonLink(Html.AdminResource("Disable"), "SetEmailTemplateEnabled",
+                                 new { id = template.ID, enabled = !template.Enabled }, new { @class = "TurnOffButton btn btn-default btn-sm" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.ButtonLink(Html.AdminResource("Enable"), "SetEmailTemplateEnabled",
+                                 new { id = template.ID, enabled = !template.Enabled }, new { @class = "TurnOnButton btn btn-default btn-sm" })
+                                                        }
+                                                    }
+                                                
+                                            </td>
+                                        </tr>
+                                                        }
+                                </table>
+                                                        }
+</div>

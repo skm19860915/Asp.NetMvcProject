@@ -1,0 +1,26 @@
+﻿@model Listing
+
+@Html.Hidden("BidAmount", ViewData["BidAmount"])
+@{
+    decimal result;
+    Boolean checkBid = Decimal.TryParse(ViewData["BidAmount"].ToString(), System.Globalization.NumberStyles.Currency, Html.GetCurrentCultureInfo(), out result);
+
+    if (!checkBid)
+    {
+        if (!SiteClient.BoolSetting(SiteProperties.SignalREnabled))
+        {
+            TempData[MVC.ErrorMessage] = "BidNaN";
+            Response.Redirect(Html.GetActionUrl("Details", new { id = Model.ID, extra = Model.Title.SimplifyForURL("-") }), false);
+        }
+    }
+
+    if (ViewData.ContainsKey(Fields.BuyItNow) && bool.Parse((string)ViewData[Fields.BuyItNow]))
+    {
+        @Html.Resource("AuctionListing, ConfirmBuyItNow", Html.LocalCurrency((string)ViewData["BidAmount"], Model.Currency.Code))
+        @Html.Hidden(Fields.BuyItNow, true)
+    }
+    else
+    {
+        @Html.Resource("AuctionListing, ConfirmBid", Html.LocalCurrency((string)ViewData["BidAmount"], Model.Currency.Code))
+    }
+}

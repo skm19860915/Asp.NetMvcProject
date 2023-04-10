@@ -1,0 +1,40 @@
+﻿@model Listing
+
+@if (Model.Context != null && !Model.Context.Disregard)
+{
+
+    if (Model.Type.Name == ListingTypes.Classified && Model.Context.Status == "LISTING_NOT_STARTED" && Model.StartDTTM.HasValue)
+    {
+        Model.Context.Parameters.Add(Html.LocalDTTM(Model.StartDTTM.Value).ToString());
+    }
+    switch (Model.Context.Disposition)
+    {
+        case ContextDispositionType.Positive:
+            <div class="alert alert-success">
+                @Html.Resource(Model.Type.Name + "Listing, " + Model.Context.Status, Model.Context.Parameters.ToArray())
+            </div>
+            break;
+        case ContextDispositionType.Neutral:
+            <div class="alert alert-warning">
+                @Html.Resource(Model.Type.Name + "Listing, " + Model.Context.Status, Model.Context.Parameters.ToArray())
+            </div>
+            break;
+        case ContextDispositionType.Negative:
+            <div class="alert alert-danger">
+                @Html.Resource(Model.Type.Name + "Listing, " + Model.Context.Status, Model.Context.Parameters.ToArray())
+            </div>
+            break;
+    }
+}
+else if (!User.Identity.IsAuthenticated)
+{
+    switch (Model.Status)
+    {
+        case ListingStatuses.Pending:
+            <div class="alert alert-warning">
+                @Html.Resource(Model.Type.Name + "Listing, LISTING_NOT_STARTED")
+            </div>
+            break;
+    }
+}
+

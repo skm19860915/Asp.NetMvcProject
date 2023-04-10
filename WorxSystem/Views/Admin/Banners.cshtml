@@ -1,0 +1,620 @@
+﻿@model Page<Banner>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_Banners");
+}
+
+@section head {
+    <script>
+        $(document).ready(function () {
+            //initial page load
+
+           
+                $(".CreateBannerForm").hide();
+
+            //BannerLocationFilter dropdown change
+            $("#@Fields.BannerLocationFilter").change(function () {
+                this.form.submit();
+            });
+
+            //"Show Create Banner Form" button click
+            $("#ShowCreateBannerForm").click(function () {
+                $(this).hide();
+                $(".CreateBannerForm").show();
+                return false;
+            });
+
+            //remove "input-validation-error" class from all objects because multiple inputs have the same key
+            $(".input-validation-error").removeClass("input-validation-error");
+
+            //"Add Category" onclick function
+            //$("a.AddCategoryLink").unbind("click");
+            $("a.AddCategoryLink").bind("click", function () {
+                $(this).parent("div").before(''
+                    + '<div class="AddCategorySection clearfix group">'
+                      + '<input type="hidden" name="@Fields.CategoryId" />'
+                      + '<select class="CategoryDropdown TopLevelDropdown form-control input-sm">'
+                        + '<option value="0">'
+                          + '@Html.AdminResourceString("Select").ToJavascriptSafeString()...'
+                        + '</option>'
+                      + '</select>'
+                    + '</div>');
+                var targetSelectbox = $(this).parent("div").prev("div").children("select").first();
+                GetCategoryOptions(9, targetSelectbox);
+                return false;
+            });
+
+            //"Remove Category" onclick function
+            //$("a.RemoveCategoryLink").unbind("click");
+            $("a.RemoveCategoryLink").bind("click", function () {
+                $(this).parent("div").remove();
+                return false;
+            });
+
+            function ReBindCategoryChooserFunctions() {
+
+                //category dropdown onchange function
+                $("select.CategoryDropdown").unbind("change");
+                $("select.CategoryDropdown").bind("change", function () {
+                    var selectedCatID = $(this).val();
+                    $(this).nextAll("select").remove();
+                    if (selectedCatID == "0") {
+                        var parentCatId = $(this).attr("parentid");
+                        if ($(this).hasClass("TopLevelDropdown")) {
+                            $(this).parent("div").remove();
+                        } else {
+                            $(this).siblings("input[name='@Fields.CategoryId']").val(parentCatId);
+                        }
+                        return false;
+                    }
+                    if ($(this).hasClass("TopLevelDropdown")) {
+                        $(this).children("option[value='0']").html(
+                            '@Html.AdminResourceString("Remove").ToJavascriptSafeString()...');
+                    }
+                    $(this).siblings("input[name='@Fields.CategoryId']").val(selectedCatID);
+                    $(this).after(''
+                        + '<select class="CategoryDropdown ChildDropdown form-control input-sm">'
+                          + '<option value="0">'
+                            + '@Html.AdminResourceString("AllSubcategories").ToJavascriptSafeString()'
+                          + '</option>'
+                        + '</select>');
+                    var targetSelectbox = $(this).nextAll("select");
+                    GetCategoryOptions(selectedCatID, targetSelectbox);
+                });
+
+            } // function ReBindCategoryChooserFunctions()
+
+            function GetCategoryOptions(parentCategoryID, targetSelectObject) {
+                targetSelectObject.hide();
+                targetSelectObject.siblings("img").remove();
+                targetSelectObject.after('<img src="Content/images/General/refresh-animated.gif" alt="" />');
+                targetSelectObject.attr("parentid", parentCategoryID);
+                var retVal = null;
+                Proxy.invoke("GetChildCategories", { parentCategoryID: parentCategoryID }
+                    , function (result) {
+                        targetSelectObject.siblings("img").remove();
+                        //draw select box
+                        if (result.length > 0) {
+                            //fill select box
+                            for (category in result) {
+                                targetSelectObject.append(
+                                      '<option value="'
+                                    + result[category].ID
+                                    + '">'
+                                    + result[category].Name
+                                    + "</option>");
+                            }
+                            targetSelectObject.show();
+                        }
+                        else {
+                            targetSelectObject.remove();
+                        }
+                    }
+                    , function (error) {
+                        window.alert(error);
+                    }
+                );
+                ReBindCategoryChooserFunctions();
+                return retVal;
+            } // function GetCategoryOptions()
+
+            //"Add Region" click function
+            //$("a.AddRegionLink").unbind("click");
+            $("a.AddRegionLink").bind("click", function () {
+                $(this).parent("div").before(''
+                    + '<div class="AddRegionSection  clearfix group">'
+                      + '<input type="hidden" name="@Fields.CategoryId" />'
+                      + '<select class="RegionDropdown TopLevelDropdown form-control input-sm">'
+                        + '<option value="0">'
+                          + '@Html.AdminResourceString("Select").ToJavascriptSafeString()...'
+                        + '</option>'
+                      + '</select>'
+                    + '</div>');
+                var targetSelectbox = $(this).parent("div").prev("div").children("select").first();
+                GetRegionOptions(27, targetSelectbox);
+                return false;
+            });
+
+            //"Remove Region" click function
+            //$("a.RemoveRegionLink").unbind("click");
+            $("a.RemoveRegionLink").bind("click", function () {
+                $(this).parent("div").remove();
+                return false;
+            });
+
+            function ReBindRegionChooserFunctions() {
+
+                //region dropdown change function
+                $("select.RegionDropdown").unbind("change");
+                $("select.RegionDropdown").bind("change", function () {
+                    var selectedCatID = $(this).val();
+                    $(this).nextAll("select").remove();
+                    if (selectedCatID == "0") {
+                        var parentCatId = $(this).attr("parentid");
+                        if ($(this).hasClass("TopLevelDropdown")) {
+                            $(this).parent("div").remove();
+                        } else {
+                            $(this).siblings("input[name='@Fields.CategoryId']").val(parentCatId);
+                        }
+                        return false;
+                    }
+                    if ($(this).hasClass("TopLevelDropdown")) {
+                        $(this).children("option[value='0']").html(
+                            '@Html.AdminResourceString("Remove").ToJavascriptSafeString()...');
+                    }
+                    $(this).siblings("input[name='@Fields.CategoryId']").val(selectedCatID);
+                    $(this).after(''
+                        + '<select class="RegionDropdown ChildDropdown form-control input-sm">'
+                          + '<option value="0">'
+                            + '@Html.AdminResourceString("AllSubregions").ToJavascriptSafeString()'
+                          + '</option>'
+                        + '</select>');
+                    var targetSelectbox = $(this).nextAll("select");
+                    GetRegionOptions(selectedCatID, targetSelectbox);
+                });
+
+            } // function ReBindRegionChooserFunctions()
+
+            function GetRegionOptions(parentCategoryID, targetSelectObject) {
+                targetSelectObject.hide();
+                targetSelectObject.siblings("img").remove();
+                targetSelectObject.after('<img src="Content/images/General/refresh-animated.gif" alt="" />');
+                targetSelectObject.attr("parentid", parentCategoryID);
+                var retVal = null;
+                Proxy.invoke("GetChildCategories", { parentCategoryID: parentCategoryID }
+                    , function (result) {
+                        targetSelectObject.siblings("img").remove();
+                        //draw select box
+                        if (result.length > 0) {
+                            //fill select box
+                            for (category in result) {
+                                targetSelectObject.append(
+                                      '<option value="'
+                                    + result[category].ID
+                                    + '">'
+                                    + result[category].Name
+                                    + "</option>");
+                            }
+                            targetSelectObject.show();
+                        }
+                        else {
+                            targetSelectObject.remove();
+                        }
+                    }
+                    , function (error) {
+                        window.alert(error);
+                    }
+                );
+                ReBindRegionChooserFunctions();
+                return retVal;
+            } // function GetRegionOptions()
+
+            function ValidateCreateBannerForm_Upload(frm) {
+                var bannerLinkValue = frm.find("input[name='@Fields.LinkURI']").val();
+                if (bannerLinkValue == "" || bannerLinkValue == "http://") {
+                    alert('@Html.ValidationResourceString("LinkURI_Required").ToJavascriptSafeString()');
+                    return false;
+                }
+                var newMediaCount = frm.find("input[name^='media_guid_']").length;
+                if (newMediaCount == 0) {
+                    alert('@Html.ValidationResourceString("BannerMediaId_Required").ToJavascriptSafeString()');
+                    return false;
+                }
+                return true;
+            };
+
+            //"Create Banner" (upload) button click
+            $("#CreateNewBannerButton_Upload").click(function () {
+                var frm = $("#CreateBannerForm_Upload");
+                if (ValidateCreateBannerForm_Upload(frm)) {
+                    frm.each(function () { this.submit() });
+                }
+                return false;
+            });
+
+            function ValidateUpdateBannerForm_Upload(frm) {
+                var bannerLinkValue = frm.find("input[name='@Fields.LinkURI']").val();
+                if (bannerLinkValue == "" || bannerLinkValue == "http://") {
+                    alert('@Html.ValidationResourceString("LinkURI_Required").ToJavascriptSafeString()');
+                    return false;
+                }
+                return true;
+            };
+
+            //"Update Banner" (upload) button click
+            $(".UpdateBannerButton_Upload").click(function () {
+
+                var frm = $("#UpdateBannerForm");
+                frm.html("");
+
+                
+                var allInputs = $(this).parents(".existingBanner");
+                
+                CopyInputsToForm(allInputs, frm);
+
+              
+
+                //display all input elements before submitting
+                /*var testing = "";
+                //testing...
+                frm.find("input[type='hidden']").each(function () {
+                testing += '\ntesting - "'
+                + $(this).attr("name")
+                + '" = "'
+                + $(this).attr("value") + '"\n';
+                });
+                if (confirm(testing))
+                {*/
+                if (ValidateUpdateBannerForm_Upload(frm)) {
+                    frm.each(function () { this.submit() });
+                }
+                /*}*/
+
+                return false;
+            });
+
+            function ValidateCreateBannerForm_Html(frm) {
+                // Disabled link URI input display/validation for HTML banners because this value is not
+                //  actually used when Banner HTML is provided by the user.
+                var HtmlText = frm.find("textarea[name='@Fields.BannerHtml']").val();
+                if (HtmlText == "") {
+                    alert('@Html.ValidationResourceString("BannerHtml_Required").ToJavascriptSafeString()');
+                    return false;
+                }
+                return true;
+            }
+
+            //"Create Banner" (html) button click
+            $("#CreateNewBannerButton_Html").click(function () {
+                var frm = $("#CreateBannerForm_Html");
+                if (ValidateCreateBannerForm_Html(frm)) {
+                    frm.each(function () { this.submit() });
+                }
+                return false;
+            });
+
+            function ValidateUpdateBannerForm_Html(frm) {
+                // Disabled link URI input display/validation for HTML banners because this value is not
+                //  actually used when Banner HTML is provided by the user.
+                //
+                var HtmlText = frm.find("textarea[name='@Fields.BannerHtml']").val();
+                if (HtmlText == "") {
+                    alert('@Html.ValidationResourceString("BannerHtml_Required").ToJavascriptSafeString()');
+                    return false;
+                }
+                return true;
+            };
+
+            //"Update Banner" (html) button click
+            $(".UpdateBannerButton_Html").click(function () {
+
+                var frm = $("#UpdateBannerForm");
+                frm.html("");
+
+                var allInputs = $(this).parents(".existingBanner");
+                
+                CopyInputsToForm(allInputs, frm);
+
+                //display all input elements before submitting
+                /*var testing = "";
+                //testing...
+                frm.find("input[type='hidden']").each(function () {
+                testing += '\ntesting - "'
+                + $(this).attr("name")
+                + '" = "'
+                + $(this).attr("value") + '"\n';
+                });
+                if (confirm(testing))
+                {*/
+                if (ValidateUpdateBannerForm_Html(frm)) {
+                    frm.each(function () { this.submit() });
+                }
+                /*}*/
+
+                return false;
+            });
+
+            function CopyInputsToForm(sourceContainer, targetForm) {
+                sourceContainer.find("input,select").each(function () {
+                    var inpName = $(this).attr("name");
+                    var inpVal = $(this).val();
+                    if (inpName && inpVal) {
+                        $("<input />").attr("type", "hidden")
+                                      .attr("name", inpName)
+                                      .val(inpVal)
+                                      .appendTo(targetForm);
+                    }
+                });
+                sourceContainer.find("textarea").each(function () {
+                    var inpName = $(this).attr("name");
+                    var inpVal = $(this).val();
+                    if (inpName && inpVal) {
+                        $("<textarea />").css("display", "none")
+                                         .attr("name", inpName)
+                                         .val(inpVal)
+                                         .appendTo(targetForm);
+                    }
+                });
+            }
+
+            $("#SaveBannerSettings").click(function () {
+                $(this).parents("form").first().submit();
+                return false;
+            });
+
+        });
+    </script>
+}
+
+@using (Html.BeginForm(MVC.UpdateBannerPropertiesAction, MVC.AdminController))
+{
+    @Html.Partial("PropertyGroup", ViewData[MVC.ViewData_BannerSiteProperties])
+
+    <div>
+        @if (!SiteClient.DemoEnabled)
+        {
+            <button class="btn btn-success" id="SaveBannerSettings">@Html.AdminResource("SaveDisplayOptions")</button>
+        }
+        else
+        {
+            <button class="btn btn-success" id="SaveBannerSettings" disabled="disabled">@Html.AdminResource("SaveDisplayOptions")</button>
+        }
+    </div>
+
+}
+<hr />
+<div class="group">
+    <div class="row">
+        <div class="col-xs-6 col-sm-8">
+            <button class="btn btn-default" id="ShowCreateBannerForm">@Html.AdminResource("CreateBanner")</button>
+        </div>
+        <div class="col-xs-6 col-sm-4">
+            @using (Html.BeginForm(MVC.BannersAction, MVC.AdminController, FormMethod.Get, new { @id = "BannersFiltersForm" }))
+            {
+                <div class="input-group">
+                    <span class="input-group-addon"> @Html.AdminResourceString("View")</span>
+                    @Html.DropDownList(Fields.BannerLocationFilter, Html.GetSelectList(new string[] { "AllBanners", "TOP", "LEFT", "BOTTOM" }), new { @class = "form-control" })
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+
+
+        @{
+            using (Html.BeginForm(MVC.CreateBannerAction, MVC.AdminController, FormMethod.Post, new { @id = "CreateBannerForm_Upload", @class = "CreateBannerForm" }))
+            {
+                <div class="panel panel-default banner-panel">
+                    <div class="panel-heading">
+                        @Html.AdminResource("BannerUploadFormTitle")
+                    </div>
+                    <div class="panel-body">
+                        <p><strong>@Html.AdminResource("Location")</strong> @Html.DropDownList(Fields.BannerLocation, Html.GetSelectList(new string[] { "TOP", "LEFT", "BOTTOM" }), new { @class = "form-control input-sm" })</p>
+
+                                <p><strong>@Html.AdminResource("Link")</strong><strong class="Required">*</strong> @Html.TextBox(Fields.LinkURI, "http://", new { @class = "form-control input-sm" })</p>
+
+                                @Html.Partial("BannerImageUploader", new Media())
+
+                                <div class="BannerCatReg sub-header">
+                                    @Html.AdminResource("Categories") @Html.AdminResource("OptionalInParens")
+                                </div>
+                                <div>
+                                    @Html.Partial("InlineMultiCategoryChooser", new List<Category>())
+                                </div>
+                                <div class="BannerCatReg sub-header">
+                                    @Html.AdminResource("Regions") @Html.AdminResource("OptionalInParens")
+                                </div>
+                                <div>
+                                    @Html.Partial("InlineMultiRegionChooser", new List<Category>())
+                                </div>
+                           
+                    </div>
+                    <div class="panel-footer text-right">
+                        @if (!SiteClient.DemoEnabled)
+                {
+                            <button class="btn btn-success" id="CreateNewBannerButton_Upload">@Html.AdminResource("CreateBanner")</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success" id="CreateNewBannerButton_Upload" disabled="disabled">@Html.AdminResource("CreateBanner")</button>
+                        }
+                    </div>
+                    </div>
+               
+            } // using (Html.BeginForm(MVC.CreateBannerAction, MVC.AdminController))
+        }
+    </div>
+    <div class="col-sm-6">
+        @{
+            using (Html.BeginForm(MVC.CreateBannerAction, MVC.AdminController, FormMethod.Post, new { @id = "CreateBannerForm_Html", @class = "CreateBannerForm" }))
+            {
+
+                <div class="panel panel-default banner-panel">
+                    <div class="panel-heading">
+                        @Html.AdminResource("BannerHTMLFormTitle")
+                    </div>
+                    <div class="panel-body">
+                        <p><strong>@Html.AdminResource("Location")</strong> @Html.DropDownList(Fields.BannerLocation, Html.GetSelectList(new string[] { "TOP", "LEFT", "BOTTOM" }), new { @class = "form-control input-sm" })</p>
+                        <p>
+                            <strong>
+                                @Html.AdminResource("BannerScriptHTML")@Html.Hidden(Fields.LinkURI, "http://")</strong>
+                            @if (SiteClient.DemoEnabled)
+                            {                 <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                            }
+                            <br />
+                                        @Html.Partial("BannerHtmlEditor", new Media())
+                            </p>
+                                        <div class="BannerCatReg sub-header">
+                                            @Html.AdminResource("Categories") @Html.AdminResource("OptionalInParens")
+                                        </div>
+                                        <div>
+                                            @Html.Partial("InlineMultiCategoryChooser", new List<Category>())
+                                        </div>
+                                        <div class="BannerCatReg sub-header">
+                                            @Html.AdminResource("Regions") @Html.AdminResource("OptionalInParens")
+                                        </div>
+                                        <div>
+                                            @Html.Partial("InlineMultiRegionChooser", new List<Category>())
+                                        </div>
+                                        </div>
+                    <div class="panel-footer text-right">
+                        @if (!SiteClient.DemoEnabled)
+                        {
+                            <button class="btn btn-success" id="CreateNewBannerButton_Html">@Html.AdminResource("CreateBanner")</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success" id="CreateNewBannerButton_Html" disabled="disabled">@Html.AdminResource("CreateBanner")</button>
+                        }
+                    </div>
+                                        </div>
+
+            } // using (Html.BeginForm(MVC.CreateBannerAction, MVC.AdminController))
+                }
+                </div>
+
+                </div>
+                @{
+                    using (Html.BeginForm(MVC.UpdateBannerAction, MVC.AdminController, FormMethod.Post, new { @id = "UpdateBannerForm" }))
+                    {
+                        //intentionally blank form
+                    } // using (Html.BeginForm(MVC.UpdateBannerAction, MVC.AdminController))
+                }
+                   
+                    <div class="sub-header">@Html.AdminResource("ExistingBanners")</div>
+                    
+    @{
+        string rowClass = string.Empty;
+
+        foreach (Banner banner in Model.List)
+        {
+  
+            bool hideLinkInput = (banner.Media.Type == "RainWorx.FrameWorx.Providers.MediaAsset.NativeHTML");
+            <div class="panel panel-default existingBanner">
+                <div class="panel-body">
+                    <div class="row">
+                       <div class="col-xs-12 col-sm-6"> 
+                           <p class="UpdateBannerID"><strong>@Html.AdminResource("ID")</strong> @banner.ID@Html.Hidden(Fields.BannerId, banner.ID)</p>
+
+                        <p class="UpdateBannerLoc"><strong>@Html.AdminResource("Location")</strong> @Html.DropDownList(Fields.BannerLocation, Html.GetSelectList(new string[] { "TOP", "LEFT", "BOTTOM" }, banner.BannerLocation), null, new { @class = "form-control" })</p>
+                           <p class="UpdateBannerLink">
+                               @if (!hideLinkInput)
+                               {
+
+                                   <strong>@Html.AdminResource("Link")</strong>
+                                   @Html.TextBox(Fields.LinkURI, banner.LinkURI, new { @class = "form-control input-sm" })
+
+                               }
+                               else
+                               {
+                                   @Html.Hidden(Fields.LinkURI, banner.LinkURI)
+                               }
+                           </p>
+                           <p class="UpdateBannerMedia">
+                               @switch (banner.Media.Type)
+                               {
+                                   case "RainWorx.FrameWorx.Providers.MediaAsset.NativeImage":
+                                       @Html.Partial("BannerImageUploader", banner.Media)
+                                       break;
+                                   case "RainWorx.FrameWorx.Providers.MediaAsset.NativeHTML":
+                                       @Html.Partial("BannerHtmlEditor", banner.Media)
+                                       break;
+                               }
+                           </p>
+                    </div>
+                  
+                    
+                        <div class="col-sm-6">
+                            <div class="sub-header">
+                                @Html.AdminResource("Categories") @Html.AdminResource("OptionalInParens")
+                            </div>
+                            @{
+                                List<Category> bannerCats = banner.Categories.Where(c => c.Type == CategoryTypes.Item && c.ID != 9).ToList();
+                                @Html.Partial("InlineMultiCategoryChooser", bannerCats)
+                            }
+                        
+                            <div class="sub-header">
+                                @Html.AdminResource("Regions") @Html.AdminResource("OptionalInParens")
+                                </div>
+                            @{
+                                List<Category> bannerRegions = banner.Categories.Where(c => c.Type == CategoryTypes.Region && c.ID != 27).ToList();
+                                @Html.Partial("InlineMultiRegionChooser", bannerRegions)
+                            }
+                           
+                    </div>
+                    </div>
+                    </div>
+                                      <div class="panel-footer text-right">
+@if (!SiteClient.DemoEnabled)
+{
+    switch (banner.Media.Type)
+    {
+        case "RainWorx.FrameWorx.Providers.MediaAsset.NativeImage":
+
+            <button class="btn btn-default UpdateBannerButton_Upload">@Html.AdminResource("UpdateBanner")</button>
+
+            break;
+        case "RainWorx.FrameWorx.Providers.MediaAsset.NativeHTML":
+
+            <button class="btn btn-default UpdateBannerButton_Html">@Html.AdminResource("UpdateBanner")</button>
+
+            break;
+    }
+
+    
+                        @(Html.ButtonLink(Html.AdminResourceString("DeleteBanner"), MVC.DeleteBannerAction,
+                                        new { @bannerId = banner.ID }, new { @class = "btn btn-danger" }))
+}
+else
+{
+    switch (banner.Media.Type)
+    {
+        case "RainWorx.FrameWorx.Providers.MediaAsset.NativeImage":
+            <button class="btn btn-default" disabled="disabled">@Html.AdminResource("UpdateBanner")</button>
+            break;
+        case "RainWorx.FrameWorx.Providers.MediaAsset.NativeHTML":
+            <button class="btn btn-default" disabled="disabled">@Html.AdminResource("UpdateBanner")</button>
+            break;
+    }
+    
+                            <button class="btn btn-danger" disabled="disabled">@Html.AdminResource("DeleteBanner")</button>
+}
+                    </div>
+                     </div>
+
+                                }
+
+    }
+                  
+
+                    @if (Model.TotalPageCount > 1)
+                    {
+                        Html.RenderPageNumberLinks(Model);
+                    }
+                    else if (Model.TotalItemCount == 0)
+                    {
+                        <div class="no-history">@Html.AdminResource("NoBannersDisplay")</div>
+                    }

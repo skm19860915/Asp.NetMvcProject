@@ -1,0 +1,54 @@
+﻿@Html.Partial("RandomTopBanners")
+
+@{
+    bool showCategories = bool.Parse(SiteClient.Settings["HomepageCategories"]);
+    int numberOfBanners = int.Parse(SiteClient.Settings[RainWorx.FrameWorx.Strings.SiteProperties.LeftBannersToDisplay]);
+
+    string IndexCssColumns = "col-xs-12";
+
+    int pageIndex = (int)ViewData[MVC.PageIndex];
+    string viewFilter = (string)ViewData["ViewFilter"];
+    string fillLevel = string.Empty;
+    int pageSize = SiteClient.IntSetting(SiteProperties.MaxEventsPerPage);
+    var pageOfEvents = EventClient.GetHomepageAuctionEventsWithFillLevel(User.Identity.Name, viewFilter, pageIndex, pageSize, fillLevel);
+}
+@if (numberOfBanners > 0)
+{
+    IndexCssColumns += " col-md-9";
+    <div class="col-xs-12 col-md-3 categories">
+        @Html.Partial("RandomLeftBanners")
+    </div>
+}
+<div class="@IndexCssColumns">
+    <ul class="nav nav-pills nav-justified eFilter">
+        <li class="filter-option@(viewFilter == "Current" ? " active" : "")">
+            @Html.ActionLinkNoEncoding(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-time\"></span>", Html.GlobalResourceString("CurrentAuctions")),
+                MVC.IndexAction, MVC.EventController, new { ViewFilter = "Current" }, null)
+        </li>
+        <li class="filter-option@(viewFilter == "Preview" ? " active" : "")">
+            @Html.ActionLinkNoEncoding(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-calendar\"></span>", Html.GlobalResourceString("UpcomingAuctions")),
+                MVC.IndexAction, MVC.EventController, new { ViewFilter = "Preview" }, null)
+        </li>
+        <li class="filter-option@(viewFilter == "Closed" ? " active" : "")">
+            @Html.ActionLinkNoEncoding(string.Format("{0} {1}", "<span class=\"glyphicon glyphicon-lock\"></span>", Html.GlobalResourceString("ClosedAuctions")),
+                MVC.IndexAction, MVC.EventController, new { ViewFilter = "Closed" }, null)
+        </li>
+    </ul>
+
+    @if (pageOfEvents.List.Count <= 0)
+    {
+        @Html.GetSiteContent("EmptyHomePage")
+    }
+    @foreach (var auctionEvent in pageOfEvents.List)
+    {
+        <div data-eventid="@auctionEvent.ID">
+            @Html.Partial("Event_Row", auctionEvent)
+        </div>
+    }
+    @if (pageOfEvents.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(pageOfEvents);
+    }
+</div>
+
+@Html.Partial("RandomBottomBanners")

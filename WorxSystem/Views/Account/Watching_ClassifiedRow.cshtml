@@ -1,0 +1,78 @@
+﻿@model Listing
+<div class="col-sm-12">
+    <div class="watch-item clearfix">
+        @Html.ButtonLink(Html.GlobalResource("Delete_small"), MVC.RemoveWatchAction,
+            new { id = Model.ID, page = Request["page"], SortFilterOptions = Request["SortFilterOptions"] },
+            new { @class = "close" })
+        <div class="row clearfix">
+            <div class="col-xs-12 col-md-9">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-3">
+                        <label class="pull-left">
+                            <input class="row-selection-checkbox" type="checkbox" name="selectedObjects" value="@Model.ID" />
+                        </label>
+                        <div class="img-container">
+                            @if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                            {
+                                @Html.Partial("NoPhotoThumbnail")
+                            }
+                            else
+                            {
+                                string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                                @Model.BeginDetailLink()
+                                <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                                @Model.EndDetailLink()
+                            }
+                        </div>
+                    </div>
+                    <div class="col-xs-12  col-sm-8 col-md-9">
+                        @Model.DetailLink(Model.Title) <em>(@Model.ID)</em>
+                        @if (SiteClient.DisplayListingType)
+                        {
+                            <span class="label label-primary">@Html.GlobalResource("ClassifiedAdBanner")</span>
+                        }
+                    </div>
+                    <div class="col-xs-12 col-sm-8 col-md-3">
+                        <div class="watch-item__label">
+                            @Html.GlobalResource("Price")
+                        </div>
+                        <strong>
+                            @if (Model.CurrentPrice.HasValue)
+                            {
+                                <span class="awe-rt-CurrentPrice price">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                            }
+                            else
+                            {
+                                @Html.GlobalResource("NA")
+                            }
+                        </strong>
+                    </div>
+                    <div class="col-xs-12 col-sm-8 col-md-6">
+                        <div class="watch-item__label">
+                            @if (!Model.IsGoodTilCanceled() || Model.Status.Equals(ListingStatuses.Ended))
+                            {
+                                <span>
+                                    @Html.GlobalResource("EndDateTime")
+                                </span>
+                            }
+                        </div>
+                        @if (!Model.IsGoodTilCanceled() || Model.Status.Equals(ListingStatuses.Ended))
+                        {
+                            <div class="watch-item__date">
+                                <span class="awe-rt-endingDTTM awe-short-date" data-initial-dttm="@(Model.EndDTTM.HasValue ? Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value) : MvcHtmlString.Empty)"></span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-sm-offset-4 col-md-offset-0 col-md-3 watch-item__cta">
+                <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="btn btn-default btn-block">
+                    @Html.GlobalResource("ViewItem")
+                </a>
+                <a href="Browse?Seller=@Model.OwnerUserName">
+                    @Html.GlobalResource("ViewSELLERUSERNAMEListings", Model.OwnerUserName)
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

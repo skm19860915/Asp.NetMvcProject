@@ -1,0 +1,71 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_ExtendListings");
+}
+
+<script>
+    $(document).ready(function () {
+        $("input#AllListings").click(function () {         
+            var isChecked = $(this).prop('checked');
+            if (isChecked) {
+                $("input#ListingID").val('');
+                $("#SingleListingID input").attr('disabled', 'disabled');
+                $("#SingleListingID .AdminTitleCol").fadeTo(0, 0.5);
+            } else {
+                $("#SingleListingID input").removeAttr("disabled");
+                $("#SingleListingID .AdminTitleCol").fadeTo(0, 1);
+            }
+        });
+
+        var isChecked = $("input#AllListings").prop('checked') ? true : false;
+        if (isChecked) {
+            $("input#ListingID").val('');
+            $("#SingleListingID input").attr('disabled', 'disabled');
+            $("#SingleListingID .AdminTitleCol").fadeTo(0, 0.5);
+        } else {
+            $("#SingleListingID input").removeAttr("disabled");
+            $("#SingleListingID .AdminTitleCol").fadeTo(0, 1);
+        }
+    });
+
+    function checkValues() {        
+        var isChecked = $("input#AllListings").prop("checked");        
+
+        if ($("input[name='ListingID']").val() == "" && !isChecked) {            
+            return false;
+        } else {            
+            return true;
+        }
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-4">@Html.AdminResource("AllListings")</label>
+            <div class="col-xs-10 col-sm-6 yesNoToggle">@Html.CheckBox("AllListings")</div>
+            <div class="col-xs-2">@Html.ToolTipButton("ExtendListing_AllListings_Help")</div>
+            <div class="col-xs-12">@Html.ToolTipContent("ExtendListing_AllListings_Help", Html.AdminResource("ExtendListing_AllListings_Help"))</div>
+            </div>
+           <div class="form-group">
+               <label class="control-label col-xs-12 col-sm-4">@Html.AdminResource("ListingID")</label>
+               <div class="col-xs-10 col-sm-6">@Html.TextBox("ListingID", null, new { @class = "form-control" })</div>
+               <div class="col-xs-2">@Html.ToolTipButton("ExtendListing_ListingID_Help")</div>
+               <div class="col-xs-12">@Html.ToolTipContent("ExtendListing_ListingID_Help", Html.AdminResource("ExtendListing_ListingID_Help"))</div>
+
+               </div>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-4">@Html.AdminResource("Minutes")</label>
+            <div class="col-xs-10 col-sm-6">@Html.TextBox("Minutes", null, new { @class = "form-control" })</div>
+            <div class="col-xs-2">@Html.ToolTipButton("ExtendListing_Minutes_Help")</div>
+            <div class="col-xs-12">@Html.ToolTipContent("ExtendListing_Minutes_Help", Html.AdminResource("ExtendListing_Minutes_Help"))</div>
+
+        </div>
+
+        <div>
+                <input type="submit" class="btn btn-success" onclick="return checkValues()" value="@Html.AdminResource("Submit")" />
+        </div>
+    </div>
+}

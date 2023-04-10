@@ -1,0 +1,15 @@
+﻿@model Invoice
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+@if (Model == null)
+{
+    <div class="well well-sm section-title">@Html.GlobalResource("FeesDue")</div>
+    <div class="alert alert-success">@Html.GlobalResource("NoFeesDue")</div>
+}
+else
+{
+    @Html.Partial("UnpaidFeeInvoice")
+}

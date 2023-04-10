@@ -1,0 +1,97 @@
+﻿@model Dictionary<string, decimal>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    Event auctionEvent = (Event)ViewData["Event"];
+}
+
+<div class="well well-sm section-title">
+    <a href="@Url.Action((string)ViewData["SelectedNavAction"])" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> @Html.GlobalResource("Back")</a>&nbsp;
+    @* @Html.GlobalResource("LineageString_EventSummary", (string)ViewData["EventsSubsectionTitle"], auctionEvent.Title, auctionEvent.ID) *@
+    @Html.GlobalResource("LineageString_EventSummary_short", (string)ViewData["EventsSubsectionTitle"])
+    </div>
+    <div class="row">
+    <div class="col-xs-12 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body event-data">
+                <h1 class="event-title">
+                    @auctionEvent.BeginDetailLink()
+                    @auctionEvent.Title
+                    @auctionEvent.EndDetailLink()
+                </h1>
+                <div class="data-card">
+                    @if (auctionEvent.StartDTTM.HasValue)
+                    {
+                        <strong>
+                            <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("Starts")
+                        </strong>
+                        @Html.LocalDTTM(auctionEvent.StartDTTM.Value, auctionEvent.TimeZone, "G")
+                    }
+                    else
+                    {
+                        <strong>
+                            <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("ScheduledStart")
+                        </strong>
+                        @Html.GlobalResource("NotSet")
+                    }
+                    <span class="awe-rt-ColoredStatus">@Html.Partial("Event_StatusLabel", auctionEvent)</span>
+                </div>
+                <div class="data-card">
+                    <strong>
+                        <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("FirstLotCloses")
+                    </strong>
+                    @Html.LocalDTTM(auctionEvent.EndDTTM, auctionEvent.TimeZone, "G")
+                </div>
+
+                @if (auctionEvent.ProxyBidding)
+                {
+                    <div class="data-card">
+                        @Html.GlobalResource("EventUsesProxy")
+                    </div>
+                }
+                <div class="data-card">
+                    @if (auctionEvent.BuyersPremiumPercent > 0)
+                    {
+                        @auctionEvent.BuyersPremiumPercent.ToString(Formats.PercentFormat) @:&#37;&nbsp; @Html.GlobalResource("BuyersPremium") -
+                            }
+                    @Html.GlobalResource("EventCurrencyInfo") <strong>@auctionEvent.Currency.Code</strong>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <div class="panel panel-default">
+            <ul class="list-group">
+                @foreach (string key in Model.Keys)
+                {
+                    switch (key)
+                    {
+                        case "TotalItems":
+                        case "ItemsWithBids":
+                        case "ItemsBelowReserve":
+                        case "TotalBids":
+                        case "ParticipatingBidders":
+                        case "WinningBidders":
+                            {
+                                <li class="list-group-item"><span class="badge">@((int)Model[key]) </span> @Html.GlobalResource("EventSummaryCount_" + key)</li>
+                            }
+                            break;
+                        case "CurrentTotal":
+                        case "MaxBidsTotal":
+                        case "CurrentTotalBelowReserve":
+                            {
+                                <li class="list-group-item"><span class="badge">@Html.LocalCurrency(Model[key], auctionEvent.Currency.Code) </span> @Html.GlobalResource("EventSummaryCount_" + key)</li>
+                            }
+                            break;
+                        default:
+                            {
+                                <li class="list-group-item"><span class="badge">@Model[key] </span> @Html.GlobalResource("EventSummaryCount_" + key)</li>
+                            }
+                            break;
+
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</div>

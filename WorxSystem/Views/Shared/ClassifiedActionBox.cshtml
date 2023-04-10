@@ -1,0 +1,72 @@
+﻿@model Listing
+<div class="detail__submit-wrapper">
+    @if (Model.CurrentPrice.HasValue)
+    {
+        <div class="classified__price">
+            <strong>@Html.Resource("ClassifiedListing, AskingPrice")</strong>
+            <span class="awe-rt-CurrentPrice">
+                @* do not remove this span, it gets populated via AJAX *@
+                @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+            </span>
+            <span id="convertedprice" class="awe-hidden">
+                (<span class="Bidding_Local_Price" data-currency="@Model.Currency.Code">
+                    @* do not remove this span, it gets populated via AJAX *@
+                    @if (Model.Currency.Code != Html.GetCookie("currency"))
+                    {
+                        @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value.ConvertAmount(Model.Currency.Code, Html.GetCookie("currency")), Html.GetCookie("currency"))
+                    }
+                </span>)
+            </span>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 watching__wrapper">
+            @Html.Partial("ListingDetail_AddWatch")
+        </div>
+        @if (SiteClient.UserMessagingEnabled && (Html.FBOUserName() != Model.OwnerUserName))
+        {
+            <script>
+                function checkValues() {
+                    if ($("textarea[name='MessageBody']").val().length > 1000) {
+                        return false;
+                    }
+
+                    if ($("textarea[name='MessageBody']").val() == "") {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+
+                function imposeMaxLength(Object, MaxLen) {
+                    return (Object.value.length <= MaxLen);
+                }
+            </script>
+            <div class="col-xs-12 col-sm-8">
+                @(Html.Hidden("MessageSubject",
+                                                       Html.Resource("ClassifiedListing, ClassifiedSubject", Model.Title, Model.ID)))
+                @(Html.TextArea("MessageBody", string.Empty,
+                                                         new
+                                                         {
+                                                             rows = "4",
+                                                             cols = "50",
+                                                             onkeypress = "return imposeMaxLength(this, 999);",
+                                                             @class = "classified__msg-input",
+                                                             placeholder = Html.Resource("ClassifiedListing, ClassifiedDisclaimer"),
+
+                                                         }))
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><input type="submit" class="btn btn-primary btn-block" onclick="return checkValues()" value="@Html.Resource("ClassifiedListing, SendMessage")" /></div>
+                    <div class="col-xs-12 col-sm-6">
+                        @if (SiteClient.BoolSetting(SiteProperties.EnablePublicQandA))
+                        {
+                            <a onClick="classifiedQASubmit(); return false;" class="btn btn-default btn-block" id="SubmitPublicQA">@Html.Resource("ClassifiedListing, SubmitPublicQA")</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,62 @@
+﻿@model Page<Invoice>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+}
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_SiteFees_Past")
+</div>
+@{
+    var currentAction = (String)ViewContext.RouteData.Values["action"];
+}
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <tr>
+            <th>@Html.ActionLink(Html.GlobalResource("CreatedDTTM"), currentAction, new { sort = "CreatedDTTM", descending = !((bool)ViewData["SortDescending"]) })</th>
+            <th>@Html.ActionLink(Html.GlobalResource("ID"), currentAction, new { sort = "Id", descending = !((bool)ViewData["SortDescending"]) })</th>
+            <th>@Html.GlobalResource("Status")</th>
+        </tr>
+        @foreach (Invoice invoice in Model.List)
+        {
+            <tr>
+                <td>@Html.LocalDTTM(invoice.CreatedDTTM, "G")</td>
+                <td>@Html.ActionLink(invoice.ID.ToString(), "InvoiceDetail", new { id = invoice.ID, returnUrl })</td>
+                <td>
+                    @{
+                        string spanClass = string.Empty;
+                        switch (invoice.Status)
+                        {
+                            case InvoiceStatuses.New:
+                                spanClass = "label label-danger";
+                                break;
+                            case InvoiceStatuses.Pending:
+                                spanClass = "label label-warning";
+                                break;
+                            case InvoiceStatuses.Paid:
+                                spanClass = "label label-success";
+                                break;
+                        }
+                        <span class="@spanClass">
+                            @if (invoice.Shipped)
+                            {
+                                @Html.GlobalResource("Shipped")
+                            }
+                            else if (invoice.Status == InvoiceStatuses.Pending)
+                            {
+                                @Html.GlobalResource("PaymentPending")
+                            }
+                            else
+                            {
+                                @Html.GlobalResource(invoice.Status)
+                            }
+                        </span>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

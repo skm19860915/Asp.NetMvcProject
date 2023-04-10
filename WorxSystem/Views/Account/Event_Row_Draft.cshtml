@@ -1,0 +1,51 @@
+﻿@model Event
+@{
+    var draftLotCounts = (Dictionary<int, int>)ViewData["DraftLotCounts"];
+}
+<div class="col-sm-12">
+    <div class="line-item clearfix" data-eventid="@Model.ID">
+        @Html.Partial("Action_Events")
+        <div class="img-container">
+            @if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+            {
+                @Html.Partial("NoPhotoThumbnail")
+            }
+            else
+            {
+                string uri = string.Format(Model.PrimaryImageURI, "ThumbFit".ToLower());
+                @Model.BeginDetailLink()
+                <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                @Model.EndDetailLink()
+            }
+        </div>
+        <div class="item-data">
+            <p>
+                <strong>
+                    @Model.DetailLink(Model.Title)
+                </strong>
+                <em>(@Model.ID)</em>
+            </p>
+            <p>
+                @if (Model.StartDTTM.HasValue)
+                {
+                    <span>@Html.GlobalResource("Starts"):</span>
+                    @Html.LocalDTTM(Model.StartDTTM.Value, Model.TimeZone, "G")
+                }
+                else
+                {
+                    <span>@Html.GlobalResource("ScheduledStart"):</span>
+                    @Html.GlobalResource("NotSet")
+                }
+                <br />
+                @Html.GlobalResource("FirstLotCloses"):
+                @Html.LocalDTTM(Model.EndDTTM, Model.TimeZone, "G")
+                <br />
+                @Html.GlobalResource("NumberOfLots"): @Model.LotCount
+                &nbsp;| &nbsp;
+                @Html.GlobalResource("NumberOfDraftLots"): @draftLotCounts[Model.ID]
+            </p>
+        </div>
+
+
+    </div>
+</div>

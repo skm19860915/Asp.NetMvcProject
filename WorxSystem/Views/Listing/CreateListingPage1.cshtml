@@ -1,0 +1,100 @@
+﻿<div class="row">
+    <div class="col-xs-12">
+        @{
+            using (Html.BeginForm())
+            {
+                @Html.Hidden(Fields.ReturnUrl)
+
+                <div class="well well-sm section-title">
+                    @Html.GlobalResource("CreateListing") - @Html.GlobalResource("Step1Of2")
+                    <div class="pull-right hidden-xs">@Html.GlobalResource("RequiredFields", "<span class=\"required\"></span>")</div>
+                </div>
+                <div class="panel panel-default">
+                    @Html.LocalizedValidationSummary()
+                    @Html.Hidden("SimilarListingID")
+                    <div class="panel-heading">
+                        <span class="required">@Html.GlobalResource("Category")</span>
+                    </div>
+                    <div class="panel-body">
+                        @Html.Partial("AJAXCategoryChooser")
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="required">@Html.GlobalResource("ListingType")</span>
+                    </div>
+                    @Html.Partial("AJAXListingTypeChooser")
+                </div>
+                if (bool.Parse(SiteClient.Settings["EnableStores"]))
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("Stores")
+                        </div>
+                        <div class="panel-body">
+                            @Html.DropDownList(Fields.StoreID, "Select a store!")
+                        </div>
+                    </div>
+                }
+                if (bool.Parse(SiteClient.Settings[SiteProperties.EnableRegions]))
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("Regions")
+                        </div>
+                        <div class="panel-body">
+                            @Html.Partial("AJAXRegionChooser")
+                        </div>
+                    </div>
+                }
+
+                if (SiteClient.EnableMultipleCurrencies)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <label class="required">@Html.GlobalResource("Currency")</label>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-sm-6">
+                                @Html.DropDownList(Fields.Currency, Html.Currencies(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.Hidden(Fields.Currency, SiteClient.SiteCurrency)
+                }
+
+                <div class="well">
+                    <input type="submit" class="btn btn-primary" id="create" name="create" disabled="disabled" value="@Html.GlobalResource("CreateListingNextStep")" />
+                </div>
+
+            }
+        }
+
+    </div>
+</div>
+<script>
+    function FormHasRequiredFields() {
+        var retVal = true;
+        $(".CategorySelectBox").each(function () {
+            if ($(this).find("option:selected").length == 0) {
+                retVal = false;
+            }
+        });
+        if (!retVal) return false;
+        if ($("input[name='ListingType']:checked").length == 0) {
+            return false;
+        }
+        return true;
+    }
+    $(document).ready(function () {
+        if (FormHasRequiredFields()) {
+            $("#create").prop("disabled", false).fadeTo(0, 1);
+        } else {
+            $("#create").prop("disabled", true).fadeTo(0, 0.5);
+        }
+    });
+</script>

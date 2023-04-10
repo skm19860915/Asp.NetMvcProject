@@ -1,0 +1,97 @@
+﻿@model Page<RainWorx.FrameWorx.DTO.UserMessage>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+}
+<div class="well well-sm section-title">
+    @if ((bool)ViewData[MVC.ViewData_UserMessages_Incoming])
+    {
+        @Html.GlobalResource("LineageString_Messaging_Inbox")
+    }
+    else
+    {
+        @Html.GlobalResource("LineageString_Messaging_Outbox")
+    }
+</div>
+@if (Model.TotalItemCount == 0)
+{
+    <div class="alert alert-info">
+        @Html.GlobalResource("YouHaveNoMessages")
+    </div>
+}
+else
+{
+    <div class="panel panel-default">
+        <table class="table messaging__list">
+            <tr class="active">
+                <th>
+                    @Html.ActionLink(Html.GlobalResource("Subject"), MVC.ViewMessagesAction,
+                                            new
+                                                {
+                                                    incoming = ViewData[MVC.ViewData_UserMessages_Incoming],
+                                                    sort = Fields.Subject,
+                                                    descending = (string)ViewData[MVC.ViewData_SortField] != Fields.Subject ? false : !((bool)ViewData[MVC.ViewData_SortDescending])
+                                                })
+                </th>
+                <th class="hidden-xs">
+                    @Html.ActionLink(Html.GlobalResource("Listing"), MVC.ViewMessagesAction,
+                                            new
+                                                {
+                                                    incoming = ViewData[MVC.ViewData_UserMessages_Incoming],
+                                                    sort = Fields.ListingId,
+                                                    descending = (string)ViewData[MVC.ViewData_SortField] != Fields.ListingId ? false : !((bool)ViewData[MVC.ViewData_SortDescending])
+                                                })
+                </th>
+                <th>
+                    @Html.ActionLink(Html.GlobalResource("Sent"), MVC.ViewMessagesAction,
+                                            new
+                                                {
+                                                    incoming = ViewData[MVC.ViewData_UserMessages_Incoming],
+                                                    sort = Fields.Sent,
+                                                    descending = (string)ViewData[MVC.ViewData_SortField] != Fields.Sent ? true : !((bool)ViewData[MVC.ViewData_SortDescending])
+                                                })
+                </th>
+                <th class="hidden-xs">
+                    @(((bool)ViewData[MVC.ViewData_UserMessages_Incoming]
+                                ? Html.GlobalResource("From")
+                                : Html.GlobalResource("To")))
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.List)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(item.Subject, MVC.ReadMessageAction, new { id = item.ID, returnUrl })
+                        @if (((bool)ViewData[MVC.ViewData_UserMessages_Incoming] ? item.RecipientStatus : item.SenderStatus) == UserMessageStatuses.Unread)
+                        {
+                            <span class="label label-info">@Html.GlobalResource("NewMessage")</span>
+                        }
+                    </td>
+                    <td class="hidden-xs">
+                        @if (item.ListingID.HasValue)
+                        {
+                            @Html.ActionLink(item.ListingID.ToString(), MVC.DetailsAction, MVC.ListingController, new { id = item.ListingID }, null)
+                        }
+                    </td>
+                    <td>
+                        @Html.LocalDTTM(item.Sent, "G")
+                    </td>
+                    <td class="hidden-xs">
+                        @(((bool)ViewData[MVC.ViewData_UserMessages_Incoming] ? item.From : item.To))
+                    </td>
+                    <td>
+                        @{string viewReplyButtonText = (Html.FBOUserName() == item.To ? Html.GlobalResourceString("Reply") : Html.GlobalResourceString("View"));}
+
+                            @Html.ButtonLink(viewReplyButtonText, MVC.ReadMessageAction,
+                                new { id = item.ID, returnUrl }, new { @class = "btn btn-default btn-xs" })
+                            @Html.ButtonLink(Html.GlobalResource("Delete_small"), MVC.DeleteMessageAction,
+                                new { id = item.ID, returnUrl }, new { @class = "close hidden-xs" })
+                       
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}

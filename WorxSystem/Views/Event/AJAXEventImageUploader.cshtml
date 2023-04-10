@@ -1,0 +1,363 @@
+﻿@model List<RainWorx.FrameWorx.DTO.Media.Media>
+@{
+    int MAX_UPLOADED_IMAGE_SIZE_BYTES = 5000000; // default 5 MB
+    int tempMax;
+    if (int.TryParse(System.Configuration.ConfigurationManager.AppSettings["MAX_UPLOADED_IMAGE_SIZE_BYTES"], out tempMax))
+    {
+        MAX_UPLOADED_IMAGE_SIZE_BYTES = tempMax;
+    }
+
+    string bannerThumbStyle = "ThumbFit";
+}
+<script>
+
+    var maxImages_EventImage = 1;
+
+    $(document).ready(function () {
+        if (window.File && window.FileList) {
+            $("#html5files_EventImage").change(handleFileSelect_EventImage);
+
+            var ie_version =  getIEVersion();
+            var safari_version = getSafariVersion();
+            if ((ie_version.major > 0 && ie_version.major < 11) || (safari_version > 0 && safari_version < 7)) {
+                // programmatically triggering file select causes IE9 & 10 to disallow form submission, so show file input object instead of "Add Image(s)" button...
+                $("#html5files_EventImage").removeClass("hidden");
+            } else {
+                $("#html5button_EventImage").show();
+            }
+
+        } else {
+            $("#photo_EventImage").show();
+            $("#photo_EventImage").makeAsyncUploaderWithSuccessHandler({
+                upload_url: $.url('Media/AsyncUploadEventImage?resultstyle=@bannerThumbStyle'),
+                flash_url: 'Content/swf/swfupload.swf',
+                button_image_url: 'Content/images/blankButton.png',
+                disableDuringUpload: 'INPUT[type="submit"]',
+                button_text: '@Html.GlobalResource("ChooseImages")',
+                file_queue_error_handler: function(file, code, msg) {
+                    //alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()'/* + ': ' + msg*/);
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                        message: '@Html.GlobalResourceString("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()',
+                        buttons: [{
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }]
+                    });
+                },
+                /* function(file, code, msg) { alert("Sorry, your file wasn't uploaded: " + msg); }, */
+                upload_error_handler: function(file, code, msg) {
+                    //alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()'/* + ': ' + msg*/);
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                        message: '@Html.GlobalResourceString("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()',
+                        buttons: [{
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }]
+                    });
+                }
+                /* function(file, code, msg) { alert("Sorry, your file wasn't uploaded: " + msg); } */
+            }, addImage_EventImage);
+        }
+    });
+
+    var files_EventImage;
+
+    function handleFileSelect_EventImage() {
+        //max file size definition
+        var MAX_SINGLE_FILE_SIZE_BYTES = @MAX_UPLOADED_IMAGE_SIZE_BYTES;
+        var abort = false;
+
+        files_EventImage = new Array();
+        for (var i = 0, singleFile; singleFile = this.files[i]; i++) {
+            files_EventImage.push(singleFile);
+
+            //file size check
+            if (MAX_SINGLE_FILE_SIZE_BYTES > 0 && singleFile.size > MAX_SINGLE_FILE_SIZE_BYTES) {
+                abort = true;
+                var errorMessage = '@Html.GlobalResourceString("SelectedFileIsTooLarge").ToJavascriptSafeString()'
+                    .replace('[FILE_NAME]', singleFile.name)
+                    .replace('[FILE_SIZE]', fileSizeLabel(singleFile.size))
+                    .replace('[MAX_FILE_SIZE]', fileSizeLabel(MAX_SINGLE_FILE_SIZE_BYTES));
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                    message: errorMessage,
+                    buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                    ]
+                });
+            }
+        }
+
+        if (!abort) {
+            var file = files_EventImage.shift();
+            if (file != undefined) {
+                $("#progress_bar_EventImage").slideDown();
+                UploadFile_EventImage(file);
+            }
+        } else {
+            //clear selected files
+            $(this).val("");
+        }
+    }
+
+    function updateProgress_EventImage(evt) {
+        // evt is an ProgressEvent.
+        //While the request entity body is being uploaded and the upload complete flag is false,
+        //queue a task to fire a progress event named progress at the XMLHttpRequestUpload object
+        //about every 50ms or for every byte transmitted, whichever is least frequent.
+        //- W3 XMLHttpRequest Level 2 (Bolded for emphasis)
+        if (evt.lengthComputable) {
+            var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+            // Increase the progress bar length.
+            if (percentLoaded < 100) {
+                $('.percent').css("width", percentLoaded + "%");
+                $('.percent').text(percentLoaded + "%");
+            }
+        }
+    }
+
+    function successHandler_EventImage(result) {
+        $('.percent').css("width", "100%");
+        $('.percent').text("100%");
+        addImage_EventImage('unk', 'unk', 'unk', result.guid, result.uri);
+        var file = files_EventImage.shift();
+        if (file != undefined) {
+            UploadFile_EventImage(file);
+        } else {
+            $("#progress_bar_EventImage").slideUp('slow');
+            $("#html5files_EventImage").val("");
+        }
+    }
+
+    function UploadFile_EventImage(file) {
+
+        var currentImageCount = $("#sortablethumbnails_EventImage").find(".imagecontainer").length;
+        if (currentImageCount >= maxImages_EventImage) {
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                message: '@Html.GlobalResourceString("AJAX_TooManyImages").ToJavascriptSafeString()',
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                        action: function(dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            $("#progress_bar_EventImage").slideUp('slow');
+            return false;
+        };
+
+        var formData = new FormData();
+        formData.append("resultstyle", "@bannerThumbStyle");
+        formData.append("file", file);
+        $.ajax({
+            url: $.url("Media/AsyncUploadEventImage"),  //server script to process data
+            type: 'POST',
+            xhr: function () {  // custom xhr
+                var myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) { // check if upload property exists
+                    myXhr.upload.addEventListener('progress', updateProgress_EventImage, false); // for handling the progress of the upload
+                }
+                return myXhr;
+            },
+            //Ajax events
+            //beforeSend: beforeSendHandler,
+            //success: successHandler_EventImage,
+            //error: errorHandler,
+            // Form data
+            data: formData,
+            //Options to tell JQuery not to process data or worry about content-type
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (results) {
+            successHandler_EventImage(results);
+        }).fail(function (e) {
+            //alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()'/* + ': ' + msg*/);
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                message: '@Html.GlobalResourceString("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()',
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                        action: function(dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            $("#progress_bar_EventImage").slideUp('slow');
+        });
+    }
+
+    function DeleteMedia_EventImage(guid) {
+        $.ajax({
+            url: $.url("Media/DeleteMedia"),  //server script to process data
+            type: 'POST',
+            //Ajax events
+            //beforeSend: beforeSendHandler,
+            //success: successHandler_EventImage,
+            //error: errorHandler,
+            // Form data
+            data: { guid : guid },
+            //Options to tell JQuery not to process data or worry about content-type
+            cache: false
+            //contentType: false,
+            //processData: false
+        });
+    }
+
+    function RotateMedia_EventImage(guid, clockwise) {
+        $.ajax({
+            url: $.url("Media/RotateMedia"),  //server script to process data
+            type: 'POST',
+            //Ajax events
+            //beforeSend: beforeSendHandler,
+            //success: successHandler_EventImage,
+            //error: errorHandler,
+            // Form data
+            data: { guid: guid, clockwise: clockwise, resultstyle: "@bannerThumbStyle" },
+            //Options to tell JQuery not to process data or worry about content-type
+            cache: false
+            //contentType: false,
+            //processData: false
+        }).done(function (results) {
+            if (results.Success) {
+                var base = $("input[value='" + results.OldGUID + "']");
+                base.attr("name", "media_guid_" + results.NewGUID);
+                base.attr("value", results.NewGUID);
+                base.next().attr("name", "media_ordr_" + results.NewGUID);
+                base.prev().attr("src", results.NewURI);
+                base.prev().removeClass("img-busy");
+                EnableDisplayButtons_EventImage();
+                $("input#ThumbnailRendererState_EventImage").val($("div#sortablethumbnails_EventImage").html());
+            }
+        });
+    }
+
+</script>
+@Html.GlobalResource("UploadEventImage")
+
+<input type="file" id="photo_EventImage" name="photo" class="hidden" />
+<button class="btn btn-default awe-hidden" id="html5button_EventImage" onclick="$('#html5files_EventImage').click();return false;">@Html.GlobalResource("ChooseImage_HTML5")</button>
+@Html.ToolTipButton("DeleteImageDisclaimer_EventImage")
+<input type="file" id="html5files_EventImage" name="files[]" multiple class="hidden" />
+<div id="progress_bar_EventImage" class="awe-hidden"><div class="percent">0%</div></div>
+<script>
+
+    function addImage_EventImage(fileName, fileSize, fileType, guid, response) {
+        var thumbnails = $("div#sortablethumbnails_EventImage");
+
+        var newDiv = $("<div class='imagecontainer'/>").appendTo(thumbnails);
+
+        var newImg = $("<img alt='thumbnail' class='img-responsive'/>").appendTo(newDiv).attr("src", response);
+        $("<input type='hidden' name='media_guid_" + guid + "'/>").appendTo(newDiv).attr("value", guid);
+        $("<input type='hidden' name='media_ordr_" + guid + "'/>").appendTo(newDiv).attr("class", "order");
+        $("<div class='btn-group'><a href='#' class='btn btn-default btn-xs img-rotate-CW img-rotate-CW_EventImage'><span class='glyphicon glyphicon-refresh'></span>&nbsp;@Html.GlobalResource("RotateImage")</a>" +
+        "<a href='#' class='btn btn-danger btn-xs img-delete img-delete_EventImage'><span class='glyphicon glyphicon-remove'></span>&nbsp;@Html.GlobalResource("Remove")</a></div>").appendTo(newDiv);
+        RefreshOrder_EventImage();
+    }
+
+    $(document).ready(function () {
+        $("div#sortablethumbnails_EventImage").html($("input#ThumbnailRendererState_EventImage").val());
+    });
+
+    $(document).ready(function () {
+        $("div#sortablethumbnails_EventImage").sortable({
+            opacity: 0.7,
+            revert: false,
+            scroll: true,
+            tolerance: 'pointer',
+            placeholder: "imagecontainer-highlight",
+            update: function (event, ui) {
+                RefreshOrder_EventImage();
+            }
+        });
+        $("div#sortablethumbnails_EventImage").disableSelection();
+
+        $(document).on("click", "a.img-delete_EventImage", function () {
+            var guid = $(this).parent().parent().children("input[type=hidden]:first").val();
+            $(this).parent().parent().remove();
+            RefreshOrder_EventImage();
+            DeleteMedia_EventImage(guid);
+            return false;
+        });
+
+        $(document).on("click", "a.img-rotate-CW_EventImage", function () {
+            DisableThumbButtons_EventImage();
+            $(this).parent().parent().children("img:first").addClass("img-busy");
+            var guid = $(this).parent().parent().children("input[type=hidden]:first").val();
+            RotateMedia_EventImage(guid, true);
+            return false;
+        });
+
+        @{
+            bool thumbButtonsValid = true;
+        }
+        @if (Model != null)
+        {
+            List<Media> mediaList = Model.Where(m => m.Variations.ContainsKey("ThumbCrop")).ToList();
+            foreach (Media media in mediaList)
+            {
+                //Load Media
+                IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(media.Loader);
+                Dictionary<string, string> loaderProviderSettings =
+                CommonClient.GetAttributeData(mediaLoader.TypeName, MediaUploadContexts.UploadEventImage);
+                <text>addImage_EventImage('unk', 'unk', 'unk', '@media.GUID', '@mediaLoader.Load(loaderProviderSettings, media, bannerThumbStyle)');</text>
+                if (!media.Variations.ContainsKey("Original"))
+                {
+                    thumbButtonsValid = false;
+                }
+            }
+        }
+
+        if (!(@thumbButtonsValid.ToString().ToLower())) {
+            $(".img-rotate-CCW").addClass("img-buttons-hide");
+            $(".img-rotate-CW").addClass("img-buttons-hide");
+        }
+    });
+
+    function DisableThumbButtons_EventImage() {
+        $(".img-delete").addClass("img-buttons-hide");
+        $(".img-rotate-CCW").addClass("img-buttons-hide");
+        $(".img-rotate-CW").addClass("img-buttons-hide");
+        $("#create").addClass("img-buttons-hide");
+    }
+
+    function EnableDisplayButtons_EventImage() {
+        $(".img-delete").removeClass("img-buttons-hide");
+        $(".img-rotate-CCW").removeClass("img-buttons-hide");
+        $(".img-rotate-CW").removeClass("img-buttons-hide");
+        $("#create").removeClass("img-buttons-hide");
+    }
+
+    function RefreshOrder_EventImage() {
+        var images = $(".imagecontainer");
+        for (var x = 0; x < images.length; x++) {
+            $(".imagecontainer .order:eq(" + x + ")").val(x);
+        }
+        $("input#ThumbnailRendererState_EventImage").val($("div#sortablethumbnails_EventImage").html());
+    }
+
+</script>
+<div id="sortablethumbnails_EventImage">
+</div>
+

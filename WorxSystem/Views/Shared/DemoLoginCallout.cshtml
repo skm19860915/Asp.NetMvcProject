@@ -1,0 +1,151 @@
+﻿@*<div id="DemoDiv">
+        <table cellpadding="0" cellspacing="0" id="DemoMiddle">
+            <tr>
+                <td>
+                    <strong>
+                        Select a predefined demo user below:
+                    </strong>
+                    <br />
+                    <a href="@Url.Action("LogOn", "Account", new { username = "AuctionBob", returnURL = Request["returnURL"] })">AuctionBob</a>
+                    <br />
+                    <a href="@Url.Action("LogOn", "Account", new { username = "BidderBill", returnURL = Request["returnURL"] })">BidderBill</a>
+                    <br />
+                    <a href="@Url.Action("LogOn", "Account", new { username = "SusanSales", returnURL = Request["returnURL"] })">SusanSales</a>
+                    <br />
+                    <a href="@Url.Action("LogOn", "Account", new { username = "admin", returnURL = Request["returnURL"] })">Admin</a>
+                    <p />
+                    (All demo user account passwords: demo)
+                </td>
+            </tr>
+        </table>
+    </div>*@
+@if (SiteClient.EnableEvents)
+{
+    <div class="demo-data__wrapper">
+        <div class="row">
+            <div class="col-md-6 col-sm-7">
+                <strong>Sign in as an admin user</strong><br />
+                Username: <a class="DemoUserNameLink" href="#SignOnAs">Admin</a> &nbsp;&nbsp; Password: demo
+            </div>
+            <div class="col-md-6 col-sm-8">
+                <strong>Or sign in as a regular seller</strong><br />
+                Username: <a class="DemoUserNameLink" href="#SignOnAs">Seller1</a> &nbsp;&nbsp; Password: demo<br />
+                &nbsp;<br />
+                <button id="ShowDemoUsersListButton" class="btn btn-warning" data-target="#DemoUsers" data-toggle="modal" type="button">Additional Test User Accounts</button>
+            </div>
+        </div>
+    </div>
+
+    <div aria-labelledby="DemoUsersLabel" class="modal fade" id="DemoUsers" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+
+                    <h4 class="modal-title" id="myModalLabel">Additional Test User Accounts</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a class="DemoUserNameLink" href="#SignOnAs">SpringfieldEstates</a></td>
+                                <td>demo</td>
+                                <td>Seller</td>
+                            </tr>
+                            <tr>
+                                <td><a class="DemoUserNameLink" href="#SignOnAs">JCassisAntiques</a></td>
+                                <td>demo</td>
+                                <td>Seller</td>
+                            </tr>
+                            <tr>
+                                <td><a class="DemoUserNameLink" href="#SignOnAs">CollectArt</a></td>
+                                <td>demo</td>
+                                <td>Buyer</td>
+                            </tr>
+                            <tr>
+                                <td><a class="DemoUserNameLink" href="#SignOnAs">XLMachines</a></td>
+                                <td>demo</td>
+                                <td>Seller</td>
+                            </tr>
+                            <tr>
+                                <td><a class="DemoUserNameLink" href="#SignOnAs">OnlyMusic</a></td>
+                                <td>demo</td>
+                                <td>Seller</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="demo-data__wrapper">
+        <div class="row">
+            <div class="col-md-6 col-sm-7">
+                Sign in as an admin user<br />
+                Username: <a class="DemoUserNameLink" href="#SignOnAs">Admin</a> &nbsp;&nbsp; Password: demo
+            </div>
+            <div class="col-md-6 col-sm-8">
+                Or sign in as a regular seller<br />
+                Username: <a class="DemoUserNameLink" href="#SignOnAs">SusanSales</a> &nbsp;&nbsp; Password: demo<br />
+                <button id="ShowDemoUsersListButton" class="btn btn-warning" data-target="#DemoUsers" data-toggle="modal" type="button">Additional Test User Accounts</button>
+            </div>
+        </div>
+    </div>
+
+    <div aria-labelledby="DemoUsersLabel" class="modal fade" id="DemoUsers" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+
+                    <h4 class="modal-title" id="myModalLabel">Additional Test User Accounts</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a class="DemoUserNameLink" href="#SignOnAs">AuctionBob</a></td>
+                                <td>demo</td>
+                                <td>Seller</td>
+                            </tr>
+                            <tr>
+                                <td><a class="DemoUserNameLink" href="#SignOnAs">BidderBill</a></td>
+                                <td>demo</td>
+                                <td>Buyer</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $(".DemoUserNameLink").on("click", function (event) {
+            event.preventDefault();
+            var targetUserName = $(this).html();
+            $("input[name=username]").val(targetUserName);
+            $("input[name=password]").val("demo");
+            $(this).parents("#DemoUsers").first().modal("hide");
+            $("input[name=password]").closest("form").submit();
+        });
+    });
+</script>

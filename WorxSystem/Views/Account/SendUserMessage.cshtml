@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("ContactUser")
+</div>
+@Html.LocalizedValidationSummary()
+@if (SiteClient.UserMessagingEnabled)
+{
+    using (Html.BeginForm(MVC.SendMessageAction, MVC.AccountController, new
+    {
+        sender = ViewData[Fields.Sender],
+        receiver = ViewData[Fields.Receiver],
+        template = ViewData[Fields.Template],
+        returnUrl = ViewData[Fields.ReturnUrl]
+    }, FormMethod.Post, null))
+    {
+        <div class="panel panel-default">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>@Html.GlobalResource("To"):</strong> @ViewData["Receiver"]
+                </li>
+                <li class="list-group-item">
+                    <strong class="required">@Html.GlobalResource("Subject"):</strong>&nbsp; @Html.TextBox("Subject", "", new { @class = "form-control" })
+
+                    <strong class="required">@Html.GlobalResource("Message"):</strong>
+                    @Html.TextArea("Body", "", 8, 45, new { @class = "form-control" })
+                </li>
+            </ul>
+            @{ string returnUrl = (ViewData.ContainsKey(Fields.ReturnUrl)) ? (string)ViewData[Fields.ReturnUrl] : string.Empty; }
+            @if (string.IsNullOrEmpty(returnUrl))
+            {
+                returnUrl = Html.GetActionUrl(MVC.ViewMessagesAction, MVC.AccountController);
+            }
+            <script>
+                $(document).ready(function () {
+                    //[Cancel] Button
+                    $("#CancelButton").click(function () {
+                        var targetUrl = '@returnUrl.ToJavascriptSafeString()';
+                        //alert('redirecting to:' + $.htmlDecode(targetUrl));
+                        document.location = $.htmlDecode(targetUrl);
+                        return false;
+                    });
+                });
+            </script>
+            <div class="panel-footer">
+                <button class="btn btn-link" id="CancelButton">@Html.GlobalResource("Cancel")</button>
+
+                <input type="submit" class="btn btn-default" name="Send" id="Submit1" value="@Html.GlobalResource("Send")" />
+            </div>
+        </div>
+    }
+}

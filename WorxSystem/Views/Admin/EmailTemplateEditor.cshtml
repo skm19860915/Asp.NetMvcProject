@@ -1,0 +1,139 @@
+﻿@using System.Globalization
+@model EmailTemplateContent
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_EmailTemplateEditor");
+    string helpDocsBaseUrl = SiteClient.EnableEvents
+        ? "http://www.rainworx.com/ev-docs-3.1r2"
+        : "http://www.rainworx.com/docs-3.1r2";
+}
+@section PageName {
+    <a href="@helpDocsBaseUrl/AdminGuide/CMS/Email-Templates/EmailTemplates-enable.htm" target="_blank" class="btn btn-link pull-right">@Html.AdminResource("EmailTemplateHelp") <span class="glyphicon glyphicon-new-window"></span></a>
+}
+@section head {
+<script>
+    $(document).ready(function () {
+
+        // [Preview] click
+        $("#PreviewEmailTemplateA").click(function () {
+            $("#PreviewEmailTemplateContainerB").show().load(
+                '@(Html.GetActionUrl(MVC.PreviewEmailTemplateAction) + " #Results")',
+                {
+                    template: $("#template").val(),
+                    culture: $("#culture").val(),
+                    subject: $("#Subject").val(),
+                    body: $("#Body").val()
+                }, function (response, status, xhr) {
+                    //indicator.fadeOut('slow');
+                    if (status == "error") {
+                        var msg = "Sorry but there was an error: ";
+                        alert(msg + xhr.status + " " + xhr.statusText);
+                    }
+                }
+            );
+        });
+
+        // [Reset] click
+        $("#ResetContent").click(function (e) {
+            e.preventDefault();
+            var thisLink = $(this);
+            thisLink.pulse();
+            //either set values to defaults or restore previous values
+            if (thisLink.html() == "@Html.GlobalResource("Reset").ToJavascriptSafeString()") {
+                Proxy.invoke("GetDefaultTemplateContent", { template: "@Model.Name.ToJavascriptSafeString()" },
+                    function (result) {
+                        if (result == null) return;
+                        if (result.error) {
+                            window.alert(result.error);
+                        } else {
+                            //temporarily save old values (for undo)
+                            thisLink.data("oldSubject", $("#@Fields.Subject").val());
+                            thisLink.data("oldBody", $("#@Fields.Body").val());
+
+                            //set the new values
+                            $("#@Fields.Subject").val(result.subject);
+                            $("#@Fields.Body").val(result.body);
+
+                            //update link text to "Undo Reset"
+                            thisLink.html("@Html.GlobalResource("UndoReset")");
+                        }
+                    },
+                    function (error) { window.alert(error); }
+                );
+            } else {
+                //update link text to "Reset"
+                thisLink.html("@Html.GlobalResource("Reset")");
+
+                //restore old values
+                $("#@Fields.Subject").val(thisLink.data("oldSubject"));
+                $("#@Fields.Body").val(thisLink.data("oldBody"));
+            }
+        });
+
+    });
+    $.fn.pulse = function () {
+        $(this).addClass("signalr-pulse", 10, function () { $(this).removeClass("signalr-pulse", 3000); });
+    };
+</script>
+    <style>
+        #ResetContent{
+            padding-left: 0px;
+        }
+    </style>
+}
+<div class="sub-header">
+    @Html.AdminResource("Editing") : @Html.AdminResource("template_" + (string)ViewData["template"])
+    @if (SiteClient.BoolSetting(SiteProperties.EnableMultipleCultures))
+    {
+        @("(" + CultureInfo.GetCultureInfo(Model.Culture).NativeName + ")")
+    }
+</div>
+@using (Html.BeginForm(MVC.EmailTemplateEditorAction, MVC.AdminController, FormMethod.Post, new { @id = "EditEmailTemplate", @class = "form-horizontal" }))
+{
+    @Html.Hidden(Fields.template)
+    @Html.Hidden(Fields.culture)
+    string template = (string)ViewData[Fields.template];
+    string cssClass = string.Empty;
+    if (template.Equals("EmailHeader", StringComparison.OrdinalIgnoreCase) || template.Equals("EmailFooter", StringComparison.OrdinalIgnoreCase))
+    {
+        cssClass = "hidden";
+    }
+    <div class="@cssClass">
+        <label for="@Fields.Subject" class="control-label">@Html.AdminResource(Fields.Subject)</label>
+        @Html.TextBox(Fields.Subject, null, null, new { @class = "form-control input-sm" })
+    </div>
+    <label for="@Fields.Body" class="control-label">@Html.AdminResource(Fields.Body)</label>
+
+    @Html.TextArea(Fields.Body, null, 20, 120, new { @class = "form-control" })
+    <div class="action-panel">
+        @Html.ActionLink(Html.AdminResource("Cancel"), MVC.EmailTemplatesAction, null, new { @class = "btn btn-link" })
+        <a href="#ResetContent" id="ResetContent" class="btn btn-link">@Html.GlobalResource("Reset")</a>
+        @if (!template.Equals("EmailHeader", StringComparison.OrdinalIgnoreCase) && !template.Equals("EmailFooter", StringComparison.OrdinalIgnoreCase))
+        {
+            <button type="button" data-toggle="modal" data-target="#PreviewEmailTemplateContainerA" id="PreviewEmailTemplateA"class="btn btn-info">@Html.AdminResource("Preview")</button>
+        }
+
+        @if (SiteClient.DemoEnabled)
+        {
+            <button class="btn btn-success" disabled="disabled">@Html.AdminResource("SaveTemplate") <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" /></button>
+        }
+        else
+        {
+            <input type="submit" class="btn btn-success" id="Save" name="Save" value="@Html.AdminResource("SaveTemplate")" />
+        }
+    </div>
+}
+<div class="modal fade" id="PreviewEmailTemplateContainerA">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                @Html.AdminResource("Previewing") : @Html.AdminResourceString("template_" + (string)ViewData["template"]).ToJavascriptSafeString() @(SiteClient.BoolSetting(SiteProperties.EnableMultipleCultures) ? "(" + CultureInfo.GetCultureInfo(Model.Culture).NativeName + ")" : string.Empty)
+            </div>
+            <div class="modal-body" id="PreviewEmailTemplateContainerB">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

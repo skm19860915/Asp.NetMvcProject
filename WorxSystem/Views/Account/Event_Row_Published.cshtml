@@ -1,0 +1,50 @@
+﻿@model Event
+
+@*<div class="hidden-xs"><input type="checkbox" name="EventIDs" value="@Model.ID" class="row-selection-checkbox" /></div>*@
+<div class="col-sm-12" data-eventid="@Model.ID">
+    <div class="line-item clearfix">
+        @Html.Partial("Action_Events")
+        <div class="img-container">
+            @if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+            {
+                @Html.Partial("NoPhotoThumbnail")
+            }
+            else
+            {
+                string uri = string.Format(Model.PrimaryImageURI, "ThumbFit".ToLower());
+                @Model.BeginDetailLink()
+                <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                @Model.EndDetailLink()
+            }
+        </div>
+        <div class="item-data">
+            <p>
+                <span class="awe-rt-ColoredStatus">
+                    @Html.Partial("Event_StatusLabel")
+                </span>
+                <strong>
+                    @Model.DetailLink(Model.Title)
+                </strong>
+                <em>(@Model.ID)</em>
+            </p>
+            <p>
+                @if (Model.StartDTTM.HasValue)
+                {
+                    @Html.LocalDTTM(Model.StartDTTM.Value, Model.TimeZone, "G")
+                    @(" - ")
+                    @Html.LocalDTTM(Model.EndDTTM, Model.TimeZone, "G")
+                }
+                else
+                {
+                    <span>&nbsp;</span>
+                    @(" - ")
+                    @Html.LocalDTTM(Model.EndDTTM, Model.TimeZone, "G")
+                }
+                @*<br /> @Html.TimeZoneName(Model.TimeZone)*@
+            </p>
+            <p>
+                @Html.GlobalResource("NumberOfLots"): @Model.LotCount
+            </p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,42 @@
+﻿@model Invoice
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+@{
+    if (Model == null)
+    {
+        @Html.LocalizedValidationSummary()
+    }
+    else if (Model.Type == "Fee")
+    {
+        if (Model.Status == "Paid")
+        {
+            @Html.Partial("PaidFeeInvoice", Model)
+        }
+        else if (Model.Status == "Pending")
+        {
+            @Html.Partial("PendingFeeInvoice", Model)
+        }
+        else
+        {
+            @Html.Partial("UnpaidFeeInvoice", Model)
+        }
+    }
+    else
+    {
+        if (Model.Status == "Paid")
+        {
+            @Html.Partial("PaidListingInvoice", Model)
+        }
+        else if (Model.Status == "Pending")
+        {
+            @Html.Partial("PendingListingInvoice", Model)
+        }
+        else
+        {
+            @Html.Partial("UnpaidListingInvoice", Model)
+        }
+    }
+}

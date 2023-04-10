@@ -1,0 +1,10 @@
+﻿@model RainWorx.FrameWorx.DTO.Invoice
+@using (Html.BeginForm())
+{
+    @Html.Hidden("provider", ViewData["ProviderName"])
+    <div class="col-xs-12">
+        <div class="payment-method clearfix">
+            <input type="submit" class="btn btn-primary btn-block" value="@Html.GlobalResource("AdminBypass")" />
+        </div>
+    </div>
+}

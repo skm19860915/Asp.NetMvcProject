@@ -1,0 +1,47 @@
+﻿@model Listing
+@{
+    var listingActiveOfferStatuses = (Dictionary<int, bool>)ViewData["ActiveOfferListings"];
+}
+
+<tr data-listingid="@Model.ID">
+    <td>@(Model.Lot.LotOrder + 1)</td>
+    <td>
+        <span class="awe-rt-ColoredStatus">@Html.Partial("Listing_StatusLabel_ForSeller")</span>
+        <div class="visible-xs">@(Model.CurrentPrice.HasValue ? Html.LocalCurrency(Model.CurrentPrice.Value, Model.Currency.Code) : string.Empty)</div>
+    </td>
+    <td class="hidden-xs">
+        @{
+            if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+            {
+                <span class="glyphicon glyphicon-ban-circle" title="@Html.GlobalResource("NoImage")"></span>
+            }
+            else
+            {
+                <span class="glyphicon glyphicon-picture" title="@Html.GlobalResource("HasImage")"></span>
+            }
+}
+    </td>
+    <td>
+
+        @Model.DetailLink(Model.Title) <em>(@Model.Lot.LotNumber)</em>
+        <span class="visible-xs"><br />@(Model.EndDTTM.HasValue ? Html.LocalDTTM(Model.EndDTTM.Value, Model.Lot.Event.TimeZone, "G") : MvcHtmlString.Empty)</span>
+    </td>
+    <td class="hidden-xs">@(Model.EndDTTM.HasValue ? Html.LocalDTTM(Model.EndDTTM.Value, Model.Lot.Event.TimeZone, "G") : MvcHtmlString.Empty)</td>
+    <td class="hidden-xs">@(Model.CurrentPrice.HasValue ? Html.LocalCurrency(Model.CurrentPrice.Value, Model.Currency.Code) : string.Empty)</td>
+    <td>
+        <div class="btn-group">
+            @if (Model.Properties != null && Model.Properties.Any(p =>
+                p.Field.Name == Fields.MakeOfferAllowed && !string.IsNullOrWhiteSpace(p.Value) && bool.Parse(p.Value)) &&
+                listingActiveOfferStatuses != null && listingActiveOfferStatuses[Model.ID] == true)
+            {
+                <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle pull-right"><span class="glyphicon glyphicon-cog"></span><div class="badge offerbadge--pending">!</div></a>
+            }
+            else
+            {
+                <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle pull-right"><span class="glyphicon glyphicon-cog"></span></a>
+            }
+            @Html.Partial("Action_Lot", Model.Lot)
+        </div>
+    </td>
+</tr>
+

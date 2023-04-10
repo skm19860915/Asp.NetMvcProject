@@ -1,0 +1,66 @@
+﻿@model Listing
+
+@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " + Model.Title;
+}
+<div class="row">
+    <div class="col-xs-12">
+        @{
+            if (Model.Status == ListingStatuses.Active)
+            {
+                <div class="alert alert-success">
+                    @Html.GlobalResource("ItemIsActiveConfirmation")
+                </div>
+            }
+            else if (Model.Status == ListingStatuses.Draft)
+            {
+                <div class="alert alert-success">
+                    @Html.GlobalResource("ItemIsDraftConfirmation")
+                </div>
+            }
+            else if (Model.Status == ListingStatuses.Pending)
+            {
+                <div class="alert alert-success">
+                    @Html.GlobalResource("ItemIsPendingConfirmation")
+                </div>
+            }
+            else if (Model.Status == ListingStatuses.AwaitingPayment)
+            {
+                <div class="alert alert-warning">
+                    @Html.GlobalResource("ItemIsAwaitingPaymentConfirmation")
+                </div>
+            }
+        }
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Partial("Listing_" + Model.Type.Name + "Row", Model)
+            </div>
+            <div class="panel-footer">
+                <div class="hidden-xs">
+                    @Html.ActionLink(Html.GlobalResource("SellAnotherItem"), MVC.CreateListingPage1Action, MVC.ListingController, "", new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateListingPage1Action, MVC.ListingController, new { SimilarListingID = Model.ID }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("ViewActiveListings"), MVC.ListingsActiveAction, MVC.AccountController, new { SortFilterOptions = 5 }, new { @class = "btn btn-default" })
+                </div>
+                <div class="visible-xs">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            @Html.GlobalResource("MoreOptions")
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("SellAnotherItem"), MVC.CreateListingPage1Action, MVC.ListingController, "")
+                            </li>
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateListingPage1Action, MVC.ListingController, new { SimilarListingID = Model.ID }, null)
+                            </li>
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("ViewActiveListings"), MVC.ListingsActiveAction, MVC.AccountController, new { SortFilterOptions = 5 })
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,167 @@
+﻿@model Page<Listing>
+@{
+    const int LotRemovalDelayMS = 3000;
+    const int AnimationMS = 500;
+
+    int visibleLotCount = SiteClient.PageSize;
+    if (Model.List.Count <= visibleLotCount)
+    {
+        visibleLotCount = Model.List.Count;
+    }
+    var currentEvent = (Event)ViewData[MVC.EventDetails];
+}
+<div id="VisibleLots">
+    @for (int i = 0; i < visibleLotCount; i++)
+    {
+        Listing listing = Model.List[i];
+        <section data-listingid="@listing.ID" data-lot-order="@listing.Lot.LotOrder">
+            @Html.Partial("Listing_" + listing.Type.Name + "Row", listing)
+        </section>
+    }
+</div>
+@if (Model.List.Count > visibleLotCount)
+{
+    <div id="LotBuffer" class="awe-hidden">
+        @for (int i = visibleLotCount; i < Model.List.Count; i++)
+        {
+            Listing listing = Model.List[i];
+            <section data-listingid="@listing.ID" data-lot-order="@listing.Lot.LotOrder">
+                @Html.Partial("Listing_" + listing.Type.Name + "Row", listing)
+            </section>
+        }
+    </div>
+}
+<div id="TempBuffer" class="awe-hidden"></div>
+<div class="text-center">
+    <p>
+        <a id="ShowMoreLots" class="awe-hidden btn btn-primary" href="#ShowMoreLots">
+            @Html.GlobalResource("ShowMore")
+            &nbsp;
+            &nbsp;
+            <span class="glyphicon glyphicon-chevron-down"></span>
+        </a>
+    </p>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $("#ShowMoreLots").on("click", function (event) {
+            event.preventDefault();
+            //console.log("showing more lots...");
+            ShowMoreLots();
+        });
+
+        $(document).on("SignalR_UpdateListingStatus", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            if (data.Status == "Ending" || data.Status == "Ended" || data.Status == "Closing" || data.Status == "Closed" || data.Status == "Unsuccessful" || data.Status == "Successful") {
+                setTimeout(function () {
+                    HideLot(data.ListingID, AddNextBufferedLot);
+                }, @LotRemovalDelayMS);
+            }
+        });
+
+        UpdateShowMoreLotsLink();
+    });
+    var _bufferingLots = false;
+    var _noMoreLotsToBuffer = @((Model.List.Count == Model.TotalItemCount).ToString().ToLower());
+    function ShowMoreLots() {
+        //move all lots in buffer to visible list
+        $("#ShowMoreLots").hide();
+        $("#LotBuffer [data-listingid]").appendTo("#VisibleLots");
+        BufferMoreLots();
+    }
+    function HideLot(listingId, callback) {
+        var lotToHide = $("[data-listingid='" + listingId + "']");
+        lotToHide
+            .animate({ opacity: 0, height: 0 }, @AnimationMS, function () {
+                $(this).remove();
+                if ($("#VisibleLots [data-listingid]:first").length == 0) {
+                    //the last lot has been removed, reload the page after a small delay
+                    setTimeout(function () {
+                        var targetUrl = '@currentEvent.GetDetailUrl().ToJavascriptSafeString()' + '?ViewStyle=@ViewData["ViewStyle"]';
+                        window.location.href = targetUrl;
+                    }, @LotRemovalDelayMS);
+                } else {
+                    callback();
+                }
+            });
+    }
+    function AddNextBufferedLot() {
+        var lotToMove = $("#LotBuffer [data-listingid]:first");
+        if (lotToMove.length > 0) {
+            lotToMove
+                .css({ opacity: 0 })
+                .hide()
+                .appendTo("#VisibleLots")
+                .show()
+                .animate({ opacity: 1 }, @AnimationMS);
+            if ($("#LotBuffer [data-listingid]").length < 3) {
+                BufferMoreLots()
+            }
+        }
+        //console.log("new buffer count:", $("#LotBuffer [data-listingid]").length);
+    }
+    function BufferMoreLots() {
+        UpdateShowMoreLotsLink();
+        if (_noMoreLotsToBuffer) {
+            //console.log("No more lots to buffer");
+            return;
+        }
+        if (_bufferingLots) {
+            //console.log("Buffering in progress... aborting duplicate request.");
+            return;
+        }
+        _bufferingLots = true;
+        //console.log("buffering more lots...");
+        var highestLotOrder = 999999;
+        $("[data-lot-order]").each(function () {
+            var convertedToNumber = new Number($(this).attr("data-lot-order"));
+            if (highestLotOrder == 999999 || convertedToNumber > highestLotOrder) {
+                highestLotOrder = convertedToNumber;
+            }
+        });
+        //console.log("largetLotOrder: ", highestLotOrder);
+        $.ajax({
+            url: "Event/MoreLots_Inline",
+            type: "post",
+            cache: false,
+            data: { EventID: @currentEvent.ID, ViewStyle: "list", gtLotOrder: highestLotOrder },
+            success: function (data) {
+                $("#TempBuffer").html(data);
+                if ($("#TempBuffer [data-listingid]:first").length == 0) {
+                    _noMoreLotsToBuffer = true;
+                    //console.log("Setting no-more-lots-to-buffer flag.");
+                } else {
+                    RegisterAdditionalInterestingListings("#TempBuffer", function () {
+                        $("#LotBuffer").append($("#TempBuffer").html());
+                        $("#TempBuffer").html("");
+                    });
+                }
+                UpdateShowMoreLotsLink();
+                _bufferingLots = false;
+            }
+        });
+    }
+    function UpdateShowMoreLotsLink() {
+        var firstLotInBuffer = $("#LotBuffer [data-listingid]:first");
+        if (firstLotInBuffer.length > 0) {
+            $("#ShowMoreLots").show();
+        } else {
+            $("#ShowMoreLots").hide();
+        }
+    }
+
+    ////this will execute if the browser supports the Page Visibility API, was switched to a background tab for some amount of time, and has just become the active tab again
+    //function StalePageHandler(timeSinceLastVisibleMS) {
+    //    //find any closed lots and call the HideLot() function on each one found
+
+    //    $("[data-listingid]").each(function () {
+    //        if ($(this).find(".awe-rt-ShowOnEnd:visible").length > 0) {
+    //            //found a container with "ShowOnEnd" elements which are visible, hide it...
+    //            HideLot($(this).attr("data-listingid"), AddNextBufferedLot);
+    //        }
+    //    })
+    //}
+
+</script>

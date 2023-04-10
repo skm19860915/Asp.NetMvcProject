@@ -1,0 +1,44 @@
+﻿@model LineItem
+<div class="list clearfix">
+    <div class="row">
+        <div class="col-sm-1">
+            <input type="checkbox" name="LineItemIDs" data-listing-id="@Model.ListingID" value="@Model.ID" class="row-selection-checkbox" />
+        </div>
+        <div class="col-sm-2">
+            @Model.Listing.BeginDetailLink()
+            @if (Model.PrimaryMedia != null && Model.PrimaryMedia.Variations.ContainsKey("ThumbCrop"))
+            {
+                @Html.Partial(Model.PrimaryMedia.Type + "_ThumbCrop", Model.PrimaryMedia)
+            }
+            else
+            {
+            @Html.Partial("NoPhotoThumbnail")            
+            }
+           
+        </div>
+        <div class="col-sm-5">
+            <p>
+                <strong>
+                    @Model.Listing.BeginDetailLink()
+                    @Model.Description <em>(@Model.ListingID)</em>
+                    @Model.Listing.EndDetailLink()
+                </strong>
+            </p>
+            <div class="row">
+                <div class="col-sm-4">@Model.Quantity</div>
+                <div class="col-sm-4">@Html.LocalCurrency(Model.PerUnitAmount, Model.Currency)</div>
+                <div class="col-sm-4">@Html.LocalCurrency(Model.TotalAmount, Model.Currency)</div>
+            </div>
+            </div>
+        <div class="col-sm-3">
+            <p>
+                @Html.LocalDTTM(Model.DateStamp, "G")
+            </p>
+            <p>
+                @Model.Payer.UserName
+            </p>
+        </div>
+        </div>
+    @Html.Partial("Action_SellerSold")
+    
+</div> 

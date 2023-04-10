@@ -1,0 +1,101 @@
+﻿@model Listing
+@{
+    // Final Buyer Fee details
+    decimal minFinalBuyerFee = (decimal)ViewData[MVC.ViewData_MinFinalBuyerFee];
+    decimal maxFinalBuyerFee = (decimal)ViewData[MVC.ViewData_MaxFinalBuyerFee];
+    List<Tier> finalBuyerFeeTiers = (List<Tier>)ViewData[MVC.ViewData_FinalBuyerFeeTiers];
+}
+@if (maxFinalBuyerFee > 0.0M && finalBuyerFeeTiers.Count > 0)
+{
+    <div class="detail__fee-heading">
+        <a class="detail__buyer-fee__more" data-toggle="modal" data-target="#ShowBuyerFeeTiers">
+            @Html.GlobalResource("MoreInfo")
+        </a>
+        @Html.GlobalResource("BuyerFee")
+    </div>
+                <div class="detail__buyer-fee">
+                    @Html.Resource(Model.Type.Name + "Listing, BuyerFeeNotice")
+
+@{
+
+                Tier firstTier = finalBuyerFeeTiers[0];
+
+                if (finalBuyerFeeTiers.Count == 1)
+                { // only one tier
+
+                if (firstTier.ValueType == TierTypes.Percent)
+                { // precentage
+                <span>@firstTier.Value.ToString("P").Replace(" %", "%")</span>
+                }
+                else
+                { // flat amount
+                <span>@Html.LocalCurrency(firstTier.Value, SiteClient.SiteCurrency)</span>
+                }
+
+                }
+                else
+                { // multiple tiers
+
+                if (firstTier.ValueType == TierTypes.Percent)
+                { // precentage
+                <span>
+                    @minFinalBuyerFee.ToString("P").Replace(" %", "%") &nbsp;
+                    - &nbsp;
+                    @maxFinalBuyerFee.ToString("P").Replace(" %", "%")
+                </span>
+                }
+                else
+                { // flat amount
+                <span>
+                    @Html.LocalCurrency(minFinalBuyerFee, SiteClient.SiteCurrency)  &nbsp;
+                    - &nbsp;
+                    @Html.LocalCurrency(maxFinalBuyerFee, SiteClient.SiteCurrency)
+                </span>
+                }
+
+                }
+                
+
+}
+                    </div>
+                <div class="modal fade" id="ShowBuyerFeeTiers" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <table class="table table-condensed">
+                                    <tr>
+                                        <td><strong>@Html.GlobalResource("ForFinalSalePriceUpToEllipse")</strong></td>
+                                        <td><strong>@Html.GlobalResource("BuyerFinalFee")</strong></td>
+                                    </tr>
+                                    @{
+                                        decimal lastTierUpperBound = 0;
+                                        int index = 0;
+                                    }
+                                    @foreach (var tier in finalBuyerFeeTiers.OrderBy(t => t.UpperBoundExclusive))
+                                    {
+                                        if (index < (finalBuyerFeeTiers.Count - 1))
+                                        { // not the last tier
+                                            <tr>
+                                                <td>@Html.LocalCurrency(tier.UpperBoundExclusive.ConvertAmount(SiteClient.SiteCurrency, Model.Currency.Code), Model.Currency.Code)</td>
+                                                <td><strong>@(tier.ValueType == TierTypes.Percent ? tier.Value.ToString("P").Replace(" %", "%") : Html.LocalCurrency(tier.Value, SiteClient.SiteCurrency))</strong></td>
+                                            </tr>
+                                        }
+                                        else
+                                        { // last tier
+                                            <tr>
+                                                <td>@Html.GlobalResource("Over_Xdollars", Html.LocalCurrency(lastTierUpperBound.ConvertAmount(SiteClient.SiteCurrency, Model.Currency.Code), Model.Currency.Code))</td>
+                                                <td><strong>@(tier.ValueType == TierTypes.Percent ? tier.Value.ToString("P").Replace(" %", "%") : Html.LocalCurrency(tier.Value, SiteClient.SiteCurrency))</strong></td>
+                                            </tr>
+                                        }
+                                        lastTierUpperBound = tier.UpperBoundExclusive;
+                                        index++;
+                                    }
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+                }

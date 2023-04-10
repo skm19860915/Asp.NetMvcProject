@@ -1,0 +1,194 @@
+﻿@{ string returnUrl = Request.Url.PathAndQuery; }
+<div class="user-nav navbar-right">
+    <ul class="nav navbar-nav">
+        @if (Request.IsAuthenticated)
+        {
+            <li>
+                <p class="navbar-text">
+                    @Html.ButtonLink(Html.GlobalResource("LogOff"), MVC.LogoffAction, MVC.AccountController, null, new { @class = "btn btn-default btn-xs visible-xs pull-right" })
+                    @Html.GlobalResource("Hello") @Html.DisplayUserName()
+
+
+                </p>
+            </li>
+            if (Context.User.IsInRole("Admin"))
+            {
+                <li class="visible-xs">
+                    @Html.ActionLink(Html.GlobalResource("GoToAdminControlPanel"), MVC.IndexAction, MVC.AdminController)
+                    @if (!string.IsNullOrEmpty(Html.GetCookie(MVC.FBOUserName)))
+                    {
+                        @Html.ActionLink(Html.GlobalResource("StopImpersonating"), MVC.StopImpersonatingAction, MVC.AccountController)
+                    }
+                </li>
+            }
+            if (SiteClient.EnableEvents && Context.User.IsInRole("Seller"))
+            {
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.GlobalResource("ManageAuctions") <span class="caret"></span></a>
+                    <ul class="dropdown-menu myaccount__dropdown" role="menu">
+                        @if (SiteClient.BoolSetting(SiteProperties.UserMessagingEnabled))
+                        {
+                            int countOfNewMessages = 0;
+                            try
+                            {
+                                countOfNewMessages = UserClient.GetUnreadMessageCount(Context.User.Identity.Name, Html.FBOUserName());
+                            }
+                            catch (Exception)
+                            {
+                                //ignore this error -- probably indicates old credentials for a user from a different localhost instance
+                            }
+                            if (countOfNewMessages > 0)
+                            {
+                                <li>
+                                    <a href="@Url.RouteUrl("IncomingMessages")">@Html.GlobalResource("ViewMessages") <span class="label label-success"> @countOfNewMessages</span></a>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                            }
+                        }
+                        <li>
+                            @Html.ActionLink(Html.GlobalResource("MyAuctions"), MVC.EventsPublishedAction, MVC.AccountController)
+                        </li>
+                        <li>
+                            <a href="@Url.Action(MVC.CreateEventAction, MVC.EventController)">@Html.GlobalResource("CreateEvent") <span class="glyphicon glyphicon-plus"> </span></a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action(MVC.CreateLotPage1Action, MVC.EventController, new { returnUrl }, null)">@Html.GlobalResource("CreateLot") <span class="glyphicon glyphicon-plus"> </span></a>
+                        </li>
+                        @if (SiteClient.BoolSetting(SiteProperties.EnableNonAuctionListingsForEvents))
+                        {
+                            <li>
+                                <a href="@Url.Action(MVC.CreateListingPage1Action, MVC.ListingController)">@Html.GlobalResource("CreateListing") <span class="glyphicon glyphicon-plus"> </span></a>
+                            </li>
+                        }
+                        <li role="separator" class="divider"></li>
+
+                        @if (Context.User.IsInRole("Buyer"))
+                        {
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("MyBids"), MVC.BiddingActiveAction, MVC.AccountController)
+                            </li>
+                        }
+                        <li>
+                            @Html.ActionLink(Html.GlobalResource("MyAccount"), MVC.IndexAction, MVC.AccountController)
+                        </li>
+
+                    </ul>
+                </li>
+            }
+            else
+            {
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.GlobalResource("MyAccount") <span class="caret"></span></a>
+                    <ul class="dropdown-menu myaccount__dropdown" role="menu">
+                        @if (SiteClient.BoolSetting(SiteProperties.UserMessagingEnabled))
+                        {
+                            int countOfNewMessages = UserClient.GetUnreadMessageCount(Context.User.Identity.Name, Html.FBOUserName());
+                            if (countOfNewMessages > 0)
+                            {
+                                <li>
+                                    <a href="@Url.RouteUrl("IncomingMessages")">@Html.GlobalResource("ViewMessages") <span class="label label-success"> @countOfNewMessages</span></a>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                            }
+                        }
+                        @if ((!SiteClient.EnableEvents) && Context.User.IsInRole("Seller"))
+                        {
+                            <li>
+                                <a href="@Url.Action(MVC.CreateListingPage1Action, MVC.ListingController)">@Html.GlobalResource("CreateListing") <span class="glyphicon glyphicon-plus"> </span></a>
+                            </li>
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("MyListings"), MVC.ListingsActiveAction, MVC.AccountController)
+                            </li>
+                        }
+                        @if (Context.User.IsInRole("Buyer"))
+                        {
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("MyBids"), MVC.BiddingActiveAction, MVC.AccountController)
+                            </li>
+                        }
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            @Html.ActionLink(Html.GlobalResource("MyAccountHome"), MVC.IndexAction, MVC.AccountController)
+                        </li>
+                    </ul>
+                </li>
+            }
+            if (!SiteClient.EnableEvents || (SiteClient.EnableEvents && SiteClient.TextSetting(SiteProperties.HomepageContent) != "browse"))
+            {
+                <li class="visible-xs">
+                    @Html.ActionLink(Html.GlobalResource("Browse"), MVC.BrowseAction, MVC.ListingController)
+                </li>
+            }
+            
+            if (!SiteClient.EnableEvents)
+            {
+                if (SiteClient.RestrictOutsideSellers)
+                {
+                    if (Context.User.IsInRole("Seller"))
+                    {
+                        <li class="visible-xs">@Html.ActionLink(Html.GlobalResource("Sell"), MVC.CreateListingPage1Action, MVC.ListingController)</li>
+                    }
+                }
+                else
+                {
+                    <li class="visible-xs">@Html.ActionLink(Html.GlobalResource("Sell"), MVC.CreateListingPage1Action, MVC.ListingController)</li>
+                }
+            }
+            else
+            {
+                <li class="visible-xs">
+                    @Html.ActionLink(Html.GlobalResource("EventListLinkText"), MVC.IndexAction, MVC.EventController)
+                </li>
+            }
+            <li class="hidden-xs">
+                @Html.ActionLink(Html.GlobalResource("LogOff"), MVC.LogoffAction, MVC.AccountController)
+            </li>
+            <li class="dropdown more visible-xs">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.GlobalResource("More")  <span class="glyphicon glyphicon-plus-sign"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    @Html.GetSiteContent("Literal_SubNavigation")
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("AdvancedSearch"), "Search", "Listing")
+                    </li>
+                </ul>
+            </li>
+        }
+        else
+        {
+            if (!SiteClient.BoolSetting(SiteProperties.ActiveDirectoryEnabled))
+            {
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Register"), MVC.RegisterAction, MVC.AccountController)
+                </li>
+            }
+            <li>
+                @Html.ActionLink(Html.GlobalResource("SignIn"), MVC.LogOnAction, MVC.AccountController, new { returnUrl }, null)
+            </li>
+            if (!SiteClient.EnableEvents || (SiteClient.EnableEvents && SiteClient.TextSetting(SiteProperties.HomepageContent) != "browse"))
+            {
+                <li class="visible-xs">
+                    @Html.ActionLink(Html.GlobalResource("Browse"), MVC.BrowseAction, MVC.ListingController)
+                </li>
+            }
+            if (SiteClient.EnableEvents && SiteClient.TextSetting(SiteProperties.HomepageContent) != "default")
+            {
+                <li class="visible-xs">
+                    @Html.ActionLink(Html.GlobalResource("EventListLinkText"), MVC.IndexAction, MVC.EventController)
+                </li>
+            }
+            if (!SiteClient.EnableEvents && !SiteClient.RestrictOutsideSellers)
+            {
+                <li class="visible-xs">@Html.ActionLink(Html.GlobalResource("Sell"), MVC.CreateListingPage1Action, MVC.ListingController)</li>
+            }
+            <li class="dropdown more visible-xs">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.GlobalResource("More") <span class="glyphicon glyphicon-plus-sign"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    @Html.GetSiteContent("Literal_SubNavigation")
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("AdvancedSearch"), "Search", "Listing")
+                    </li>
+                </ul>
+            </li>
+        }
+    </ul>
+</div>

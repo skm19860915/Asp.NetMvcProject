@@ -1,0 +1,30 @@
+﻿@model Category
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = @Html.AdminResource("LineageString_RegionDetail");
+}
+@section PageName {
+    &gt; @ViewData[MVC.LineageString] 
+    <a href="@Url.Action(MVC.RegionEditorAction)" class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-chevron-left"></span> @Html.AdminResource("BackToList")</a>
+    }
+
+
+@{
+    if (Model.ID != 27)
+    {
+        using (Html.BeginForm(MVC.RenameRegionAction, MVC.AdminController, FormMethod.Post, new { @class="form-horizontal"}))
+        {
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-4">@Html.AdminResource("RegionName")</label>
+                <div class="col-xs-12 col-sm-6">
+                    @Html.TextBox(Fields.Name, Model.Name, new { @class = "form-control input-sm" })
+            </div> 
+                @Html.Hidden(Fields.CategoryID, Model.ID)
+            </div>
+            <div class="action-panel">
+                <input type="submit" class="btn btn-success" id="Submit1" name="RenameRegionSave" value="@Html.AdminResource("Save")" />
+            </div>
+        }
+    }
+}

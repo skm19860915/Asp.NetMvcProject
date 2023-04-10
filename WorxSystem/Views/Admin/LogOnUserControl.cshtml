@@ -1,0 +1,119 @@
+﻿@{
+    string returnUrl = Request.Url.PathAndQuery;
+}
+<ul class="nav navbar-nav navbar-right">
+    <li class="navbar-text hidden-xs">
+        <strong>@Html.GlobalResource("Hello") @Html.DisplayUserName()</strong>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle withSVG" data-toggle="dropdown" href="#">
+            <svg fill="#fff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                <path d="M0 0h24v24H0z" fill="none" />
+            </svg>
+        </a>
+        <ul class="dropdown-menu myAccountDropMenu" role="menu">
+            @if (!string.IsNullOrEmpty(Html.GetCookie(MVC.FBOUserName)))
+            {
+                <li>
+                    <span class="visible-xs"> @Html.DisplayUserName()</span> @Html.ButtonLink(Html.GlobalResource("StopImpersonating"), MVC.StopImpersonatingAction, MVC.AccountController, null, new { @class = "btn btn-default btn-xs" })
+                </li>
+                <li role="separator" class="divider"></li>
+            }
+            @if (SiteClient.BoolSetting(SiteProperties.UserMessagingEnabled))
+            {
+                int countOfNewMessages = UserClient.GetUnreadMessageCount(Context.User.Identity.Name, Html.FBOUserName());
+                if (countOfNewMessages > 0)
+                {
+                    <li>
+                        <a href="@Url.RouteUrl("IncomingMessages")">@Html.GlobalResource("ViewMessages")  <span class="label label-success">@countOfNewMessages</span></a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                }
+            }
+            @if (SiteClient.EnableEvents)
+            {
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("MyAuctions"), MVC.EventsPublishedAction, MVC.AccountController)
+                </li>
+                <li>
+                    <a href="@Url.Action(MVC.CreateEventAction, MVC.EventController)">
+                        @Html.GlobalResource("CreateEvent") <span class="glyphicon glyphicon-plus"> </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action(MVC.CreateLotPage1Action, MVC.EventController, null, null)">
+                        @Html.GlobalResource("CreateLot") <span class="glyphicon glyphicon-plus"> </span>
+                    </a>
+                </li>
+                if (SiteClient.BoolSetting(SiteProperties.EnableNonAuctionListingsForEvents))
+                {
+                    <li>
+                        <a href="@Url.Action(MVC.CreateListingPage1Action, MVC.ListingController)">
+                            @Html.GlobalResource("CreateListing") <span class="glyphicon glyphicon-plus"> </span>
+                        </a>
+                    </li>
+                }
+                <li role="separator" class="divider"></li>
+                if (Context.User.IsInRole("Buyer"))
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("MyBids"), MVC.BiddingActiveAction, MVC.AccountController)
+                    </li>
+                }
+            }
+            else
+            {
+                if (Context.User.IsInRole("Seller"))
+                {
+                    <li>
+                        <a href="@Url.Action(MVC.CreateListingPage1Action, MVC.ListingController)">
+                            @Html.GlobalResource("CreateListing") <span class="glyphicon glyphicon-plus"> </span>
+                        </a>
+                    </li>
+                }
+                if (Context.User.IsInRole("Seller"))
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("MyListings"), MVC.ListingsActiveAction, MVC.AccountController)
+                    </li>
+                }
+                if (Context.User.IsInRole("Buyer"))
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("MyBids"), MVC.BiddingActiveAction, MVC.AccountController)
+                    </li>
+                }
+            }
+            <li>
+                <a href="@Url.Action(MVC.IndexAction, MVC.AccountController)">
+                    @Html.GlobalResource("MyAccount")
+                </a>
+            </li>
+            <li role="separator" class="divider visible-xs"></li>
+            <li class="visible-xs">
+                <a href="@Url.Action(MVC.LogoffAction,MVC.AccountController)">
+                    @Html.GlobalResource("LogOff")
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li class="hidden-xs">
+        @Html.ActionLink(Html.GlobalResource("LogOff"), MVC.LogoffAction, MVC.AccountController)
+    </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

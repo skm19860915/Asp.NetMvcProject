@@ -1,0 +1,111 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_CountryManagement");
+    var defaultCountryId = SiteClient.IntSetting(SiteProperties.SiteDefaultCountry);
+}
+
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="col-xs-5">
+            <div class="select-header">
+                @Html.AdminResource("Disabled")
+            </div>
+            <select id="DisabledList" multiple="multiple" size="22" class="form-control with-header">
+                @foreach (var country in SiteClient.Countries.Where(c => !c.Enabled).OrderBy(c => c.Name))
+                {
+                    <option value="@country.ID">@Html.LocalizeCountry(@country.Name)</option>
+                }
+            </select>
+        </div>
+        <div class="col-xs-2  center-block">
+            <button class="btn btn-default btn-block" style="margin-top: 100px;" id="EnableSelectedCountries"><span class="glyphicon glyphicon-chevron-right"></span></button>
+            <br />
+
+            <button class="btn btn-default btn-block" style="margin-top: 20px;" id="DisableSelectedCountries"><span class="glyphicon glyphicon-chevron-left"></span></button>
+        </div>
+        <div class="col-xs-5">
+            <div class="select-header">
+                @Html.AdminResource("Enabled")
+            </div>
+            <select id="EnabledList" multiple="multiple" size="22" class="form-control with-header">
+                @foreach (var country in Html.Countries())
+                {
+                    <option value="@country.ID">@country.Name @(country.ID == defaultCountryId ? " " + Html.AdminResourceString("default_parens") : string.Empty)</option>
+                }
+            </select>
+            <div class="group">
+                <button class="btn btn-default" id="SetDefault">@Html.AdminResource("SetDefault")</button>
+                <button class="btn btn-default" id="EditStatesRegions">@Html.AdminResource("EditStatesRegions")</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-panel">
+        <button class="btn btn-success confirm-before-leaving" id="Save">@Html.AdminResource("SaveConfiguration")</button>
+        @Html.Hidden("DisabledCountryIds")
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            // [ << ] - click (move countries from enabled list to disabled list)
+            $("#DisableSelectedCountries").click(function (event) {
+                event.preventDefault();
+                $("#EnabledList").find("option:selected").each(function () {
+                    $("#DisabledList").prepend($(this));
+                    $("#EnabledList").find(this).remove();
+                });
+                $("option:selected").removeAttr("selected");//deselect all options
+            });
+
+            // [ >> ] - click (move countries from disabled list to enabled list)
+            $("#EnableSelectedCountries").click(function (event) {
+                event.preventDefault();
+                $("#DisabledList").find("option:selected").each(function () {
+                    $("#EnabledList").prepend($(this));
+                    $("#DisabledList").find(this).remove();
+                });
+                $("option:selected").removeAttr("selected");//deselect all options
+            });
+
+            // [Save] - click (copy values to hidden fields then submit form)
+            $("#Save").click(function (event) {
+                event.preventDefault();
+                var disabledIds = "";
+                $("#DisabledList").find("option").each(function () {
+                    disabledIds += (disabledIds != "" ? "," : "") + $(this).attr("value");
+                });
+                $("#DisabledCountryIds").val(disabledIds);
+                $(this).parents("form").first().submit();
+            });
+
+            // enable/disable [Set Default] and [Edit States/Regions] buttons
+            $("#EnabledList").change(function () {
+                if ($(this).find("option:selected").length == 1) {
+                    $("#SetDefault").prop("disabled", false).removeClass("disabled");
+                    $("#EditStatesRegions").prop("disabled", false).removeClass("disabled");
+                } else {
+                    $("#SetDefault").prop("disabled", true).addClass("disabled");
+                    $("#EditStatesRegions").prop("disabled", true).addClass("disabled");
+                }
+            });
+
+            // [Set Default] - click
+            $("#SetDefault").click(function (event) {
+                event.preventDefault();
+                if ($("#EnabledList option:selected").length == 1) {
+                    document.location = $.htmlDecode('@Url.Action(MVC.SetDefaultCountryAction)/' + $("#EnabledList").val());
+                }
+            });
+
+            // [Edit States/Regions] - click
+            $("#EditStatesRegions").click(function (event) {
+                event.preventDefault();
+                if ($("#EnabledList option:selected").length == 1) {
+                    document.location = $.htmlDecode('@Url.Action(MVC.StatesRegionsManagementAction)/' + $("#EnabledList").val());
+                }
+            });
+
+        });
+    </script>
+}

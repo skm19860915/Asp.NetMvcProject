@@ -1,0 +1,10 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.SiteTitle = Html.GlobalResourceString("LockedOut");
+}
+
+<hgroup>
+    <h1 class="text-danger">@Html.GlobalResource("LockedOut")</h1>
+    <h2 class="text-danger">@Html.GlobalResource("ThisAccountHasBeenLockedOutPleaseTryAgainLater")</h2>
+</hgroup>

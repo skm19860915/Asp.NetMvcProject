@@ -1,0 +1,58 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+<div class="row">
+    <div class="col-xs-12">
+        @*[@Model.Exception.GetType().Name]*@
+        @{
+            switch (@Model.Exception.GetType().Name)
+            {
+                case "HttpRequestValidationException":
+                    {
+                        ViewBag.SiteTitle = SiteClient.TextSetting(SiteProperties.SiteTitle);
+                        <div class="alert alert-danger">@Html.GlobalResource("RequestValidationErrorTitle")</div>
+                        <p class="awe-error-message">
+                            @Html.GlobalResource("RequestValidationErrorMessage")
+                        </p>
+                        <p><button type="button" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> @Html.GlobalResource("Back")</button></p>
+                    }
+                    break;
+                case "SqlException":
+                    {
+                        ViewBag.SiteTitle = SiteClient.TextSetting(SiteProperties.SiteTitle);
+                        <div class="alert alert-danger">@Html.GlobalResource("SqlExceptionErrorTitle")</div>
+                        <p class="awe-error-message">
+                            @Html.GlobalResource("SqlExceptionErrorMessage")
+                        </p>
+                        <p><button type="button" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> @Html.GlobalResource("Back")</button></p>
+                    }
+                    break;
+                default:
+                    {
+                        ViewBag.SiteTitle = Html.GlobalResourceString("GenericErrorTitle");
+                        <div class="alert alert-danger">@Html.GlobalResource("GenericErrorTitle")</div>
+                        <p class="awe-error-message">
+                            @Model.Exception.Message
+                        </p>
+                    }
+                    break;
+            }
+            LogManager.HandleException(Model.Exception, "MVC", Environment.MachineName,
+                new Dictionary<string, object>()
+                {
+                { "ControllerName", Model.ControllerName },
+                { "ActionName", Model.ActionName },
+                { "UrlReferrer", Request.UrlReferrer != null ? Request.UrlReferrer.AbsoluteUri : string.Empty },
+                { "User", User.Identity.Name ?? string.Empty }
+                });
+        }
+    </div>
+</div>
+@section head {
+    <script>
+        $(document).ready(function () {
+            $("button").click(function () {
+                document.location = $.htmlDecode('@(Request.UrlReferrer != null ? Request.UrlReferrer.AbsoluteUri : "/")');
+                return false;
+            });
+        });
+    </script>
+}

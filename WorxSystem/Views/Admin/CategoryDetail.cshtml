@@ -1,0 +1,213 @@
+﻿@model Category
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_CategoryDetail");
+}
+@section PageName{
+    (@Model.Name)
+    <a href="@Url.Action(MVC.CategoryEditorAction,MVC.AdminController)" class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-chevron-left"></span> @Html.AdminResource("BackToCategoryList")</a>
+}
+
+@{
+    bool leafCategory = (Model.Type == CategoryTypes.Item && CommonClient.GetChildCategories(Model.ID).Count <= 0);
+    if (Model.ID != 9)
+    {
+        using (Html.BeginForm("RenameCategory", "Admin", FormMethod.Post, new { @class = "form-inline" }))
+        {
+            <label class="control-label">@Html.AdminResource("CategoryName")</label>
+            @Html.TextBox(Fields.Name, Model.Name, new { @class = "form-control" })
+            @Html.Hidden("CategoryID", Model.ID)
+            <input type="submit" class="btn btn-success" id="Submit1" name="RenameCategorySave" value="@Html.AdminResource("SaveName")" />
+        }
+    }
+    <hr />
+
+    <h2 class="sub-header">@Html.AdminResource("CustomFields")</h2>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#AssignListingTypes").click(function () {
+                var assignForm = $("#AssignListingTypeForm");
+                if (assignForm.find("option:selected").length > 0) {
+                    assignForm.each(function () { this.submit() });
+                } else {
+                    alert('@Html.AdminResource("YouMustSelectAListingTypeFirst").ToJavascriptSafeString()');
+                }
+                return false;
+            });
+
+            $("#UnassignListingTypes").click(function () {
+                var assignForm = $("#UnassignListingTypeForm");
+                if (assignForm.find("option:selected").length > 0) {
+                    assignForm.each(function () { this.submit() });
+                } else {
+                    alert('@Html.AdminResource("YouMustSelectAListingTypeFirst").ToJavascriptSafeString()');
+                }
+                return false;
+            });
+
+            $("#AssignFieldsButton").click(function () {
+                var assignForm = $("#AssignCatFieldsForm");
+                var hiddenInheritField = assignForm.find("input[name='Inherit']").first();
+                if ($("#UpdateSubCatsCheckbox:checked").length > 0) {
+                    hiddenInheritField.val("true");
+                } else {
+                    hiddenInheritField.val("false");
+                }
+                if (assignForm.find("option:selected").length > 0) {
+                    assignForm.each(function () { this.submit() });
+                } else {
+                    alert('@Html.AdminResource("YouMustSelectAFieldFirst").ToJavascriptSafeString()');
+                }
+                return false;
+            });
+
+            $("#UnAssignFieldsButton").click(function () {
+                var unassignForm = $("#UnAssignCatFieldsForm");
+                var hiddenInheritField = unassignForm.find("input[name='Inherit']").first();
+                if ($("#UpdateSubCatsCheckbox:checked").length > 0) {
+                    hiddenInheritField.val("true");
+                } else {
+                    hiddenInheritField.val("false");
+                }
+                if (unassignForm.find("option:selected").length > 0) {
+                    unassignForm.each(function () { this.submit() });
+                } else {
+                    alert('@Html.AdminResource("YouMustSelectAFieldFirst").ToJavascriptSafeString()');
+                }
+                return false;
+            });
+
+        });
+    </script>
+
+    if (!leafCategory)
+    {
+        <p>
+            <strong>
+                @Html.AdminResource("ApplyChangesToSubCategories") &nbsp;
+            </strong>
+        </p>
+        <p>
+            @Html.CheckBox("Inherit", true, new { @id = "UpdateSubCatsCheckbox" })
+            @Html.AdminResource("ApplyChangesToSubCategories_Help")
+        </p>
+    }
+    else
+    { <div class="awe-hidden">
+            @Html.CheckBox("Inherit", Model.ID == 9, new { @id = "UpdateSubCatsCheckbox", @class = "awe-hidden" })
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-xs-5 col-lg-4">
+            <div class="select-header">@Html.AdminResource("AvailableFields")</div>
+
+            @using (Html.BeginForm("AssignFieldFromCategoryDetail", "Admin", FormMethod.Post, new { @id = "AssignCatFieldsForm" }))
+            {
+                @Html.Hidden("Inherit")
+                @Html.DropDownList("CustomFieldID", (IEnumerable<SelectListItem>)ViewData["UnassignedCustomFields"], new { size = "15", @class = "form-control with-header" }) <br />
+                @Html.Hidden("categoryID", Model.ID)
+            }
+
+        </div>
+        <div class="col-xs-2  center-block">
+            <button class="btn btn-default btn-block" style="margin-top: 100px;" id="AssignFieldsButton"><span class="glyphicon glyphicon-chevron-right"></span></button><br />
+            <button class="btn btn-default btn-block" style="margin-top: 20px;" id="UnAssignFieldsButton"><span class="glyphicon glyphicon-chevron-left"></span></button>
+
+        </div>
+        <div class="col-xs-5 col-lg-4">
+            <div class="select-header">@Html.AdminResource("AssignedFields")</div>
+            @using (Html.BeginForm("UnassignFieldFromCategoryDetail", "Admin", FormMethod.Post, new { @id = "UnAssignCatFieldsForm" }))
+            {
+
+                @Html.Hidden("Inherit")
+                @Html.DropDownList("CustomFieldID", (IEnumerable<SelectListItem>)ViewData["AssignedCustomFields"], new { size = "15", @class = "form-control with-header" }) <br />
+                @Html.Hidden("categoryID", Model.ID)
+            }
+        </div>
+    </div>
+
+    <h2 class="sub-header">@Html.AdminResource("ListingTypes")</h2>
+
+    if (leafCategory)
+    {
+        <div class="row">
+            <div class="col-xs-5 col-lg-4">
+                <div class="select-header">@Html.AdminResource("Available")</div>
+                @using (Html.BeginForm("UnassignListingTypeFromCategoryDetail", "Admin", FormMethod.Post, new { @id = "AssignListingTypeForm" }))
+                {
+                    @(Html.DropDownList("ListingTypeID",
+                                            (IEnumerable<SelectListItem>)ViewData["UnassignedListingTypes"],
+                                            new { size = "5", @class = "form-control with-header" }))
+                    @Html.Hidden("CategoryID", Model.ID)
+
+                }
+            </div>
+            <div class="col-xs-2  center-block">
+                <button class="btn btn-default btn-block" style="margin-top: 35px;" id="AssignListingTypes"><span class="glyphicon glyphicon-chevron-right"></span></button><br />
+                <button class="btn btn-default btn-block" style="margin-top: 10px;" id="UnassignListingTypes"><span class="glyphicon glyphicon-chevron-left"></span></button>
+            </div>
+            <div class="col-xs-5 col-lg-4">
+                <div class="select-header">
+                    @Html.AdminResource("Assigned")</div>
+                @using (Html.BeginForm("AssignListingTypeFromCategoryDetail", "Admin", FormMethod.Post, new { @id = "UnassignListingTypeForm" }))
+                {
+                    @(Html.DropDownList("ListingTypeID",
+                                            (IEnumerable<SelectListItem>)ViewData["AssignedListingTypes"],
+                                            new { size = "5", @class = "form-control with-header" })) 
+                                            @Html.Hidden("CategoryID", Model.ID)
+
+                }
+                </div>
+            </div>
+    }
+    else
+    {
+        <p class="option-unavailable">@Html.AdminResource("ListingTypesUnavailable")</p>
+
+    }
+
+    <h2 class="sub-header">@Html.AdminResource("CategoryPageSpecificSettings")</h2>
+
+    using (Html.BeginForm("SetCategoryMetaData", "Admin", FormMethod.Post))
+    {
+        <script>
+            $(document).ready(function () {
+                CKEDITOR.replace('PageContent');
+            });
+        </script>
+
+        <div class="form-group">
+            <label>@Html.AdminResource("PageTitle")</label>
+
+            @Html.TextBox("PageTitle", Model.PageTitle, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <label>@Html.AdminResource("PageContent")</label>
+
+            <textarea id="PageContent" name="PageContent" rows="20" class="form-control">@Model.PageContent</textarea>
+        </div>
+        <div class="form-group">
+            <label>@Html.AdminResource("MetaKeywords")</label>
+
+            @Html.TextBox("MetaKeywords", Model.MetaKeywords, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <label>@Html.AdminResource("MetaDescription")</label>
+
+            @Html.TextArea("MetaDescription", Model.MetaDescription, new { rows = "5", @class = "form-control" })
+        </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-success" id="SetMetaData" name="SetMetaDataSave" value="@Html.AdminResource("SaveMetaData")" />
+            </div>
+                @Html.Hidden("CategoryID", Model.ID)
+
+    }
+    @* bundle for ckeditor disabled because of dynamic relative reference issues
+        @Scripts.Render("~/bundles/ckeditor")
+    *@
+    <script src="Scripts/ckeditor/ckeditor.js"></script>
+}

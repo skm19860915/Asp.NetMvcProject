@@ -1,0 +1,98 @@
+﻿@model Listing
+
+@{
+    int purchaseQuantity;
+    Boolean checkQuantity = int.TryParse(ViewData["Quantity"].ToString(), System.Globalization.NumberStyles.Integer,
+                                           Html.GetCurrentCultureInfo(), out purchaseQuantity);
+    if (checkQuantity)
+    {
+        decimal buyNowPrice = Model.CurrentPrice ?? 0;
+        if ((((decimal?)ViewData["OfferAmount"]) ?? 0.0M) > 0.0M)
+        {
+            buyNowPrice = (decimal)ViewData["OfferAmount"];
+        }
+
+        decimal totalPricePlusFees = buyNowPrice * purchaseQuantity;
+
+        //Buyer Final Fee values
+        decimal minFinalBuyerFee = (decimal)ViewData[MVC.ViewData_MinFinalBuyerFee];
+        decimal maxFinalBuyerFee = (decimal)ViewData[MVC.ViewData_MaxFinalBuyerFee];
+        List<Tier> finalBuyerFeeTiers = (List<Tier>)ViewData[MVC.ViewData_FinalBuyerFeeTiers];
+
+        //Buyer's Premium values
+        decimal buyersPremiumPct = 0;
+        decimal buyersPremiumAmount = 0;
+        if (SiteClient.BoolSetting(SiteProperties.EnableBuyersPremium) && Model.Owner.Properties.Any(p => p.Field.Name == StdUserProps.BuyersPremiumPercent))
+        {
+            decimal.TryParse(Model.Owner.Properties.First(p => p.Field.Name == StdUserProps.BuyersPremiumPercent).Value,
+                                out buyersPremiumPct);
+        }
+        string allFeesDescription;
+        if (maxFinalBuyerFee > 0 && buyersPremiumPct > 0)
+        {
+            //allFeesDescription = Html.GlobalResourceString("AllBuyerFees");
+            allFeesDescription =
+                  Html.GlobalResourceString("BuyersPremium")
+                + " " + Html.GlobalResource("and") + " "
+                + Html.GlobalResourceString("BuyerFinalFee");
+        }
+        else if (buyersPremiumPct > 0)
+        {
+            allFeesDescription = Html.GlobalResourceString("BuyersPremium");
+        }
+        else
+        {
+            allFeesDescription = Html.GlobalResourceString("BuyerFinalFee");
+        }
+        if (buyersPremiumPct > 0)
+        {
+            string formattedBuyersPremiumPercent = (buyersPremiumPct / 100).ToString("P").Replace(" %", "%");
+            buyersPremiumAmount = (buyNowPrice * purchaseQuantity) * buyersPremiumPct / 100;
+            totalPricePlusFees += buyersPremiumAmount;
+
+            <p>
+                @(Html.Resource("FixedPriceListing, A_Xpct_BuyerFeeDescr_Of_Ydollars_WillBeAppliedToYourTotal",
+                formattedBuyersPremiumPercent,
+                Html.GlobalResource("BuyersPremium"),
+                Html.LocalCurrency(buyersPremiumAmount, Model.Currency.Code)))
+            </p>
+        }
+        if (maxFinalBuyerFee > 0)
+        {
+            decimal feeAmount = ListingClient.CalculateFinalBuyerFee(User.Identity.Name, Model.Type.Name,
+                                                                     buyNowPrice,
+                                                                     Model.Currency.Code, purchaseQuantity, Model.PrimaryCategory.ID);
+            totalPricePlusFees += feeAmount.ConvertAmount(SiteClient.SiteCurrency, Model.Currency.Code);
+            if (finalBuyerFeeTiers.Count > 0 && finalBuyerFeeTiers[0].ValueType == TierTypes.Percent)
+            { // percent fee
+                string formattedBuyerFeePercent =
+                    (feeAmount.ConvertAmount(SiteClient.SiteCurrency, Model.Currency.Code) / (buyNowPrice * purchaseQuantity)).ToString("P").Replace(" %", "%");
+
+                <p>
+                    @(Html.Resource("FixedPriceListing, A_Xpct_BuyerFeeDescr_Of_Ydollars_WillBeAppliedToYourAccount",
+                formattedBuyerFeePercent,
+                Html.GlobalResource("BuyerFinalFee"),
+                Html.LocalCurrency(feeAmount, SiteClient.SiteCurrency)))
+                </p>
+            }
+            else
+            { // flat fee
+                <p>
+                    @(Html.Resource("FixedPriceListing, A_Xdollars_BuyerFeeDescr_WillBeAppliedToYourAccount",
+                Html.LocalCurrency(feeAmount, SiteClient.SiteCurrency),
+                Html.GlobalResource("BuyerFinalFee")))
+                </p>
+            }
+        }
+        if (buyersPremiumPct > 0 || maxFinalBuyerFee > 0)
+        {
+            <p>
+                <strong>
+                    @(Html.Resource("FixedPriceListing, PriceIncluding_BuyerFeeDescr_Xdollars",
+                allFeesDescription,
+                Html.LocalCurrency(totalPricePlusFees, Model.Currency.Code)))
+                </strong>
+            </p>
+        }
+    }
+}

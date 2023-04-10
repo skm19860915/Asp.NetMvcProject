@@ -1,0 +1,196 @@
+﻿@model Listing
+@{
+    //determine if inline bidding is enabled
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool quickBidForListViewsEnabled = false;
+    var quickBidForListViewsProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidForListViewsEnabled);
+    if (quickBidForListViewsProp != null)
+    {
+        bool.TryParse(quickBidForListViewsProp.Value, out quickBidForListViewsEnabled);
+    }
+}
+@if (quickBidForListViewsEnabled)
+{
+    @Html.Partial("Listing_AuctionRow_WithBidding")
+}
+else
+{
+    string containerCssClasses = "panel panel-default clearfix listing";
+    if (Model.Decorations.Any(d => d.Name == DecorationNames.Highlight))
+    {
+        containerCssClasses += " highlight";
+    }
+    bool boldDecoration = Model.Decorations.Any(d => d.Name == DecorationNames.Bold);
+
+    <div class="@containerCssClasses">
+        @if (Model.Decorations.Any(d => d.Name == DecorationNames.Sunburst))
+        {
+            <div class="listing-badge"></div>
+        }
+        @if ((Model.Lot != null))
+        {
+            if (Model.Status.Equals(ListingStatuses.Successful) || Model.Status.Equals(ListingStatuses.Unsuccessful))
+            {
+                <span class="label label-default status-type">@Html.GlobalResource("Ended")</span>
+            }
+            else
+            {
+                <span class="awe-hidden awe-rt-ShowOnEnd label label-default status-type">@Html.GlobalResource("Ended")</span>
+                if (SiteClient.DisplayListingType)
+                {
+                    <span class="awe-rt-HideOnEnd label label-primary status-type">@Html.GlobalResource("AuctionBanner")</span>
+                }
+            }
+        }
+        else if (SiteClient.DisplayListingType)
+        {
+            <span class="label label-primary status-type">@Html.GlobalResource("AuctionBanner")</span>
+        }
+        <div class="row">
+            <div class="col-xs-4 col-sm-3 col-lg-2 img-container">
+                @{
+                    if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                    {
+                        @Html.Partial("NoPhotoThumbnail")
+                    }
+                    else
+                    {
+                        string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                        @Model.BeginDetailLink()
+                        <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                        @Model.EndDetailLink()
+                    }
+                }
+            </div>
+            <div class="col-xs-8 col-sm-9 col-lg-10">
+                @{
+                    string title = Model.Title;
+                    if (!Model.Title.Contains(" ") && Model.Title.Length >= 12)
+                    {
+                        title = Model.Title.Ellipsize(12);
+                    }
+                }
+                <h1 class="title">
+                    @Model.BeginDetailLink()
+                    @if (Model.Lot != null)
+                    {
+                        @Html.GlobalResource("Lot")@: @Model.Lot.LotNumber -
+                    }
+                    @if (boldDecoration)
+                    {
+                        <strong>@title</strong>
+                    }
+                    else
+                    {
+                        @title
+                    }
+                    @Model.EndDetailLink()
+                </h1>
+
+                <h2 class="subtitle">
+                    @Model.BeginDetailLink()
+                    @{
+                        string subtitle = Model.Subtitle;
+                        if (!Model.Subtitle.Contains(" ") && Model.Subtitle.Length >= 27)
+                        {
+                            subtitle = Model.Subtitle.Ellipsize(27);
+                        }
+                    }
+                    @if (boldDecoration)
+                    {
+                        <strong>@subtitle</strong>
+                    }
+                    else
+                    {
+                        @subtitle
+                    }
+                    @Model.EndDetailLink()
+                </h2>
+                @{bool showSeller = bool.Parse(SiteClient.Settings["ShowSellerOnListingRow"]);}
+                @if (showSeller)
+                {
+                    <span class="seller">
+                        @Html.GlobalResource("Seller"): <a href="Browse?Seller=@Model.OwnerUserName">@Model.OwnerUserName</a>
+                    </span>
+                    <br />
+                }
+                @if (Model.Status.Equals(ListingStatuses.Active) || Model.Status.Equals(ListingStatuses.Draft) || Model.Status.Equals(ListingStatuses.Preview))
+                {
+                    @Html.Partial("Listing_Row_Shipping", Model)
+                }
+            </div>
+        </div>
+        <div class="cta">
+            @if (Model.Status.Equals(ListingStatuses.Preview))
+            {
+                <p class="awe-rt-HideOnEnd time">
+                    <span class="awe-rt-HideOnStart">
+                        @Html.GlobalResource("StartsIn")
+                        <span data-epoch="starting" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnStart" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnStart" data-action-time="@Html.CultureInvariantLocalDTTM(Model.StartDTTM.Value)">@*Leave Empty, autofilled by SignalR*@</span>
+                    </span>
+                    <span class="awe-hidden awe-rt-ShowOnStart">
+                        <span data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)" data-end-value="@Html.GlobalResource("Ended")">@*Leave Empty, autofilled by SignalR*@</span>
+                        <span class="awe-rt-HideOnEnd remaining">@Html.GlobalResource("Remaining")</span>
+                    </span>
+                </p>
+                <p class="bids">
+                    <span class="awe-hidden awe-rt-hideable awe-rt-ShowStatusSuccessful sold">@Html.GlobalResource("Sold")</span>
+                    &nbsp;
+                    <span class="awe-rt-HideOnEnd awe-rt-CurrentPrice price">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                    <span class="awe-hidden awe-rt-ShowOnEnd awe-rt-CurrentPrice price ended">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                    <span class="awe-rt-HideOnStart">&nbsp;</span>
+                    <span class="awe-hidden awe-rt-ShowOnStart awe-rt-HideOnEnd glyphicon glyphicon-option-vertical"></span>
+                    <span class="awe-hidden awe-rt-ShowOnStart awe-rt-HideOnEnd awe-rt-AcceptedListingActionCount" data-previous-value="@Model.AcceptedListingActionCount()">@Model.AcceptedListingActionCount()</span>
+                    <span class="awe-hidden awe-rt-ShowOnStart awe-rt-HideOnEnd">@Html.Resource("AuctionListing, Bids")</span>
+                    &nbsp;
+                    <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="awe-rt-HideOnEnd btn btn-primary">
+                        <span class="awe-rt-HideOnStart">@Html.GlobalResource("Preview") </span>
+                        <span class="awe-hidden awe-rt-ShowOnStart awe-rt-HideOnEnd">@Html.Resource("AuctionListing, BidNow") </span>
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </p>
+            }
+            else if (Model.Status.Equals(ListingStatuses.Active))
+            {
+                <p class="awe-rt-HideOnEnd time">
+                    <span data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)" data-end-value="@Html.GlobalResource("Ended")">@*Leave Empty, autofilled by SignalR*@</span>
+                    <span class="awe-rt-HideOnEnd remaining">@Html.GlobalResource("Remaining")</span>
+                </p>
+                <p class="bids">
+                    <span class="awe-hidden awe-rt-hideable awe-rt-ShowStatusSuccessful sold">@Html.GlobalResource("Sold")</span>
+                    &nbsp;
+                    <span class="awe-rt-HideOnEnd awe-rt-CurrentPrice price">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                    <span class="awe-hidden awe-rt-ShowOnEnd awe-rt-CurrentPrice price ended">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                    <span class="awe-rt-HideOnEnd glyphicon glyphicon-option-vertical"></span>
+                    <span class="awe-rt-HideOnEnd awe-rt-AcceptedListingActionCount" data-previous-value="@Model.AcceptedListingActionCount()">@Model.AcceptedListingActionCount()</span>
+                    <span class="awe-rt-HideOnEnd">@Html.Resource("AuctionListing, Bids")</span>
+                    &nbsp;
+                    <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="awe-rt-HideOnEnd btn btn-primary">
+                        @Html.Resource("AuctionListing, BidNow")
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </p>
+            }
+            else if (Model.Status.Equals(ListingStatuses.Successful) || Model.Status.Equals(ListingStatuses.Unsuccessful))
+            {
+                <p class="bids">
+                    @if (Model.Status.Equals(ListingStatuses.Successful))
+                    {
+                        <span class="sold">@Html.GlobalResource("Sold")</span>
+                    }
+                    &nbsp;
+                    <span class=" awe-rt-CurrentPrice price ended">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                    &nbsp;
+                </p>
+            }
+            else if (Model.Status.Equals(ListingStatuses.Draft))
+            {
+                <p class="bids">
+                    &nbsp;
+                    <span class="awe-rt-CurrentPrice price">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>&nbsp;
+                    &nbsp;
+                </p>
+            }
+        </div>
+    </div>
+}

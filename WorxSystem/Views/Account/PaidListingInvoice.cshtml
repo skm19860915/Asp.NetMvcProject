@@ -1,0 +1,568 @@
+﻿@model Invoice
+@* This view exists in both the Account and Admin view folders, be sure you're editing the correct one *@
+@{
+    bool hideTaxFields = SiteClient.BoolSetting(SiteProperties.HideTaxFields);
+    bool salesTaxEnabled = SiteClient.BoolSetting(SiteProperties.SalesTaxEnabled);
+    bool vatEnabled = SiteClient.BoolSetting(SiteProperties.VATEnabled);
+    bool buyersPremiumEnabled = SiteClient.BoolSetting(SiteProperties.EnableBuyersPremium);
+    string currentController = Request.RequestContext.RouteData.Values["controller"].ToString();
+
+    List<CustomField> includableListingFields = CommonClient.GetCustomFields(CustomFieldGroups.Item, 0, 0, Fields.Id, false).List
+        .Where(cf => cf.IncludeOnInvoice || cf.IncludeInSalesReport).ToList();
+    List<CustomField> fieldsToHide = includableListingFields.Where(cf => !cf.IncludeOnInvoice).ToList();
+
+    Event auctionEvent = null;
+    if (SiteClient.EnableEvents)
+    {
+        if (Model.AuctionEventId.HasValue)
+        {
+            auctionEvent = EventClient.GetEventByIDWithFillLevel(User.Identity.Name, Model.AuctionEventId.Value, EventFillLevels.Properties);
+        }
+        List<CustomField> includableEventFields = CommonClient.GetCustomFields(CustomFieldGroups.Event, 0, 0, Fields.Id, false).List
+            .Where(cf => cf.IncludeOnInvoice || cf.IncludeInSalesReport).ToList();
+        fieldsToHide.AddRange(includableEventFields);
+    }
+
+    bool payerIsTaxExempt = Model.Payer.Properties.Any(up => up.Field.Name == StdUserProps.TaxExempt && up.Value != null)
+        ? bool.Parse(Model.Payer.Properties.First(up => up.Field.Name == StdUserProps.TaxExempt).Value) : false;
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        @Html.GlobalResource("Invoice")
+        <div class="btn-group pull-right">
+            @if (Model.Payer.UserName != Html.FBOUserName()) // Seller or Admin
+            {
+                <script>
+                    $(document).ready(function () {
+                        //[Email Invoice] Button
+                        $("#EmailInvoiceButton").click(function () {
+                            EmailInvoice('@Templates.SellerSendInvoice.ToJavascriptSafeString()', @Model.ID, '@Model.Payer.UserName');
+                            $(this).html('@Html.GlobalResource("EmailSent")')
+                                    .addClass("DisabledButton").removeClass("DefaultButton").attr("disabled", "disabled");
+                            return false;
+                        });
+                    });
+                </script>
+
+                @Html.Partial("BackButton")
+                <button class="btn btn-default btn-xs" id="EmailInvoiceButton">@Html.GlobalResource("EmailInvoice")</button>
+
+                @Html.ButtonLink(Html.GlobalResource("MarkNotPaid"), MVC.SetInvoicePaidAction, currentController,
+                    new { id = Model.ID, paid = false, returnUrl = ViewData[Fields.ReturnUrl] }, new { @class = "btn btn-default btn-xs" })
+
+                if (Model.Type == InvoiceTypes.Shipping)
+                {
+                    if (Model.Shipped)
+                    {
+
+                        @Html.ButtonLink(Html.GlobalResource("MarkNotShipped"), MVC.SetInvoiceShippedAction, currentController,
+                                new { invoiceID = Model.ID, shipped = false, returnUrl = ViewData[Fields.ReturnUrl] }, new { @class = "btn btn-default btn-xs" })
+                    }
+                    else
+                    {
+                        @Html.ButtonLink(Html.GlobalResource("MarkShipped"), MVC.SetInvoiceShippedAction, currentController,
+                                new { invoiceID = Model.ID, shipped = true, returnUrl = ViewData[Fields.ReturnUrl] }, new { @class = "btn btn-default btn-xs" })
+                    }
+                }
+                <button id="PrintInvoice" class="btn btn-default btn-xs">@Html.GlobalResource("PrintInvoice")</button>
+
+                <script>
+                    $(document).ready(function () {
+                        $("#PrintInvoice").click(function () {
+                            window.open('@Html.GetActionUrl("PrintInvoice", new { id = Model.ID }).ToMvcHtmlString().ToJavascriptSafeString()', '_blank', 'width=600,height=600,scrollbars=yes');
+                            return false;
+                        });
+                    });
+                </script>
+            } // if (Model.Payer.UserName != Html.FBOUserName())
+            else
+            { // Buyer
+
+                @Html.Partial("BackButton")
+                <button id="PrintInvoice" class="btn btn-default btn-xs">@Html.GlobalResource("PrintInvoice")</button>
+
+                <script>
+                    $(document).ready(function () {
+                        $("#PrintInvoice").click(function () {
+                            window.open('@Html.GetActionUrl("PrintInvoice", new { id = Model.ID }).ToMvcHtmlString().ToJavascriptSafeString()', '_blank', 'width=600,height=600,scrollbars=yes');
+                            return false;
+                        });
+                    });
+                </script>
+            }
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-8 form-group">
+
+        </div>
+        @if (Model.Shipped)
+        {
+            <div class="col-sm-4 text-right">
+                <img src="Content/images/paidStamp.png" alt="@Html.GlobalResource("Paid")" />
+                <img src="Content/images/shippedStamp.png" alt="@Html.GlobalResource("Shipped")" />
+            </div>
+        }
+        else
+        {
+            <div class="col-sm-4  text-right">
+                <img src="Content/images/paidStamp.png" alt="@Html.GlobalResource("Paid")" />
+            </div>
+        }
+
+        <div class="col-sm-6">
+            @Html.GlobalResource("Seller"): @Model.Owner.UserName
+
+            @* display applicable seller custom fields *@
+            @foreach (var property in Model.Owner.Properties
+                .Where(p => p.Field.IncludeOnInvoiceAsSeller && p.Field.Visibility > CustomFieldAccess.Admin)
+                .OrderBy(p => p.Field.DisplayOrder))
+            {
+                if (!string.IsNullOrEmpty(property.Value))
+                {
+                    string formattedValue;
+                    switch (property.Field.Type)
+                    {
+                        case CustomFieldType.Boolean:
+                            formattedValue = bool.Parse(property.Value) ? Html.GlobalResourceString("Yes") : Html.GlobalResourceString("No");
+                            break;
+                        case CustomFieldType.Decimal:
+                            formattedValue = decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo());
+                            break;
+                        case CustomFieldType.Int:
+                            formattedValue = int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                            break;
+                        case CustomFieldType.DateTime:
+                            formattedValue = DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                            break;
+                        case CustomFieldType.Enum:
+                            formattedValue = Html.CustomFieldResourceString(property.Value);
+                            break;
+                        default:
+                            formattedValue = property.Value;
+                            break;
+                    }
+                    <br />@(string.Format("{0}: {1}", Html.CustomFieldResourceString(property.Field.Name), formattedValue))
+                }
+            }
+
+            @* display applicable event custom fields *@
+            @if (auctionEvent != null)
+            {
+                foreach (var property in auctionEvent.Properties
+                    .Where(p => p.Field.IncludeOnInvoice && p.Field.Visibility > CustomFieldAccess.Admin)
+                    .OrderBy(p => p.Field.DisplayOrder))
+                {
+                    if (!string.IsNullOrEmpty(property.Value))
+                    {
+                        string formattedValue;
+                        switch (property.Field.Type)
+                        {
+                            case CustomFieldType.Boolean:
+                                formattedValue = bool.Parse(property.Value) ? Html.GlobalResourceString("Yes") : Html.GlobalResourceString("No");
+                                break;
+                            case CustomFieldType.Decimal:
+                                formattedValue = decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.Int:
+                                formattedValue = int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.DateTime:
+                                formattedValue = DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                                break;
+                            case CustomFieldType.Enum:
+                                formattedValue = Html.CustomFieldResourceString(property.Value);
+                                break;
+                            default:
+                                formattedValue = property.Value;
+                                break;
+                        }
+                        <br />@(string.Format("{0}: {1}", Html.CustomFieldResourceString(property.Field.Name), formattedValue))
+                    }
+                }
+            }
+
+            <br />@Html.GlobalResource("InvoiceNumber"): @Model.ID
+            <p>&nbsp;</p>
+            <strong>@Html.GlobalResource("SellerAddress")</strong>
+            <br />@Model.OwnerName
+            <br />@Model.OwnerStreet1
+            @if (!string.IsNullOrEmpty(Model.OwnerStreet2))
+            {
+                <br />@Model.OwnerStreet2
+            }
+            <br />@Model.OwnerCity, @Model.OwnerStateRegion @Model.OwnerZipPostal @Model.OwnerCountry
+            <p>&nbsp;</p>
+        </div>
+        <div class="col-sm-6">
+            @Html.GlobalResource("Buyer"): @Model.Payer.UserName
+            @if (payerIsTaxExempt)
+            {
+                <text>&nbsp;&nbsp;</text><span class="label label-success">@Html.GlobalResource("TaxExempt")</span>
+            }
+            <br />
+            @* display applicable buyer custom fields *@
+            @foreach (var property in Model.Payer.Properties
+                .Where(p => p.Field.IncludeOnInvoiceAsBuyer && p.Field.Visibility > CustomFieldAccess.Admin)
+                .OrderBy(p => p.Field.DisplayOrder))
+            {
+                if (!string.IsNullOrEmpty(property.Value))
+                {
+                    string formattedValue;
+                    switch (property.Field.Type)
+                    {
+                        case CustomFieldType.Boolean:
+                            formattedValue = bool.Parse(property.Value) ? Html.GlobalResourceString("Yes") : Html.GlobalResourceString("No");
+                            break;
+                        case CustomFieldType.Decimal:
+                            formattedValue = decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo());
+                            break;
+                        case CustomFieldType.Int:
+                            formattedValue = int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                            break;
+                        case CustomFieldType.DateTime:
+                            formattedValue = DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo());
+                            break;
+                        case CustomFieldType.Enum:
+                            formattedValue = Html.CustomFieldResourceString(property.Value);
+                            break;
+                        default:
+                            formattedValue = property.Value;
+                            break;
+                    }
+                    @(string.Format("{0}: {1}", Html.CustomFieldResourceString(property.Field.Name), formattedValue))<br />
+                }
+            }
+
+            @Html.GlobalResource("DateCreated"): @Html.LocalDTTM(Model.CreatedDTTM, "g")
+            <p>&nbsp;</p>
+            <strong>@Html.GlobalResource("BillingAddress")</strong><br />
+            @if (!string.IsNullOrEmpty(Model.BillingCountry))
+            {
+                @(string.Format("{0} {1}", Model.BillingFirstName, Model.BillingLastName))<br />
+                    @Model.BillingStreet1<br />
+                if (!string.IsNullOrEmpty(Model.BillingStreet2))
+                {
+                    @Model.BillingStreet2<br />
+                }
+                @Model.BillingCity@:, @Model.BillingStateRegion @Model.BillingZipPostal @Model.BillingCountry
+            }
+            else
+            {
+                <div class="no-address">@Html.GlobalResource("AddressNotDefined")</div>
+            }
+            @if (Model.Type == InvoiceTypes.Shipping)
+            {
+                <p>&nbsp;</p>
+                <strong>@Html.GlobalResource("ShippingAddress")</strong>
+                if (!string.IsNullOrEmpty(Model.ShippingCountry))
+                {
+                    <br />@(string.Format("{0} {1}", Model.ShippingFirstName, Model.ShippingLastName))
+                    <br />@Model.ShippingStreet1
+                    if (!string.IsNullOrEmpty(Model.ShippingStreet2))
+                    {
+                        <br />@Model.ShippingStreet2
+                    }
+                    <br />@Model.ShippingCity@:, @Model.ShippingStateRegion @Model.ShippingZipPostal @Model.ShippingCountry
+                }
+            }
+        </div>
+    </div>
+    <table class="table">
+        <tr class="active">
+            <th>@Html.GlobalResource("Description")</th>
+            <th class="hidden-xs">@Html.GlobalResource("UnitPrice")</th>
+            <th class="hidden-xs">@Html.GlobalResource("Quantity")</th>
+            <th>@Html.GlobalResource("Total")</th>
+            <th class="hidden-xs">&nbsp;</th>
+        </tr>
+        @{var lineItems = ((Page<LineItem>)ViewData[MVC.ViewData_PageOfLineitems]).List;}
+        @foreach (LineItem lineItem in lineItems.Where(li => li.Type == LineItemTypes.Listing))
+        {
+            string lineItemDescription = string.Format("{0} ({1})", lineItem.Description,
+                !string.IsNullOrWhiteSpace(lineItem.LotNumber) ? lineItem.LotNumber : lineItem.ListingID.ToString());
+            <tr>
+                <td>
+                    @Html.ActionLink(lineItemDescription, MVC.DetailsAction, MVC.ListingController,
+                        new { id = lineItem.ListingID }, null)
+                </td>
+                <td class="hidden-xs">@Html.LocalCurrency(lineItem.PerUnitAmount, Model.Currency)</td>
+                <td class="hidden-xs">@Html.LocalInteger(lineItem.Quantity)</td>
+                <td>
+                    @Html.LocalCurrency(lineItem.TotalAmount, Model.Currency)
+                    <div class="visible-xs">
+                        @if (!hideTaxFields)
+                        {
+                            if (lineItem.Taxable)
+                            {
+                                <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource(" taxableitem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource(" taxexemptitem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                            }
+                        }
+                        @if (buyersPremiumEnabled)
+                        {
+                            if (lineItem.BuyersPremiumApplies)
+                            {
+                                <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource(" buyerspremium")"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource(" nobuyerspremium")"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button>
+                            }
+                        }
+                    </div>
+                </td>
+                <td class="hidden-xs">
+                    @if (!hideTaxFields)
+                    {
+                        if (lineItem.Taxable)
+                        {
+                            <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource(" taxableitem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource(" taxexemptitem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                        }
+                    }
+                    @if (buyersPremiumEnabled)
+                    {
+                        if (lineItem.BuyersPremiumApplies)
+                        {
+                            <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource(" buyerspremium")"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource(" nobuyerspremium")"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button>
+                        }
+                    }
+                </td>
+            </tr>
+            foreach (KeyValuePair<string, string> pair in lineItem.Properties.Where(lip => !fieldsToHide.Any(cf => cf.Name == lip.Key)))
+            {
+                <tr>
+                    <td colspan="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>@Html.CustomFieldResource(pair.Key, Model.Owner.Culture): @Html.CustomFieldResource(pair.Value, Model.Owner.Culture)</em></td>
+                </tr>
+            } // foreach (KeyValuePair<string, string> pair in lineItem.Properties)
+        }
+        @foreach (LineItem lineItem in lineItems.Where(li => li.Type == LineItemTypes.Adjustment))
+        {
+            <tr>
+                <td>
+                    @lineItem.Description
+                </td>
+                <td class="hidden-xs">@Html.LocalCurrency(lineItem.PerUnitAmount, Model.Currency)</td>
+                <td class="hidden-xs">@Html.LocalInteger(lineItem.Quantity)</td>
+                <td>@Html.LocalCurrency(lineItem.TotalAmount, Model.Currency)</td>
+                <td class="hidden-xs">
+                    @if (!hideTaxFields)
+                    {
+                        if (lineItem.Taxable)
+                        {
+                            <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource("TaxableItem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource("TaxExemptItem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                        }
+                    }
+                    @if (buyersPremiumEnabled)
+                    {
+                        if (lineItem.BuyersPremiumApplies)
+                        {
+                            <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource("BuyersPremium")"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource("NoBuyersPremium")"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button>
+                        }
+                    }
+                </td>
+            </tr>
+            foreach (KeyValuePair<string, string> pair in lineItem.Properties.Where(lip => !fieldsToHide.Any(cf => cf.Name == lip.Key)))
+            {
+                <tr>
+                    <td colspan="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>@Html.CustomFieldResource(pair.Key, Model.Owner.Culture): @Html.CustomFieldResource(pair.Value, Model.Owner.Culture)</em></td>
+                </tr>
+            } // foreach (KeyValuePair<string, string> pair in lineItem.Properties)
+        }
+        <tr>
+            <td class="hidden-xs"></td>
+            <td class="hidden-xs"></td>
+            <td>
+                <label>@Html.GlobalResource("Subtotal")</label>
+            </td>
+            <td>
+                @Html.LocalCurrency(Model.Subtotal, Model.Currency)
+            </td>
+            <td class="hidden-xs"></td>
+        </tr>
+        @if (Model.Type == InvoiceTypes.Shipping)
+        {
+            <tr>
+                <td class="hidden-xs"></td>
+                <td class="hidden-xs"></td>
+                <td>
+                    <label>@Html.GlobalResource("Shipping")</label>
+                </td>
+                <td>
+                    @ViewData["ShippingOption"]
+                </td>
+                <td class="hidden-xs"></td>
+            </tr>
+        }
+        @if (Model.BuyersPremiumAmount > 0)
+        {
+            <tr>
+                <td class="hidden-xs"></td>
+                <td class="hidden-xs"></td>
+                <td>
+                    <label>@Html.GlobalResource("BuyersPremium")</label>
+                    (@((Model.BuyersPremiumPercent / 100).ToString("P")))
+                </td>
+                <td>
+                    @Html.LocalCurrency(Model.BuyersPremiumAmount, Model.Currency)
+                    <div class="visible-xs">
+                        @if (!hideTaxFields)
+                        {
+                            if (Model.BuyersPremiumIsTaxable())
+                            {
+                                <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource("TaxableItem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource("TaxExemptItem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                            }
+                        }
+                    </div>
+                </td>
+                <td class="hidden-xs">
+                    @if (!hideTaxFields)
+                    {
+                        if (Model.BuyersPremiumIsTaxable())
+                        {
+                            <button class="btn btn-success btn-xs no-click-action" title="@Html.GlobalResource("TaxableItem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-default btn-xs no-click-action" title="@Html.GlobalResource("TaxExemptItem")"><small>@Html.GlobalResource("TaxableItem_Small")</small></button>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+        @if (!(hideTaxFields && Model.SalesTax == 0.0M))
+        {
+            <tr>
+                <td class="hidden-xs"></td>
+                <td class="hidden-xs"></td>
+                <td>
+                    <label>@Html.GlobalResource(vatEnabled ? "VAT" : "SalesTax")</label>
+                </td>
+                <td>
+                    @Html.LocalCurrency(Model.SalesTax, Model.Currency)
+                </td>
+                <td class="hidden-xs"></td>
+            </tr>
+        }
+        <tr class="success">
+            <td class="hidden-xs"></td>
+            <td class="hidden-xs"></td>
+            <td>
+                <label>@Html.GlobalResource("Total")</label>
+            </td>
+            <td>
+                <strong>@Html.LocalCurrency(Model.Total, Model.Currency)</strong>
+            </td>
+            <td class="hidden-xs"></td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <strong>
+                    @if (Model.Payer.UserName != Html.FBOUserName()) //  Seller or Admin
+                    {
+                        @Html.GlobalResource("CommentsShownToBuyer")@: :
+                    }
+                    else
+                    { // Buyer
+                        if (!string.IsNullOrEmpty(Model.Comments))
+                        {
+                            @Html.GlobalResource("Comments")@: :
+                        }
+                    }
+                </strong>
+                @if (Model.Payer.UserName != Html.FBOUserName()) //  Seller or Admin
+                {
+                    using (Html.BeginForm(MVC.UpdateInvoiceCommentsAction, currentController))
+                    {
+                        <div class="form-group">
+                            @Html.TextArea(Fields.Comments, Model.Comments, 4, 50, new { @class = "form-control" })
+                            @Html.Hidden(Fields.InvoiceID, Model.ID)
+                            @Html.Hidden(Fields.ReturnUrl)
+                        </div>
+                        <div class="form-group text-right">
+                            @{
+                                MvcHtmlString helpText;
+                                if (SiteClient.EnableEvents)
+                                {
+                                    helpText = Html.GlobalResource("ApplyCommentToAllInvoices_Events_Help");
+                                }
+                                else
+                                {
+                                    helpText = Html.GlobalResource("ApplyCommentToAllInvoices_Help");
+                                }
+                                <div class="col-xs-12 text-right">
+                                    <input type="checkbox" id="ApplyToAllInvoices" name="ApplyToAllInvoices" value="@MVC.TrueValue" />
+                                    <label for="ApplyToAllInvoices">@Html.GlobalResource("ApplyCommentToAllInvoices")</label>
+                                    @if (helpText != null)
+                                    {
+                                        @Html.ToolTipButton("ApplyCommentToAllInvoices_Help")
+                                    }
+                                </div>
+                                if (helpText != null)
+                                {
+                                    <div class="col-xs-12 text-center">
+                                        @Html.ToolTipContent("ApplyCommentToAllInvoices_Help", helpText)
+                                    </div>
+                                }
+                            }
+                            <div class="col-xs-12 text-right">
+                                <input type="submit" class="btn btn-default pull-right" value="@Html.GlobalResource("SaveComments")" />
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    }
+                }
+                else
+                { // Buyer
+                    @Model.Comments
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+@if (!hideTaxFields || buyersPremiumEnabled)
+{
+    <script>
+        $(document).ready(function () {
+            $(".no-click-action").click(function (event) {
+                event.preventDefault();
+            });
+        });
+    </script>
+    <div class="well well-sm" id="IconKey">
+        @if (!hideTaxFields)
+        {
+            <button class="btn btn-success btn-xs no-click-action"><small>@Html.GlobalResource("TaxableItem_Small")</small></button> @Html.GlobalResource("TaxableItem")
+            <button class="btn btn-default btn-xs no-click-action"><small>@Html.GlobalResource("TaxableItem_Small")</small></button> @Html.GlobalResource("TaxExemptItem")
+        }
+        @if (buyersPremiumEnabled)
+        {
+            <button class="btn btn-success btn-xs no-click-action"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button> @Html.GlobalResource("BuyersPremium")
+            <button class="btn btn-default btn-xs no-click-action"><small>@Html.GlobalResource("BuyersPremium_Small")</small></button> @Html.GlobalResource("NoBuyersPremium")
+        }
+    </div>
+}
+@Html.Partial("PaymentHistory")

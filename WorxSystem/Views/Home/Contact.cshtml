@@ -1,0 +1,73 @@
+﻿@using Recaptcha
+@using System.Configuration
+@{ 
+    string demoReCaptchaPublicKey = ConfigurationManager.AppSettings["DemoReCaptchaPublicKey"];
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            @Html.GlobalResource("ContactUs")
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        <span class="help-block text-right">
+                            @Html.GlobalResource("RequiredFields", "<span class=\"required\"></span>")
+                        </span>
+                        @using (Html.BeginForm(MVC.ContactAction, MVC.HomeController, FormMethod.Post, new { @id = "ContactUsForm", @class = "form-horizontal" }))
+                    {
+                            @Html.LocalizedValidationSummary()
+                            <div class="form-group">
+                                <label for="@Fields.FirstName" class="col-md-3 control-label required">
+                                    @Html.GlobalResource(Fields.FirstName)
+                                </label>
+                                <div class="col-md-9">
+                                    @Html.TextBox(Fields.FirstName, null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="@Fields.LastName" class="col-md-3 control-label required">
+                                    @Html.GlobalResource(Fields.LastName)
+                                </label>
+                                <div class="col-md-9">
+                                    @Html.TextBox(Fields.LastName, null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="@Fields.Email" class="col-md-3 control-label required">@Html.GlobalResource(Fields.Email)</label>
+                                <div class="col-md-9">
+                                    @Html.TextBox(Fields.Email, null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="@Fields.Message" class="col-md-3 control-label required">@Html.GlobalResource(Fields.Message)</label>
+                                <div class="col-md-9">
+                                    @Html.TextArea(Fields.Message, null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        if (SiteClient.BoolSetting("EnableRecaptchaForContactUs") || !string.IsNullOrWhiteSpace(demoReCaptchaPublicKey))
+                        {
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label required">@Html.GlobalResource("RecaptchaSecurity")</label>
+                                    <div class="col-md-9">
+                                        @Html.RenderCaptcha()
+                                    </div>
+                                </div>
+                        }
+                            <div class="form-group">
+                                <label class="col-md-3 control-label"></label>
+                                <div class="col-md-9">
+                                    <button class="btn btn-primary pull-right" id="SendMessage"><span class="glyphicon glyphicon-envelope"></span> @Html.GlobalResource("Send")</button>
+                                </div>
+                            </div>
+                    }
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        @Html.GetSiteContent("ContactUs")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

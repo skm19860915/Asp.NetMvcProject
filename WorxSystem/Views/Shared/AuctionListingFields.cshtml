@@ -1,0 +1,88 @@
+﻿@{
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool reserveEnabled = bool.Parse(auctionProperties.Single(ap => ap.Field.Name == SiteProperties.EnableReserve).Value);
+    bool buyNowEnabled = bool.Parse(auctionProperties.Single(ap => ap.Field.Name == SiteProperties.EnableBuyNow).Value);
+    string existingReserveValue = (string)ViewData[Fields.ReservePrice];
+    if (existingReserveValue == null)
+    {
+        var reserveModelState = ViewData.ModelState[Fields.ReservePrice];
+        if (reserveModelState != null && reserveModelState.Value != null)
+        {
+            existingReserveValue = reserveModelState.Value.AttemptedValue;
+        }
+    }
+    string existingBuyNowValue = (string)ViewData[Fields.FixedPrice];
+    if (existingBuyNowValue == null)
+    {
+        var buyNowModelState = ViewData.ModelState[Fields.FixedPrice];
+        if (buyNowModelState != null && buyNowModelState.Value != null)
+        {
+            existingBuyNowValue = buyNowModelState.Value.AttemptedValue;
+        }
+    }
+}
+
+<div class="form-group">
+    <label class="required col-sm-3 control-label">
+        @Html.Resource("AuctionListing, StartingBid")
+    </label>
+    <div class="col-sm-6">
+        @Html.CurrencyBox(Fields.Price, null, (string)ViewData[Fields.Currency], new { @class = "form-control" })
+    </div>
+</div>
+@if (!string.IsNullOrWhiteSpace(existingReserveValue) || reserveEnabled)
+{
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            @Html.Resource("AuctionListing, ReservePrice")
+        </label>
+        <div class="col-sm-6">
+            @Html.CurrencyBox(Fields.ReservePrice, null, (string)ViewData[Fields.Currency], new { @class = "form-control" })
+        </div>
+    </div>
+}
+@if (!string.IsNullOrWhiteSpace(existingBuyNowValue) || buyNowEnabled)
+{
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            @Html.Resource("AuctionListing, BuyNowPrice")
+        </label>
+        <div class="col-sm-6">
+            @Html.CurrencyBox(Fields.FixedPrice, null, (string)ViewData[Fields.Currency], new { @class = "form-control" })
+        </div>
+    </div>
+}
+@if ((bool)ViewData[SiteProperties.EnableMakeOffer])
+{
+    <div class="form-group">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-8">
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBox(Fields.MakeOfferAllowed, null)
+                    @Html.Resource("AuctionListing, AcceptOffers")
+                    &nbsp;@Html.ToolTipButton("AcceptOffers_Help")
+                </label>
+                @Html.ToolTipContent("AcceptOffers_Help", Html.GlobalResource("AcceptOffers_Help"))
+            </div>
+        </div>
+    </div>
+}
+@if (!SiteClient.BoolSetting(SiteProperties.HideTaxFields))
+{
+    <div class="form-group">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-8">
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBox(Fields.IsTaxable, null)
+                    @Html.Resource("AuctionListing, IsTaxable")
+                </label>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @Html.Hidden(Fields.IsTaxable, MVC.FalseValue)
+}

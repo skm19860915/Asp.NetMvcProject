@@ -1,0 +1,137 @@
+﻿@model Page<Event>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+
+        $(".awe-delete-link").click(function () {
+            var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("DeleteEventWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                message: jsDeleteConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+        $("select#ViewFilterOption").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+        $('.checkall').click(function () {
+            $(".row-selection-checkbox").prop("checked", this.checked);
+        });
+
+        $("#SetArchived").click(function () {
+            if ($(".row-selection-checkbox:checked").length == 0) {
+                //alert('@Html.GlobalResourceString("YouMustSelectAtLeastOneEventToProceed")');
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                    message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneSaleToProceed").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+            $(this).parents("form").first().submit();
+            return false;
+        });
+
+        $(".PrintAllInvoices").click(function (event) {
+            event.preventDefault();
+            window.open($(this).attr("href"), '_blank', 'width=600,height=600,scrollbars=yes');
+            return false;
+        });
+
+        //[Process Payments]
+        $(".ProcessPayments").on("click", function (event) {
+            event.preventDefault();
+            var targetUrl = $.htmlDecode($(this).attr("href"));
+            $(this).attr('disabled', 'disabled');
+            $(this).fadeTo(0, 0.5);
+            window.location.assign(targetUrl);
+        });
+
+    });
+</script>
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_EventsClosed")
+</div>
+@Html.LocalizedValidationSummary()
+<div class="panel panel-default">
+    <div class="row">
+        <div class="col-xs-2 col-sm-1">
+            <input type="checkbox" class="checkall pull-left" />
+        </div>
+        @using (Html.BeginForm(MVC.EventsClosedAction, MVC.AccountController, new { page = 0 }, FormMethod.Get))
+        {
+            <div class="col-xs-10 col-sm-4 col-sm-offset-7">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">@Html.GlobalResource("Sort")</div>
+                        @Html.DropDownList(MVC.SortFilterOptions, null, new { @class = "form-control SubmitOnChange" })
+                    </div>
+                </div>
+                <input type="submit" id="submitDropDown" class="awe-hidden" />
+            </div>
+
+        }
+    </div>
+    <div class="row">
+        @using (Html.BeginForm(MVC.SetEventsArchivedAction, MVC.AccountController, FormMethod.Post))
+        {
+
+            foreach (Event auctionEvent in Model.List)
+            {
+                @Html.Partial("Event_Row", auctionEvent)
+            }
+            if (Model.TotalItemCount == 0)
+            {
+                <p class="no-history">
+                    @Html.GlobalResource("NoEventsAvailable")
+                </p>
+            }
+            <div class="col-xs-12">
+                @Html.Hidden(MVC.SortFilterOptions, ((SelectList)ViewData[MVC.SortFilterOptions]).SelectedValue)
+                @Html.Hidden("archived", true.ToString())
+                @((Model.PageIndex > 0) ? Html.Hidden("page", Model.PageIndex) : MvcHtmlString.Empty)
+                <button class="btn btn-default" id="SetArchived">@Html.GlobalResource("ArchiveEvents")</button>
+            </div>
+        }
+    </div>
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

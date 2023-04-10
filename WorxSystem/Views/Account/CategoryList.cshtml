@@ -1,0 +1,105 @@
+﻿@model List<Hierarchy<int, Category>>
+@{
+    User impersonatedUser = null;
+    if (User.Identity.IsAuthenticated && !User.Identity.Name.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase))
+    {
+        //admin user is impersonating another user, check the impersonated user's roles
+        impersonatedUser = UserClient.GetUserByUserName(User.Identity.Name, Html.FBOUserName());
+    }
+}
+@foreach (Hierarchy<int, Category> categoryTree in Model.OrderBy(c => c.Current.DisplayOrder))
+{
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.RolesAllowed))
+    {
+        if (impersonatedUser != null)
+        {
+            if (!impersonatedUser.Roles.Any(r => r.Name.Equals(categoryTree.Current.RolesAllowed, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+        }
+        else
+        {
+            if (!User.IsInRole(categoryTree.Current.RolesAllowed)) { continue; }
+        }
+    }
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.EnabledCustomProperty))
+    {
+        if (categoryTree.Current.EnabledCustomProperty.StartsWith("#"))
+        {
+            if (!bool.Parse(categoryTree.Current.EnabledCustomProperty.Substring(1))) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.Contains("&&") ||
+                 categoryTree.Current.EnabledCustomProperty.Contains("||"))
+        {
+            if (!Html.EvaluateComplexEnabledCustomProperty(categoryTree.Current.EnabledCustomProperty)) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_!"))
+        {
+            //render this category if no listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(8);
+            bool skip = false;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = true;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_"))
+        {
+            //render this category if any listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(7);
+            bool skip = true;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = false;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("!"))
+        {
+            if (bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty.Substring(1)])) { continue; }
+        }
+        else
+        {
+            if (!bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty])) { continue; }
+        }
+    }
+
+    if (string.IsNullOrEmpty(categoryTree.Current.MVCAction))
+    {
+        <li>@Html.GlobalResource(categoryTree.Current.Name)</li>
+    }
+    else
+    {
+        if (ViewContext.RouteData.Values["action"].Equals(categoryTree.Current.MVCAction) ||
+            (ViewContext.RouteData.Values["id"] != null && categoryTree.Current.MVCAction.Equals(ViewContext.RouteData.Values["action"] + "/" + ViewContext.RouteData.Values["id"])) ||
+            (Request.Url.ToString().Contains("/" + categoryTree.Current.MVCAction)) ||
+            (ViewData.ContainsKey("SelectedNavAction") && categoryTree.Current.MVCAction != null && categoryTree.Current.MVCAction.Equals(ViewData["SelectedNavAction"]))
+            )
+        {
+            <li class="active">
+                @Html.ActionLink(Html.GlobalResource(categoryTree.Current.Name), categoryTree.Current.MVCAction)
+            </li>
+        }
+        else
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource(categoryTree.Current.Name), categoryTree.Current.MVCAction)
+            </li>
+        }
+    }
+    @Html.Partial("CategoryList", categoryTree.ChildHierarchies)
+}

@@ -1,0 +1,364 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_RegionGeneral");
+}
+
+<div id="InUseByListing" class="alert alert-danger awe-hidden">@Html.AdminResource("RegionInUseByListing")</div>
+<div id="HasChildCategories" class="alert alert-danger awe-hidden">@Html.AdminResource("RegionHasChildCategories")</div>
+
+<script>
+    var childSpanName = null;
+    var indicator = null;
+
+    function AlphaSortCategories(parentCategoryId) {
+        Proxy.invoke("AlphaSortCategories", { parentCategoryId: parentCategoryId },
+            function (result) {
+                //success
+                if ($("select option[value=" + parentCategoryId + "]").parent().parent().children("select").html() == null) {
+                    childSpanName = "catlistboxes";
+                    $("span#" + childSpanName).html("");
+                    $("input#CategoryID").val("27");
+                    GetCategories(27);
+                } else {
+                    $("select option[value=" + parentCategoryId + "]").parent().parent().children("select").change();
+                }
+            },
+            function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function MoveCategoryUp(categoryId) {
+        Proxy.invoke("MoveCategoryUp", { categoryId: categoryId },
+            function (result) {
+                //success
+                var selectedOption = $("select option[value=" + categoryId + "]");
+                selectedOption.prev().before(selectedOption);
+                if (selectedOption.is(":first-child")) $("#MoveSelectedOptionUp").attr('disabled', 'disabled').attr('class', 'btn btn-default'); else $("#MoveSelectedOptionUp").removeAttr('disabled').attr('class', 'btn btn-default');
+                if (selectedOption.is(":last-child")) $("#MoveSelectedOptionDown").attr('disabled', 'disabled').attr('class', 'btn btn-default'); else $("#MoveSelectedOptionDown").removeAttr('disabled').attr('class', 'btn btn-default');
+            },
+            function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function MoveCategoryDown(categoryId) {
+        Proxy.invoke("MoveCategoryDown", { categoryId: categoryId },
+            function (result) {
+                //success
+                var selectedOption = $("select option[value=" + categoryId + "]");
+                selectedOption.next().after(selectedOption);
+                if (selectedOption.is(":first-child")) $("#MoveSelectedOptionUp").attr('disabled', 'disabled').attr('class', 'btn btn-default'); else $("#MoveSelectedOptionUp").removeAttr('disabled').attr('class', 'btn btn-default');
+                if (selectedOption.is(":last-child")) $("#MoveSelectedOptionDown").attr('disabled', 'disabled').attr('class', 'btn btn-default'); else $("#MoveSelectedOptionDown").removeAttr('disabled').attr('class', 'btn btn-default');
+            },
+            function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function GetCategories(parentCategoryID) {
+        var retVal = null;
+        $("#InUseByListing").hide();
+        $("#HasChildCategories").hide();
+        Proxy.invoke("GetChildCategories", { parentCategoryID: parentCategoryID },
+        function (result) {
+            indicator.remove();
+
+            if (parentCategoryID == 27) {
+                $("#EditButton").attr('disabled', 'disabled');
+                $("#DeleteButton").attr('disabled', 'disabled');
+            } else {
+                $("#EditButton").removeAttr('disabled');
+                $("#DeleteButton").removeAttr('disabled');
+            }
+
+            //draw select box
+            if (result.length > 0) {
+
+                $("span#" + childSpanName).append("<select class='SelectorDisplay form-control category' name='selectFor" + parentCategoryID + "' id='selectFor" + parentCategoryID + "'></select>");
+                //render any child divs
+                $("span#" + childSpanName).append("<span id='spanFor" + parentCategoryID + "'></span>");
+                childSpanName = "spanFor" + parentCategoryID;
+
+                //$("select#selectFor" + parentCategoryID).hide();
+                $("select#selectFor" + parentCategoryID).attr("size", 6);
+
+                //fill select box
+                for (category in result) {
+                    $("select#selectFor" + parentCategoryID).append("<option value='" + result[category].ID + "'>" + result[category].Name + " (" + result[category].ID + ")</option>");
+                }
+
+                //attach change handler for select box
+                $("select#selectFor" + parentCategoryID).change(function () {
+                    if ($(this).find(':selected').length > 0) {
+                        //var catID = $(this).attr("id");
+                        //catID = catID.substring(9);
+                        $("input#CategoryID").val($(this).val());
+                        $("span#SelectedCategoryName").html($(this).children("option:selected").text());
+                        //GetFields($(this).val());
+                        //GetListingTypes($(this).val());
+                        $("span#spanFor" + parentCategoryID).fadeOut("fast");
+                        $("span#spanFor" + parentCategoryID).remove();
+                        $("select#selectFor" + parentCategoryID).after("<span id='spanFor" + parentCategoryID + "'></span>");
+                        childSpanName = "spanFor" + parentCategoryID;
+                        indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+                        GetCategories($("select#selectFor" + parentCategoryID).val());
+
+                        var selectedOption = $(this).children("option:selected");
+                        if (selectedOption.is(":first-child")) $("#MoveSelectedOptionUp").attr('disabled', 'disabled');
+                        else $("#MoveSelectedOptionUp").removeAttr('disabled');
+                        if (selectedOption.is(":last-child")) $("#MoveSelectedOptionDown").attr('disabled', 'disabled');
+                        else $("#MoveSelectedOptionDown").removeAttr('disabled');
+                    }
+                });
+
+                $("select#selectFor" + parentCategoryID).click(function () {
+                    $(this).change();
+                });
+
+                //$("select#selectFor" + parentCategoryID).fadeIn("fast");
+            }
+
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function AddMultipleCategories(parentCategoryID, names) {
+        var retVal = null;
+        $("#InUseByListing").hide();
+        $("#HasChildCategories").hide();
+        indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+        Proxy.invoke("AddMultipleCategories", { parentCategoryID: parentCategoryID, names: names },
+        function (result) {
+            if ($("select option[value=" + parentCategoryID + "]").html() == null) {
+                childSpanName = "catlistboxes";
+                $("span#" + childSpanName).html("");
+                $("input#CategoryID").val("27");
+                GetCategories(27);
+            } else {
+                $("select option[value=" + parentCategoryID + "]").change();
+            }
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function DeleteRegion(categoryID) {
+        var retVal = null;
+        if (categoryID == 27) return;
+        $("#InUseByListing").hide();
+        $("#HasChildCategories").hide();
+        indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+        Proxy.invoke("DeleteRegion", { regionID: categoryID },
+        function (result) {
+            indicator.remove();
+            if (result == "success") {
+                if ($("select option[value=" + categoryID + "]").parent().parent().parent().children("select").html() == null) {
+                    $("span#SelectedCategoryName").html('@Html.AdminResource("RootItemCategoryTitle").ToJavascriptSafeString()');
+                    childSpanName = "catlistboxes";
+                    $("span#" + childSpanName).html("");
+                    $("input#CategoryID").val("27");
+                    GetCategories(27);
+                } else {
+                    $("select option[value=" + categoryID + "]").parent().parent().parent().children("select").change();
+                }
+            } else {
+                $("[id='" + result + "']").show(); // $("#" + result).show();
+            }
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function GetCategoryUsages(categoryID) {
+        if (categoryID == 9) return;
+        $("#InUseByListing").hide();
+        $("#HasChildCategories").hide();
+        var retVal = null;
+        indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+        Proxy.invoke("GetCategoryUsages", { categoryID: categoryID },
+        function (result) {
+            indicator.remove();
+            ConfirmDeletion(categoryID, result[0]);
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    function ConfirmDeletion(categoryID, childCategories) {
+        if (childCategories > 0) {
+            var advDelConfDialog = new BootstrapDialog({
+                type: 'type-danger',
+                cssClass: 'acp-boot-dialog',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.AdminResource("RegionDeletionConfirmation_Title").ToJavascriptSafeString()',
+                message: ''
+                    + '@Html.AdminResource("RegionDeletionRepercussionWarning").ToJavascriptSafeString()'
+                    + '<br /><br />'
+                    + '<div style="color:red;">'
+                    + '    <ul>'
+                    + '        <li><span id="NumChildCats"></span> ' + '@Html.AdminResource("DirectChildRegions").ToJavascriptSafeString()' + '</li>'
+                    + '        <li>@Html.AdminResource("AllDescendantRegions").ToJavascriptSafeString()</li>'
+                    + '    </ul>'
+                    + '</div>'
+                    + '<br />'
+                    + '@Html.AdminResource("DeleteWarning_ReallyDeleteRegion").ToJavascriptSafeString()'
+                    + '<br /><br />'
+                    + '<div style="color:red;font-weight:bolder;">@Html.AdminResource("DeleteWarning_CantBeUndone").ToJavascriptSafeString()</div>'
+                ,
+                buttons: [
+                    {
+                        label: '@Html.AdminResource("No").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }, {
+                        label: '@Html.AdminResource("YesPermanentlyDelete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function (dialogItself) {
+                            DeleteRegion(categoryID);
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            advDelConfDialog.realize();
+            var advDelConfBody = advDelConfDialog.getModalBody();
+            advDelConfBody.find("#NumChildCats").html(childCategories);
+            advDelConfDialog.open();
+        } else {
+            BootstrapDialog.show({
+                type: 'type-danger',
+                cssClass: 'acp-boot-dialog',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.AdminResource("RegionDeletionConfirmation_Title").ToJavascriptSafeString()',
+                message: ''
+                    + '@Html.AdminResource("DeleteWarning_ReallyDeleteRegion").ToJavascriptSafeString()'
+                    + '<br /><br />'
+                    + '<div style="color:red;font-weight:bolder;">@Html.AdminResource("DeleteWarning_CantBeUndone")</div>'
+                ,
+                buttons: [
+                    {
+                        label: '@Html.AdminResource("No").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }, {
+                        label: '@Html.AdminResource("YesPermanentlyDelete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function (dialogItself) {
+                            DeleteRegion(categoryID);
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+        }
+    }
+
+    function ResetForm() {
+        $("#InUseByListing").hide();
+        $("#HasChildCategories").hide();
+        childSpanName = "catlistboxes";
+        $("span#" + childSpanName).html("");
+        $("span#SelectedCategoryName").html("");
+        $("input#CategoryID").val("27");
+        $("span#SelectedCategoryName").html('@Html.AdminResource("RootItemCategoryTitle").ToJavascriptSafeString()');
+        indicator = $("<img src='Content/images/General/refresh-animated.gif' style='margin-bottom:184px;' />").appendTo("span#" + childSpanName);
+        $("#MoveSelectedOptionDown").attr('disabled', 'disabled');
+        $("#MoveSelectedOptionUp").attr('disabled', 'disabled');
+        $("#EditButton").attr('disabled', 'disabled');
+        $("#DeleteButton").attr('disabled', 'disabled');
+        GetCategories(27);
+    }
+
+    $(document).ready(function () {
+
+        //Move Up click
+        $("#MoveSelectedOptionUp").click(function () {
+            MoveCategoryUp($("#CategoryID").val());
+            return false;
+        });
+        //Move Down click
+        $("#MoveSelectedOptionDown").click(function () {
+            MoveCategoryDown($("#CategoryID").val());
+            return false;
+        });
+        //alpha sort categories
+        $("#AlphaSort").click(function () {
+            AlphaSortCategories($("#CategoryID").val());
+            return false;
+        });
+
+        //load top level categories for the initial page load
+        var catRenderState = $("input#CategoryRendererState").val(); // not used anywhere?
+        //childSpanName = "catlistboxes";
+        //$("input#CategoryID").val("9");
+        //indicator = $("<img src='Content/images/General/refresh-animated.gif' />").appendTo("span#" + childSpanName);
+        ResetForm();
+
+        //[Add] button click
+        $("button.AdminAddCatButton").click(function () {
+            //alert('Adding cats...');
+            AddMultipleCategories($("#CategoryID").val(), $("#Names").val());
+            //alert('...cats added.');
+            return false;
+        });
+
+        //[Delete] button click
+        //$("button.AdminDeleteCatButton").click(function () {
+        //    DeleteCategory($("#CategoryID").val());
+        //});
+        $("#DeleteButton").click(function () {
+            GetCategoryUsages($("#CategoryID").val());
+        });
+
+        //[Edit] button click
+        $("#EditButton").click(function () {
+            var targetUrl = '@Html.GetActionUrl("RegionDetail", "Admin").ToMvcHtmlString().ToJavascriptSafeString()'
+                + "?CategoryID=" + $("#CategoryID").val();
+            document.location = $.htmlDecode(targetUrl);
+            return false;
+        });
+
+        //[Reset] button click
+        $("#ResetButton").click(function () {
+            ResetForm();
+            return false;
+        });
+    });
+
+</script>
+<p class="text-danger">@ViewData["Message"]</p>
+
+<span id="catlistboxes"></span>
+<p />
+<input type="hidden" name="CategoryID" id="CategoryID" />
+
+<div class="group" id="SelectCatButtonContainer">
+    <p>
+        <strong> @Html.AdminResource("CurrentlySelected"):</strong>&nbsp;&nbsp;<span id="SelectedCategoryName"></span>&nbsp;&nbsp;&nbsp;
+        <button class="btn btn-default btn-xs" id="ResetButton">@Html.AdminResource("Reset")</button>
+    </p>
+    <button id="EditButton" class="btn btn-default" disabled="disabled">@Html.AdminResource("Edit")</button>
+    <button class="btn btn-default" id="DeleteButton">@Html.AdminResource("Delete")</button>
+   
+    <button id="MoveSelectedOptionUp" class="btn btn-default" disabled="disabled"><span class="glyphicon glyphicon-arrow-up"></span> @Html.AdminResource("MoveUp")</button>
+    <button id="MoveSelectedOptionDown" class="btn btn-default" disabled="disabled"><span class="glyphicon glyphicon-arrow-down"></span>@Html.AdminResource("MoveDown")</button>
+    <button id="AlphaSort" class="btn btn-default"><span class="glyphicon glyphicon-sort-by-alphabet"></span>  @Html.AdminResource("AlphaSortRegions")</button>
+</div>
+
+<div class="sub-header">@Html.AdminResource("RegionEditor_AddNew")</div>
+<div class="row">
+    <div class="col-sm-6">
+        <p>
+            @Html.TextArea("Names", "", 10, 50, new { @class = "form-control" })
+
+        </p>
+        <p>
+            <button class="btn btn-default AdminAddCatButton">@Html.AdminResource("AddRegions")</button>
+        </p>
+    </div>
+    <div class="col-sm-6">
+        <p>
+            @Html.AdminResource("RegionEditor_AddNewInstructions")
+
+        </p>
+    </div>
+</div>

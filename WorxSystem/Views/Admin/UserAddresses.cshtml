@@ -1,0 +1,42 @@
+﻿@model List<Address>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    User targetUser = (User)ViewData["User"];
+    ViewBag.PageName = Html.AdminResource("LineageString_UserManagement");
+}
+
+@section PageName{
+    &gt; @targetUser.UserName (@targetUser.ID)
+}
+
+@Html.Partial("UserManagementTopNav", "addresses")
+<div class="user-details panel panel-default">
+    <div class="panel-body">
+        @foreach (Address address in Model)
+        {
+            <div class="panel panel-default">
+
+                <div class="panel-body">
+                    @Html.Partial("Address", address)
+                </div>
+                <div class="panel-footer text-right">
+                    @if (address.ID == (int)ViewData["PrimaryAddressID"])
+                {
+                        <button class="btn btn-info PrimaryAddress" disabled="disabled">@Html.AdminResource("PrimaryAddress")</button>
+                        @Html.ButtonLink(Html.AdminResource("Edit"), "EditAddress", new { @id = targetUser.ID, addressID = address.ID }, new { @class = "btn btn-default" })
+                    }
+                    else
+                    {
+                        @Html.ButtonLink(Html.AdminResource("SetPrimary"), "SetPrimaryAddress", new { @id = targetUser.ID, addressID = address.ID }, new { @class = "btn btn-default" })@:&nbsp;
+                        @Html.ButtonLink(Html.AdminResource("Edit"), "EditAddress", new { @id = targetUser.ID, addressID = address.ID }, new { @class = "btn btn-default" })@:&nbsp;
+                        @Html.ButtonLink(Html.AdminResource("Delete"), "DeleteAddress", new { @id = targetUser.ID, addressID = address.ID }, new { @class = "btn btn-default" })
+                    }
+                </div>
+            </div>
+        }
+
+        @Html.ButtonLink(Html.AdminResource("AddNew"), MVC.AddAddressAction, new { @id = targetUser.ID }, new { @class = "btn btn-default" })
+
+    </div>
+</div>

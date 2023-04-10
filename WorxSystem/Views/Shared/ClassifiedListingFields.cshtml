@@ -1,0 +1,9 @@
+﻿<div class="form-group">
+    <label class="col-sm-3 control-label">
+        @Html.Resource("ClassifiedListing, Price")
+    </label>
+    <div class="col-sm-6">
+        @Html.CurrencyBox(Fields.Price, null, (string)ViewData[RainWorx.FrameWorx.Strings.Fields.Currency], new { @class = "form-control" })
+    </div>
+</div>
+

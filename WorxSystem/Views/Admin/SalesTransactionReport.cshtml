@@ -1,0 +1,401 @@
+﻿@model Page<SalesTransactionReportResult>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+    ViewBag.PageName = Html.AdminResource("LineageString_SalesTransactionReport");
+}
+@section head {
+    <script src="~/Scripts/jquery.doubleScroll.js"></script>
+    <script>
+        $(document).ready(function () {
+            var isSubmitting = false;
+
+            //when any filter input is changed, submit the form
+            $(".SubmitOnChange").change(function () {
+                //submit container form
+                if (!isSubmitting) {
+                    isSubmitting = true;
+
+                    //if an event id has just been specified then clear the from/to dates, since they do not make sense in this context
+                    if ($(this).attr("name") == "eventID") {
+                        $("#dateStart").val("");
+                        $("#dateEnd").val("");
+                    }
+
+                    $("#Report1").submit();
+                    return true;
+                }
+                return false;
+            });
+            //$("#ShowFilterOptions").click(function () {
+            //    $("input.input-sm").toggle();
+            //    if ($(this).hasClass("btn-default")) {
+            //        $(this).removeClass("btn-default").addClass("btn-info");
+            //    }
+            //    else if ($(this).hasClass("btn-info")) {
+            //        $(this).addClass("btn-default").removeClass("btn-info");
+            //    }
+            //});
+            //$(window).on("load", function () {
+            //    var inputs = $('#Report1 :input')
+            //        .not(':input[type=button], :input[type=submit], :input[type=hidden], select, option');
+            //    $(inputs).each(function (index, element) {
+            //        if (element.value.length != "") {
+            //            $("input.input-sm").show();
+            //            $("#ShowFilterOptions").addClass("btn-info").removeClass("btn-default");
+            //        }
+            //    });
+            //});
+
+            $("#ApplyFilters").show().click(function () {
+                if (!isSubmitting) {
+                    isSubmitting = true;
+                    $("#Report1").submit();
+                }
+                return false;
+            });
+            @{
+                string exportURL = Html.GetActionUrl(MVC.SalesTransactionCSVAction);
+                exportURL += "?" + HttpContext.Current.Request.QueryString;
+            }
+            $("#ExportCSV").show().click(function () {
+                document.location = $.htmlDecode("@exportURL");
+                return false;
+            });
+
+            $(".awe-print-invoice-link").click(function (event) {
+                event.preventDefault();
+                var targetUrl = $.htmlDecode($(this).attr("href"));
+                window.open(targetUrl, '_blank', 'width=600,height=600,scrollbars=yes');
+            });
+
+           
+            //double scroll bar for xs views
+            $('.double-scroll').doubleScroll({ resetOnWindowResize: true });
+        });
+    </script>
+}
+@section scripts {
+    <script>
+        function resizeText(px) {
+            var reportText = document.getElementById("report");
+            if (reportText.style.fontSize == "") {
+                reportText.style.fontSize = "12px";
+            }
+            reportText.style.fontSize = (px) + "px";
+        }
+</script>
+}
+@{
+    using (Html.BeginForm(MVC.SalesTransactionReportAction, MVC.AdminController, FormMethod.Get, new { @id = "Report1" }))
+    {
+        <input type="hidden" name="page" value="0" />
+        @Html.Hidden("sort")
+        @Html.Hidden("descending")
+
+        string baseReSortUrl = Html.GetActionUrl(MVC.SalesTransactionReportAction, MVC.AdminController, new
+        {
+            dateStart = ViewData["dateStart"],
+            dateEnd = ViewData["dateEnd"],
+            payee = ViewData["payee"],
+            invoiceID = ViewData["invoiceID"],
+            listingID = ViewData["listingID"],
+            eventID = ViewData["eventID"],
+            lotNumber = ViewData["lotNumber"],
+            description = ViewData["description"],
+            quantity = ViewData["quantity"],
+            priceLow = ViewData["priceLow"],
+            priceHigh = ViewData["priceHigh"],
+            totalPriceLow = ViewData["totalPriceLow"],
+            totalPriceHigh = ViewData["totalPriceHigh"],
+            isPaid = ViewData["isPaid"],
+            payer = ViewData["payer"],
+            firstName = ViewData["firstName"],
+            lastName = ViewData["lastName"],
+            email = ViewData["email"]
+        });
+        if (!baseReSortUrl.Contains("?"))
+        {
+            baseReSortUrl += "?";
+        }
+        else
+        {
+            baseReSortUrl += "&";
+        }
+        string reSortUrl;
+        string columnHeaderClass;
+        <div class="group clearfix">
+            <div class="form-inline">
+                <div class="btn-group form-group">
+                    @*<button class="btn btn-default btn-sm" type="button" id="ShowFilterOptions"><span class="glyphicon glyphicon-filter"></span> @Html.AdminResource("ShowFilterOptions")</button>*@
+                    <button class="btn btn-default btn-sm" id="ApplyFilters">@Html.AdminResource("ApplyFilters")</button>
+                    @Html.ActionLink(Html.AdminResource("ResetFilters"), MVC.SalesTransactionReportAction, null, new { @class = "btn btn-default btn-sm" })
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">@Html.AdminResource("Status")</span>
+                        @Html.DropDownList("isPaid", (SelectList)ViewData["PaidStatusSelectList"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </div>
+                </div>
+                <button class="btn btn-default btn-sm" type="button" id="ExportCSV">@Html.AdminResource("ExportCSV")</button>
+                <div class="btn-group form-group pull-right" role="group">
+                    <button type="button" class="btn btn-sm btn-default" id="fontSize12" onclick="resizeText(12)">
+                        @Html.AdminResource("fontSizeCharacter")
+                    </button>
+                    <button type="button" class="btn btn-sm btn-default" id="fontSize14" onclick="resizeText(14)">
+                        @Html.AdminResource("fontSizeCharacter")
+                    </button>
+                    <button type="button" class="btn btn-sm btn-default" id="fontSize16" onclick="resizeText(16)">
+                        @Html.AdminResource("fontSizeCharacter")
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default report double-scroll">
+            <table class="table table-condensed report" id="report">
+                <thead>
+                    <tr>
+                        @{
+                        reSortUrl = baseReSortUrl + "sort=DateTime&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "DateTime" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "DateTime") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("Date")</a>
+                        <div class="dual-input clearfix">
+                            @{
+                                Html.RenderDateInput("dateStart", ViewData["dateStart"], new { @class = "SubmitOnChange form-control input-sm" });
+                            }
+
+                            @{
+                                Html.RenderDateInput("dateEnd", ViewData["dateEnd"], new { @class = "SubmitOnChange form-control input-sm" });
+                            }
+                        </div>
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=Payee&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "Payee" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Payee") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("Seller")</a>
+                        @Html.TextBox("payee", ViewData["payee"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=Description&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "Description" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Description") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("Description")</a>
+                        @Html.TextBox("description", ViewData["description"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                    @if (SiteClient.EnableEvents)
+                    {
+                        reSortUrl = baseReSortUrl + "sort=LotNumber&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "LotNumber" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "LotNumber") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        <th class="@columnHeaderClass">
+                            <a href="@reSortUrl">@Html.AdminResource("LotNumber")</a>
+                            @Html.TextBox("lotNumber", ViewData["lotNumber"], new { @class = "SubmitOnChange form-control input-sm" })
+                        </th>
+                    }
+                    else
+                    {
+                        reSortUrl = baseReSortUrl + "sort=ListingID&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "ListingID" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "ListingID") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        <th class="@columnHeaderClass">
+                            <a href="@reSortUrl">@Html.AdminResource("ListingID")</a>
+                            @Html.TextBox("listingID", ViewData["listingID"], new { @class = "SubmitOnChange form-control input-sm" })
+                        </th>
+                    }
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=Quantity&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "Quantity" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Quantity") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("QTY")</a>
+                        @Html.TextBox("quantity", ViewData["quantity"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=Price&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "Price" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Price") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("Price")</a>
+                        <div class="dual-input clearfix">
+                            @Html.TextBox("priceLow", ViewData["priceLow"], new { @class = "SubmitOnChange form-control input-sm" })
+
+                            @Html.TextBox("priceHigh", ViewData["priceHigh"], new { @class = "SubmitOnChange form-control input-sm" })
+                        </div>
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=Total&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "Total" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Total") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("Total")</a>
+                        <div class="dual-input clearfix">
+                            @Html.TextBox("totalPriceLow", ViewData["totalPriceLow"], new { @class = "SubmitOnChange form-control input-sm" })
+                            @Html.TextBox("totalPriceHigh", ViewData["totalPriceHigh"], new { @class = "SubmitOnChange form-control input-sm" })
+                        </div>
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=InvoiceID&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "InvoiceID" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "InvoiceID") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th colspan="2" class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("InvoiceID")</a>
+                        @Html.TextBox("invoiceID", ViewData["invoiceID"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                </tr>
+                <tr>
+
+                    @if (SiteClient.EnableEvents)
+                    {
+                        reSortUrl = baseReSortUrl + "sort=AuctionEventId&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "AuctionEventId" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "AuctionEventId") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                        <th class="@columnHeaderClass">
+                            <a href="@reSortUrl">@Html.AdminResource("EventID")</a>
+                            @Html.TextBox("eventID", ViewData["eventID"], new { @class = "SubmitOnChange form-control input-sm" })
+                        </th>
+                    }
+                    else
+                    {
+                        <th></th>
+                    }
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=Payer&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "Payer" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Payer") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("Buyer")</a>
+                        @Html.TextBox("payer", ViewData["payer"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=Email&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "Email" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "Email") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("Email")</a>
+                        @Html.TextBox("email", ViewData["email"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=FirstName&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "FirstName" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "FirstName") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("FirstName")</a>
+                        @Html.TextBox("firstName", ViewData["firstName"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                    @{
+                        reSortUrl = baseReSortUrl + "sort=LastName&descending=";
+                        reSortUrl += (string)ViewData["sort"] == "LastName" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                        columnHeaderClass = (((string)ViewData["sort"] ?? "") == "LastName") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                    }
+                    <th class="@columnHeaderClass">
+                        <a href="@reSortUrl">@Html.AdminResource("LastName")</a>
+                        @Html.TextBox("lastName", ViewData["lastName"], new { @class = "SubmitOnChange form-control input-sm" })
+                    </th>
+                    <th colspan="4">Address</th>
+                </tr>
+            </thead>
+
+            @if (Model != null && Model.TotalItemCount > 0)
+                {
+
+                    foreach (SalesTransactionReportResult result in Model.List)
+                    {
+                    <tbody>
+                        <tr>
+                            <td>
+                                @Html.LocalDTTM(result.DateTime, "G")
+                            </td>
+                            <td>@Html.ActionLink(result.Payee, MVC.UserSummaryAction, new { id = result.PayeeID, backUrl = returnUrl })</td>
+                            <td>@Html.ActionLink(result.Description, MVC.DetailsAction, MVC.ListingController, new { id = result.ListingID }, null)</td>
+                            <td>
+                                @if (SiteClient.EnableEvents)
+                            {
+                            if (!string.IsNullOrEmpty(result.LotNumber))
+                            {
+                                        @Html.ActionLink(result.LotNumber, MVC.DetailsAction, MVC.ListingController, new { @id = result.ListingID }, null)
+                                    }
+                                }
+                                else {
+                                    @Html.ActionLink(result.ListingID.ToString(), MVC.DetailsAction, MVC.ListingController, new { id = result.ListingID }, null)
+                                }
+                            </td>
+
+                            <td>@Html.LocalInteger(result.Quantity)</td>
+                            <td>@Html.LocalCurrency(result.Price, result.Currency)</td>
+                            <td>@Html.LocalCurrency(result.Total, result.Currency)</td>
+                            <td class="nowrap">
+                                @if (result.InvoiceID.HasValue)
+                            {
+                                    @Html.ActionLink(result.InvoiceID.ToString(), MVC.InvoiceDetailAction, MVC.AdminController, new { @id = result.InvoiceID }, null)
+                                    <a class="awe-print-invoice-link" href="@Html.GetActionUrl(MVC.PrintInvoiceAction, MVC.AdminController, new { @id = result.InvoiceID })">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </a>
+                                }
+                            </td>
+                            <td>
+                                @if (result.Paid)
+                        {
+                                    <img src="Content/images/Paid.png" title="@Html.AdminResource("Paid")" alt="@Html.AdminResource("Paid")" />
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @if (SiteClient.EnableEvents)
+                        {
+                            if (result.AuctionEventId.HasValue)
+                            {
+                                        @Html.ActionLink(result.AuctionEventId.ToString(), MVC.DetailsAction, MVC.EventController, new { @id = result.AuctionEventId }, null)
+                                    }
+                                }
+                            </td>
+                            <td>@Html.ActionLink(result.Payer, "UserSummary", new { id = result.PayerID, backUrl = returnUrl })</td>
+                            <td><a href="mailto:@result.Email">@result.Email</a></td>
+                            <td>@result.FirstName</td>
+                            <td>@result.LastName</td>
+                            <td colspan="4">@result.Address</td>
+                        </tr>
+                    </tbody>
+                }
+            } // if (Model != null && Model.TotalItemCount > 0)
+            else
+            {
+                <tr><td colspan="9" class="no-history">@Html.AdminResource("NoResultsToDisplay")</td></tr>
+            }
+        </table>
+    </div>
+                        }
+
+                        if (Model != null && Model.TotalPageCount > 1)
+                        {
+                            //var htmlAttribs = new Dictionary<string, object>
+                            Html.RenderPageNumberLinks(Model);//, null, null, null, null, htmlAttribs );
+                        }
+
+                        if (ViewData["CurrencyCount"] != null && Model.List.Count > 0 && (int)ViewData["CurrencyCount"] <= 1)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-body text-right">
+                                    <strong>
+                                        @Html.AdminResource("Total"): @Html.LocalCurrency((decimal)ViewData["TotalAmount"], Model.List[0].Currency)
+                                    </strong>
+                                </div>
+                            </div>
+                        }
+}
+

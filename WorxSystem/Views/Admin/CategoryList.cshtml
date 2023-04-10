@@ -1,0 +1,112 @@
+﻿@model List<Hierarchy<int, Category>>
+@using System.Configuration;
+@{
+    bool? allowAuctionListingsAndLots = null;
+    if (SiteClient.EnableEvents)
+    {
+        bool tempBool1;
+        if (bool.TryParse(ConfigurationManager.AppSettings["AllowAuctionListingsAndLots"], out tempBool1))
+        {
+            allowAuctionListingsAndLots = tempBool1;
+        }
+    }
+}
+@foreach (Hierarchy<int, Category> categoryTree in Model.OrderBy(c => c.Current.DisplayOrder))
+{
+
+
+    //////////////////////
+    //
+    // "Billing & Fees > Sales Payment Options" (Name=='SalesPreferences') nav cat temporarily disabled during beta testing period -- remove this entire section to enable
+    //
+    //if (categoryTree.Current.ID == 1083)
+    //{
+    //    continue;
+    //}
+    //
+    //////////////////////
+
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.RolesAllowed))
+    {
+        if (!Context.User.IsInRole(categoryTree.Current.RolesAllowed)) { continue; }
+    }
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.EnabledCustomProperty))
+    {
+        if (allowAuctionListingsAndLots.HasValue && categoryTree.Current.ID == 22203) //"Auction" admin nav cat
+        {
+            if (!allowAuctionListingsAndLots.Value) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("#"))
+        {
+            if (!bool.Parse(categoryTree.Current.EnabledCustomProperty.Substring(1))) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.Contains("&&") ||
+                 categoryTree.Current.EnabledCustomProperty.Contains("||"))
+        {
+            if (!Html.EvaluateComplexEnabledCustomProperty(categoryTree.Current.EnabledCustomProperty)) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_!"))
+        {
+            //render this category if no listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(8);
+            bool skip = false;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = true;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_"))
+        {
+            //render this category if any listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(7);
+            bool skip = true;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = false;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("!"))
+        {
+            if (bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty.Substring(1)])) { continue; }
+        }
+        else
+        {
+            if (!bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty])) { continue; }
+        }
+    }
+
+    if (string.IsNullOrEmpty(categoryTree.Current.MVCAction))
+    {
+        <li>@Html.GlobalResource(categoryTree.Current.Name)</li>
+    }
+    else
+    {
+        if (ViewContext.RouteData.Values["action"].Equals(categoryTree.Current.MVCAction) || (ViewContext.RouteData.Values["id"] != null && categoryTree.Current.MVCAction.Equals(ViewContext.RouteData.Values["action"] + "/" + ViewContext.RouteData.Values["id"])) || (Request.Url.ToString().Contains("/" + categoryTree.Current.MVCAction)))
+        {
+            <li class="active">
+                @Html.ActionLink(Html.GlobalResource(categoryTree.Current.Name), categoryTree.Current.MVCAction)
+            </li>
+        }
+        else
+        {
+            <li value="@Html.GlobalResource(categoryTree.Current.Name)">
+                @Html.ActionLink(Html.GlobalResource(categoryTree.Current.Name), categoryTree.Current.MVCAction)
+            </li>
+        }
+    }
+    @Html.Partial("CategoryList", categoryTree.ChildHierarchies)
+}

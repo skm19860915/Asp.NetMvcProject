@@ -1,0 +1,27 @@
+﻿@model Listing
+<div class="detail__submit-wrapper">
+    <div class="row">
+        @if (Model.CurrentPrice.HasValue)
+        {
+            <div class="col-xs-12 col-sm-6 detail__price">
+                <strong>@Html.Resource("ClassifiedListing, AskingPrice")</strong>
+                <span class="awe-rt-CurrentPrice">
+                    @* do not remove this span, it gets populated via AJAX *@
+                    @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                </span>
+                <span id="convertedprice" class="awe-hidden">
+                    (<span class="Bidding_Local_Price" data-currency="@Model.Currency.Code">
+                        @* do not remove this span, it gets populated via AJAX *@
+                        @if (Model.Currency.Code != Html.GetCookie("currency"))
+                        {
+                            @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value.ConvertAmount(Model.Currency.Code, Html.GetCookie("currency")), Html.GetCookie("currency"))
+                        }
+                    </span>)
+                </span>
+            </div>
+        }
+        <div class="col-xs-12 col-sm-6 watching__wrapper">
+            @Html.Partial("ListingDetail_AddWatch")
+        </div>
+    </div>
+</div>

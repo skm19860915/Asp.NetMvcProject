@@ -1,0 +1,50 @@
+﻿@model User
+
+@section head {
+    @{
+        string pageTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " + Html.GlobalResourceString("UserNotFound");
+        if (Model != null)
+        {
+            pageTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " +
+                        Html.GlobalResourceString("FeedbackForUserName", Model.UserName);
+        }
+        ViewBag.SiteTitle = pageTitle;
+    }
+}
+<div class="col-xs-12">
+    @{
+        if (Model != null)
+        {
+            <div class="well well-sm section-title">@Html.GlobalResource("FeedbackForUserName", Model.UserName)</div>
+            <div class="row">
+                @Html.Partial("ViewFeedback_Summary", ViewData["FeedbackRating"])
+            </div>
+            <div class="form-group">
+                <div class="btn-group btn-group-justified hidden-xs">
+                    <a class="btn btn-primary">@Html.GlobalResource("AllFeedback")</a>
+                    @Html.ActionLink(Html.GlobalResource("FeedbackAsSeller"), "ViewSellerFeedback", new { @userid = Model.ID }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("FeedbackAsBuyer"), "ViewBuyerFeedback", new { @userid = Model.ID }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("FeedbackLeftForOthers"), "ViewFeedbackForOthers", new { @userid = Model.ID }, new { @class = "btn btn-default" })
+                </div>
+                <div class="btn-group-vertical visible-xs">
+                    <a class="btn btn-primary">@Html.GlobalResource("AllFeedback")</a>
+                    @Html.ActionLink(Html.GlobalResource("FeedbackAsSeller"), "ViewSellerFeedback", new { @userid = Model.ID }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("FeedbackAsBuyer"), "ViewBuyerFeedback", new { @userid = Model.ID }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("FeedbackLeftForOthers"), "ViewFeedbackForOthers", new { @userid = Model.ID }, new { @class = "btn btn-default" })
+                </div>
+            </div>
+            @Html.Partial("ViewFeedbackList_FromOthers", ViewData["FeedbackList"])
+
+
+        }
+        else // User not found.
+        {
+
+            <div class="alert alert-danger">@Html.GlobalResource("UserNotFound")</div>
+
+
+        }
+    }
+
+
+</div>

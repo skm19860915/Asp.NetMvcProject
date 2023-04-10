@@ -1,0 +1,181 @@
+﻿
+<script>
+    function addMethod(method, methodid, amount, additionalAmount) {
+        var currencySymbol = "";
+        var symbolInUse = $("#AdditionalItemAmount").prev("span");
+        if (symbolInUse.length > 0) {
+            currencySymbol = symbolInUse.html();
+        }
+        var currencyCode = "";
+        var codeInUse = $("#AdditionalItemAmount").next("span");
+        if (codeInUse.length > 0) {
+            currencyCode = " " + codeInUse.html();
+        }
+        var newMethodHtml = '<div class="shipping__method">';
+        newMethodHtml += '<strong>' + method + '</strong>';
+        newMethodHtml += '&nbsp;&nbsp;&nbsp;' + currencySymbol + amount + currencyCode;
+        if (additionalAmount != "") {
+            newMethodHtml += ' <span class="small awe-additional-shipping">(' + currencySymbol + additionalAmount + currencyCode + ')</span>';
+        }
+        newMethodHtml += '&nbsp;&nbsp;&nbsp;';
+        newMethodHtml += '    <a href="#" class="btn btn-default btn-xs" data-method-id="' + methodid + '">@Html.GlobalResource("Remove").ToJavascriptSafeString()</a>';
+        newMethodHtml += '    <input type="hidden" name="ship_amount_' + methodid + '" value="' + amount + '" />';
+        newMethodHtml += '    <input type="hidden" name="ship_additional_' + methodid + '" value="' + additionalAmount + '" />';
+        newMethodHtml += '    <input type="hidden" name="ship_method_' + methodid + '" value="' + methodid + '" />';
+        newMethodHtml += '</div>';
+
+        $("#shipping").append(newMethodHtml);
+    };
+
+    $(document).ready(function () {
+        var shipRenderState = $("input#ShippingRenderState").val();
+        if (shipRenderState != "") {
+            $("#shipping").html(shipRenderState);
+        }
+
+        $("input#AddShipping").click(function () {
+            var methodInput = $("#ShippingMethod");
+            var amountInput = $("#Amount");
+            var additionalAmountInput = $("#AdditionalItemAmount");
+            var method = methodInput.find(":selected").text();
+            var methodid = methodInput.val();
+            var amount = amountInput.val();
+            var additionalAmount = additionalAmountInput.val();
+            if (amountInput.val() == "" || !IsNumeric(amount)) {
+                //invalid number, or blank
+                amountInput.addClass("input-validation-error");
+            }
+            else if (additionalAmount != "" && !IsNumeric(additionalAmount)) {
+                additionalAmountInput.addClass("input-validation-error");
+            }
+            else if (!methodid) {
+                methodInput.addClass("input-validation-error");
+            }
+            else {
+                //capture formatted amount
+                var origVal = amountInput.val();
+                amountInput.parseNumber({ format: "#,##0.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                amountInput.formatNumber({ format: "#,##0.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                amount = amountInput.val();
+
+                var origAdditionalValue = additionalAmountInput.val();
+                if (origAdditionalValue != "") {
+                    additionalAmountInput.parseNumber({ format: "#,##0.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                    additionalAmountInput.formatNumber({ format: "#,##0.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                }
+                additionalAmount = additionalAmountInput.val();
+
+                if (IsBiggerNumber(0, amount)) {
+                    //negative values not allowed!
+                    amountInput.addClass("input-validation-error");
+                    amountInput.val(origVal);
+                }
+                else if (IsBiggerNumber(0, additionalAmount)) {
+                    //negative values not allowed!
+                    additionalAmountInput.addClass("input-validation-error");
+                    additionalAmountInput.val(origVal);
+                }
+                else {
+                    //append the new option details as an HTML row + hidden inputs
+                    addMethod(method, methodid, amount, additionalAmount);
+                    //reset amount inputs
+                    amountInput.removeClass("input-validation-error");
+                    amountInput.val("");
+                    additionalAmountInput.removeClass("input-validation-error");
+                    additionalAmountInput.val("");
+                    // remove the selected option from the select list
+                    $("#ShippingMethod :selected").remove();
+                }
+            }
+        });
+
+        //[Remove] -- click
+        $(document).on("click", "#shipping a", function () {
+            var methodInput = $("#ShippingMethod");
+            var amountInput = $("#Amount");
+            var additionalAmountInput = $("#AdditionalItemAmount");
+            //reset select input
+            methodInput.removeClass("input-validation-error");
+            //reset amount input
+            amountInput.removeClass("input-validation-error");
+            amountInput.val("");
+            //reset additional amount input
+            additionalAmountInput.removeClass("input-validation-error");
+            additionalAmountInput.val("");
+            //first add the option back to the select list
+            var methodNameToRestore = $(this).siblings(":first").text();
+            var methodIdToRestore = $(this).data("methodId");
+            methodInput.prepend("<option value='" + methodIdToRestore + "'>" +
+                methodNameToRestore + "</option>");
+            methodInput.removeClass("input-validation-error");
+            //now remove the entire containing <tr> row, including hidden inputs
+            $(this).parent().remove();
+            return false;
+        });
+
+        function ToNumber(textValue) {
+            //convert value to string
+            var temp = textValue.toString();
+            //strip out all group separator characters (i.e. remove commas from en-US style numbers)
+            temp = temp.replace(/\@Html.GetCurrencyGroupChar()/g, "");
+            //replace decimal character with '.' (i.e. replace ',' with '.' for es-ES style numbers)
+            temp = temp.replace(/\@Html.GetCurrencyDecimalChar()/g, ".");
+            if (!isNaN(temp)) return new Number(temp);
+            return NaN;
+        }
+
+        function IsNumeric(textValue) {
+            if (isNaN(ToNumber(textValue))) return false;
+            return true;
+        }
+
+        function IsBiggerNumber(valueA, valueB) {
+            //attempts to parse both values as numbers then returns true if valueA > valueB
+            var numberA = ToNumber(valueA);
+            var numberB = ToNumber(valueB);
+            if (isNaN(numberA) || isNaN(numberB)) return false;
+            if (numberA > numberB) return true;
+            return false;
+        }
+
+    });
+</script>
+@Html.ToolTipContent("ShippingOptions_Help", Html.GlobalResource("ShippingOptions_Help"))
+<div id="shipping">
+    <div id="shipping-selection" class="form-inline">
+        <div class="form-group">
+            @Html.DropDownList("ShippingMethod", (SelectList)ViewData["ShippingMethod"], new { id = "ShippingMethod", @class = "form-control" })
+        </div>
+        <div class="form-group">
+            @Html.CurrencyBox("Amount", "", (string)ViewData[RainWorx.FrameWorx.Strings.Fields.Currency], new { id = "Amount", @class = "form-control", placeholder = @Html.GlobalResource("Cost") })
+        </div>
+        <div class="form-group">
+            @Html.CurrencyBox("AdditionalItemAmount", "", (string)ViewData[RainWorx.FrameWorx.Strings.Fields.Currency], new { id = "AdditionalItemAmount", @class = "form-control", placeholder = @Html.GlobalResource("AdditionalCost") })
+        </div>
+        <div class="form-group">
+            <input type="button" class="btn btn-default" value="@Html.GlobalResource("Add")" id="AddShipping" />
+            @Html.ToolTipButton("ShippingOptions_Help")
+        </div>
+    </div>
+
+    @if (ViewData[RainWorx.FrameWorx.Strings.Fields.ShippingOptions] != null)
+    {
+        var existingShippingOpts = (List<ShippingOption>)ViewData[RainWorx.FrameWorx.Strings.Fields.ShippingOptions];
+        foreach (ShippingOption option in existingShippingOpts)
+        {
+            <div class="shipping__method">
+                <strong> @option.Method.Name</strong>&nbsp;&nbsp;&nbsp;
+                @Html.LocalCurrency(option.FirstItemAmount, (string)ViewData[RainWorx.FrameWorx.Strings.Fields.Currency])
+                @if (option.AdditionalItemAmount.HasValue)
+                {
+                    <span class="small awe-additional-shipping">(@Html.LocalCurrency(option.AdditionalItemAmount.Value, (string)ViewData[RainWorx.FrameWorx.Strings.Fields.Currency]))</span>
+                }
+                &nbsp;&nbsp;&nbsp;
+                <a href="#" class="btn btn-default btn-xs" data-method-id="@option.Method.ID">@Html.GlobalResource("Remove")</a>
+                <input type="hidden" name="ship_amount_@option.Method.ID" value="@Html.DecimalToPlainCurrencyMvcHtmlString(option.FirstItemAmount)" />
+                <input type="hidden" name="ship_additional_@option.Method.ID" value="@(option.AdditionalItemAmount.HasValue ? Html.DecimalToPlainCurrencyMvcHtmlString(option.AdditionalItemAmount.Value) : new MvcHtmlString(string.Empty))" />
+                <input type="hidden" name="ship_method_@option.Method.ID" value="@option.Method.ID" />
+            </div>
+        }
+    }
+</div>

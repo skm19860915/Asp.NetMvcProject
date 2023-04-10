@@ -1,0 +1,107 @@
+﻿@model Listing
+@{
+    var showUserNames = SiteClient.BoolSetting(SiteProperties.ShowBidHistoryUserNames);
+    bool isAdmin = false;
+    if (User.Identity.IsAuthenticated)
+    {
+        isAdmin = User.IsInRole("Admin");
+    }
+    if (isAdmin && User.Identity.Name == Html.FBOUserName())
+    {
+        showUserNames = true;
+    }
+
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool reserveEnabled = bool.Parse(auctionProperties.Single(ap => ap.Field.Name == SiteProperties.EnableReserve).Value);
+    bool reserveDefined = !string.IsNullOrWhiteSpace(Model.Properties.Where(p => p.Field.Name.Equals(Fields.ReservePrice)).Single().Value);
+   
+    if (!Model.Properties.Any(p => p.Field.Name.Equals("ReservePrice")))
+    {
+        ViewData["ReserveStatus"] = "NA";
+    }
+    else if (Model.Properties.GetPropertyValue("ReservePrice", 0.0M) == 0.0M)
+    {
+        ViewData["ReserveStatus"] = "NoReserve";
+    }
+    else if ((Model.CurrentPrice ?? 0.0M) >=
+        Model.Properties.GetPropertyValue("ReservePrice", 0.0M))
+    {
+        ViewData["ReserveStatus"] = "ReserveMet";
+    }
+    else
+    {
+        ViewData["ReserveStatus"] = "ReserveNotMet";
+    }
+}
+<table class="table-condensed">
+    @if (Model.CurrentPrice.HasValue)
+    {
+        <tr>
+            <td>
+                @if (Model.Status == ListingStatuses.Successful || Model.Status == ListingStatuses.Unsuccessful)
+                {
+                    <strong>@Html.Resource("AuctionListing, FinalPrice")</strong>
+                }
+                else
+                {
+                    <strong>@Html.Resource("AuctionListing, CurrentPrice")</strong>
+                }
+            </td>
+            <td>
+                @Html.LocalCurrency((decimal)Model.CurrentPrice, Model.Currency.Code)
+                @if (reserveDefined || reserveEnabled)
+                {
+                    <span class="reserve-not-met awe-rt-ReserveStatus">@Html.Resource("AuctionListing, " + (string)ViewData["ReserveStatus"])</span>
+                }
+            </td>
+        </tr>
+    }
+    @if (Model.OriginalPrice.HasValue)
+    {
+        <tr>
+            <td><strong>@Html.GlobalResource("StartingPrice")</strong></td>
+            <td>@Html.LocalCurrency((decimal)Model.OriginalPrice, Model.Currency.Code)</td>
+        </tr>
+    }
+    <tr>
+        <td><strong>@Html.GlobalResource("NumberOfBids")</strong></td>
+        <td>@Model.AcceptedActionCount</td>
+    </tr>
+    @if (Model.Status == ListingStatuses.Active)
+    {
+        <tr>
+            <td><strong>@Html.GlobalResource("RemainingTime")</strong></td>
+            <td>@Html.RemainingTime(Model.EndDTTM.Value)</td>
+        </tr>
+        <tr>
+            <td><strong>@Html.GlobalResource("StartDTTM")</strong></td>
+            <td>@Html.LocalDTTM(Model.StartDTTM.Value)</td>
+        </tr>
+        <tr>
+            <td><strong>@Html.GlobalResource("EndDTTM")</strong></td>
+            <td>@Html.LocalDTTM(Model.EndDTTM.Value)</td>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <td><strong>@Html.GlobalResource("EndDTTM")</strong></td>
+            <td>@Html.LocalDTTM(Model.EndDTTM.Value)</td>
+        </tr>
+    }
+    <tr>
+        <td><strong>@Html.GlobalResource("Seller")</strong></td>
+        <td>@Model.OwnerUserName</td>
+    </tr>
+    @if (Model.CurrentListingAction != null && showUserNames)
+    {
+        <tr>
+            <td><strong>@Html.Resource("AuctionListing, HighBidder")</strong></td>
+            <td>@Model.CurrentListingAction.UserName</td>
+        </tr>
+    }
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+</table>

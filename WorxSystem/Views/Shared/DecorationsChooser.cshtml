@@ -1,0 +1,32 @@
+﻿@foreach (Decoration decoration in SiteClient.Decorations)
+{
+    if (SiteClient.BoolSetting("ListingOption_" + decoration.Name + "_Enabled"))
+    {
+        <li class="list-group-item">
+            <div class="form-inline">
+                <div class="form-group">
+                    <div class="checkbox">
+                        @Html.CheckBox("decoration_" + decoration.ID)
+                        <label for="@("decoration_" + decoration.ID)">
+                            @if (!string.IsNullOrEmpty(decoration.FormatString))
+                            {
+                                @(string.Format(decoration.FormatString, Html.GlobalResourceString(decoration.Name + "_Decoration")).ToMvcHtmlString())
+                            }
+                            else
+                            {
+                                @Html.GlobalResourceString(decoration.Name + "_Decoration", Html.GlobalResourceString("Listing_Badge_Text"))
+                            }
+                            @if (decoration.Amount > 0)
+                            {
+                                @:&nbsp;-&nbsp;
+                                @Html.SiteCurrencyOrFree(decoration.Amount)
+                            }
+                            &nbsp;-&nbsp;
+                            @Html.GlobalResource(decoration.Name + "_Description")
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
+}

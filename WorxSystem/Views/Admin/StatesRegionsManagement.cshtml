@@ -1,0 +1,127 @@
+﻿@model List<State>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_StatesRegionsManagement", ViewData["SelectedCountryName"]);
+}
+@section PageName {
+<a href="@Url.Action(MVC.CountryManagementAction)" class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-chevron-left"></span> @Html.AdminResource("BackToList")</a>
+}
+
+
+<script>
+
+    $(document).ready(function () {
+
+        //check or uncheck all rows
+        $('.checkall').click(function ( event ) {
+            if (!$('div.fs-checkbox').hasClass('fs-checkbox-checked')) {
+                $('div.fs-checkbox').addClass('fs-checkbox-checked');
+                $('input:checkbox').prop('checked', 'checked');
+            } else {
+                $('div.fs-checkbox').removeClass('fs-checkbox-checked');
+                $('input:checkbox').prop('checked', false);
+            }       
+        });
+
+        // [Delete Selected] - click
+        $("#DeleteSelected").click(function () {
+            event.preventDefault();
+            if ($(".row-selection-checkbox:checked").length > 0)
+            {
+                this.form.submit();
+            }
+        });
+
+        //edit row
+        $(".awe-edit-row").on("click", function (event) {
+            event.preventDefault();
+            var parentContainer = $(this).parents("tr").first();
+            var codeContainer = parentContainer.find(".awe-state-code");
+            var currentCodeValue = codeContainer.text();
+            var nameContainer = parentContainer.find(".awe-state-name");
+            var currentNameValue = nameContainer.html();
+            parentContainer.find(".awe-edit-row").hide();
+            parentContainer.find(".awe-save-row").show();
+            codeContainer.html($('<input type="text" class="awe-state-code-input form-control input-sm" />').val(currentCodeValue));
+            nameContainer.html($('<input type="text" class="awe-state-name-input form-control input-sm" />').val(currentNameValue));
+        });
+
+        //save row
+        $(".awe-save-row").on("click", function (event) {
+            event.preventDefault();
+            var parentContainer = $(this).parents("tr").first();
+            var codeContainer = parentContainer.find(".awe-state-code").first();
+            var newCodeValue = parentContainer.find(".awe-state-code-input").val();
+            var nameContainer = parentContainer.find(".awe-state-name").first();
+            var newNameValue = parentContainer.find(".awe-state-name-input").val();
+            var thisStateId = parentContainer.find("input[name='StateID']").val();
+            $.post(
+                '@Url.Action(MVC.UpdateStateRegionAction)',
+                {
+                    id: thisStateId,
+                    code: newCodeValue,
+                    name: newNameValue,
+                },
+                function (data) {
+                    if (data == "OK") {
+                        parentContainer.find(".awe-edit-row").show();
+                        parentContainer.find(".awe-save-row").hide();
+                        codeContainer.html(newCodeValue);
+                        nameContainer.html(newNameValue);
+                    } else {
+                        alert(data);
+                    }
+                });
+        });
+
+    });
+</script>
+
+@if (Model.Count > 0)
+{
+    using (Html.BeginForm(MVC.DeleteStatesRegionsAction, MVC.AdminController))
+    {
+        <div class="panel panel-default">
+            <table class="table table-condensed">
+                <tr>
+                    <th class="checkall-col"><input type="checkbox" class="checkall  no-toggle" /></th>
+                    <th>@Html.AdminResource("Code") &nbsp;</th>
+                    <th>@Html.AdminResource("Name")</th>
+                    <th>&nbsp;</th>
+                </tr>
+                @foreach (var state in Model.OrderBy(s => s.ID))
+                {
+
+                    <tr>
+                        <td><input type="checkbox" name="StateID" value="@state.ID" class="row-selection-checkbox no-toggle" /></td>
+                        <td class="awe-state-code">@state.Code</td>
+                        <td class="awe-state-name">@Html.LocalizeState(state.Name)</td>
+                        <td class="awe-state-buttons">
+                            <button class="btn btn-default btn-xs awe-edit-row">@Html.AdminResource("Edit")</button>
+                            <button class="btn btn-success btn-xs awe-save-row awe-hidden">@Html.AdminResource("Save")</button>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <div class="panel-footer text-right">
+                <button class="btn btn-default btn-sm btn-danger" id="DeleteSelected">@Html.AdminResource("DeleteSelected")</button>
+            </div>
+        </div>
+    }
+}
+
+    <div class="sub-header">
+        @Html.AdminResource("AddNewStates")
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">@using (Html.BeginForm(MVC.AddNewStatesRegionsAction, MVC.AdminController))
+        {
+            <p>@Html.TextArea(Fields.NewStates, new { rows = "10", @class = "form-control" })</p>
+            <p><input type="submit" class="btn btn-default" value="@Html.AdminResource("AddStates")" /></p>
+            @Html.Hidden("id", null, new { @id = "HiddenCountryId1" })
+        }
+        </div>
+        <div class="col-xs-12 col-sm-6">@Html.AdminResource("AddStatesRegions_Help")</div>
+    </div>
+  
+

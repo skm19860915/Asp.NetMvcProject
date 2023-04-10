@@ -1,0 +1,177 @@
+﻿@model User
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_UserManagement");
+}
+@section PageName {
+     &gt; @Model.UserName (@Model.ID)
+
+    }
+    
+
+@Html.Partial("UserManagementTopNav", "summary")
+<div class="user-details panel panel-default">
+    <table class="table table-striped">
+        <tr>
+            <td>@Html.AdminResource("ID")</td>
+            <td>@Model.ID</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Username")</td>
+            <td>@Model.UserName</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Status")</td>
+            @{
+                string statusLabel;
+                if (!Model.IsActive)
+                {
+                    statusLabel = Html.AdminResourceString("Deactivated");
+                }
+                else if (Model.IsLockedOut)
+                {
+                    statusLabel = Html.AdminResourceString("Restricted");
+                }
+                else if (!Model.IsVerified)
+                {
+                    statusLabel = Html.AdminResourceString("Unverified");
+                }
+                else if (!Model.IsApproved)
+                {
+                    statusLabel = Html.AdminResourceString("Unapproved");
+                }
+                else if (Model.Newsletter)
+                {
+                    statusLabel = Html.AdminResourceString("Active") + " / " + Html.AdminResourceString("Newsletter");
+                }
+                else //if (Model.IsActive && !Model.IsLockedOut && Model.IsVerified && Model.IsApproved)
+                {
+                    statusLabel = Html.AdminResourceString("Active");
+                }
+            }
+            <td>@statusLabel</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Email"):</td>
+            <td><a href="mailto:@Model.Email">@Model.Email</a></td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Name")</td>
+            <td>@Model.FirstName() @Model.LastName()</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("PrimaryAddress")</td>
+            <td>
+                @{
+                    List<Address> allAddresses = UserClient.GetAddresses(User.Identity.Name, Model.UserName);
+                    Address primaryAddress = allAddresses.Where(a => a.ID == Model.PrimaryAddressID).FirstOrDefault();
+                    //Address billingAddress = allAddresses.Where(a => a.ID == Model.BillingAddressID).FirstOrDefault();
+                    if (primaryAddress != null)
+                    {
+                        @primaryAddress.Street1<br />
+                        @primaryAddress.Street2
+                        if (!string.IsNullOrEmpty(primaryAddress.Street2))
+                        {
+                            <br />
+                        }
+                        @primaryAddress.City@:,
+                        @primaryAddress.StateRegion@:&nbsp;                     
+                        @primaryAddress.ZipPostal@:&nbsp;                        
+                        @primaryAddress.Country.Code
+                    }
+                    else
+                    {
+                        @:&nbsp;
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("LastLoginDate")</td>
+            <td>
+                @if (Model.LastLoginDate > Model.CreationDate)
+                {
+                    @Html.LocalDTTM(Model.LastLoginDate, "G") @:(@Html.AdminResource("XhoursAgo", Html.TimeSince(Model.LastLoginDate)))
+                }
+                else
+                {
+                    @Html.AdminResource("Never")
+                }
+            </td>
+        </tr>
+
+        <tr>
+            <td>@Html.AdminResource("LastActivityDate")</td>
+            <td>
+                @if (Model.LastActivityDate > Model.CreationDate)
+                {
+                    @Html.LocalDTTM(Model.LastActivityDate, "G") @:(@Html.AdminResource("XhoursAgo", Html.TimeSince(Model.LastActivityDate)))
+                }
+                else
+                {
+                    @Html.AdminResource("Never")
+                }
+            </td>
+        </tr>
+
+        <tr>
+            <td>@Html.AdminResource("LastIP")</td>
+            <td>@Model.LastIP</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("ServiceAuthorizationToken")</td>
+            @if (SiteClient.BoolSetting("EnableWebAPI") && @Model.WebAPIEnabled)
+            {
+                <td>@Model.ServiceAuthorizationToken</td>
+            }
+            else
+            {
+                <td>@Html.AdminResource("Disabled")</td>
+            }
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("CreationDate")</td>
+            <td>@Html.LocalDTTM(Model.CreationDate, "G") (@Html.AdminResource("XhoursAgo", Html.TimeSince(Model.CreationDate)))</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Culture")</td>
+            <td>
+                @if (SiteClient.SupportedCultures.ContainsKey(Model.Culture))
+                {
+                    @SiteClient.SupportedCultures.Where(c => c.Key == Model.Culture).SingleOrDefault().Value.NativeName
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("ActiveListings")</td>
+            <td>@ViewData["ActiveListingCount"]</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("AllListings")</td>
+            <td>@ViewData["TotalListingCount"]</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Sales")</td>
+            <td>@ViewData["TotalSaleCount"]</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Purchases")</td>
+            <td>@ViewData["TotalPurchaseCount"]</td>
+        </tr>
+        @if (SiteClient.FeedbackEnabled)
+        {
+            <tr>
+                <td>@Html.AdminResource("FeedbackRating")</td>
+                <td>
+                                @Html.Partial("FeedbackRating", Model)
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <td>@Html.AdminResource("Comments")</td>
+            <td>@Model.Comment &nbsp;</td>
+        </tr>
+    </table>
+</div>

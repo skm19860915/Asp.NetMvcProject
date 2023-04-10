@@ -1,0 +1,87 @@
+﻿@model List<Decoration>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h3 class="h3row">@Html.AdminResource("LineageString_OptionFee")</h3>
+<h4 class="h4row">@Html.AdminResource("LocationsManagement")</h4>
+
+<table>
+    <tr>
+        <th>@Html.AdminResource("Name")</th>
+        <th>@Html.AdminResource("Description")</th>
+        <th>@Html.AdminResource("Amount")</th>
+        <th>@Html.AdminResource("PayToProceed")</th>
+    </tr>
+    @foreach (Location location in (List<Location>)ViewData["Locations"])
+    {
+        <tr>
+            <td>@Html.ActionLink(Html.AdminResource(location.Name), "EditLocation", new { id = location.ID })</td>
+            <td>@Html.GlobalResource(location.Description)</td>
+            <td>@Html.LocalCurrency(location.Amount, SiteClient.Settings[SiteProperties.SiteCurrency])</td>
+            <td>@Html.GlobalResource(location.PayToProceed.ToString())</td>
+        </tr>
+    }
+</table>
+
+<h4 class="h4row">@Html.AdminResource("DecorationsManagement")</h4>
+
+<table>
+    <tr>
+        <th>@Html.AdminResource("Name")</th>
+        <th>@Html.AdminResource("Description")</th>
+        <th>@Html.AdminResource("Amount")</th>
+        <th>@Html.AdminResource("FormatString")</th>
+        <th>@Html.AdminResource("ValidFields")</th>
+        <th>@Html.AdminResource("PayToProceed")</th>
+        <th>&nbsp;</th>
+    </tr>
+    @foreach (Decoration decoration in Model)
+    {
+        <tr>
+            <td>@Html.ActionLink(decoration.Name, "EditDecoration", new { id = decoration.ID })</td>
+            <td>@decoration.Description</td>
+            <td>@Html.LocalCurrency(decoration.Amount, SiteClient.Settings[SiteProperties.SiteCurrency])</td>
+            <td>@decoration.FormatString</td>
+            <td>@decoration.ValidFields</td>
+            <td>@Html.GlobalResource(decoration.PayToProceed.ToString())</td>
+            <td>@Html.ActionLink(Html.AdminResource("Delete"), "DeleteDecoration", new { id = decoration.ID })</td>
+        </tr>
+    }
+</table>
+<h4 class="h4row">@Html.AdminResource("AddNewDecor")</h4>
+@using (Html.BeginForm("AddDecoration", "Admin"))
+{
+    <table>
+        <tr>
+            <td>@Html.AdminResource("Name"):</td>
+            <td>@Html.TextBox("Name")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Description"):</td>
+            <td>@Html.TextArea("Description")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("Amount"):</td>
+            <td>@Html.TextBox("Amount")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("FormatString"):</td>
+            <td>@Html.TextBox("FormatString")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("ValidFields"):</td>
+            <td>@Html.TextBox("ValidFields")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("PayToProceed"):</td>
+            <td>@Html.CheckBox("PayToProceed")</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: right;">
+                <input type="submit" class="DefaultButton" value="@Html.AdminResource("Add")" name="Add" id="Add" />
+            </td>
+        </tr>
+    </table>
+}

@@ -1,0 +1,22 @@
+﻿@model List<LineItem>
+@* This view exists in both the Account and Admin view folders, be sure you're editing the correct one *@
+
+<p><strong>@Html.GlobalResource("SimilarLineItems")</strong></p>
+@{
+    List<int> itemIds = new List<int>();
+
+    foreach (LineItem lineItem in Model)
+    {
+        <p>
+            @Html.ActionLink(Html.GlobalResource("Add"), "AddLineItem", MVC.AccountController, new { invoiceID = ViewData["InvoiceID"], lineItemID = lineItem.ID }, null) @lineItem.Description
+        </p>
+        itemIds.Add(lineItem.ID);
+    }
+
+    if (itemIds.Count > 1)
+    {
+        <p>
+            @Html.ActionLink(Html.GlobalResource("AddAll"), "AddAllLineItems", MVC.AccountController, new { invoiceID = ViewData["InvoiceId"], lineItemIds = String.Join(",", itemIds) }, null)
+        </p>
+    }
+}

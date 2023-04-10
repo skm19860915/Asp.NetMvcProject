@@ -1,0 +1,65 @@
+﻿@model Listing
+<div class="list clearfix">
+    <div class="row">
+        <div class="col-sm-1">
+            <input class="row-selection-checkbox" type="checkbox" name="ListingIDs" value="@Model.ID" />
+        </div>
+        <div class="col-sm-2">
+            @{
+                if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                {
+                    @Html.Partial("NoPhotoThumbnail")
+                }
+                else
+                {
+                    string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                    @Model.BeginDetailLink()
+                    <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                    @Model.EndDetailLink()
+                }
+            }
+        </div>
+        <div class="col-sm-8">
+            <p>
+                <strong>
+                    @Model.BeginDetailLink()
+                    @Model.Title <em>(@Model.ID)</em>
+                    @Model.EndDetailLink()
+                </strong>
+            </p>
+            <p>
+                @Html.LocalDTTM(Model.EndDTTM.Value, "G")
+            </p>
+            <div class="row">
+                <div class="col-sm-4">@Model.AcceptedActionCount</div>
+                <div class="col-sm-4">
+                    @if (Model.CurrentPrice.HasValue)
+                    {
+                        @Html.LocalCurrency(Model.CurrentPrice.Value, Model.Currency.Code)
+                    }
+                    else
+                    {
+                        @Html.GlobalResource("NA")
+                    }
+                </div>
+                <div class="col-sm-4">
+                    @if (Model.OriginalPrice.HasValue)
+                    {
+                        @Html.LocalCurrency(Model.OriginalPrice.Value, Model.Currency.Code)
+                    }
+                    else
+                    {
+                        @Html.GlobalResource("NA")
+                    }
+                    @{
+                        if (Model.Type.Name == ListingTypes.Auction && !string.IsNullOrEmpty(Model.Properties.Single(p => p.Field.Name == "ReservePrice").Value))
+                        {    <br /><span class="label label-default">@Html.GlobalResource("Reserve") : @Html.LocalCurrency(decimal.Parse(Model.Properties.Single(p => p.Field.Name == "ReservePrice").Value), Model.Currency.Code)</span>
+
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("Action_SellerNoSale")
+</div>

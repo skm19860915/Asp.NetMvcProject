@@ -1,0 +1,38 @@
+﻿@{
+    bool showCategories = bool.Parse(SiteClient.Settings["HomepageCategories"]);
+    int numberOfBanners = int.Parse(SiteClient.Settings[RainWorx.FrameWorx.Strings.SiteProperties.LeftBannersToDisplay]);
+
+    string GalleryCssColumns = "";
+    if ((showCategories) || (numberOfBanners > 0))
+    {
+        GalleryCssColumns += " col-lg-4";
+    }
+    else
+    {
+        GalleryCssColumns += " col-md-4 col-lg-3";
+    }
+    ViewBag.BlockInlineBidding = true;
+}
+@if (SiteClient.MaxHomePageFeatured > 0)
+{
+    string fillLevel = ListingFillLevels.LotEvent;
+    if (SiteClient.BoolSetting(SiteProperties.ShowHomepageDecorations))
+    {
+        fillLevel += "," + ListingFillLevels.Decorations;
+    }
+    fillLevel += "," + ListingFillLevels.Properties;
+    List<Listing> listings = ListingClient.GetListingsByLocationWithFillLevel(Context.User.Identity.Name, FeeNames.Featured, null, SiteClient.MaxHomePageFeatured, fillLevel);
+
+    if (listings.Count <= 0)
+    {
+        @Html.GetSiteContent("EmptyHomePage")
+    }
+    <div class="galleryContainer clearfix">
+        @foreach (Listing listing in listings)
+        {
+            <div class="col-xs-6 @GalleryCssColumns galleryUnit" data-listingid="@listing.ID">
+                @Html.Partial(listing.Type.Name + "Thumbnail", listing)
+            </div>
+        }
+    </div>
+}

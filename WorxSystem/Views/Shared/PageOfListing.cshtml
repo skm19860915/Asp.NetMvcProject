@@ -1,0 +1,16 @@
+﻿@model Page<Listing>
+
+@foreach (Listing listing in Model.List)
+{
+    <section data-listingid="@listing.ID">
+        @Html.Partial("Listing_" + listing.Type.Name + "Row", listing)
+    </section>
+
+}
+
+@if (Model.TotalPageCount > 1)
+{
+        Html.RenderPageNumberLinks(Model);
+}
+
+

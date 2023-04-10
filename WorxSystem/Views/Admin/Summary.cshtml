@@ -1,0 +1,149 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("AdminSummary");
+
+    string helpDocsBaseUrl = SiteClient.EnableEvents
+        ? "http://www.rainworx.com/ev-docs-3.1r2"
+        : "http://www.rainworx.com/docs-3.1r2";
+
+    bool contactInfoUpdated = SiteClient.TextSetting(SiteProperties.AdministratorEmail) != "yourname@example.com" &&
+        SiteClient.TextSetting(SiteProperties.SystemEmailAddress) != "no-reply@example.com";
+
+    User defaultAdminUser = UserClient.GetUserByID(SystemActors.SystemUserName, 1);
+    Address defaultAdminAddress = null;
+    if (defaultAdminUser != null)
+    {
+        var allAdminAddresses = UserClient.GetAddresses(SystemActors.SystemUserName, defaultAdminUser.UserName);
+        if (allAdminAddresses.Count > 0)
+        {
+            defaultAdminAddress = allAdminAddresses.First();
+        }
+    }
+    bool adminUserUpdated = defaultAdminUser == null ||
+        (defaultAdminUser.FirstName() != "Admin_FirstName" && defaultAdminUser.LastName() != "Admin_LastName" &&
+        (defaultAdminAddress == null ? false : defaultAdminAddress.Street1 != "4049 Williston Rd #11"));
+
+    bool siteLogoUpdated = !SiteClient.TextSetting(SiteProperties.SiteLogoFileName).StartsWith("Content/Images/Logos/AuctionWorxLogo31");
+
+    bool mobileLogoUpdated = !SiteClient.TextSetting(SiteProperties.MobileLogoFileName).StartsWith("Content/Images/Logos/AuctionWorxLogo31");
+
+    bool siteUrlUpdated = (SiteClient.TextSetting(SiteProperties.URL) != "http://www.auctionworx.com" &&
+                           SiteClient.TextSetting(SiteProperties.SecureURL) != "http://www.auctionworx.com");
+
+    bool siteNameUpdated = (!SiteClient.TextSetting(SiteProperties.FriendlySiteName).StartsWith("AuctionWorx") &&
+                              !SiteClient.TextSetting(SiteProperties.LegalSiteName).StartsWith("AuctionWorx") &&
+                              !SiteClient.TextSetting(SiteProperties.SiteTitle).StartsWith("AuctionWorx"));
+
+    bool allChecksCompleted = contactInfoUpdated &&
+                              adminUserUpdated &&
+                              siteLogoUpdated &&
+                              mobileLogoUpdated &&
+                              siteUrlUpdated &&
+                              siteNameUpdated;
+    bool quickStartListHiddenManually = (Html.GetCookie("hide-quickstart-checklist") ?? "").Equals("yes");
+    bool quickStartListShownManually = (Html.GetCookie("hide-quickstart-checklist") ?? "").Equals("no");
+}
+
+<div class="row">
+    @{ var allCounts = (Dictionary<string, int>)ViewData[Fields.AdminSummaryCounts]; }
+    @foreach (string key in allCounts.Keys)
+    {
+        <div class="col-sm-6 col-md-4">
+
+            <div class="data-pill">
+                @if (!SiteClient.EnableEvents) { 
+                    @allCounts[key] @:&nbsp; @Html.AdminResource("AdminSummaryCount" + key)
+                }
+                else
+                {
+                    @allCounts[key] @:&nbsp; @Html.AdminResource("EventAdminSummaryCount" + key)
+                }
+            </div>
+
+        </div>
+    }
+</div>
+<div class="sub-header">@Html.AdminResource("QuickAccessMenu")</div>
+<div class="row quickaccess">
+    <div class="col-xs-6 col-md-4"><a href="@Url.Action("Index","Home")"><div class="panel panel-default"><div class="panel-body text-center"><p><span class="glyphicon glyphicon-home"></span></p><p>@Html.AdminResource("Homepage")</p></div></div></a></div>
+    <div class="col-xs-6 col-md-4"><a href="@Url.Action("ImportCSV","Admin")"><div class="panel panel-default"><div class="panel-body text-center"><p><span class="glyphicon glyphicon-cloud-upload"></span></p><p>@Html.AdminResource("CSVImport")</p></div></div></a></div>
+    <div class="col-xs-6 col-md-4"><a href="@Url.Action("UserManagement","Admin")"><div class="panel panel-default"><div class="panel-body text-center"><p><span class="glyphicon glyphicon-user"></span></p><p>@Html.AdminResource("UserManagement")</p></div></div></a></div>
+    <div class="col-xs-6 col-md-4"><a href="@Url.Action("EmailTemplates","Admin")"><div class="panel panel-default"><div class="panel-body text-center"><p><span class="glyphicon glyphicon-envelope"></span></p><p>@Html.AdminResource("EmailTemplates")</p></div></div></a></div>
+    <div class="col-xs-6 col-md-4"><a href="@Url.Action("ContentManagement","Admin")"><div class="panel panel-default"><div class="panel-body text-center"><p><span class="glyphicon glyphicon-link"></span></p><p>@Html.AdminResource("CMSContent")</p></div></div></a></div>
+    <div class="col-xs-6 col-md-4"><a href="@Url.Action("Banners","Admin")"><div class="panel panel-default"><div class="panel-body text-center"><p><span class="glyphicon glyphicon-modal-window"></span></p><p>@Html.AdminResource("ManageBanners")</p></div></div></a></div>
+</div>
+<div class="row">
+    <div class="col-xs-12 text-right">
+        <a href="@helpDocsBaseUrl" class="btn bnt-block btn-warning" target="_blank">
+            @Html.AdminResource("OnlineHelpAndDocs")
+            <span class="glyphicon glyphicon-new-window"></span>
+        </a>
+        <span class="show-quickstart-list@(((allChecksCompleted || quickStartListHiddenManually) && !quickStartListShownManually) ? string.Empty : " awe-hidden" )">
+            <button class="btn btn-primary welcome-button">@Html.AdminResource("QuickStartShow")</button>
+        </span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 admin-welcome@(((allChecksCompleted || quickStartListHiddenManually) && !quickStartListShownManually) ? " awe-hidden" : string.Empty)">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>@Html.AdminResource("QuickStartList")</strong>
+            </div>
+            <div class="panel-body">
+                <p>@Html.AdminResource("QuickStartWelcome")</p>
+                <table>
+                    <tr>
+                        <td><span class="@(contactInfoUpdated ? "glyphicon glyphicon-ok text-success" : "glyphicon glyphicon-ok text-muted")"></span></td>
+                        <td>
+                            <strong><a href="Admin/PropertyManagement/41203" target="_blank">@Html.AdminResource("QuickStartSiteContact") <span class="small glyphicon glyphicon-new-window"></span></a>:</strong> @Html.AdminResource("QuickStartSiteContactDesc")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="@(adminUserUpdated ? "glyphicon glyphicon-ok text-success" : "glyphicon glyphicon-ok text-muted")"></span></td>
+                        <td>
+                            <strong><a href="Admin/EditUser/1?backUrl=%2FAdmin%2FUserManagement%3F" target="_blank">@Html.AdminResource("QuickStartUserInfo") <span class="small glyphicon glyphicon-new-window"></span></a>:</strong> @Html.AdminResource("QuickStartUserInfoDesc")
+                        </td>
+                    </tr>
+            <tr>
+                <td><span class="@(siteLogoUpdated ? "glyphicon glyphicon-ok text-success" : "glyphicon glyphicon-ok text-muted")"></span></td>
+                <td>
+                    <strong><a href="Admin/LogoUploader" target="_blank">@Html.AdminResource("QuickStartSiteLogo") <span class="small glyphicon glyphicon-new-window"></span></a>:</strong> @Html.AdminResource("QuickStartSiteLogoDesc")
+                </td>
+            </tr>
+            <tr>
+                <td><span class="@(mobileLogoUpdated ? "glyphicon glyphicon-ok text-success" : "glyphicon glyphicon-ok text-muted")"></span></td>
+                <td>
+                    <strong><a href="Admin/MobileLogoUploader" target="_blank">@Html.AdminResource("QuickStartMobileLogo") <span class="small glyphicon glyphicon-new-window"></span></a>:</strong> @Html.AdminResource("QuickStartMobileLogoDesc")
+                </td>
+            </tr>
+            <tr>
+                <td><span class="@(siteUrlUpdated ? "glyphicon glyphicon-ok text-success" : "glyphicon glyphicon-ok text-muted")"></span></td>
+                <td>
+                    <strong><a href="Admin/PropertyManagement/41202" target="_blank">@Html.AdminResource("QuickStartSiteUrl") <span class="small glyphicon glyphicon-new-window"></span></a>:</strong> @Html.AdminResource("QuickStartSiteUrlDesc")
+                </td>
+            </tr>
+            <tr>
+                <td><span class="@(siteNameUpdated ? "glyphicon glyphicon-ok text-success" : "glyphicon glyphicon-ok text-muted")"></span></td>
+                <td>
+                    <strong><a href="Admin/PropertyManagement/41202" target="_blank">@Html.AdminResource("QuickStartSiteName") <span class="small glyphicon glyphicon-new-window"></span></a>:</strong> @Html.AdminResource("QuickStartSiteNameDesc")
+                </td>
+            </tr>
+                    <tr>
+                        <td><strong class="text-muted">@Html.AdminResource("Also")</strong></td>
+                        <td>
+                            <strong><a href="Admin/PropertyManagement/41202" target="_blank">@Html.AdminResource("QuickStartTimeZone") <span class="small glyphicon glyphicon-new-window"></span></a>:</strong>@Html.AdminResource("QuickStartTimeZoneDesc")
+                        </td>
+                    </tr>
+                </table>
+                <div class="bg-warning">
+                    @Html.AdminResource("QuickStartNotes") 
+                    &nbsp;<button class="btn btn-default btn-xs" type="button"><strong>?</strong></button>  
+                </div>
+            </div>
+            <div class="panel-footer">
+                <button class="btn btn-default btn-xs welcome-button">@Html.AdminResource("QuickStartHide")</button>
+            </div>
+        </div>
+    </div>
+
+</div>

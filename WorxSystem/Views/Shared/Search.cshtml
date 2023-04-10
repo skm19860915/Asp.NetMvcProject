@@ -1,0 +1,140 @@
+﻿@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle];
+}
+@section head {
+    @Styles.Render("~/bundles/timepicker_css")
+    @Scripts.Render("~/bundles/datetimepicker_js")
+}
+<div class="col-xs-12">
+    <div class="well well-sm section-title">
+        @Html.GlobalResource("Search")
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @Html.LocalizedValidationSummary()
+            @using (Html.BeginForm("Search", "Listing", FormMethod.Get, new { @class = "form-horizontal" }))
+            {
+                <div class="form-group">
+                    <label class="col-md-3 control-label">@Html.GlobalResource("EnterKeywords")</label>
+                    <div class="col-md-6">
+                        @Html.TextBox("FullTextQuery", "", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group" id="awe-listing-search-category-container">
+                    <label class="col-md-3 control-label"> @Html.GlobalResource("SelectCategory")</label>
+                    <div class="col-md-9">
+
+                        @Html.Partial("AJAXCategoryChooser")
+                        <div class="text-right">
+                            <a class="btn btn-default btn-xs" id="ResetCategories" href="#ResetCategories">@Html.GlobalResource("Reset")</a>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $("#ResetCategories").click(function () {
+                                    $("#catlistboxes").html($("#selectFor9").val([]).parent());
+                                    $("input#CategoryID").val("9");
+                                    AttachCategoryChangeHandler(9);
+                                    return false;
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+                if (bool.Parse(SiteClient.Settings[SiteProperties.EnableRegions]))
+                {
+                    <div class="form-group" id="awe-listing-search-category-container">
+                        <label class="col-md-3 control-label"> @Html.GlobalResource("SelectRegion")</label>
+                        <div class="col-md-9">
+                            @Html.Partial("AJAXRegionChooser")
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    <label class="col-md-3 control-label"> @Html.GlobalResource("PriceRange")</label>
+                    <div class="col-md-3">
+                        @Html.TextBox("PriceLow", null, new { @class = "form-control" })
+                        <span class="help-block"> @Html.GlobalResource("MinimumToMaximum")</span>
+                    </div>
+                    <div class="col-md-1 text-center hidden-sm hidden-xs">-</div>
+                    <div class="col-md-3">
+                        @Html.TextBox("PriceHigh", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                if (ListingClient.ListingTypes.Count(lt => lt.Enabled) > 1)
+                {
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">@Html.GlobalResource("ListingTypes")</label>
+                        @Html.Partial("AJAXListingTypeSearcher")
+                    </div>
+                }
+                <div class="form-group">
+                    <label class="col-md-3 control-label">@Html.GlobalResource("ListingStatus")</label>
+                    <div class="col-md-3 col-md-6">
+                        <div class="radio">
+                            @*@Html.CheckBox("CompletedListings")&nbsp;@Html.GlobalResource("IncludeCompletedListings")*@
+                            <label for="StatusFilter_ActiveOnly">
+                                @Html.RadioButton(Fields.StatusFilter, "active_only", true, new { @id = "StatusFilter_ActiveOnly" })
+                                @Html.GlobalResource("Active")
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label for="StatusFilter_CompletedOnly">
+                                @Html.RadioButton(Fields.StatusFilter, "completed_only", false, new { @id = "StatusFilter_CompletedOnly" })
+                                @Html.GlobalResource("Completed")
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label for="StatusFilter_Any">
+                                @Html.RadioButton(Fields.StatusFilter, "all", false, new { @id = "StatusFilter_Any" })
+                                @Html.GlobalResource("Any")
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-md-3 control-label search__label--listing">@Html.GlobalResource("Listings")</label>
+                    <div class="col-xs-6 col-md-3">
+                        <select name="ListingTimeOrigin" class="form-control">
+                            <option selected="selected" value="">@Html.GlobalResource("All")</option>
+                            <option value="ending">@Html.GlobalResource("EndingWithin")</option>
+                            <option value="started">@Html.GlobalResource("StartedInThePast")</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-6 col-md-3">
+                        <select name="ListingTimeHours" class="form-control">
+                            <option selected="selected" value="">&nbsp;</option>
+                            <option value="1">@Html.GlobalResource("OneHour")</option>
+                            <option value="24">@Html.GlobalResource("OneDay")</option>
+                        </select>
+                    </div>
+                </div>
+                if (!SiteClient.EnableEvents)
+                {
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">@Html.GlobalResource("ListingID")</label>
+                        <div class="col-md-3">
+                            @Html.TextBox(Fields.ListingId, null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    <label class="col-md-3 control-label"> @Html.GlobalResource("Seller")</label>
+                    <div class="col-md-3">
+                        @Html.TextBox("Seller", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                @Html.Partial("AJAXCustomFieldSearcher")
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-3">
+                        <input type="submit" class="btn btn-primary btn-block" id="Search" name="Search" value="@Html.GlobalResource("Search")" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    function FormHasRequiredFields() {
+        return false;
+    }
+</script>

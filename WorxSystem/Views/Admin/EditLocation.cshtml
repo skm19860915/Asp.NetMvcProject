@@ -1,0 +1,16 @@
+﻿@model Location
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h4 class="h4row">@Html.AdminResource("EditLocation")</h4>
+
+@using (Html.BeginForm("EditLocation", "Admin", new { id = Model.ID }))
+{
+    @Html.AdminResource("Name")@: : @Html.GlobalResource(Model.Name)<br />
+    @Html.AdminResource("Description")@: : @Html.TextBox("Description", Model.Description)<br />
+    @Html.AdminResource("Amount")@: : @Html.TextBox("Amount", Model.Amount)@SiteClient.Settings[SiteProperties.SiteCurrency]<br />
+    @Html.AdminResource("PayToProceed")@: : @Html.CheckBox("PayToProceed", Model.PayToProceed)<br />
+    <input type="submit" class="DefaultButton" value="@Html.AdminResource("Save")" name="Save" id="Save" />
+}

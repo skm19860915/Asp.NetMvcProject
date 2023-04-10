@@ -1,0 +1,152 @@
+﻿@model RainWorx.FrameWorx.DTO.Invoice
+@* This view exists in both the Account and Admin view folders, be sure you're editing the correct one *@
+<div class="col-xs-12 col-sm-6">
+    <div class="payment-method clearfix">
+        <a class="btn btn-info btn-block" role="button" href="#CCCheckout" data-toggle="collapse"> @Html.GlobalResource("CheckoutWithCreditCard") <span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+    <div class="collapse" id="CCCheckout">
+        <div class="payment-method clearfix">
+            @using (Html.BeginForm())
+            {
+                @Html.Hidden("provider", ViewData["ProviderName"])
+
+                <script>
+                    $(document).ready(function () {
+                        //make sure at least one of the options is checked
+                        if ($("input[name='@Fields.SelectedCreditCardId']:checked").length == 0) {
+                            $("input[name='@Fields.SelectedCreditCardId']").first().attr("checked", "checked");
+                        }
+
+                        //initially hide extra "New" options if an "Existing" option is checked
+                        if ($("input.ExstCcOpt:checked").length > 0) {
+                            $("div.ShowOnNewOnly").hide();
+                        }
+
+                        //when any option is clicked, toggle extra "New" options as needed
+                        $("input[name='@Fields.SelectedCreditCardId']").change(function () {
+                            if ($("#AddNewCC:checked").length > 0) {
+                                $("div.ShowOnNewOnly").show();
+                            } else {
+                                $("div.ShowOnNewOnly").hide();
+                            }
+                        });
+
+                        //when any "New" details are exntered, automatically check the "New" radio button
+                        $(".OnChangeCheckNew").change(function () {
+                            $("#AddNewCC").attr("checked", "checked").change();
+                        });
+                    });
+                </script>
+                <div class="form-horizontal">
+                    @if (((IEnumerable<CreditCard>)ViewData[MVC.ViewData_CreditCards]).Count() > 0)
+                    {
+                    <strong>@Html.GlobalResource("SelectFromExistingCC")</strong>
+                    <hr />
+                    }
+                    @foreach (CreditCard creditCard in (IEnumerable<CreditCard>)ViewData[MVC.ViewData_CreditCards])
+                {
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SelectedCreditCardId, creditCard.ID, false, new { @class = "ExstCcOpt" })
+                            @creditCard.CardType.Name
+                            &nbsp; &nbsp; xxxx-@creditCard.LastFourDigits &nbsp; &nbsp; @creditCard.ExpirationMonth.ToString("00")/@creditCard.ExpirationYear.ToString()
+
+
+                        </label>
+                    </div>
+
+                    }
+
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SelectedCreditCardId, 0, false, new { @id = "AddNewCC" })
+                            <strong>@Html.GlobalResource("NewCreditCard")</strong>
+                        </label>
+                        <p>&nbsp;</p>
+                    </div>
+                    <div class="ShowOnNewOnly">
+                        <div class="form-group">
+                            <label class="col-xs-1 control-label"><span class="glyphicon glyphicon-credit-card"></span></label>
+                            <div class="col-xs-11">
+                                @(Html.DropDownList(Fields.CardType
+                    , (IEnumerable<SelectListItem>)ViewData[Fields.CreditCardTypes]
+                    , Html.GlobalResourceString("PleaseSelect")
+                    , new { @class = "CreditCardType OnChangeCheckNew form-control" }))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-1 control-label"><strong style="font-size: larger">#</strong></label>
+                            <div class="col-xs-11">
+                                @Html.TextBox(Fields.CardNumber, string.Empty, new { @class = "CreditCardNumber OnChangeCheckNew form-control", placeholder = @Html.GlobalResource("CardNumber") })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-1 control-label"><span class="glyphicon glyphicon-calendar"></span></label>
+                            <div class="col-xs-5">
+                                @Html.MonthDropDownList(Fields.ExpirationMonth, " ", new { @class = "CreditCardExpMonth OnChangeCheckNew form-control" })
+                                <span class="help-block">@Html.GlobalResource("Month")</span>
+                            </div>
+                            <div class="col-xs-6">
+                                @Html.YearDropDownList(Fields.ExpirationYear, " ", new { @class = "CreditCardExpYear OnChangeCheckNew form-control" })
+                                <span class="help-block">@Html.GlobalResource("Year")</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-xs-1 control-label"><span class="glyphicon glyphicon-lock"></span> </label>
+                            <div class="col-xs-9">
+                                @Html.TextBox(Fields.VerificationCode, string.Empty, new { @class = "CreditCardCVV OnChangeCheckNew form-control", placeholder = @Html.GlobalResource("VerificationCode") })
+                            </div>
+                            <div class="col-xs-1">
+                                @Html.ToolTipButton("CVV_Help")
+                            </div>
+                        </div>
+                        <div class="col-xs-11 col-xs-offset-1">@Html.ToolTipContent("CVV_Help", Html.GlobalResource("CVV_Help"))</div>
+
+                        @if (ViewData["PayerBillingAddressId"] == null)
+                        {
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label required">@Html.GlobalResource("BillingAddress")</label>
+                            <div class="col-sm-7">
+
+                                @{
+                                        bool isFirstOpt = true;
+                                        foreach (Address address in (IEnumerable<Address>)ViewData[MVC.ViewData_AddressList])
+                                        {
+
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            @Html.RadioButton("AddressID", address.ID, isFirstOpt)
+                                        </span>
+                                        <button disabled="disabled" class="btn btn-default text-left">
+                                            @Html.Partial("Address", address)
+                                        </button>
+                                    </div>
+                                    <p></p>
+
+                                            isFirstOpt = false;
+                                        }
+                                }
+                                @Html.ButtonLink(Html.GlobalResource("AddNewAddress"), MVC.CreateAddressAction, null, null, new { @class = "btn btn-default btn-xs" })
+                            </div>
+                        </div>
+                                        }
+                                        else
+                                        {
+                        @Html.Hidden("AddressID", ViewData["PayerBillingAddressId"])
+                                        }
+                        <div class="form-group">
+                            <div class="col-xs-10 col-xs-offset-2 checkbox">
+                                @Html.CheckBox(Fields.SaveNewCard, true, new { @class = "no-toggle" })
+                                <label for="@Fields.SaveNewCard">
+                                    @Html.GlobalResource("SaveNewCardInformation")
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" class="btn btn-success btn-block" value="@Html.GlobalResource("PayWithCreditCard")" />
+                </div>
+                                    }
+        </div>
+    </div>
+</div>

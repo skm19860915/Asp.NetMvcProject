@@ -1,0 +1,288 @@
+﻿@model Page<User>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_UserManagement");
+}
+
+@section head {
+<script src="~/Scripts/jquery.doubleScroll.js"></script>
+    <script>
+        $(document).ready(function () {
+            //when any filter input is changed, submit the form
+            $(".SubmitOnChange").change(function () {
+                //submit container form
+                $(this).parents("form").first().submit();
+                return true;
+            });
+
+            //clicking anywhere on a data row will be the same as clicking the edit link
+            $("tr.DataRow").click(function () {
+                var targetUrl = $(this).find("a").first().attr("href");
+                document.location = $.htmlDecode(targetUrl);
+            });
+
+            //clicking anywhere on a sort column will be the same as clicking the sort link
+            $("th.SortableColumn").click(function () {
+                var targetUrl = $(this).find("a").first().attr("href");
+                document.location = $.htmlDecode(targetUrl);
+            });
+
+            //add sort icon
+            $("th").children("a").after("<span class=\"glyphicon glyphicon-sort pull-right\"></span>");
+            //double scroll bar for xs views
+            $('.double-scroll').doubleScroll({ resetOnWindowResize: true });
+        });
+    </script>
+    <style>
+       
+        th.SortableColumn:hover {
+            
+            cursor: pointer;
+        }
+
+        .NonSortHeaderColumn {
+            border-right: 1px solid rgba(0,0,0,.1);
+        }
+
+        tr.DataRow:hover {
+            background-color: #FFFACD;
+            cursor: pointer;
+        }
+
+        .DataRow td {font-size: 14px;
+        }
+
+        div.FloatRight {
+            float: right;
+        }
+
+            div.FloatRight a {
+                color: #2b88b7;
+                font-size: 90%;
+                font-weight: normal;
+            }
+
+                div.FloatRight a:hover {
+                    text-decoration: underline;
+                }
+
+        tr.RestrictedRow {
+            background-color: #FBE3E4;
+        }
+
+        tr.FiltersRow td {
+            padding: 2px 2px 2px 0px;
+        }
+
+        #KeyTable td {
+            padding-right: 20px;
+        }
+
+        #KeyTable span {
+            vertical-align: middle;
+        }
+
+        #KeyTable img {
+            vertical-align: middle;
+        }
+    </style>
+}
+
+
+    <div class="group">
+        @if (!SiteClient.BoolSetting(SiteProperties.ActiveDirectoryEnabled))
+        {
+            @Html.ButtonLink(Html.AdminResource("CreateUser"), "CreateUser", null, null, new { @class = "btn btn-info" })
+        }
+
+        @{
+            string exportURL = Html.GetActionUrl(MVC.ExportUserCSVAction);
+            exportURL += "?" + HttpContext.Current.Request.QueryString + "&count=" + Model.TotalItemCount;
+        }
+        <a href="@exportURL" class="btn btn-default">@Html.AdminResource("ExportCSV")</a>
+        &nbsp;&nbsp;
+        @Html.ActionLink(Html.AdminResource("ResetFilters"), MVC.UserManagementAction)
+    </div>
+
+@using (Html.BeginForm(MVC.UserManagementAction, MVC.AdminController, new { page = 0, sort = ViewData["sort"], descending = ViewData["descending"] }, FormMethod.Get))
+{
+    string baseReSortUrl = Html.GetActionUrl(MVC.UserManagementAction, MVC.AdminController, new
+    {
+        userid = ViewData["userid"],
+        username = ViewData["username"],
+        first = ViewData["first"],
+        last = ViewData["last"],
+        email = ViewData["email"],
+        status = ViewData["status"],
+        role = ViewData["role"]/*,
+            page = 0*/
+    });
+    if (!baseReSortUrl.Contains("?"))
+    {
+        baseReSortUrl += "?";
+    }
+    else
+    {
+        baseReSortUrl += "&";
+    }
+    <div class="panel panel-default double-scroll">
+        <table id="UsersList" class="table table-striped">
+            <tr>
+                @{
+                    string reSortUrl = baseReSortUrl + "sort=id&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "id" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                    string columnHeaderClass = (((string)ViewData["sort"] ?? "") == "id") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                }
+                <th class="@columnHeaderClass"> <a href="@reSortUrl">@Html.AdminResource("ID") </a> </th>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=username&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "username" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                    columnHeaderClass = (((string)ViewData["sort"] ?? "") == "username") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                }
+                <th class="@columnHeaderClass"><a href="@reSortUrl">@Html.AdminResource("UserName")</a> </th>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=firstname&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "firstname" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                    columnHeaderClass = (((string)ViewData["sort"] ?? "") == "firstname") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                }
+                <th class="@columnHeaderClass"><a href="@reSortUrl">@Html.AdminResource("First")</a> </th>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=lastname&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "lastname" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                    columnHeaderClass = (((string)ViewData["sort"] ?? "") == "lastname") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                }
+                <th class="@columnHeaderClass"><a href="@reSortUrl">@Html.AdminResource("Last")</a> </th>
+                @{
+                    reSortUrl = baseReSortUrl + "sort=email&descending=";
+                    reSortUrl += (string)ViewData["sort"] == "email" ? (ViewData["descending"] != null ? (!(bool)ViewData["descending"]).ToString() : "False") : "False";
+                    columnHeaderClass = (((string)ViewData["sort"] ?? "") == "email") ? "SortableColumn SortHeaderColumn" : "SortableColumn NonSortHeaderColumn";
+                }
+                <th class="@columnHeaderClass"><a href="@reSortUrl">@Html.AdminResource("Email")</a> </th>
+                <th class="NonSortHeaderColumn" style="width: 100px;">@Html.AdminResource("Status")</th>
+                <th class="NonSortHeaderColumn" style="width: 100px;">@Html.AdminResource("Role")</th>
+            </tr>
+            <tr class="FiltersRow">
+                <td>@Html.TextBox("userid", ViewData["userid"], new { @class = "SubmitOnChange form-control input-sm" })</td>
+                <td>@Html.TextBox("username", ViewData["username"], new { @class = "SubmitOnChange form-control input-sm" })</td>
+                <td>@Html.TextBox("first", ViewData["first"], new { @class = "SubmitOnChange form-control input-sm" })</td>
+                <td>@Html.TextBox("last", ViewData["last"], new { @class = "SubmitOnChange form-control input-sm" })</td>
+                <td>@Html.TextBox("email", ViewData["email"], new {  @class = "SubmitOnChange form-control input-sm" })</td>
+                <td>@Html.DropDownList("status", (SelectList)ViewData["StatusSelectList"], new { @class = "SubmitOnChange form-control input-sm" })</td>
+                <td>@Html.DropDownList("role", (SelectList)ViewData["RoleSelectList"], new { @class = "SubmitOnChange form-control input-sm" })</td>
+            </tr>
+            @foreach (User user in Model.List)
+            {
+                string rowClass = "DataRow";
+                if (user.IsRestricted())
+                {
+                    rowClass += " RestrictedRow";
+                }
+                string returnUrl = Html.GetActionUrl(MVC.UserManagementAction);
+                returnUrl += "?" + HttpContext.Current.Request.QueryString;
+
+                <tr class="@rowClass">
+                    <td>@Html.ActionLink(user.ID.ToString(), MVC.UserSummaryAction, new { id = user.ID, backUrl = returnUrl })</td>
+                    <td>@user.UserName</td>
+                    <td>@user.FirstName()</td>
+                    <td>@user.LastName()</td>
+                    <td>@user.Email</td>
+                    <td>
+                        @{string statusLabel;
+                    string statusIcon;
+                        }
+                        @if (!user.IsActive)
+                    {
+                        statusLabel = Html.AdminResourceString("Deactivated");
+                        statusIcon = "Content/Images/Icon_Deactivated.png";
+                            <img src="@statusIcon" alt="@statusLabel" title="@statusLabel" />
+                        }
+                        else if (user.IsLockedOut)
+                        {
+                            statusLabel = Html.AdminResourceString("Restricted");
+                            statusIcon = "Content/Images/Icon_Restricted.png";
+                            <img src="@statusIcon" alt="@statusLabel" title="@statusLabel" />
+                        }
+                        else if (!user.IsVerified)
+                        {
+                            statusLabel = Html.AdminResourceString("Unverified");
+                            statusIcon = "Content/Images/Icon_Unverified.png";
+                            <img src="@statusIcon" alt="@statusLabel" title="@statusLabel" />
+                        }
+                        else if (!user.IsApproved)
+                        {
+                            statusLabel = Html.AdminResourceString("Unapproved");
+                            statusIcon = "Content/Images/Icon_Unapproved.png";
+                            <img src="@statusIcon" alt="@statusLabel" title="@statusLabel" />
+                        }
+                        else if (user.Newsletter)
+                        {
+                            statusLabel = Html.AdminResourceString("Newsletter");
+                            statusIcon = "Content/Images/Icon_Newsletter.png";
+                            <img src="@statusIcon" alt="@statusLabel" title="@statusLabel" />
+                        }
+                        else //if (user.IsActive && !user.IsLockedOut && user.IsVerified && user.IsApproved)
+                        {
+                            statusLabel = Html.AdminResourceString("Active");
+                            statusIcon = "Content/Images/Icon_Active.png";
+                            <img src="@statusIcon" alt="@statusLabel" title="@statusLabel" />
+                        }
+                    </td>
+                    <td>
+                        @foreach (Role userRole in UserClient.GetRoles(Context.User.Identity.Name))
+                    {
+                        if (user.Roles.Count(r => r.Name == userRole.Name) > 0)
+                        {
+                            var roleLabel = Html.AdminResource(userRole.Name);
+                            string roleIcon = "Content/Images/Icon_" + userRole.Name + ".png";
+                                <img src="@roleIcon" alt="@roleLabel" title="@roleLabel" />
+                            }
+                            else
+                            {
+                                <img src="Content/Images/General/clear.gif" height="16" width="16" style="width: 16px; height:16px;" />
+                            }
+                        }
+                    </td>
+                </tr>
+                            }
+        </table>
+    </div>
+    if (Model.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(Model);
+        <hr />
+    }
+    <div class="group">
+       <div class="row">
+           <div class="col-xs-12"><strong>@Html.AdminResource("Key")</strong></div>
+           <div class="col-xs-12 col-sm-4 col-lg-2"><img src="Content/Images/Icon_Active.png" alt="@Html.AdminResource("Active")" title="@Html.AdminResource("Active")" />
+<span>&nbsp;&nbsp;@Html.AdminResource("Active")</span></div>
+           <div class="col-xs-12 col-sm-4 col-lg-2"><img src="Content/Images/Icon_Newsletter.png" alt="@Html.AdminResource("Newsletter")" title="@Html.AdminResource("Newsletter")" />
+<span>&nbsp;&nbsp;@Html.AdminResource("Newsletter")</span></div>
+           <div class="col-xs-12 col-sm-4 col-lg-2"><img src="Content/Images/Icon_Unverified.png" alt="@Html.AdminResource("Unverified")" title="@Html.AdminResource("Unverified")" />
+<span>&nbsp;&nbsp;@Html.AdminResource("Unverified")</span></div>
+           <div class="col-xs-12 col-sm-4 col-lg-2"><img src="Content/Images/Icon_Unapproved.png" alt="@Html.AdminResource("Unapproved")" title="@Html.AdminResource("Unapproved")" />
+<span>&nbsp;&nbsp;@Html.AdminResource("Unapproved")</span></div>
+           <div class="col-xs-12 col-sm-4 col-lg-2"><img src="Content/Images/Icon_Restricted.png" alt="@Html.AdminResource("Restricted")" title="@Html.AdminResource("Restricted")" />
+<span>&nbsp;&nbsp;@Html.AdminResource("Restricted")</span></div>
+           <div class="col-xs-12 col-sm-4 col-lg-2"><img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("Deactivated")" title="@Html.AdminResource("Deactivated")" />
+<span>&nbsp;&nbsp;@Html.AdminResource("Deactivated")</span></div>
+          
+           </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-lg-2">
+                <img src="Content/Images/Icon_Admin.png" alt="@Html.AdminResource("Admin")" title="@Html.AdminResource("Admin")" />
+                <span>&nbsp;&nbsp;@Html.AdminResource("Admin")</span>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-lg-2">
+                <img src="Content/Images/Icon_Seller.png" alt="@Html.AdminResource("Seller")" title="@Html.AdminResource("Seller")" />
+                <span>&nbsp;&nbsp;@Html.AdminResource("Seller")</span>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-lg-2">
+                <img src="Content/Images/Icon_Buyer.png" alt="@Html.AdminResource("Buyer")" title="@Html.AdminResource("Buyer")" />
+                <span>&nbsp;&nbsp;@Html.AdminResource("Buyer")</span>
+            </div>
+            </div>
+           </div>
+                           }
+    

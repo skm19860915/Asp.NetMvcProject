@@ -1,0 +1,19 @@
+﻿@model Listing
+@{ string returnUrl = Request.Url.PathAndQuery; }
+<div class="btn-group">
+    <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="glyphicon glyphicon-cog"></span></a>
+    <ul class="dropdown-menu dropdown-menu-right">
+        @if (Model.Lot == null)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Relist"), MVC.RelistAction, MVC.AccountController, new { id = Model.ID, returnUrl }, null)
+            </li>
+        }
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateListingPage1Action, "Listing", new { SimilarListingID = Model.ID, returnUrl }, null)
+        </li>
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteAction, MVC.ListingController, new { id = Model.ID, returnUrl }, new { @class = "awe-delete-listing-link" })
+        </li>
+    </ul>
+</div>

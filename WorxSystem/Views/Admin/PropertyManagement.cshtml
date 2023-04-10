@@ -1,0 +1,58 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = ViewData[MVC.LineageString];
+}
+
+@section head {
+    <script>
+        $(document).ready(function () {
+            //ensure that Auth.Net and Stored Credit Cards are OFF if Stripe is ON
+            $("#StripeConnect_Enabled").on("change", function () {
+                if ($("#StripeConnect_Enabled").prop("checked")) {
+                    $("#AuthorizeNet_Enabled").prop("checked", false).checkbox("update");
+                    $("#CreditCardsEnabled").prop("checked", false).checkbox("update");
+                }
+            });
+            //ensure that Stripe is OFF if Auth.Net is ON
+            //ensure that Stored Credit Cards is ON if Auth.Net is ON
+            $("#AuthorizeNet_Enabled").on("change", function () {
+                if ($("#AuthorizeNet_Enabled").prop("checked")) {
+                    $("#StripeConnect_Enabled").prop("checked", false).checkbox("update");
+                    $("#CreditCardsEnabled").prop("checked", true).checkbox("update");
+                }
+            });
+            //ensure that Stripe is OFF if Stored Credit Cards is ON
+            //ensure that Auth.Net if OFF if Stored Credit Cards is OFF
+            $("#CreditCardsEnabled").on("change", function () {
+                if ($("#CreditCardsEnabled").prop("checked")) {
+                    $("#StripeConnect_Enabled").prop("checked", false).checkbox("update");
+                }
+                if (!$("#CreditCardsEnabled").prop("checked")) {
+                    $("#AuthorizeNet_Enabled").prop("checked", false).checkbox("update");
+                }
+            });
+
+            //ensure that "Require Address on Registration" is ON if "Require Credit Card on Registration" is ON
+            //ensure that "Require Credit Card on Registration" is OFF if "Require Address on Registration" is OFF
+            $("#RequireAddressOnRegistration").click(function () {
+                if (!$("#RequireAddressOnRegistration").prop("checked")) {
+                    $("#RequireCreditCardOnRegistration").prop("checked", false).checkbox("update")
+                }
+            });
+            $("#RequireCreditCardOnRegistration").click(function () {
+                if ($("#RequireCreditCardOnRegistration").prop("checked")) {
+                    $("#RequireAddressOnRegistration").prop("checked", true).checkbox("update")
+                }
+            });
+
+        });
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.Partial("PropertyGroup")
+    <div class="action-panel">
+        <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+    </div>
+}

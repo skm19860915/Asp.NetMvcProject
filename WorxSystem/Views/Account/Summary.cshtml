@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("AccountSummary")
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                @Html.GlobalResource("General")
+            </div>
+            <ul class="list-group">
+                @{
+                    var myGeneralCounts = (Dictionary<string, int>)ViewData[RainWorx.FrameWorx.Strings.Fields.MyGeneralCounts];
+                    foreach (string key in myGeneralCounts.Keys)
+                    {
+                        <li class="list-group-item"><span class="badge">@myGeneralCounts[key] </span> @Html.GlobalResource("MySummaryCount" + key)</li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                @Html.GlobalResource("ActionNeeded")
+            </div>
+            <ul class="list-group">
+                @{
+                    var myActionNeededCounts = (Dictionary<string, int>)ViewData[RainWorx.FrameWorx.Strings.Fields.MyActionNeededCounts];
+                    foreach (string key in myActionNeededCounts.Keys)
+                    {
+                        <li class="list-group-item">
+                            <span class="badge"> @myActionNeededCounts[key] </span>@Html.GlobalResource("MySummaryCount" + key)
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</div>

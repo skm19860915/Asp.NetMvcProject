@@ -1,0 +1,768 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Afghanistan_Standard_Time" xml:space="preserve">
+    <value>Kabul</value>
+  </data>
+  <data name="Afghanistan_Standard_Time_Short" xml:space="preserve">
+    <value>AFG</value>
+  </data>
+  <data name="Alaskan_Standard_Time" xml:space="preserve">
+    <value>Alaska</value>
+  </data>
+  <data name="Alaskan_Standard_Time_Short" xml:space="preserve">
+    <value>AKT</value>
+  </data>
+  <data name="Arabian_Standard_Time" xml:space="preserve">
+    <value>Abu Dhabi, Muscat</value>
+  </data>
+  <data name="Arabian_Standard_Time_Short" xml:space="preserve">
+    <value>ARB</value>
+  </data>
+  <data name="Arabic_Standard_Time" xml:space="preserve">
+    <value>Baghdad</value>
+  </data>
+  <data name="Arabic_Standard_Time_Short" xml:space="preserve">
+    <value>ARB</value>
+  </data>
+  <data name="Arab_Standard_Time" xml:space="preserve">
+    <value>Kuwait, Riyadh</value>
+  </data>
+  <data name="Arab_Standard_Time_Short" xml:space="preserve">
+    <value>ARB</value>
+  </data>
+  <data name="Argentina_Standard_Time" xml:space="preserve">
+    <value>Buenos Aires</value>
+  </data>
+  <data name="Argentina_Standard_Time_Short" xml:space="preserve">
+    <value>AGT</value>
+  </data>
+  <data name="Atlantic_Standard_Time" xml:space="preserve">
+    <value>Atlantic Time (Canada)</value>
+  </data>
+  <data name="Atlantic_Standard_Time_Short" xml:space="preserve">
+    <value>AT</value>
+  </data>
+  <data name="AUS_Central_Standard_Time" xml:space="preserve">
+    <value>Darwin</value>
+  </data>
+  <data name="AUS_Central_Standard_Time_Short" xml:space="preserve">
+    <value>CAUS</value>
+  </data>
+  <data name="AUS_Eastern_Standard_Time" xml:space="preserve">
+    <value>Canberra, Melbourne, Sydney</value>
+  </data>
+  <data name="AUS_Eastern_Standard_Time_Short" xml:space="preserve">
+    <value>EAUS</value>
+  </data>
+  <data name="Azerbaijan_Standard_Time" xml:space="preserve">
+    <value>Baku</value>
+  </data>
+  <data name="Azerbaijan_Standard_Time_Short" xml:space="preserve">
+    <value>AZBJ</value>
+  </data>
+  <data name="Azores_Standard_Time" xml:space="preserve">
+    <value>Azores</value>
+  </data>
+  <data name="Azores_Standard_Time_Short" xml:space="preserve">
+    <value>AZT</value>
+  </data>
+  <data name="Bahia_Standard_Time" xml:space="preserve">
+    <value>Salvador</value>
+  </data>
+  <data name="Bahia_Standard_Time_Short" xml:space="preserve">
+    <value>BHT</value>
+  </data>
+  <data name="Bangladesh_Standard_Time" xml:space="preserve">
+    <value>Dhaka</value>
+  </data>
+  <data name="Bangladesh_Standard_Time_Short" xml:space="preserve">
+    <value>BNGL</value>
+  </data>
+  <data name="Belarus_Standard_Time" xml:space="preserve">
+    <value>Minsk</value>
+  </data>
+  <data name="Belarus_Standard_Time_Short" xml:space="preserve">
+    <value>BELR</value>
+  </data>
+  <data name="Canada_Central_Standard_Time" xml:space="preserve">
+    <value>Saskatchewan</value>
+  </data>
+  <data name="Canada_Central_Standard_Time_Short" xml:space="preserve">
+    <value>CTC</value>
+  </data>
+  <data name="Cape_Verde_Standard_Time" xml:space="preserve">
+    <value>Cabo Verde Is.</value>
+  </data>
+  <data name="Cape_Verde_Standard_Time_Short" xml:space="preserve">
+    <value>CVT</value>
+  </data>
+  <data name="Caucasus_Standard_Time" xml:space="preserve">
+    <value>Yerevan</value>
+  </data>
+  <data name="Caucasus_Standard_Time_Short" xml:space="preserve">
+    <value>CAUC</value>
+  </data>
+  <data name="Central_America_Standard_Time" xml:space="preserve">
+    <value>Central America</value>
+  </data>
+  <data name="Central_America_Standard_Time_Short" xml:space="preserve">
+    <value>CAT</value>
+  </data>
+  <data name="Central_Asia_Standard_Time" xml:space="preserve">
+    <value>Astana</value>
+  </data>
+  <data name="Central_Asia_Standard_Time_Short" xml:space="preserve">
+    <value>CASIA</value>
+  </data>
+  <data name="Central_Brazilian_Standard_Time" xml:space="preserve">
+    <value>Cuiaba</value>
+  </data>
+  <data name="Central_Brazilian_Standard_Time_Short" xml:space="preserve">
+    <value>CBZ</value>
+  </data>
+  <data name="Central_European_Standard_Time" xml:space="preserve">
+    <value>Sarajevo, Skopje, Warsaw, Zagreb</value>
+  </data>
+  <data name="Central_European_Standard_Time_Short" xml:space="preserve">
+    <value>CET</value>
+  </data>
+  <data name="Central_Europe_Standard_Time" xml:space="preserve">
+    <value>Belgrade, Bratislava, Budapest, Ljubljana, Prague</value>
+  </data>
+  <data name="Central_Europe_Standard_Time_Short" xml:space="preserve">
+    <value>CET</value>
+  </data>
+  <data name="Central_Pacific_Standard_Time" xml:space="preserve">
+    <value>Solomon Is., New Caledonia</value>
+  </data>
+  <data name="Central_Pacific_Standard_Time_Short" xml:space="preserve">
+    <value>CPAC</value>
+  </data>
+  <data name="Central_Standard_Time" xml:space="preserve">
+    <value>Central Standard Time</value>
+  </data>
+  <data name="Central_Standard_Time_Mexico" xml:space="preserve">
+    <value>Guadalajara, Mexico City, Monterrey</value>
+  </data>
+  <data name="Central_Standard_Time_Mexico_Short" xml:space="preserve">
+    <value>CTM</value>
+  </data>
+  <data name="Central_Standard_Time_Short" xml:space="preserve">
+    <value>CT</value>
+  </data>
+  <data name="Cen_Australia_Standard_Time" xml:space="preserve">
+    <value>Adelaide</value>
+  </data>
+  <data name="Cen_Australia_Standard_Time_Short" xml:space="preserve">
+    <value>CAUS</value>
+  </data>
+  <data name="China_Standard_Time" xml:space="preserve">
+    <value>Beijing, Chongqing, Hong Kong, Urumqi</value>
+  </data>
+  <data name="China_Standard_Time_Short" xml:space="preserve">
+    <value>CHN</value>
+  </data>
+  <data name="Dateline_Standard_Time" xml:space="preserve">
+    <value>International Date Line West</value>
+  </data>
+  <data name="Dateline_Standard_Time_Short" xml:space="preserve">
+    <value>AoE</value>
+  </data>
+  <data name="Eastern_Standard_Time" xml:space="preserve">
+    <value>Eastern Time (US &amp; Canada)</value>
+  </data>
+  <data name="Eastern_Standard_Time_Mexico" xml:space="preserve">
+    <value>Chetumal</value>
+  </data>
+  <data name="Eastern_Standard_Time_Mexico_Short" xml:space="preserve">
+    <value>ETM</value>
+  </data>
+  <data name="Eastern_Standard_Time_Short" xml:space="preserve">
+    <value>ET</value>
+  </data>
+  <data name="Egypt_Standard_Time" xml:space="preserve">
+    <value>Cairo</value>
+  </data>
+  <data name="Egypt_Standard_Time_Short" xml:space="preserve">
+    <value>EGP</value>
+  </data>
+  <data name="Ekaterinburg_Standard_Time" xml:space="preserve">
+    <value>Ekaterinburg (RTZ 4)</value>
+  </data>
+  <data name="Ekaterinburg_Standard_Time_Short" xml:space="preserve">
+    <value>RTZ4</value>
+  </data>
+  <data name="E_Africa_Standard_Time" xml:space="preserve">
+    <value>Nairobi</value>
+  </data>
+  <data name="E_Africa_Standard_Time_Short" xml:space="preserve">
+    <value>EAF</value>
+  </data>
+  <data name="E_Australia_Standard_Time" xml:space="preserve">
+    <value>Brisbane</value>
+  </data>
+  <data name="E_Australia_Standard_Time_Short" xml:space="preserve">
+    <value>EAUS</value>
+  </data>
+  <data name="E_Europe_Standard_Time" xml:space="preserve">
+    <value>E. Europe</value>
+  </data>
+  <data name="E_Europe_Standard_Time_Short" xml:space="preserve">
+    <value>EEUR</value>
+  </data>
+  <data name="E_South_America_Standard_Time" xml:space="preserve">
+    <value>Brasilia</value>
+  </data>
+  <data name="E_South_America_Standard_Time_Short" xml:space="preserve">
+    <value>ESAT</value>
+  </data>
+  <data name="Fiji_Standard_Time" xml:space="preserve">
+    <value>Fiji</value>
+  </data>
+  <data name="Fiji_Standard_Time_Short" xml:space="preserve">
+    <value>FJT</value>
+  </data>
+  <data name="FLE_Standard_Time" xml:space="preserve">
+    <value>Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius</value>
+  </data>
+  <data name="FLE_Standard_Time_Short" xml:space="preserve">
+    <value>FLE</value>
+  </data>
+  <data name="Georgian_Standard_Time" xml:space="preserve">
+    <value>Tbilisi</value>
+  </data>
+  <data name="Georgian_Standard_Time_Short" xml:space="preserve">
+    <value>GRG</value>
+  </data>
+  <data name="GMT_Standard_Time" xml:space="preserve">
+    <value>Dublin, Edinburgh, Lisbon, London</value>
+  </data>
+  <data name="GMT_Standard_Time_Short" xml:space="preserve">
+    <value>GMT</value>
+  </data>
+  <data name="Greenland_Standard_Time" xml:space="preserve">
+    <value>Greenland</value>
+  </data>
+  <data name="Greenland_Standard_Time_Short" xml:space="preserve">
+    <value>GRT</value>
+  </data>
+  <data name="Greenwich_Standard_Time" xml:space="preserve">
+    <value>Monrovia, Reykjavik</value>
+  </data>
+  <data name="Greenwich_Standard_Time_Short" xml:space="preserve">
+    <value>GT</value>
+  </data>
+  <data name="GTB_Standard_Time" xml:space="preserve">
+    <value>Athens, Bucharest</value>
+  </data>
+  <data name="GTB_Standard_Time_Short" xml:space="preserve">
+    <value>GTB</value>
+  </data>
+  <data name="Hawaiian_Standard_Time" xml:space="preserve">
+    <value>Hawaii</value>
+  </data>
+  <data name="Hawaiian_Standard_Time_Short" xml:space="preserve">
+    <value>HWT</value>
+  </data>
+  <data name="India_Standard_Time" xml:space="preserve">
+    <value>Chennai, Kolkata, Mumbai, New Delhi</value>
+  </data>
+  <data name="India_Standard_Time_Short" xml:space="preserve">
+    <value>IND</value>
+  </data>
+  <data name="Iran_Standard_Time" xml:space="preserve">
+    <value>Tehran</value>
+  </data>
+  <data name="Iran_Standard_Time_Short" xml:space="preserve">
+    <value>IRN</value>
+  </data>
+  <data name="Israel_Standard_Time" xml:space="preserve">
+    <value>Jerusalem</value>
+  </data>
+  <data name="Israel_Standard_Time_Short" xml:space="preserve">
+    <value>ISR</value>
+  </data>
+  <data name="Jordan_Standard_Time" xml:space="preserve">
+    <value>Amman</value>
+  </data>
+  <data name="Jordan_Standard_Time_Short" xml:space="preserve">
+    <value>JOR</value>
+  </data>
+  <data name="Kaliningrad_Standard_Time" xml:space="preserve">
+    <value>Kaliningrad (RTZ 1)</value>
+  </data>
+  <data name="Kaliningrad_Standard_Time_Short" xml:space="preserve">
+    <value>RTZ1</value>
+  </data>
+  <data name="Kamchatka_Standard_Time" xml:space="preserve">
+    <value>Petropavlovsk-Kamchatsky - Old</value>
+  </data>
+  <data name="Kamchatka_Standard_Time_Short" xml:space="preserve">
+    <value>KMCH</value>
+  </data>
+  <data name="Korea_Standard_Time" xml:space="preserve">
+    <value>Seoul</value>
+  </data>
+  <data name="Korea_Standard_Time_Short" xml:space="preserve">
+    <value>KOR</value>
+  </data>
+  <data name="Libya_Standard_Time" xml:space="preserve">
+    <value>Tripoli</value>
+  </data>
+  <data name="Libya_Standard_Time_Short" xml:space="preserve">
+    <value>LIB</value>
+  </data>
+  <data name="Line_Islands_Standard_Time" xml:space="preserve">
+    <value>Kiritimati Island</value>
+  </data>
+  <data name="Line_Islands_Standard_Time_Short" xml:space="preserve">
+    <value>LIT</value>
+  </data>
+  <data name="Magadan_Standard_Time" xml:space="preserve">
+    <value>Magadan</value>
+  </data>
+  <data name="Magadan_Standard_Time_Short" xml:space="preserve">
+    <value>MGD</value>
+  </data>
+  <data name="Mauritius_Standard_Time" xml:space="preserve">
+    <value>Port Louis</value>
+  </data>
+  <data name="Mauritius_Standard_Time_Short" xml:space="preserve">
+    <value>MRT</value>
+  </data>
+  <data name="MidAtlantic_Standard_Time" xml:space="preserve">
+    <value>Mid-Atlantic - Old</value>
+  </data>
+  <data name="MidAtlantic_Standard_Time_Short" xml:space="preserve">
+    <value>MAT</value>
+  </data>
+  <data name="Middle_East_Standard_Time" xml:space="preserve">
+    <value>Beirut</value>
+  </data>
+  <data name="Middle_East_Standard_Time_Short" xml:space="preserve">
+    <value>MET</value>
+  </data>
+  <data name="Montevideo_Standard_Time" xml:space="preserve">
+    <value>Montevideo</value>
+  </data>
+  <data name="Montevideo_Standard_Time_Short" xml:space="preserve">
+    <value>MVT</value>
+  </data>
+  <data name="Morocco_Standard_Time" xml:space="preserve">
+    <value>Casablanca</value>
+  </data>
+  <data name="Morocco_Standard_Time_Short" xml:space="preserve">
+    <value>MORT</value>
+  </data>
+  <data name="Mountain_Standard_Time" xml:space="preserve">
+    <value>Mountain Time (US &amp; Canada)</value>
+  </data>
+  <data name="Mountain_Standard_Time_Mexico" xml:space="preserve">
+    <value>Chihuahua, La Paz, Mazatlan</value>
+  </data>
+  <data name="Mountain_Standard_Time_Mexico_Short" xml:space="preserve">
+    <value>MTM</value>
+  </data>
+  <data name="Mountain_Standard_Time_Short" xml:space="preserve">
+    <value>MT</value>
+  </data>
+  <data name="Myanmar_Standard_Time" xml:space="preserve">
+    <value>Yangon (Rangoon)</value>
+  </data>
+  <data name="Myanmar_Standard_Time_Short" xml:space="preserve">
+    <value>MYMR</value>
+  </data>
+  <data name="Namibia_Standard_Time" xml:space="preserve">
+    <value>Windhoek</value>
+  </data>
+  <data name="Namibia_Standard_Time_Short" xml:space="preserve">
+    <value>NMB</value>
+  </data>
+  <data name="Nepal_Standard_Time" xml:space="preserve">
+    <value>Kathmandu</value>
+  </data>
+  <data name="Nepal_Standard_Time_Short" xml:space="preserve">
+    <value>NPL</value>
+  </data>
+  <data name="Newfoundland_Standard_Time" xml:space="preserve">
+    <value>Newfoundland</value>
+  </data>
+  <data name="Newfoundland_Standard_Time_Short" xml:space="preserve">
+    <value>NFT</value>
+  </data>
+  <data name="New_Zealand_Standard_Time" xml:space="preserve">
+    <value>Auckland, Wellington</value>
+  </data>
+  <data name="New_Zealand_Standard_Time_Short" xml:space="preserve">
+    <value>NZT</value>
+  </data>
+  <data name="North_Asia_East_Standard_Time" xml:space="preserve">
+    <value>Irkutsk (RTZ 7)</value>
+  </data>
+  <data name="North_Asia_East_Standard_Time_Short" xml:space="preserve">
+    <value>NASIA</value>
+  </data>
+  <data name="North_Asia_Standard_Time" xml:space="preserve">
+    <value>Krasnoyarsk (RTZ 6)</value>
+  </data>
+  <data name="North_Asia_Standard_Time_Short" xml:space="preserve">
+    <value>NASIA</value>
+  </data>
+  <data name="N_Central_Asia_Standard_Time" xml:space="preserve">
+    <value>Novosibirsk (RTZ 5)</value>
+  </data>
+  <data name="N_Central_Asia_Standard_Time_Short" xml:space="preserve">
+    <value>RTZ5</value>
+  </data>
+  <data name="Pacific_SA_Standard_Time" xml:space="preserve">
+    <value>Santiago</value>
+  </data>
+  <data name="Pacific_SA_Standard_Time_Short" xml:space="preserve">
+    <value>SAPT</value>
+  </data>
+  <data name="Pacific_Standard_Time" xml:space="preserve">
+    <value>Pacific Time (US &amp; Canada)</value>
+  </data>
+  <data name="Pacific_Standard_Time_Mexico" xml:space="preserve">
+    <value>Baja California</value>
+  </data>
+  <data name="Pacific_Standard_Time_Mexico_Short" xml:space="preserve">
+    <value>PTM</value>
+  </data>
+  <data name="Pacific_Standard_Time_Short" xml:space="preserve">
+    <value>PT</value>
+  </data>
+  <data name="Pakistan_Standard_Time" xml:space="preserve">
+    <value>Islamabad, Karachi</value>
+  </data>
+  <data name="Pakistan_Standard_Time_Short" xml:space="preserve">
+    <value>PAK</value>
+  </data>
+  <data name="Paraguay_Standard_Time" xml:space="preserve">
+    <value>Asuncion</value>
+  </data>
+  <data name="Paraguay_Standard_Time_Short" xml:space="preserve">
+    <value>PGT</value>
+  </data>
+  <data name="Romance_Standard_Time" xml:space="preserve">
+    <value>Brussels, Copenhagen, Madrid, Paris</value>
+  </data>
+  <data name="Romance_Standard_Time_Short" xml:space="preserve">
+    <value>RMT</value>
+  </data>
+  <data name="Russian_Standard_Time" xml:space="preserve">
+    <value>Moscow, St. Petersburg, Volgograd (RTZ 2)</value>
+  </data>
+  <data name="Russian_Standard_Time_Short" xml:space="preserve">
+    <value>RTZ2</value>
+  </data>
+  <data name="Russia_Time_Zone_10" xml:space="preserve">
+    <value>Chokurdakh (RTZ 10)</value>
+  </data>
+  <data name="Russia_Time_Zone_10_Short" xml:space="preserve">
+    <value>RTZ10</value>
+  </data>
+  <data name="Russia_Time_Zone_11" xml:space="preserve">
+    <value>Anadyr, Petropavlovsk-Kamchatsky (RTZ 11)</value>
+  </data>
+  <data name="Russia_Time_Zone_11_Short" xml:space="preserve">
+    <value>RTZ11</value>
+  </data>
+  <data name="Russia_Time_Zone_3" xml:space="preserve">
+    <value>Izhevsk, Samara (RTZ 3)</value>
+  </data>
+  <data name="Russia_Time_Zone_3_Short" xml:space="preserve">
+    <value>RTZ3</value>
+  </data>
+  <data name="Samoa_Standard_Time" xml:space="preserve">
+    <value>Samoa</value>
+  </data>
+  <data name="Samoa_Standard_Time_Short" xml:space="preserve">
+    <value>SMO</value>
+  </data>
+  <data name="SA_Eastern_Standard_Time" xml:space="preserve">
+    <value>Cayenne, Fortaleza</value>
+  </data>
+  <data name="SA_Eastern_Standard_Time_Short" xml:space="preserve">
+    <value>SAET</value>
+  </data>
+  <data name="SA_Pacific_Standard_Time" xml:space="preserve">
+    <value>Bogota, Lima, Quito, Rio Branco</value>
+  </data>
+  <data name="SA_Pacific_Standard_Time_Short" xml:space="preserve">
+    <value>SAPT</value>
+  </data>
+  <data name="SA_Western_Standard_Time" xml:space="preserve">
+    <value>Georgetown, La Paz, Manaus, San Juan</value>
+  </data>
+  <data name="SA_Western_Standard_Time_Short" xml:space="preserve">
+    <value>SAWT</value>
+  </data>
+  <data name="SE_Asia_Standard_Time" xml:space="preserve">
+    <value>Bangkok, Hanoi, Jakarta</value>
+  </data>
+  <data name="SE_Asia_Standard_Time_Short" xml:space="preserve">
+    <value>SASIA</value>
+  </data>
+  <data name="Singapore_Standard_Time" xml:space="preserve">
+    <value>Kuala Lumpur, Singapore</value>
+  </data>
+  <data name="Singapore_Standard_Time_Short" xml:space="preserve">
+    <value>SNGP</value>
+  </data>
+  <data name="South_Africa_Standard_Time" xml:space="preserve">
+    <value>Harare, Pretoria</value>
+  </data>
+  <data name="South_Africa_Standard_Time_Short" xml:space="preserve">
+    <value>SAF</value>
+  </data>
+  <data name="Sri_Lanka_Standard_Time" xml:space="preserve">
+    <value>Sri Jayawardenepura</value>
+  </data>
+  <data name="Sri_Lanka_Standard_Time_Short" xml:space="preserve">
+    <value>SRL</value>
+  </data>
+  <data name="Syria_Standard_Time" xml:space="preserve">
+    <value>Damascus</value>
+  </data>
+  <data name="Syria_Standard_Time_Short" xml:space="preserve">
+    <value>SYR</value>
+  </data>
+  <data name="Taipei_Standard_Time" xml:space="preserve">
+    <value>Taipei</value>
+  </data>
+  <data name="Taipei_Standard_Time_Short" xml:space="preserve">
+    <value>TAIP</value>
+  </data>
+  <data name="Tasmania_Standard_Time" xml:space="preserve">
+    <value>Hobart</value>
+  </data>
+  <data name="Tasmania_Standard_Time_Short" xml:space="preserve">
+    <value>TSM</value>
+  </data>
+  <data name="Tokyo_Standard_Time" xml:space="preserve">
+    <value>Osaka, Sapporo, Tokyo</value>
+  </data>
+  <data name="Tokyo_Standard_Time_Short" xml:space="preserve">
+    <value>TKY</value>
+  </data>
+  <data name="Tonga_Standard_Time" xml:space="preserve">
+    <value>Nuku'alofa</value>
+  </data>
+  <data name="Tonga_Standard_Time_Short" xml:space="preserve">
+    <value>TNG</value>
+  </data>
+  <data name="Turkey_Standard_Time" xml:space="preserve">
+    <value>Istanbul</value>
+  </data>
+  <data name="Turkey_Standard_Time_Short" xml:space="preserve">
+    <value>TKY</value>
+  </data>
+  <data name="Ulaanbaatar_Standard_Time" xml:space="preserve">
+    <value>Ulaanbaatar</value>
+  </data>
+  <data name="Ulaanbaatar_Standard_Time_Short" xml:space="preserve">
+    <value>ULNB</value>
+  </data>
+  <data name="US_Eastern_Standard_Time" xml:space="preserve">
+    <value>Indiana (East)</value>
+  </data>
+  <data name="US_Eastern_Standard_Time_Short" xml:space="preserve">
+    <value>INT</value>
+  </data>
+  <data name="US_Mountain_Standard_Time" xml:space="preserve">
+    <value>Arizona</value>
+  </data>
+  <data name="US_Mountain_Standard_Time_Short" xml:space="preserve">
+    <value>AZT</value>
+  </data>
+  <data name="UTC" xml:space="preserve">
+    <value>Coordinated Universal Time</value>
+  </data>
+  <data name="UTC02" xml:space="preserve">
+    <value>Coordinated Universal Time-02</value>
+  </data>
+  <data name="UTC02_Short" xml:space="preserve">
+    <value>UTC-2</value>
+  </data>
+  <data name="UTC11" xml:space="preserve">
+    <value>Coordinated Universal Time-11</value>
+  </data>
+  <data name="UTC11_Short" xml:space="preserve">
+    <value>UTC-11</value>
+  </data>
+  <data name="UTC12" xml:space="preserve">
+    <value>Coordinated Universal Time+12</value>
+  </data>
+  <data name="UTC12_Short" xml:space="preserve">
+    <value>UTC+12</value>
+  </data>
+  <data name="UTC_Short" xml:space="preserve">
+    <value>UTC</value>
+  </data>
+  <data name="Venezuela_Standard_Time" xml:space="preserve">
+    <value>Caracas</value>
+  </data>
+  <data name="Venezuela_Standard_Time_Short" xml:space="preserve">
+    <value>VZT</value>
+  </data>
+  <data name="Vladivostok_Standard_Time" xml:space="preserve">
+    <value>Vladivostok, Magadan (RTZ 9)</value>
+  </data>
+  <data name="Vladivostok_Standard_Time_Short" xml:space="preserve">
+    <value>RTZ9</value>
+  </data>
+  <data name="West_Asia_Standard_Time" xml:space="preserve">
+    <value>Ashgabat, Tashkent</value>
+  </data>
+  <data name="West_Asia_Standard_Time_Short" xml:space="preserve">
+    <value>WAF</value>
+  </data>
+  <data name="West_Pacific_Standard_Time" xml:space="preserve">
+    <value>Guam, Port Moresby</value>
+  </data>
+  <data name="West_Pacific_Standard_Time_Short" xml:space="preserve">
+    <value>WPAC</value>
+  </data>
+  <data name="W_Australia_Standard_Time" xml:space="preserve">
+    <value>Perth</value>
+  </data>
+  <data name="W_Australia_Standard_Time_Short" xml:space="preserve">
+    <value>WAUS</value>
+  </data>
+  <data name="W_Central_Africa_Standard_Time" xml:space="preserve">
+    <value>West Central Africa</value>
+  </data>
+  <data name="W_Central_Africa_Standard_Time_Short" xml:space="preserve">
+    <value>WCAT</value>
+  </data>
+  <data name="W_Europe_Standard_Time" xml:space="preserve">
+    <value>Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna</value>
+  </data>
+  <data name="W_Europe_Standard_Time_Short" xml:space="preserve">
+    <value>WET</value>
+  </data>
+  <data name="Yakutsk_Standard_Time" xml:space="preserve">
+    <value>Yakutsk (RTZ 8)</value>
+  </data>
+  <data name="Yakutsk_Standard_Time_Short" xml:space="preserve">
+    <value>RTZ8</value>
+  </data>
+</root>

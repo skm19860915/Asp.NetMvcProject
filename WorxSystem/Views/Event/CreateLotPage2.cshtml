@@ -1,0 +1,339 @@
+﻿@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle];
+}
+
+@section head {
+    @Styles.Render("~/bundles/timepicker_css")
+    @Scripts.Render("~/bundles/datetimepicker_js")
+}
+<div class="row">
+    <div class="col-xs-12">
+        <script>
+            $(function () {
+                $("form input").keypress(function (e) {
+                    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                        $('.EnterFocus').click();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+            });
+        </script>
+        @{
+            using (Html.BeginForm())
+            {
+                <div class="well well-sm section-title">
+                    @Html.GlobalResource("CreateLot")  - @Html.GlobalResource("Step2Of2") (@Html.GlobalResource((string)ViewData[Fields.ListingType]))
+                    <div class="pull-right hidden-xs">@Html.GlobalResource("RequiredFields", "<span class=\"required\"></span>")</div>
+                </div>
+
+                @Html.LocalizedValidationSummary()
+                @Html.Hidden("CategoryID", ViewData[Fields.CategoryID])
+                @Html.Hidden("StoreID", ViewData[Fields.StoreID])
+                @Html.Hidden("RegionID", ViewData[Fields.RegionID])
+                @Html.Hidden("EventID", ViewData[Fields.EventID])
+                @Html.Hidden("ListingType", ViewData[Fields.ListingType])
+                @Html.Hidden("Currency", ViewData[Fields.Currency])
+                @Html.Hidden("LineageString", ViewData[MVC.LineageString])
+                @Html.Hidden(Fields.ReturnUrl)
+                @Html.Hidden(Fields.SaveAsDraft, "false")
+
+                <script>
+                    $(document).ready(function () {
+                        //binds this currency drop down to the site preference currency drop down in the footer (in site.master)
+                        $("select#Currency").val($.cookie('currency'));
+                        $("select#Currency").change(function () {
+                            $.cookie('currency', $("select#Currency").val(), { path: '/', expires: 365 });
+                        });
+                    });
+                </script>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        @Html.GlobalResource("Category"):
+                        <strong> @ViewData[MVC.LineageString]</strong>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.GlobalResource("StandardLotFields")
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="LotNumber">@Html.GlobalResource("LotNumber")</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBox("LotNumber", null, new { @class = "form-control", maxlength = 100 })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="required col-sm-3 control-label" for="Title">@Html.GlobalResource("Title")</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBox("Title", null, new { @class = "form-control", maxlength = 80 })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Subtitle" class="col-sm-3 control-label">
+                                    @Html.GlobalResource("Subtitle")
+                                    @{
+                                        decimal subtitleCharge = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.SubtitleExists") &&
+                                                                                                                    fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                                                                                                    fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                                                                                                    fp.Name.Equals(FeeNames.Subtitle)).Single().Amount;
+                                        if (subtitleCharge > 0.0M)
+                                        {
+                                            @:&nbsp; -&nbsp;
+                                            @Html.SiteCurrencyOrFree(subtitleCharge);
+                                        }
+                                    }
+                                </label>
+                                <div class="col-sm-9">
+                                    @Html.TextBox("Subtitle", null, new { @class = "form-control", maxlength = 80 })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="required col-sm-3 control-label" for="Description">@Html.GlobalResource("Description")</label>
+                                <div class="col-sm-9">
+                                    <script>
+                                        $(document).ready(function () {
+                                            CKEDITOR.replace('Description');
+                                        });
+                                    </script>
+                                    <textarea id="Description" name="Description" class="form-control">@ViewData["Description"]</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                if (((List<CustomProperty>)ViewData["ItemProperties"]).Count > 0)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("CustomFields")
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                @Html.Partial("PropertyGroup", ViewData["ItemProperties"])
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.GlobalResource("LotPricing")
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            @Html.Partial(ViewData[Fields.ListingType] + "ListingFields")
+                        </div>
+                    </div>
+                </div>
+                if ((int)ViewData[SiteProperties.MaxImagesPerItem] > 0)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("Images") (@Html.GlobalResource("MaxImagesInformational", SiteClient.Settings["MaxImagesPerItem"]))
+                            @{
+                                decimal firstImage = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.ImageCount") &&
+                                                     fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                                     fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                                     fp.Name.Equals(FeeNames.FirstImage)).Single().Amount;
+
+                                decimal additionalImage = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.ImageCount") &&
+                                                          fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                                          fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                                          fp.Name.Equals(FeeNames.AdditionalImages)).Single().Amount;
+
+                                if (firstImage > 0.0M || additionalImage > 0.0M)
+                                {
+                                    @:&nbsp;-&nbsp;
+                                    @Html.GlobalResource("ImageFees", Html.SiteCurrencyOrFree(firstImage),
+                   Html.SiteCurrencyOrFree(additionalImage));
+                                }
+                            }
+                        </div>
+                        <div class="panel-body clearfix">
+                            @Html.ToolTipContent("DeleteImageDisclaimer", Html.GlobalResource("DeleteImageDisclaimer"))
+                            @Html.Partial("AJAXImageUploader", ViewData[Fields.Media])
+                        </div>
+                    </div>
+                }
+
+                var allMedias = (List<Media>)ViewData[Fields.Media] ?? new List<Media>();
+                var youtubeMedias = allMedias.Where(m => m.Type.Equals("RainWorx.FrameWorx.Providers.MediaAsset.YouTube")).ToList();
+                if (ListingClient.GetListingTypeAllowedMedia((string)ViewData[Fields.ListingType], "Listing").Where(am => am.Name.Equals("RainWorx.FrameWorx.Providers.MediaAsset.YouTube") && am.Enabled).Count() > 0)
+                {
+                    if (youtubeMedias.Count > 0 || SiteClient.BoolSetting(SiteProperties.EnableYoueTubeVideos))
+                    {
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                @Html.GlobalResource("YouTubeVideo")
+                                @{
+                                    decimal youtubeCharge = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.YouTube") &&
+                                                            fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                                            fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                                            fp.Name.Equals(FeeNames.YouTubeVideo)).Single().Amount;
+
+                                    if (youtubeCharge > 0.0M)
+                                    {
+                                        @:&nbsp;-&nbsp;
+                                        @Html.SiteCurrencyOrFree(youtubeCharge);
+                                    }
+
+                                }
+                            </div>
+                            <div class="panel-body">
+                                @Html.ToolTipContent("YouTubeReferenceHelper", Html.GlobalResource("YouTubeReferenceHelper"))
+                                @Html.Partial("AJAXYouTubeVideoReferenceUploader", ViewData[Fields.Media])
+                            </div>
+                        </div>
+                    }
+                }
+
+                var pdfMedias = allMedias.Where(m => m.Context == MediaUploadContexts.UploadFile).ToList();
+                if (pdfMedias.Count > 0 || SiteClient.BoolSetting(SiteProperties.EnablePDFAttachments))
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("AdditionalMedia")
+                        </div>
+                        <ul class="panel-body">
+                            @Html.Partial("AJAXUploadFile", ViewData[Fields.Media])
+                        </ul>
+                    </div>
+                }
+
+                if (SiteClient.BoolSetting(SiteProperties.ListingOption_Featured_Enabled) ||
+                     SiteClient.BoolSetting(SiteProperties.ListingOption_Bold_Enabled) ||
+                     SiteClient.BoolSetting(SiteProperties.ListingOption_Highlight_Enabled) ||
+                     SiteClient.BoolSetting(SiteProperties.ListingOption_Sunburst_Enabled))
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("DisplayOptions")
+                        </div>
+                        <ul class="list-group">
+                            @Html.Partial("LocationsChooser")
+                            @Html.Partial("DecorationsChooser")
+                        </ul>
+                    </div>
+                }
+
+                if ((bool)ViewData[SiteProperties.EnableShipping])
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("Shipping")
+                        </div>
+                        <div class="panel-body">
+                            @Html.Partial("ShippingMethodChooser")
+                        </div>
+                    </div>
+                }
+
+                @* Hiddens to store AJAX dynamic render states *@
+                @Html.Hidden("ThumbnailRendererState")
+                @Html.Hidden("ShippingRenderState")
+                @Html.Hidden("FilesRendererState")
+                <script>
+                    $(document).ready(function () {
+
+                        //[Create Lot] click
+                        $("#create").click(function () {
+                            //Populate hidden states when submit button is clicked
+                            $("input#ThumbnailRendererState").val($("div#sortablethumbnails").html());
+                            $("input#ShippingRenderState").val($("div#shipping").html());
+                            $("input#FilesRendererState").val($("div#filescontainer").html());
+
+                            //clear help text from the start date field, if applicable
+                            var startDateInput = $('#@Fields.StartDate');
+                            var startDateHelpText = '@Html.GlobalResource("Date")';
+                            if (startDateInput.val() == startDateHelpText) {
+                                startDateInput.val('').removeClass("TextboxHelpText");
+                            }
+
+                            //disable save/create button(s) to prevent multiple form submissions
+                            $("input[name='create']").attr('disabled', 'disabled');
+                            $("input[name='create']").fadeTo(0, 0.5);
+                            $("input[name='create']").closest('form').submit();
+                        });
+
+                        //[Save Draft] click
+                        $("#SaveDraftButton").click(function () {
+                            //Populate hidden states when submit button is clicked
+                            $("input#ThumbnailRendererState").val($("div#sortablethumbnails").html());
+                            $("input#ShippingRenderState").val($("div#shipping").html());
+                            $("input#FilesRendererState").val($("div#filescontainer").html());
+
+                            //clear help text from the start date field, if applicable
+                            var startDateInput = $('#@Fields.StartDate');
+                            var startDateHelpText = '@Html.GlobalResource("Date")';
+                            if (startDateInput.val() == startDateHelpText) {
+                                startDateInput.val('').removeClass("TextboxHelpText");
+                            }
+
+                            //set hidden field to true to prevent applicable required fields from triggering validation issues
+                            $("#@Fields.SaveAsDraft").val("true");
+
+                            //disable save/create button(s) to prevent multiple form submissions
+                            $("input[name='create']").attr('disabled', 'disabled');
+                            $("input[name='create']").fadeTo(0, 0.5);
+                            $("input[name='create']").closest('form').submit();
+                        });
+
+                        //[Go Back] button click
+                        $("#GoBackButton").click(function () {
+                            var confirmMessage = // "All changes on this page will be lost, continue?";
+                                '@Html.GlobalResourceString("CancelChangesWarning").ToJavascriptSafeString()';
+                            BootstrapDialog.show({
+                                type: 'type-danger',
+                                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("AbandonChangesConfirmationTitle").ToJavascriptSafeString()',
+                                message: confirmMessage,
+                                buttons: [
+                                    {
+                                        label: '@Html.GlobalResourceString("AbandonChanges").ToJavascriptSafeString()',
+                                        cssClass: 'btn-danger',
+                                        action: function () {
+                                            //if (confirm(confirmMessage)) {
+                                            var tempForm = $("<form action='@Html.GetActionUrl(MVC.CreateLotPage1Action, MVC.EventController).ToMvcHtmlString()' method='post' id='GoBackForm' class='awe-hidden'>");
+                                            $("<input type='hidden' name='CategoryID' />").val($("#CategoryID").val()).appendTo(tempForm);
+                                            $("<input type='hidden' name='StoreID' />").val($("#StoreID").val()).appendTo(tempForm);
+                                            $("<input type='hidden' name='RegionID' />").val($("#RegionID").val()).appendTo(tempForm);
+                                            $("<input type='hidden' name='EventID' />").val($("#EventID").val()).appendTo(tempForm);
+                                            $("<input type='hidden' name='Currency' />").val($("#Currency").val()).appendTo(tempForm);
+                                            $("<input type='hidden' name='ListingType' />").val($("#ListingType").val()).appendTo(tempForm);
+                                            $("<input type='hidden' name='FromPage2' />").val("1").appendTo(tempForm);
+                                            $(this).after(tempForm);
+                                            tempForm.submit();
+                                            //}
+                                        }
+                                    }, {
+                                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        }
+                                    }
+                                ]
+                            });
+                            return false;
+                        });
+                    });
+                </script>
+                <div class="well">
+                    <button class="btn btn-link" id="GoBackButton"> <span class="glyphicon glyphicon-chevron-left"></span> @Html.GlobalResource("Back")</button>
+                    <input type="submit" class="btn btn-default" id="SaveDraftButton" name="create" value="@Html.GlobalResource("SaveDraft")" />
+                    <input type="submit" class="btn btn-primary" id="create" name="create" value="@Html.GlobalResource("CreateLot")" />
+                </div>
+
+            }
+        }
+    </div>
+</div>
+@* bundle for ckeditor disabled because of dynamic relative reference issues
+    @Scripts.Render("~/bundles/ckeditor")
+*@
+<script src="Scripts/ckeditor/ckeditor.js"></script>

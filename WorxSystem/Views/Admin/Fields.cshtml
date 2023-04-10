@@ -1,0 +1,100 @@
+﻿@model Page<CustomField>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+
+    string returnUrl = Request.Url.PathAndQuery;
+
+    string groupDisplayName = (string)ViewData[Fields.Group];
+    if (SiteClient.EnableEvents && groupDisplayName.Equals("Item", StringComparison.OrdinalIgnoreCase))
+    {
+        groupDisplayName = "Lot";
+    }
+    ViewBag.PageName = Html.AdminResource("LineageString_CustomFields_" + groupDisplayName);
+}
+@section PageName{
+    @(Html.ButtonLink(Html.AdminResource("Create" + groupDisplayName + "Field"), "CreateField", "Admin",
+                new { GroupName = ViewData[Fields.Group], returnUrl }, new { @class = "btn btn-default btn-sm pull-right" }))
+    }
+
+<div class="panel panel-default">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.AdminResource("Order")</th>
+                <th>@Html.AdminResource("Name")</th>
+                <th>@Html.AdminResource("LocalizedName")</th>
+                <th>@Html.AdminResource("Required")</th>
+                <th>@Html.AdminResource("Type")</th>
+                <th>@Html.AdminResource("Visibility")</th>
+                <th>@Html.AdminResource("Mutability")</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        @{
+            string[] nonEditableFields = new[] {
+                "FirstName", "LastName", "AllowInstantCheckout", "AcceptPayPal",
+                "PaymentInstructions", "PayPal_Email", "AcceptCreditCard",
+                "DefaultSalesInvoiceComment", "BuyersPremiumPercent", "ManagerName",
+                StdUserProps.AuthorizeNet_SellerMerchantLoginID, StdUserProps.AuthorizeNet_SellerTransactionKey,
+                //StdUserProps.TaxExempt, //this should be editable but not delete-able
+                StdUserProps.StripeConnect_SellerAccountConnected, StdUserProps.StripeConnect_SellerUserId,
+                StdUserProps.StripeConnect_SellerSecretApiKey, StdUserProps.StripeConnect_SellerPublishableApiKey
+            };
+            string[] nonViewableFields = nonEditableFields.Where(s => s != "FirstName" && s != "LastName").ToArray();
+        }
+        @foreach (CustomField customField in Model.List)
+        {
+            if (nonViewableFields.Any(s => s == customField.Name)) { continue; }
+            <tr>
+                <td class="text-center">
+                    @if (Model.List.IndexOf(customField) != 0 || Model.PageIndex != 0)
+                    {
+                        <a  href="@(Url.Action(MVC.UpdateDisplayOrderAction,
+                            new { index = Model.List.IndexOf(customField), moveUp = true, GroupName = (string)ViewData[Fields.Group], page = Model.PageIndex }))">
+                        <span class="glyphicon glyphicon-chevron-up text-success"></span></a><br />
+                    }
+                   
+                    @customField.DisplayOrder
+                    <br />
+                    @if (Model.List.IndexOf(customField) != (Model.List.Count - 1) || Model.PageIndex != (Model.TotalPageCount - 1))
+                    {
+                        <a href="@(Url.Action(MVC.UpdateDisplayOrderAction,
+                            new { index = Model.List.IndexOf(customField), moveUp = false, GroupName = (string)ViewData[Fields.Group], page = Model.PageIndex }))">
+                        <span class="glyphicon glyphicon-chevron-down text-primary"></span>
+                        </a>
+                    }
+                </td>
+                <td>
+                    @if (nonEditableFields.Any(cfn => cfn.Equals(customField.Name)))
+                    {
+                        @customField.Name
+                    }
+                    else
+                    {
+                        @Html.ActionLink(customField.Name, MVC.EditFieldAction, new { id = customField.ID, returnUrl }) 
+                    }
+                </td>
+                <td>@Html.CustomFieldResource(customField.Name)</td>
+                <td>@Html.AdminResource(@customField.Required.ToString())</td>
+                <td>@Html.AdminResource(customField.Type.ToString() == "DateTime" ? "Date" : customField.Type.ToString())</td>
+                <td>@customField.Visibility</td>
+                <td>@customField.Mutability</td>
+                <td>
+                    @if (nonEditableFields.Any(cfn => cfn.Equals(customField.Name)))
+                    {
+                       @:&nbsp;
+                    }
+                    else
+                    {
+                        @Html.ActionLink(Html.AdminResource("Edit"), MVC.EditFieldAction, 
+                            new { id = customField.ID, returnUrl }, new { @class = "btn btn-default btn-xs" })
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+    @if (Model.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(Model);
+    }
+</div>

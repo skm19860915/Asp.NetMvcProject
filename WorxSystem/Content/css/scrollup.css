@@ -1,0 +1,29 @@
+﻿#scrollUp {
+	bottom: 20px;
+	right: 20px;
+	width: 40px;
+	height: 40px;
+    background-color:#000;
+    border-radius:4px;
+    text-align:center;
+    line-height:35px;
+    opacity:0.8;
+    color:#ccc;
+}
+#scrollUp:before {
+    content: "\e113";
+    display: inline-block;
+    vertical-align: middle;
+    font: 14px/18px 'Glyphicons Halflings', Arial, sans-serif;
+    color: #ccc;
+}
+@media (min-width: 768px) {
+    #scrollUp {
+        opacity: 0;
+    }
+}
+@media (max-width: 767px) {
+    #scrollUp {
+        opacity: 0.8;
+    }
+}

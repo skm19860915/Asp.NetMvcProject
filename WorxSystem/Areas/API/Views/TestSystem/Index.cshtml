@@ -1,0 +1,95 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">RainWorx AuctionWorx ASP.NET Web API</a>
+            </p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <div id="TestResults"></div>
+</div>
+@section scripts
+{
+    <script>
+        function DisplayTestResult(testName, disposition, status, detail) {
+            var now = new Date();
+            var testResults = $("#TestResults");
+            var testResult = $("<div class='testresult'></div>").appendTo(testResults);
+            $("<span>" + testName + " @@ " + now + ": </span>").appendTo(testResult);
+            if (disposition == "SUCCESS") {
+                $("<span class='successResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            } else {
+                $("<span class='failureResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            }
+            $("<div class='detailResult'>" + JSON.stringify(detail) + "</div>").appendTo(testResult);
+        }
+
+        function Test(testName, url, method, expectation) {
+            $.ajax({
+                url: url,
+                type: method,
+                //data: JSON.stringify(newTitle),
+                contentType: "application/json",
+                processData: false,
+                async: false
+            }).always(function (data) {
+                if (expectation == data.status) {
+                    DisplayTestResult(testName, "SUCCESS", data.status, data.detail);
+                } else {
+                    DisplayTestResult(testName, "FAIL", data.status, data.detail);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            //test login
+            Test('Valid Login with No Auth', 'TestSystem/Login?user=valid', 'POST', 200);
+            Test('Valid Login with User that doesn\'t exist', 'TestSystem/Login?auth=nouser&user=valid', 'POST', 401);
+            Test('Valid Login with Existing User, but bad key', 'TestSystem/Login?auth=badkey&user=valid', 'POST', 401);
+            Test('Valid Login with any user', 'TestSystem/Login?auth=nonadmin&user=valid', 'POST', 200);
+            
+            Test('Non-Existant User Login with No Auth', 'TestSystem/Login?user=notexist', 'POST', 401);
+            Test('Non-Existant User User that doesn\'t exist', 'TestSystem/Login?auth=nouser&user=notexist', 'POST', 401);
+            Test('Non-Existant User Existing User, but bad key', 'TestSystem/Login?auth=badkey&user=notexist', 'POST', 401);
+            Test('Non-Existant User any user', 'TestSystem/Login?auth=nonadmin&user=notexist', 'POST', 401);
+            
+            Test('Bad Password User Login with No Auth', 'TestSystem/Login?user=badpass', 'POST', 401);
+            Test('Bad Password User User that doesn\'t exist', 'TestSystem/Login?auth=nouser&user=badpass', 'POST', 401);
+            Test('Bad Password User Existing User, but bad key', 'TestSystem/Login?auth=badkey&user=badpass', 'POST', 401);
+            Test('Bad Password User any user', 'TestSystem/Login?auth=nonadmin&user=badpass', 'POST', 401);
+            
+            Test('Inactive User Login with No Auth', 'TestSystem/Login?user=inactive', 'POST', 401);
+            Test('Inactive User User that doesn\'t exist', 'TestSystem/Login?auth=nouser&user=inactive', 'POST', 401);
+            Test('Inactive User Existing User, but bad key', 'TestSystem/Login?auth=badkey&user=inactive', 'POST', 401);
+            Test('Inactive User any user', 'TestSystem/Login?auth=nonadmin&user=inactive', 'POST', 401);
+            
+            Test('Unverified User Login with No Auth', 'TestSystem/Login?user=notverified', 'POST', 401);
+            Test('Unverified User User that doesn\'t exist', 'TestSystem/Login?auth=nouser&user=notverified', 'POST', 401);
+            Test('Unverified User Existing User, but bad key', 'TestSystem/Login?auth=badkey&user=notverified', 'POST', 401);
+            Test('Unverified User any user', 'TestSystem/Login?auth=nonadmin&user=notverified', 'POST', 401);
+            
+            Test('Unapproved User Login with No Auth', 'TestSystem/Login?user=notapproved', 'POST', 401);
+            Test('Unapproved User User that doesn\'t exist', 'TestSystem/Login?auth=nouser&user=notapproved', 'POST', 401);
+            Test('Unapproved User Existing User, but bad key', 'TestSystem/Login?auth=badkey&user=notapproved', 'POST', 401);
+            Test('Unapproved User any user', 'TestSystem/Login?auth=nonadmin&user=notapproved', 'POST', 401);
+            
+            Test('Locked Out User Login with No Auth', 'TestSystem/Login?user=lockedout', 'POST', 401);
+            Test('Locked Out User User that doesn\'t exist', 'TestSystem/Login?auth=nouser&user=lockedout', 'POST', 401);
+            Test('Locked Out User Existing User, but bad key', 'TestSystem/Login?auth=badkey&user=lockedout', 'POST', 401);
+            Test('Locked Out User any user', 'TestSystem/Login?auth=nonadmin&user=lockedout', 'POST', 401);            
+            
+            Test('Get Version with No Auth', 'TestSystem/Version?user=valid', 'POST', 200);
+            Test('Get Version with User that doesn\'t exist', 'TestSystem/Version?auth=nouser', 'POST', 401);
+            Test('Get Version with Existing User, but bad key', 'TestSystem/Version?auth=badkey', 'POST', 401);
+            Test('Get Version with any user', 'TestSystem/Version?auth=nonadmin', 'POST', 200);
+            
+            Test('Get Build with No Auth', 'TestSystem/Build?user=valid', 'POST', 200);
+            Test('Get Build with User that doesn\'t exist', 'TestSystem/Build?auth=nouser', 'POST', 401);
+            Test('Get Build with Existing User, but bad key', 'TestSystem/Build?auth=badkey', 'POST', 401);
+            Test('Get Build with any user', 'TestSystem/Build?auth=nonadmin', 'POST', 200);
+        });
+
+    </script>
+}

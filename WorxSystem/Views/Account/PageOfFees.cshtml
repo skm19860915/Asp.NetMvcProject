@@ -1,0 +1,47 @@
+﻿@model Page<LineItem>
+@foreach (LineItem lineItem in Model.List /* Model.LineItems */)
+{
+    string listingTitle = lineItem.Properties.ContainsKey(LineItemProperties.Listing)
+        ? lineItem.Properties[LineItemProperties.Listing] : string.Empty;
+    <tr>
+        <td>
+            @lineItem.Description
+            @if (!string.IsNullOrEmpty(lineItem.LotNumber))
+            {
+                @Html.ActionLink(string.Format("({0})", Html.GlobalResourceString("LotNumberX", lineItem.LotNumber)),
+                    MVC.DetailsAction, MVC.ListingController, new { id = lineItem.ListingID }, null)
+                <br />
+                <small class="text-muted">
+                    <em>
+                        @Html.LocalDTTM(lineItem.DateStamp, "g")&nbsp;&nbsp;
+                        @listingTitle
+                    </em>
+                </small>
+            }
+            else if (lineItem.ListingID.HasValue)
+            {
+                @Html.ActionLink(string.Format("({0}: {1})", Html.GlobalResourceString("ListingNum"), lineItem.ListingID),
+                    MVC.DetailsAction, MVC.ListingController, new { id = lineItem.ListingID }, null)
+                <br />
+                <small class="text-muted">
+                    <em>
+                        @Html.LocalDTTM(lineItem.DateStamp, "g")&nbsp;&nbsp;
+                        @listingTitle
+                    </em>
+                </small>
+            }
+            else
+            {
+                <br />
+                <small class="text-muted">
+                    <em>
+                        @Html.LocalDTTM(lineItem.DateStamp, "g")
+                    </em>
+                </small>
+            }
+        </td>
+        <td class="text-right">
+            @Html.LocalCurrency(lineItem.TotalAmount, lineItem.Currency)
+        </td>
+    </tr>
+}

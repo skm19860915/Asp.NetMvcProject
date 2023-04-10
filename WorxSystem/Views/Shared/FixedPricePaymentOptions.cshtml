@@ -1,0 +1,36 @@
+﻿@model Listing
+
+@{
+    bool ppAccepted =
+        (Model.OwnerAcceptsPayPal() && SiteClient.BoolSetting(SiteProperties.PayPal_Enabled));
+    bool ccAccepted =
+        (Model.Owner.CreditCardAccepted() && SiteClient.BoolSetting(SiteProperties.AuthorizeNet_Enabled)) ||
+        (Model.Owner.BoolProperty(StdUserProps.StripeConnect_SellerAccountConnected) && SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled));
+    string pmtInstr = Model.PaymentInstructions();
+    if (ppAccepted || ccAccepted || !string.IsNullOrEmpty(pmtInstr))
+    {
+        <div class="detail__payment-options">
+        <strong>
+            @Html.GlobalResource("PaymentOptions")
+        </strong>
+            <br />
+                @if (ppAccepted)
+                {
+                    @Html.GlobalResource("SellerAcceptsPayPal")<br />
+                }
+                @if (ccAccepted)
+                {
+                   @Html.GlobalResource("SellerAcceptsCreditCards")<br />
+                }
+                            @if (!string.IsNullOrEmpty(pmtInstr))
+                            {
+
+                                <br />
+            <strong>@Html.GlobalResource("PaymentInstructions")</strong><br />
+                        @pmtInstr
+                    
+                }
+            
+        </div>
+    }
+}

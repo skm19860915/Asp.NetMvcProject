@@ -1,0 +1,38 @@
+﻿@model Event
+
+@if (Model.Status == AuctionEventStatuses.Draft)
+{
+    <span class="label label-default">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == AuctionEventStatuses.Publishing)
+{
+    <span class="label label-warning">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == AuctionEventStatuses.Preview)
+{
+    <span class="label label-info">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == AuctionEventStatuses.Scheduled)
+{
+    <span class="label label-primary">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == AuctionEventStatuses.Active)
+{
+    <span class="label label-success">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == AuctionEventStatuses.Closing)
+{
+    <span class="label label-warning">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == AuctionEventStatuses.Closed)
+{
+    <span class="label label-danger">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == AuctionEventStatuses.AwaitingPayment)
+{
+    <span class="label label-danger">@Html.GlobalResource(Model.Status)</span>
+}
+else // Archived / Unknown
+{
+    <span class="label label-default">@Html.GlobalResource(Model.Status)</span>
+}

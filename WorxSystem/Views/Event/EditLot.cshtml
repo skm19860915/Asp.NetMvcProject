@@ -1,0 +1,536 @@
+﻿@model Lot
+
+@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle];
+}
+
+@*@section head {
+        @Styles.Render("~/bundles/timepicker_css")
+        @Scripts.Render("~/bundles/datetimepicker_js")
+    }*@
+
+@{
+    var editableFields = (Dictionary<string, bool>)ViewData[MVC.ViewData_EditableFieldList];
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            @Html.GlobalResource("Edit") : @Model.Listing.Title
+        </div>
+
+        @Html.LocalizedValidationSummary()
+        @using (Html.BeginForm(MVC.EditLotAction, MVC.EventController))
+        {
+            @Html.Hidden("id")
+            @Html.Hidden("CategoryID")
+            @Html.Hidden("LineageString", Html.LocalizedCategoryLineageString(Model.Listing))
+            @Html.Hidden("Currency")
+            @Html.Hidden(Fields.ReturnUrl)
+
+            if (Model.Listing.Status == ListingStatuses.Draft)
+            {
+                <input type="hidden" id="@Fields.SaveAsDraft" name="@Fields.SaveAsDraft" value="false" />
+            }
+
+            <script>
+                $(document).ready(function () {
+                    $("div#accordion h3 a").click(function () {
+                        $(this).parent().next().slideToggle("def");
+                        return false;
+                    });
+                });
+            </script>
+
+            var showStandardFieldsSection =
+                  ((editableFields.ContainsKey("LotNumber") && editableFields["LotNumber"])
+                || (editableFields.ContainsKey("Title") && editableFields["Title"])
+                || (editableFields.ContainsKey("Subtitle") && editableFields["Subtitle"])
+                || (editableFields.ContainsKey("Description") && editableFields["Description"])
+                || (editableFields.ContainsKey("AppendDescription") && editableFields["AppendDescription"])
+                || (editableFields.ContainsKey("Region") && editableFields["Region"]));
+
+            if (showStandardFieldsSection)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("StandardLotFields")</div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            @if (editableFields.ContainsKey("LotNumber") && editableFields["LotNumber"])
+                            {
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="LotNumber">@Html.GlobalResource("LotNumber")</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBox("LotNumber", null, new { maxlength = 100, @class = "form-control" })
+                                    </div>
+                                </div>
+                            }
+                            @if (editableFields.ContainsKey("Title") && editableFields["Title"])
+                            {
+                                <div class="form-group">
+                                    <label for="Title" class="required col-sm-2 control-label">@Html.GlobalResource("Title")</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBox("Title", Model.Listing.Title, new { maxlength = 80, @class = "form-control" })
+                                    </div>
+                                </div>
+                            }
+                            @if (editableFields.ContainsKey("Subtitle") && editableFields["Subtitle"])
+                            {
+                                <div class="form-group">
+                                    <label for="Subtitle" class="col-sm-2 control-label">
+                                        @Html.GlobalResource("Subtitle")
+                                        @{
+                                            decimal subtitleCharge = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.SubtitleExists") &&
+                                             fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                             fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                             fp.Name.Equals(FeeNames.Subtitle)).Single().Amount;
+                                            if (subtitleCharge > 0.0M)
+                                            {
+                                                @:&nbsp; -&nbsp;
+                                                @Html.SiteCurrencyOrFree(subtitleCharge);
+                                            }
+                                        }
+                                    </label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBox("Subtitle", Model.Listing.Subtitle, new { @class = "form-control", maxlength = 80 })
+                                    </div>
+                                </div>
+                            }
+
+                            @if (editableFields.ContainsKey("Description") && editableFields["Description"])
+                            {
+                                <div class="form-group">
+                                    <label for="Description" class="required col-sm-2 control-label">@Html.GlobalResource("Description")</label>
+                                    <script>
+                                        $(document).ready(function () {
+                                            CKEDITOR.replace('Description');
+                                        });
+                                    </script>
+                                    <div class="col-sm-10">
+                                        @Html.TextArea("Description", Model.Listing.Description, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            }
+                            else if (editableFields.ContainsKey("AppendDescription") && editableFields["AppendDescription"])
+                            {
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">@Html.GlobalResource("Description")</label>
+                                    <div class="col-sm-10 control-readonly-value">
+                                        @MvcHtmlString.Create(Model.Listing.Description)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="AppendDescription" class="col-sm-2 control-label">@Html.GlobalResource("AppendANoteToTheDescription")</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBox("AppendDescription", null, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            }
+
+                            @if (editableFields.ContainsKey("Category") && editableFields["Category"])
+                            {
+                                @Html.ToolTipContent("ChangePrimaryListingCategory_Help", Html.GlobalResource("ChangePrimaryListingCategory_Help"))
+                                <div class="form-group">
+                                    <label for="NewCategoryID" class="col-sm-2 control-label">@Html.GlobalResource("Category")</label>
+                                    <div class="col-sm-10 pt7">
+                                        @Html.CategoryLineageString(Model.Listing)
+                                        &nbsp; &nbsp;
+                                        <a href="#ChangeCategory" id="ChangeCategory">@Html.GlobalResource("ChangeCategory")</a>
+                                        @Html.ToolTipButton("ChangePrimaryListingCategory_Help")
+                                        <div id="change-category-container" class="awe-hidden">
+                                            &nbsp;
+                                            @Html.Partial("AJAXCategoryChooserForListingType", Model.Listing)
+                                            <div class="text-right">
+                                                <button id="CancelCatChange" class="btn btn-default btn-xs">@Html.GlobalResource("Cancel")</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    $(document).ready(function () {
+                                        $("#ChangeCategory").on("click", function (event) {
+                                            event.preventDefault();
+                                            $("#change-category-container").show();
+                                            return false;
+                                        });
+                                        $("#CancelCatChange").on("click", function (event) {
+                                            event.preventDefault();
+                                            $("#change-category-container").hide();
+                                            $("#CategoryID").val(@Model.Listing.PrimaryCategory.ID);
+                                            return false;
+                                        });
+                                    })
+                                </script>
+                            }
+
+                            @if (SiteClient.BoolSetting(SiteProperties.EnableRegions))
+                            {
+                                if (editableFields.ContainsKey("Region") && editableFields["Region"])
+                                {
+                                    var regionId = (int?)ViewData[Fields.RegionID];
+                                    <div class="form-group">
+                                        <label for="NewRegionID" class="col-sm-2 control-label">@Html.GlobalResource("Region")</label>
+                                        <div class="col-sm-10 pt7">
+                                            @if (regionId.HasValue)
+                                            {
+                                                @Html.RegionLineageString(regionId.Value)
+                                                @:&nbsp; &nbsp;
+                                                <a href="#ChangeRegion" id="ChangeRegion">@Html.GlobalResource("ChangeRegion")</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="#ChangeRegion" id="ChangeRegion">@Html.GlobalResource("SetRegion")</a>
+                                            }
+                                            <div id="change-region-container" class="awe-hidden">
+                                                &nbsp;
+                                                @Html.Partial("AJAXRegionChooser")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        $(document).ready(function () {
+                                            $("#ChangeRegion").on("click", function () {
+                                                $("#change-region-container").show();
+                                                return false;
+                                            });
+                                        })
+                                    </script>
+                                }
+                                else
+                                {
+                                    @Html.Hidden(Fields.RegionID)
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            if (editableFields.ContainsKey("CustomFields") && editableFields["CustomFields"]) //&& ((List<CustomProperty>)ViewData["Properties"]).Count > 0
+            {
+                List<CustomProperty> customProperties = (List<CustomProperty>)ViewData["Properties"];
+                if (customProperties.Count > 0)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">@Html.GlobalResource("CustomFields")</div>
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                @Html.Partial("PropertyGroup", customProperties)
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            if (editableFields.ContainsKey("ListingFields") && editableFields["ListingFields"])
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("LotPricing")</div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            @Html.Partial(Model.Listing.Type.Name + "ListingFields")
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (editableFields.ContainsKey("DecreaseReserveOnly") && editableFields["DecreaseReserveOnly"])
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("LotPricing")</div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            @Html.Partial(Model.Listing.Type.Name + "DecreaseReserveOnly", Model.Listing)
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (editableFields.ContainsKey("ReadOnlyReserve") && editableFields["ReadOnlyReserve"])
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("LotPricing")</div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            @Html.Partial(Model.Listing.Type.Name + "ReadOnlyReserve", Model.Listing)
+                        </div>
+                    </div>
+                </div>
+            }
+
+            var allMedias = (List<Media>)ViewData[Fields.Media] ?? new List<Media>();
+            if (editableFields.ContainsKey("Images") && editableFields["Images"])
+            {
+                if ((int)ViewData[SiteProperties.MaxImagesPerItem] > 0)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("Images") (@Html.GlobalResource("MaxImagesInformational", SiteClient.Settings["MaxImagesPerItem"]))
+                            @{
+                                decimal firstImage = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.ImageCount") &&
+                                                     fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                                     fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                                     fp.Name.Equals(FeeNames.FirstImage)).Single().Amount;
+
+                                decimal additionalImage = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.ImageCount") &&
+                                                          fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                                          fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                                          fp.Name.Equals(FeeNames.AdditionalImages)).Single().Amount;
+
+                                if (firstImage > 0.0M || additionalImage > 0.0M)
+                                {
+                                    @:&nbsp;-&nbsp;
+                                    @Html.GlobalResource("ImageFees", Html.SiteCurrencyOrFree(firstImage),
+                                           Html.SiteCurrencyOrFree(additionalImage));
+                                }
+                            }
+                        </div>
+                        <div class="panel-body">
+                            @Html.ToolTipContent("DeleteImageDisclaimer", Html.GlobalResource("DeleteImageDisclaimer"))
+                            @Html.Partial("AJAXImageUploader", ViewData[RainWorx.FrameWorx.Strings.Fields.Media])
+                        </div>
+                    </div>
+                } // if ((int)ViewData[RainWorx.FrameWorx.Strings.Fields.MaxImagesPerItem] > 0)
+
+                if (ListingClient.GetListingTypeAllowedMedia((string)ViewData[RainWorx.FrameWorx.Strings.Fields.ListingType], "Listing")
+                        .Where(am => am.Name.Equals("RainWorx.FrameWorx.Providers.MediaAsset.YouTube") && am.Enabled).Count() > 0)
+                {
+                    var youtubeMedias = allMedias.Where(m => m.Type.Equals("RainWorx.FrameWorx.Providers.MediaAsset.YouTube")).ToList();
+                    if (youtubeMedias.Count > 0 || SiteClient.BoolSetting(SiteProperties.EnableYoueTubeVideos))
+                    {
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                @Html.GlobalResource("YouTubeVideo")
+                                @{
+                                    decimal youtubeCharge = AccountingClient.GetAllFeeProperties().Where(fp => fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.YouTube") &&
+                                                            fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+                                                            fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+                                                            fp.Name.Equals(FeeNames.YouTubeVideo)).Single().Amount;
+
+                                    if (youtubeCharge > 0.0M)
+                                    {
+                                        @:&nbsp;-&nbsp;
+                                        @Html.SiteCurrencyOrFree(youtubeCharge);
+                                    }
+
+                                }
+                            </div>
+                            <div class="panel-body">
+                                @Html.ToolTipContent("YouTubeReferenceHelper", Html.GlobalResource("YouTubeReferenceHelper"))
+                                @Html.Partial("AJAXYouTubeVideoReferenceUploader", ViewData[RainWorx.FrameWorx.Strings.Fields.Media])
+                            </div>
+                        </div>
+                    }
+                } // if ((bool)ViewData[RainWorx.FrameWorx.Strings.Fields.EnableYoutubeInput])
+            }
+
+            var pdfMedias = allMedias.Where(m => m.Context == MediaUploadContexts.UploadFile).ToList();
+            if (pdfMedias.Count > 0 || SiteClient.BoolSetting(SiteProperties.EnablePDFAttachments))
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        @Html.GlobalResource("AdditionalMedia")
+                    </div>
+                    <ul class="panel-body">
+                        @Html.Partial("AJAXUploadFile", ViewData[Fields.Media])
+                    </ul>
+                </div>
+            }
+
+            var showListingOptsSection =
+                          ((editableFields.ContainsKey("Locations") && editableFields["Locations"])
+                        || (editableFields.ContainsKey("LocationsEnableOnly") && editableFields["LocationsEnableOnly"])
+                        || (editableFields.ContainsKey("Decorations") && editableFields["Decorations"])
+                        || (editableFields.ContainsKey("DecorationsEnableOnly") && editableFields["DecorationsEnableOnly"]));
+            showListingOptsSection = showListingOptsSection && (
+                SiteClient.BoolSetting(SiteProperties.ListingOption_Featured_Enabled) ||
+                SiteClient.BoolSetting(SiteProperties.ListingOption_Bold_Enabled) ||
+                SiteClient.BoolSetting(SiteProperties.ListingOption_Highlight_Enabled) ||
+                SiteClient.BoolSetting(SiteProperties.ListingOption_Sunburst_Enabled));
+            if (showListingOptsSection)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("LotOptions")</div>
+
+                    <ul class="list-group">
+                        @if (editableFields.ContainsKey("Locations") && editableFields["Locations"])
+                        {
+                            @Html.Partial("LocationsChooser")
+                        }
+                        else if (editableFields.ContainsKey("LocationsEnableOnly") && editableFields["LocationsEnableOnly"])
+                        {
+                            @Html.Partial("LocationsChooserEnableOnly")
+                        }
+                        @if (editableFields.ContainsKey("Decorations") && editableFields["Decorations"])
+                        {
+                            @Html.Partial("DecorationsChooser")
+                        }
+                        else if (editableFields.ContainsKey("DecorationsEnableOnly") && editableFields["DecorationsEnableOnly"])
+                        {
+                            @Html.Partial("DecorationsChooserEnableOnly")
+                        }
+                    </ul>
+                </div>
+            }
+
+            if ((bool)ViewData[SiteProperties.EnableShipping])
+            {
+                if (editableFields.ContainsKey("ShippingOptions") && editableFields["ShippingOptions"])
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">@Html.GlobalResource("Shipping")</div>
+                        <div class="panel-body">
+                            @Html.Partial("ShippingMethodChooser")
+                        </div>
+                    </div>
+                }
+            }
+
+            @*
+            bool renderAutoRelistField = false;
+            if (ViewData[Fields.AutoRelist] != null)
+            {
+                if (editableFields.ContainsKey("AutoRelist") && editableFields["AutoRelist"])
+                {
+                    renderAutoRelistField = true;
+                }
+                if (editableFields.ContainsKey("AutoRelistDescreaseOnly") && editableFields["AutoRelistDescreaseOnly"])
+                {
+                    renderAutoRelistField = true;
+                }
+            }
+            <div class="panel panel-default">
+                @if ((editableFields.ContainsKey("Duration") && editableFields["Duration"]) || renderAutoRelistField)
+                {
+                    MvcHtmlString durationSectionLabel = MvcHtmlString.Empty;
+                    switch ((string)ViewData[SiteProperties.ListingDurationOptions])
+                    {
+                        case "StartDuration":
+                            durationSectionLabel = Html.GlobalResource("StartAndDuration");
+                            break;
+                        case "StartEnd":
+                            durationSectionLabel = Html.GlobalResource("StartAndEndDate");
+                            break;
+                        default:
+                            durationSectionLabel = Html.GlobalResource("Duration");
+                            break;
+                    }
+
+                    <div class="panel-heading">@durationSectionLabel</div>
+
+                }
+
+                @if ((editableFields.ContainsKey("Duration") && editableFields["Duration"]) || (editableFields.ContainsKey("StartDate") && editableFields["StartDate"]) || renderAutoRelistField)
+                {
+
+                    @Html.Partial("DurationOptional")
+
+                }
+            </div>
+            *@
+
+            @* Hiddens to store AJAX dynamic render states *@
+            @Html.Hidden("ThumbnailRendererState")
+            @Html.Hidden("FilesRendererState")
+            @Html.Hidden("ShippingRenderState")
+            <script>
+                $(document).ready(function () {
+
+                    //[Save] or [Save & Activate] click
+                    $("#save").on("click", function (event) {
+
+                        event.preventDefault();
+                        //disable save button(s) to prevent multiple form submissions
+                        $("input[name='save']").prop("disabled", true).fadeTo(0, 0.5);
+
+                        //clear help text from the start date field, if applicable
+                        var startDateInput = $('#@Fields.StartDate');
+                        var startDateHelpText = '@Html.GlobalResource("LeaveBlankToStartImmediately")';
+                        if (startDateInput.val() == startDateHelpText) {
+                            startDateInput.val('').removeClass("TextboxHelpText");
+                        }
+
+                        //Populate hidden states when submit button is clicked
+                        $("input#ThumbnailRendererState").val($("div#sortablethumbnails").html());
+                        $("input#FilesRendererState").val($("div#filescontainer").html());
+                        $("input#ShippingRenderState").val($("span#shipping").html());
+
+                        $(this).closest("form").submit();
+                    });
+
+                    //[Save Draft] click
+                    $("#SaveDraftButton").on("click", function (event) {
+
+                        event.preventDefault();
+                        //disable save button(s) to prevent multiple form submissions
+                        $("input[name='save']").prop("disabled", true).fadeTo(0, 0.5);
+
+                        //clear help text from the start date field, if applicable
+                        var startDateInput = $('#@Fields.StartDate');
+                        var startDateHelpText = '@Html.GlobalResource("LeaveBlankToStartImmediately")';
+                        if (startDateInput.val() == startDateHelpText) {
+                            startDateInput.val('').removeClass("TextboxHelpText");
+                        }
+
+                        //Populate hidden states when submit button is clicked
+                        $("input#ThumbnailRendererState").val($("div#sortablethumbnails").html());
+                        $("input#FilesRendererState").val($("div#filescontainer").html());
+                        $("input#ShippingRenderState").val($("span#shipping").html());
+
+                        //set hidden field to true to prevent applicable required fields from triggering validation issues
+                        $("#@Fields.SaveAsDraft").val("true");
+
+                        $(this).closest("form").submit();
+                    });
+
+                    //[Cancel] click
+                    @{string cancelUrl = (ViewData.ContainsKey(Fields.ReturnUrl)) ? (string)ViewData[Fields.ReturnUrl] : string.Empty;}
+                    @if (string.IsNullOrEmpty(cancelUrl))
+                    {
+                        cancelUrl = Model.GetDetailUrl();
+                    }
+                    $("#CancelButton").click(function () {
+                        var cancelUrl = '@cancelUrl.ToJavascriptSafeString()';
+                        var confirmMessage = // "All changes on this page will be lost, continue?";
+                            '@Html.GlobalResourceString("CancelChangesWarning").ToJavascriptSafeString()';
+                        BootstrapDialog.show({
+                            type: 'type-danger',
+                            title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("AbandonChangesConfirmationTitle").ToJavascriptSafeString()',
+                            message: confirmMessage,
+                            buttons: [
+                                {
+                                    label: '@Html.GlobalResourceString("AbandonChanges").ToJavascriptSafeString()',
+                                    cssClass: 'btn-danger',
+                                    action: function () {
+                                        //if (confirm(confirmMessage))
+                                        document.location = $.htmlDecode(cancelUrl);
+                                    }
+                                }, {
+                                    label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                    action: function (dialogItself) {
+                                        dialogItself.close();
+                                    }
+                                }
+                            ]
+                        });
+                        return false;
+                    });
+                });
+            </script>
+            <div class="well">
+                <button class="btn btn-link" id="CancelButton">@Html.GlobalResource("Cancel")</button>
+                @if (Model.Listing.Status != ListingStatuses.Draft)
+                {
+                    <input type="submit" class="btn btn-primary" id="save" name="save" value="@Html.GlobalResource("Save")" />
+                }
+                else
+                {
+                    <input type="submit" class="btn btn-default" id="SaveDraftButton" name="save" value="@Html.GlobalResource("SaveDraft")" />
+                    <input type="submit" class="btn btn-primary" id="save" name="save" value="@(Model.Event.Status == AuctionEventStatuses.Draft
+                    ? Html.GlobalResource("SaveAndValidate") : Html.GlobalResource("SaveAndPublish"))" />
+                }
+            </div>
+        }
+    </div>
+</div>
+@* bundle for ckeditor disabled because of dynamic relative reference issues
+    @Scripts.Render("~/bundles/ckeditor")
+*@
+<script src="Scripts/ckeditor/ckeditor.js"></script>

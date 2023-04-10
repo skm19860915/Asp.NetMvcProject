@@ -1,0 +1,95 @@
+﻿@model Address
+
+<script>
+    function GetStates(countryID) {
+        var retVal = null;
+        Proxy.invoke("GetStates", { countryID: countryID },
+    function (result) {
+        //draw radio buttons
+        $("span#warncountry").hide();
+        $("select[name='StateDropDown']").empty();
+        if (result == "NOSTATES") {
+            $("li#stateSelection").hide();
+            $("input[name='StateRegion']").hide();
+            $("select[name='StateDropDown']").hide();
+            $("input[name='StateRegion']").val("!");
+        } else if (result.length > 0) {
+            $("select[name='StateDropDown']").append("<option value=''><@Html.GlobalResource("SelectAState")</option>");
+            for (state in result) {
+                $("select[name='StateDropDown']").append("<option value='" + result[state].Code + "'>" + result[state].Name + "</option>");
+            }
+            $("input[name='StateRegion']").hide();
+
+            if ($("input[name='StateRegion']").val() == "") {
+                $("input[name='StateRegion']").val($("select[name='StateDropDown'] option:first-child").val());
+            } else {
+                $("select[name='StateDropDown']").val($("input[name='StateRegion']").val());
+            }
+
+            $("select[name='StateDropDown']").show();
+            $("li#stateSelection").show();
+        } else if (result.length == 0) {
+            $("input[name='StateRegion']").show();
+            $("select[name='StateDropDown']").hide();
+            $("li#stateSelection").show();
+        }
+    },
+    function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    $(document).ready(function () {
+        $("select[name='Country']").change(function () {
+            if ($(this).val() != "") {
+                GetStates($(this).val());
+            } else {
+                $("span#warncountry").show();
+                $("input[name='StateRegion']").hide();
+                $("select[name='StateDropDown']").hide();
+            }
+        });
+        $("select[name='StateDropDown']").change(function () {
+            $("input[name='StateRegion']").val($("select[name='StateDropDown']").val());
+        });
+        if ($("select[name='Country']").val() != "") GetStates($("select[name='Country']").val());
+    });
+</script>
+
+<div class="form-group">
+    <label for="Street1" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("AddressStreet1") <strong class="Required">*</strong></label>
+    <div class="col-xs-10 col-sm-6">
+        @Html.TextBox("Street1", Model.Street1, new { @class = "form-control  input-sm" })
+    </div>
+</div>
+<div class="form-group">
+    <label for="Street2" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("AddressStreet2")</label>
+    <div class="col-xs-10 col-sm-6">
+        @Html.TextBox("Street2", Model.Street2, new { @class = "form-control  input-sm" })
+    </div>
+</div>
+<div class="form-group">
+    <label for="Country" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("CountryTerritory") <strong class="Required">*</strong></label>
+    <div class="col-xs-10 col-sm-6">
+        <span class="Form_Registration_Country">@Html.DropDownList("Country",null, Html.GlobalResourceString("SelectACountry"), new { @class = "form-control  input-sm" })</span>
+    </div>
+</div>
+<div class="form-group">
+    <label for="City" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("City") <strong class="Required">*</strong></label>
+    <div class="col-xs-10 col-sm-6">
+        @Html.TextBox("City", Model.City, new { @class = "form-control  input-sm" })
+    </div>
+</div>
+<div class="form-group" id="stateSelection">
+    <label for="StateRegion" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("StateRegion") <strong class="Required">*</strong></label>
+    <div class="col-xs-10 col-sm-6">
+        @Html.TextBox("StateRegion", Model.StateRegion, new { @class = "form-control input-sm awe-hidden" })
+        <select name="StateDropDown" class="form-control input-sm awe-hidden"></select>
+        <span id="warncountry"><strong class="Required">@Html.GlobalResource("SelectCountryFirst")</strong></span>
+    </div>
+</div>
+<div class="form-group">
+    <label for="ZipPostal" class="col-xs-12 col-sm-4 control-label">@Html.GlobalResource("ZipPostal") <strong class="Required">*</strong></label>
+    <div class="col-xs-10 col-sm-6">
+        @Html.TextBox("ZipPostal", Model.ZipPostal, new { @class = "form-control  input-sm" })
+    </div>
+</div>

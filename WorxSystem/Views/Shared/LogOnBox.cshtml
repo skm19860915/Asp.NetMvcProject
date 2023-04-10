@@ -1,0 +1,70 @@
+﻿@using Microsoft.Owin.Security
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    string returnUrl = (string)ViewData[Fields.ReturnUrl];
+}
+<div class="form-horizontal">
+    @if (loginProviders.Count() > 0)
+    {
+        if (loginProviders.Any(p => p.AuthenticationType == "Facebook"))
+        {
+            <div class="form-group">
+                <a class="btn btn-block btn-facebook" href="@Html.GetActionUrl(MVC.ExternalLoginAction,
+                                                                    new { provider = "Facebook", returnUrl })">
+                    <span><svg viewBox="0 0 512 512"><path fill="#fff" d="M211.9 197.4h-36.7v59.9h36.7V433.1h70.5V256.5h49.2l5.2-59.1h-54.4c0 0 0-22.1 0-33.7 0-13.9 2.8-19.5 16.3-19.5 10.9 0 38.2 0 38.2 0V82.9c0 0-40.2 0-48.8 0 -52.5 0-76.1 23.1-76.1 67.3C211.9 188.8 211.9 197.4 211.9 197.4z"></path></svg></span>
+                    @Html.GlobalResource("SignInWithXxx", Html.GlobalResourceString("Facebook"))
+                </a>
+            </div>
+        }
+        if (loginProviders.Any(p => p.AuthenticationType == "Google"))
+        {
+            <div class="form-group">
+                <a class="btn btn-block btn-google" href="@Html.GetActionUrl(MVC.ExternalLoginAction,
+                                                                    new { provider = "Google", returnUrl })">
+                    <span><svg viewBox="0 0 512 512"><path fill="#fff" d="M179.7 237.6L179.7 284.2 256.7 284.2C253.6 304.2 233.4 342.9 179.7 342.9 133.4 342.9 95.6 304.4 95.6 257 95.6 209.6 133.4 171.1 179.7 171.1 206.1 171.1 223.7 182.4 233.8 192.1L270.6 156.6C247 134.4 216.4 121 179.7 121 104.7 121 44 181.8 44 257 44 332.2 104.7 393 179.7 393 258 393 310 337.8 310 260.1 310 251.2 309 244.4 307.9 237.6L179.7 237.6 179.7 237.6ZM468 236.7L429.3 236.7 429.3 198 390.7 198 390.7 236.7 352 236.7 352 275.3 390.7 275.3 390.7 314 429.3 314 429.3 275.3 468 275.3" /></svg></span>
+                    @Html.GlobalResource("SignInWithXxx", Html.GlobalResourceString("Google"))
+                </a>
+            </div>
+        }
+        <div class="text-or">
+            <span>@Html.GlobalResource("Or")</span>
+        </div>
+    }
+    <div class="form-group">
+        <label class="col-md-3 control-label">
+            @Html.GlobalResource("Username")
+        </label>
+        <div class="col-md-9">
+            @Html.TextBox("username", "", new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-3 control-label">
+            @Html.GlobalResource("Password")
+        </label>
+        <div class="col-md-9">
+            @Html.Password("password", "", new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-3 col-md-9">
+
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBox("rememberMe") @Html.GlobalResource("RememberPassword")
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-offset-3 col-md-9">
+        <input type="submit" value="@Html.GlobalResource("SignIn")" class="btn btn-primary pull-right" />
+        @if (!SiteClient.BoolSetting(SiteProperties.ActiveDirectoryEnabled))
+        {
+            <span>
+                &nbsp;&nbsp;&nbsp;&nbsp;@Html.ActionLink(Html.GlobalResource("ForgotYourPassword"), MVC.ForgotPasswordAction, MVC.AccountController)
+            </span>
+        }
+    </div>
+</div>

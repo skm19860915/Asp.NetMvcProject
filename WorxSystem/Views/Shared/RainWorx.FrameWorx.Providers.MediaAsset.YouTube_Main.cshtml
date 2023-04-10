@@ -1,0 +1,42 @@
+﻿@model Media
+
+@* <button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#YouTube-modal">
+        <span class="glyphicon glyphicon-film"></span> @Html.GlobalResource("WatchVideo")
+    </button> *@
+
+<div class="modal fade" id="YouTube-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- <div class="modal-header">
+                <h4 class="modal-title"></h4>
+            </div> -->
+            <div class="modal-body text-center">
+                <script>
+                    $(document).ready(function () {
+                        //Google Chrome - fixes iFrame refresh issue
+                        if (!$("#iFrameYouTube").attr("src")/*.length == 0*/) {
+                            $("#iFrameYouTube").attr("src", $("#iFrameYouTubeLink").attr("href"));
+                        }
+
+                        $('.youtube-close').click(function () {
+                            //$("#iFrameYouTube").stopVideo();
+                            var video = $("#iFrameYouTube").attr("src");
+                            $("#iFrameYouTube").attr("src", "");
+                            $("#iFrameYouTube").attr("src", video);
+                        });
+                    });
+                </script>
+                @{
+                    //Load Media
+                    IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(Model.Loader);
+                    Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, Model.Context);
+                    string embedCode = mediaLoader.Load(loaderProviderSettings, Model, "Main");
+                }
+                @MvcHtmlString.Create(embedCode)
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default youtube-close" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@model ListingType
+
+<div class="sub-header">
+    @if (!SiteClient.EnableEvents)
+    {
+        @Html.AdminResource(Model.Name)
+        @: @Html.AdminResource("BidIncrements")
+    }
+    else
+    {
+        @Html.AdminResource("DefaultEventBidIncrements")
+    }
+</div>
+<div class="row">
+    <div class="col-xs-12 col-md-6">
+        
+    @using (Html.BeginForm(MVC.UpdateBidIncrementsAction, MVC.AdminController))
+    {
+        bool isFirstRow = true;
+        @Html.Hidden("ListingTypeName", Model.Name)
+        var increments = ListingClient.GetIncrements(Context.User.Identity.Name, Model.Name).OrderBy(i => i.PriceLevel);
+        <div class="panel panel-default">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>@Html.AdminResource("ForPricesAbove")</th>
+                        <th>@Html.AdminResource("Increment")</th>
+                        <th>@Html.AdminResource("Delete")?</th>
+                    </tr>
+                </thead>
+                @foreach (Increment increment in increments)
+                {
+                    if (isFirstRow)
+                    {
+                        isFirstRow = false;
+                        <tr>
+                            <td>@Html.TextBox("inc_PriceLevel_" + increment.ID, increment.PriceLevel, new { @class = "form-control input-sm", @readonly="readonly" })</td>
+                            <td>@Html.TextBox("inc_Increment_" + increment.ID, increment.Amount, new { @class = "form-control input-sm" })</td>
+                            <td> &nbsp; </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>@Html.TextBox("inc_PriceLevel_" + increment.ID, increment.PriceLevel, new { @class = "form-control input-sm" })</td>
+                            <td>@Html.TextBox("inc_Increment_" + increment.ID, increment.Amount, new { @class = "form-control input-sm" })</td>
+                            <td> <input type="checkbox" name="deleteIncrement" class="no-toggle" value="@increment.ID" /></td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td>
+                        @Html.TextBox("inc_new_PriceLevel", null, new { @placeholder = Html.AdminResource("PriceLevel"), @class = "form-control input-sm" })
+                    </td>
+                    <td>@Html.TextBox("inc_new_Increment", null, new { @placeholder = Html.AdminResource("EnterNewIncrement"), @class = "form-control input-sm" })</td>
+                    <td class="control-label">@Html.AdminResource("New")</td>
+                </tr>
+            </table>
+        </div>
+                <input type="submit" class="btn btn-success btn" value="@Html.AdminResource("SaveBidIncrements")" name="SaveBidIncrements" id="SaveBidIncrements" />
+
+            }
+        
+    </div>
+    <div class="col-xs-12 col-md-6">@Html.AdminResource("IncrementHelp")</div>
+</div>
+

@@ -1,0 +1,255 @@
+﻿@model EventOrganization
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    Event auctionEvent = (Event)ViewData["Event"];
+}
+
+<div class="well well-sm section-title">
+    <a href="@Url.Action(MVC.LotsByEventAction, new { id = auctionEvent.ID })" class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-chevron-left"></span> @Html.GlobalResource("Back")</a>
+    @Html.GlobalResource("LineageString_ClosingGroupManagement")
+    @*
+        @Html.ActionLink(Html.GlobalResource("ManageSoftClosingGroups"), MVC.SoftClosingGroupsAction, MVC.AccountController,
+            new { id = auctionEvent.ID }, new { @class = "btn btn-default btn-xs pull-right" })
+    *@
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="pull-right">
+            @using (Html.BeginForm())
+            {
+                <input type="hidden" name="jsonModel" id="jsonModel" value="@Model.LotStateString" />
+
+                <div class="btn-group btn-group-xs">
+                    @Html.ActionLink(Html.GlobalResource("GroupAll"), MVC.RecalculateClosingGroupsAction,
+                    new { EventID = auctionEvent.ID, GroupingOption = "MergeAll" }, new { @class = "btn btn-default QuickLotGroup" })
+
+                    @Html.ActionLink(Html.GlobalResource("UnGroupAll"), MVC.RecalculateClosingGroupsAction,
+                    new { EventID = auctionEvent.ID, GroupingOption = "SplitAll" }, new { @class = "btn btn-default QuickLotGroup" })
+
+                    <a href="#GroupXLots" class="btn btn-default GroupXLots">@Html.GlobalResource("GroupXLotsTogether")</a>
+                </div>
+
+                <div class="btn-group btn-group-xs">
+                    <input type="submit" value="@Html.GlobalResource("SaveConfiguration")" class="btn btn-success" onclick="serialize();return true; " />
+                    @Html.ActionLink(Html.GlobalResource("Cancel"), MVC.LotsByEventAction, new { id = auctionEvent.ID }, new { @class = "btn btn-default" })
+                </div>
+
+            }
+        </div>
+        @auctionEvent.Title (<small><em>@auctionEvent.ID</em></small>)
+    </div>
+    <div id="Lots" class="evui-mainContainer">
+    </div>
+</div>
+
+@*render all lots hidden, for movement into position via moveIntoPlace (then shown)*@
+@foreach (Lot lot in Model.Lots)
+{
+    <div id="@lot.ID" class="evui-lotContainer evui-lotContainer-data awe-hidden">
+        <div class="btn-group pull-right">
+            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                &nbsp;<br /><span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu evui-quickmove-options" role="menu"></ul>
+        </div>
+        <strong>
+            @Html.GlobalResource("Lot"): @lot.LotNumber
+        </strong>
+        <br />
+        <small>
+            @lot.Listing.Title.Ellipsize(28)
+        </small>
+
+
+    </div>
+}
+<script>
+    function serialize() {
+        var uiModel = [];
+        $(".evui-groupContainer").each(function() {
+            var temp = $(this).sortable("toArray");
+            uiModel[uiModel.length] = temp;
+        });
+        $("#jsonModel").val(JSON.stringify(uiModel));
+    }
+
+    function moveIntoPlace() {
+        var mainContainer = $("#Lots");
+        mainContainer.html("");
+        var uiModel = JSON.parse($("#jsonModel").val());
+        for (var index = 0; index < uiModel.length; index++) {
+            var groupContainer = $('<div/>').addClass('evui-groupContainer').appendTo(mainContainer);
+            $('<div/>').addClass('evui-groupLabel').appendTo(groupContainer);
+
+            for (var index2 = 0; index2 < uiModel[index].length; index2++) {
+                $("#" + uiModel[index][index2]).detach().appendTo(groupContainer).removeClass("awe-hidden");
+            }
+            $('<div class="clearfix"/>').appendTo(groupContainer);
+            groupContainer.sortable({
+                connectWith: '.evui-groupContainer',
+                items: '> .evui-lotContainer'
+            });
+        }
+        realculateGroupLabels();
+    }
+
+    $(document).ready(function() {
+        $('#Lots').on('click', '.evui-quickLotMove', function(e) {
+            e.preventDefault();
+            var sourceLot = $(this).closest('.evui-lotContainer');
+            var sourceGroup = $(sourceLot).parent();
+
+            var targetContainer = $('.evui-groupContainer').eq($(this).data("groupIndex"));
+
+            $(targetContainer).find(".clearfix").remove();
+            $(sourceLot).detach().appendTo(targetContainer);
+
+            if (!$(sourceGroup).has(".evui-lotContainer").length) {
+                sourceGroup.remove();
+            }
+
+            if ($('.evui-groupContainer').last().has('.evui-lotContainer').length) {
+                addEmptyLotContainer();
+            }
+            realculateGroupLabels();
+            $('<div class="clearfix"/>').appendTo(targetContainer);
+        });
+
+        $('#Lots').on('sortreceive', '.evui-groupContainer',
+            function (e, ui) {
+                $(this).find(".clearfix").remove();
+                if (!ui.sender.has(".evui-lotContainer").length) {
+                    ui.sender.remove();
+                }
+
+                if ($('.evui-groupContainer').last().has('.evui-lotContainer').length) {
+                    addEmptyLotContainer();
+                }
+                realculateGroupLabels();
+                $('<div class="clearfix"/>').appendTo(this);
+            }
+        );
+
+        $("#Lots").sortable({
+            items: '> .evui-groupContainer:not(:last-child)', //not last child prevents the "New" group from being moved...
+            update: function(e, ui) {
+                realculateGroupLabels();
+            }
+        });
+
+
+        //modal input and warning when clicking "Group X Lots Together"
+        $(".GroupXLots").click(function (event) {
+            event.preventDefault()
+
+            var targetHref = '@Html.GetActionUrl(MVC.RecalculateClosingGroupsAction, new {
+                EventID = auctionEvent.ID,
+                GroupingOption = "NLotsPerGroup",
+                LotsPerGroup = "_LOTSPERGROUPVALUE_",
+                ReOrderByLotNumber = "_REORDERBYLOTNUMVALUE_"
+            }).ToJavascriptSafeString()';
+            BootstrapDialog.show({
+                type: 'type-warning',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("QuickGroupNLotsPerGroupTitle").ToJavascriptSafeString()',
+                message:
+                    '<div class="form-group">' +
+                      '<label class="control-label" for="LotsPerGroup">@Html.GlobalResourceString("NumOfLotsPerGroup").ToJavascriptSafeString()</label>' +
+                      '<input class="form-control" type="text" class="" id="LotsPerGroup">' +
+                    '</div>' +
+                    '<div class="form-group"><div class="checkbox"><label>' +
+                      '<input type="checkbox" value="true" id="ReOrderByLotNumber">@Html.GlobalResourceString("ReorderLotsByLotNumber").ToJavascriptSafeString()' +
+                    '</label></div></div>' +
+                    '<p>' + '@Html.GlobalResourceString("QuickGroupWarning_CantBeUndone").ToJavascriptSafeString()' + '</p>',
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Proceed").ToJavascriptSafeString()',
+                        cssClass: 'btn-warning',
+                        action: function () {
+                            //require non-blank value with only chars 0-9 and at least one non-0 char
+                            if ($("#LotsPerGroup").val() != "" &&
+                                (/^[0-9]+$/.test($("#LotsPerGroup").val())) &&
+                                (/[1-9]+/.test($("#LotsPerGroup").val()))) {
+                                window.location = $.htmlDecode(targetHref
+                                    .replace("_LOTSPERGROUPVALUE_", $("#LotsPerGroup").val())
+                                    .replace("_REORDERBYLOTNUMVALUE_", $("#ReOrderByLotNumber").prop("checked")));
+                            } else {
+                                $("#LotsPerGroup").addClass("input-validation-error");
+                            }
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+
+            return false;
+        });
+
+        //modal warning when clicking "Group All" or "Un-Group All"
+        $(".QuickLotGroup").click(function (event) {
+            event.preventDefault();
+            var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("QuickGroupWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("QuickGroupWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-warning',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("QuickGroupWarningTitle").ToJavascriptSafeString()',
+                message: jsDeleteConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Proceed").ToJavascriptSafeString()',
+                        cssClass: 'btn-warning',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        moveIntoPlace();
+    });
+
+    function addEmptyLotContainer() {
+        var mainContainer = $("#Lots");
+        var groupContainer = $('<div/>').addClass('evui-groupContainer').appendTo(mainContainer);
+        $('<div/>').addClass('evui-groupLabel').appendTo(groupContainer);
+        groupContainer.sortable({
+            connectWith: '.evui-groupContainer',
+            items: '> .evui-lotContainer'
+        });
+    }
+
+    function realculateGroupLabels() {
+        var interval = @Model.ClosingGroupIncrementSeconds;
+        var eventEndDTTM = new Date("@Html.CultureInvariantLocalDTTM(auctionEvent.EndDTTM, auctionEvent.TimeZone).ToJavascriptSafeString()");
+        var idx = 1;
+        var quickMoveOptions = $("<ul />");
+        $('.evui-groupLabel').each(function () {
+            if ($(this).parent().has('.evui-lotContainer').length) {
+                //var localizedDate = eventEndDTTM.toLocaleString();
+                var localizedDate = Globalize.formatDate(eventEndDTTM, { date: "short" }) + ', ' + Globalize.formatDate(eventEndDTTM, { time: "medium" }); //format a date
+                $(this).text(localizedDate);
+                quickMoveOptions.append('<li><a class="evui-quickLotMove" data-group-index="' + (idx - 1) + '">' + $(this).text() + '</a></li>');
+            } else {
+                $(this).html('<div class="alert alert-success evui-newtarget">@Html.GlobalResource("NewGroupDragHere")</div>');
+                quickMoveOptions.append('<li><a class="evui-quickLotMove" data-group-index="' + (idx - 1) + '">@Html.GlobalResource("NewGroup")</a></li>');
+            }
+            eventEndDTTM.setSeconds(eventEndDTTM.getSeconds() + interval);
+            idx++;
+        });
+        $(".evui-quickmove-options").html(quickMoveOptions.html());
+    }
+
+</script>

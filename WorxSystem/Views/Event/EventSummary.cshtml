@@ -1,0 +1,130 @@
+﻿@model Event
+@{
+    var followLiveActivated = (bool?)ViewData["FollowLive"];
+    var currentLot = (Lot)ViewData["CurrentLot"];
+}
+<div class="panel panel-default event-data" data-eventid="@Model.ID">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-7 col-md-9 clearfix">
+                <h1 class="event-title">
+                    @Model.BeginDetailLink()@Model.Title@Model.EndDetailLink()
+
+                    <small> (<span class="awe-rt-Status">@Model.Status</span> #@Model.ID)</small>
+                </h1>
+                @if (!string.IsNullOrEmpty(Model.TermsAndConditions))
+                {
+                    <a data-toggle="modal" href="#TermsAndConditions"><span class="glyphicon glyphicon-list-alt"></span>@Html.GlobalResource("TermsAndConditions")</a><br />
+                }
+                @if (!string.IsNullOrEmpty(Model.ShippingInfo))
+                {
+                    <a data-toggle="modal" href="#ShippingInformation"><span class="glyphicon glyphicon-envelope"></span>@Html.GlobalResource("ShippingInformation")</a>
+                }
+                <div class="modal fade" id="TermsAndConditions">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                @Model.TermsAndConditions.ToMvcHtmlString()
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="ShippingInformation">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                @Model.ShippingInfo.ToMvcHtmlString()
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @{ var nonImageMedia = Model.Media.Where(m => !m.Variations.ContainsKey(SiteClient.ThumbnailType));}
+                @if (nonImageMedia.Count() > 0)
+                {
+                    <p>
+                        @foreach (Media media in nonImageMedia)
+                        {
+                            <div class="event-media">@Html.Partial(media.Type + "_" + media.DefaultVariationName, media)</div>
+                        }
+                    </p>
+                }
+            </div>
+            <div class="col-sm-5 col-md-3">
+                @* @if (!string.IsNullOrEmpty(Model.ManagedByName))
+                    {
+                        <p>
+                            <strong>
+                                @Html.GlobalResource("ManagedByX", Model.ManagedByName)
+                            </strong>
+                        </p>
+                    }*@
+                @if (Model.BuyersPremiumPercent > 0)
+                {
+
+                    <div class="data-card small">
+                        @Model.BuyersPremiumPercent.ToString("n")&#37; &nbsp;@Html.GlobalResource("BuyersPremium")
+                    </div>
+                }
+                @if (Model.ProxyBidding)
+                {
+                    <div class="data-card small">
+                        @Html.GlobalResource("EventUsesProxy")
+                    </div>
+                }
+                @if (Model.FollowLiveEnabled)
+                {
+                    if (followLiveActivated.HasValue && followLiveActivated.Value == true)
+                    {
+                        <div class="data-card small">
+                            <input type="checkbox" id="ToggleFollowingLive" checked />
+                            <label for="ToggleFollowingLive">@Html.GlobalResource("FollowAuctionLive")</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="data-card small">
+                            <input type="checkbox" id="ToggleFollowingLive" />
+                            <label for="ToggleFollowingLive">@Html.GlobalResource("FollowAuctionLive")</label>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#ToggleFollowingLive").on("click", function () {
+            if ($(this).prop("checked")) {
+                var thisEventId = '@Model.ID';
+                console.log("Finding next lot...");
+                $.post('RealTime/GetNextLotClosing', { eventId: thisEventId }).done(function (data) {
+                    if (data.LotId) {
+                        var baseTargetUrl = '@Html.GetActionUrl(MVC.LotDetailsAction, new { id = "[NEXTLOTID]" }).ToJavascriptSafeString()';
+                        if (baseTargetUrl.indexOf("?") < 0) {
+                            baseTargetUrl += "?FollowLive=true"
+                        } else {
+                            baseTargetUrl += "&FollowLive=true"
+                        }
+                        var targetUrl = baseTargetUrl.replace("[NEXTLOTID]", data.LotId);
+                        console.log("Redirecting to next lot...", targetUrl);
+                    } else {
+                        var targetUrl = '@Html.GetActionUrl(MVC.DetailsAction, new { id = Model.ID }).ToJavascriptSafeString()';
+                        console.log("Next lot NOT FOUND; redirecting to event detail page...", targetUrl);
+                    }
+                    document.location = targetUrl;
+                });
+            } else {
+                var targetUrl = '@Html.GetActionUrl(MVC.LotDetailsAction, new { id = currentLot.ID }).ToJavascriptSafeString()';
+                console.log("ToggleFollowingLive un-checked; targertUrl:", targetUrl);
+                document.location = targetUrl;
+            }
+        });
+    });
+</script>

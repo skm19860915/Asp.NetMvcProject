@@ -1,0 +1,47 @@
+﻿@model Listing
+@{ string returnUrl = Request.Url.PathAndQuery; }
+<div class="btn-group">
+    <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="glyphicon glyphicon-cog"></span></a>
+    <ul class="dropdown-menu dropdown-menu-right">
+        <li>
+            @Html.ActionLink(Model.Lot != null ? Html.GlobalResource("ViewLot") : Html.GlobalResource("ViewListing"), MVC.DetailsAction, MVC.ListingController,
+            new { id = Model.ID }, null)
+        </li>
+        @if (Html.IsEditable(Model))
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditAction, MVC.ListingController,
+                new { id = Model.ID, returnUrl }, null)
+            </li>
+        }
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Cancel"), MVC.EndEarlyAction, MVC.ListingController,
+            new { id = Model.ID, returnUrl }, new { @class = "awe-end-early-link" })
+        </li>
+        @if (Model.Status == ListingStatuses.AwaitingPayment)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("StartNow"), MVC.FeesAction, MVC.AccountController,
+                null, null)
+            </li>
+        }
+        else
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("StartNow"), MVC.StartNowAction, MVC.ListingController,
+                new { id = Model.ID, returnUrl }, null)
+            </li>
+        }
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateListingPage1Action, MVC.ListingController,
+            new { SimilarListingID = Model.ID, returnUrl }, null)
+        </li>
+        @if (Context.User.IsInRole("Admin"))
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteAction, MVC.ListingController,
+                new { id = Model.ID, returnUrl }, new { @class = "awe-delete-listing-link" })
+            </li>
+        }
+    </ul>
+</div>

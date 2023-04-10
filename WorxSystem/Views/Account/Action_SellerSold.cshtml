@@ -1,0 +1,81 @@
+﻿@model LineItem
+@{ string returnUrl = Request.Url.PathAndQuery; }
+<div class="btn-group">
+    <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="glyphicon glyphicon-cog"></span></a>
+    <ul class="dropdown-menu dropdown-menu-right">
+
+        @if (Model.Status == "New")
+        {
+            if (Model.Listing != null)
+            {
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("CreateInvoice"), "CreateInvoice", new { Model.ID, returnUrl }, null)
+                </li>
+            }
+        }
+        else if (Model.Status == "Void")
+        {
+            <li class="text-center">
+                <span class="text-muted"><em>@Html.GlobalResource("Voided")</em></span>
+            </li>
+        }
+        else if (Model.Status == "Pending")
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("ViewInvoice"), "InvoiceDetail", new { id = Model.InvoiceID, returnUrl }, null)
+            </li>
+        }
+        else if (Model.Status == "Complete")
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("InvoicePaid"), "InvoiceDetail", new { id = Model.InvoiceID, returnUrl }, null)
+            </li>
+        }
+
+        @if (SiteClient.FeedbackEnabled)
+        {
+            if (!Model.OwnerFeedbackSent)
+            {
+                if (Model.Listing != null)
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("SubmitFeedback"), MVC.SubmitFeedbackAction, MVC.AccountController,
+                        new { ListingID = Model.ListingID, Sender = Model.Owner.UserName, Receiver = Model.Payer.UserName, returnUrl }, null)
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="text-center">
+                    <span class="text-muted"><em>@Html.GlobalResource("FeedbackSent")</em></span>
+                </li>
+            }
+        }
+
+        @if (SiteClient.UserMessagingEnabled)
+        {
+            if (Model.Listing != null)
+            {
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Contact"), MVC.SendListingMessageAction, MVC.AccountController,
+                    new { receiver = Model.Payer.UserName, template = Templates.AskBuyerQuestion, listingID = Model.ListingID, returnUrl }, null)
+                </li>
+            }
+            else
+            {
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Contact"), MVC.SendUserMessageAction, MVC.AccountController,
+                    new { receiver = Model.Payer.UserName, template = Templates.UserMessageReplyGeneral, returnUrl }, null)
+                </li>
+            }
+        }
+
+        @if (Model.Listing != null)
+        {
+            <li>
+                @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateListingPage1Action, MVC.ListingController,
+                new { SimilarListingID = Model.ListingID, returnUrl }, null)
+            </li>
+        }
+    </ul>
+</div>

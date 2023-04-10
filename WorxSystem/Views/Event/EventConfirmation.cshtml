@@ -1,0 +1,148 @@
+﻿@model Event
+<div class="row">
+    <div class="col-xs-12">
+        <div class="alert alert-success">
+            <strong>
+                @Html.GlobalResource("SuccessfulEventCreation"):
+                @Model.BeginDetailLink()
+                @Model.Title
+                @Model.EndDetailLink()
+                (@Model.Status #@Model.ID)
+            </strong>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group">
+                    @Html.ButtonLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController, new { EventID = Model.ID }, new { @class = "btn btn-default" })
+                    @Html.ButtonLink(Html.GlobalResource("CreateNewEvent"), MVC.CreateEventAction, MVC.EventController, null, new { @class = "btn btn-default" })
+                    @Html.ButtonLink(Html.GlobalResource("EditEvent"), MVC.EditAction, MVC.EventController, new { @id = Model.ID }, new { @class = "btn btn-default" })
+                </div>
+                @Html.ActionLink(Html.GlobalResource("ManageLots"), MVC.LotsByEventAction, MVC.AccountController, new { id = Model.ID }, new { @class="btn btn-primary"})
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-8 col-md-9">
+                    <p>
+                        @Model.BeginDetailLink()
+                        @Model.Title
+                        @Model.EndDetailLink()
+                    </p>
+                    <p>
+                        @Model.Subtitle
+                    </p>
+                    @if (!string.IsNullOrEmpty(Model.ManagedByName))
+                    {
+                        <p>
+                            @Html.GlobalResource("ManagedByX", Model.ManagedByName)
+                        </p>
+                    }
+
+                    @{ var nonImageMedia = Model.Media.Where(m => !m.Variations.ContainsKey(SiteClient.ThumbnailType));}
+                    @if (nonImageMedia.Count() > 0)
+                    {
+                        <hr />
+                        <p>
+                            <strong>@Html.GlobalResource("AdditionalMedia")</strong>
+                        </p>
+                        foreach (Media media in nonImageMedia)
+                        {
+                            <br />@Html.Partial(media.Type + "_" + media.DefaultVariationName, media)
+                        }
+                    }
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <hr />
+                            <p>
+                                <strong>@Html.GlobalResource("EventImages")</strong>
+                            </p>
+                        </div>
+                        <div class="col-xs-12 col-sm-3">
+
+                            @if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                            {
+                                @Html.Partial("NoPhotoThumbnail")
+                            }
+                            else
+                            {
+                                <img src="@string.Format(Model.PrimaryImageURI, "ThumbFit".ToLower())" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                            }
+                        </div>
+                        <div class="col-xs-12 col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.SecondaryImageURI))
+                            {
+                                <img class="img-responsive" src="@string.Format(Model.SecondaryImageURI, "LargeSize".ToLower())" />
+                            }
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-4 col-md-3 event-data">
+                    @if (Model.StartDTTM.HasValue)
+                    {
+                        <div class="data-card">
+                            <strong>
+                                <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("Starts")
+                            </strong>
+                            <br />
+                            @Html.LocalDTTM(Model.StartDTTM.Value, Model.TimeZone, "G")
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="data-card">
+                            <strong>
+                                <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("ScheduledStart")
+                            </strong>
+                            <br />
+                            @Html.GlobalResource("NotSet")
+                        </div>
+                    }
+                    <div class="data-card">
+                        <strong>
+                            <span class="glyphicon glyphicon-time"></span> &nbsp; @Html.GlobalResource("FirstLotCloses")
+                        </strong>
+                        <br />
+                        @Html.LocalDTTM(Model.EndDTTM, Model.TimeZone, "G")
+                    </div>
+
+                    @if (Model.BuyersPremiumPercent > 0)
+                    {
+
+                        <div class="data-card small">
+                            @Model.BuyersPremiumPercent.ToString("n")&#37; &nbsp;@Html.GlobalResource("BuyersPremium")
+                        </div>
+
+                    }
+                    @if (Model.ProxyBidding)
+                    {
+
+                        <div class="data-card small">
+                            @Html.GlobalResource("EventUsesProxy")
+                        </div>
+
+                    }
+                    <div class="data-card small">
+                        @Html.GlobalResource("EventCurrency") <strong>@Model.Currency.Code</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("ShippingInformation")
+                </div>
+                <div class="panel-body">@Model.ShippingInfo.ToMvcHtmlString()</div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("TermsAndConditions")
+                </div>
+                <div class="panel-body">@Model.TermsAndConditions.ToMvcHtmlString()</div>
+            </div>
+        </div>*@
+</div>

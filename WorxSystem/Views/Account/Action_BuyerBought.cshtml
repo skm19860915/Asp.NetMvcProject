@@ -1,0 +1,105 @@
+﻿@model LineItem
+@{ string returnUrl = Request.Url.PathAndQuery; }
+
+<div class="btn-group pull-right">
+    <a role="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="glyphicon glyphicon-cog"></span></a>
+    <ul class="dropdown-menu dropdown-menu-right">
+
+        @if (SiteClient.UserMessagingEnabled)
+        {
+            if (Model.Listing != null)
+            {
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Contact"), MVC.SendListingMessageAction, MVC.AccountController,
+                    new { receiver = Model.Owner.UserName, template = Templates.AskListingQuestion, listingID = Model.ListingID, returnUrl }, null)
+                </li>
+            }
+            else
+            {
+                <li>
+                    @Html.ActionLink(Html.GlobalResource("Contact"), MVC.SendUserMessageAction, MVC.AccountController,
+                    new { receiver = Model.Owner.UserName, template = Templates.UserMessageReplyGeneral, returnUrl }, null)
+                </li>
+            }
+        }
+        @if (SiteClient.FeedbackEnabled)
+        {
+            if (!Model.PayerFeedbackSent)
+            {
+                if (Model.Listing != null)
+                {
+                    <li>
+                        @Html.ActionLink(Html.GlobalResource("SubmitFeedback"), MVC.SubmitFeedbackAction, MVC.AccountController,
+                        new { ListingID = Model.ListingID, Sender = Model.Payer.UserName, Receiver = Model.Owner.UserName, returnUrl }, null)
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="text-center">
+                    <span class="text-muted"><em>@Html.GlobalResource("FeedbackSent")</em></span>
+                </li>
+            }
+        }
+        <li>
+            @Html.ActionLink(Html.GlobalResource("ViewListing"), MVC.DetailsAction, MVC.ListingController,
+            new { id = Model.ListingID }, null)
+        </li>
+    </ul>
+</div>
+@if (Model.Status == LineItemStatuses.Void)
+{
+
+    <button class="btn btn-default disabled pull-right" onclick="return false;">
+        <em>@Html.GlobalResource("Voided")</em>
+    </button>
+}
+else
+{
+    if ((Model.Status == LineItemStatuses.New) && (Model.OwnerAllowsInstantCheckout() || SiteClient.BoolSetting(SiteProperties.AutoGenerateInvoices)))
+    {
+        if (Model.Listing != null)
+        {
+            //when Auto Generate Invoices is enabled only render a checkout button for a lot after the entire event has ended
+            bool suppressCheckoutButton = false;
+            if (SiteClient.BoolSetting(SiteProperties.AutoGenerateInvoices) && Model.Listing.Lot != null && Model.Listing.Lot.Event != null && 
+                Model.Listing.Lot.Event.Status != AuctionEventStatuses.Closed && Model.Listing.Lot.Event.Status != AuctionEventStatuses.Archived)
+            {
+                suppressCheckoutButton = true;
+            }
+            if (!suppressCheckoutButton)
+            {
+                @Html.ActionLink(Html.GlobalResource("Checkout"), MVC.CheckoutAction, MVC.AccountController,
+                    new { lineitemid = Model.ID, returnUrl }, new { @class = "btn btn-default pull-right" })
+            }
+        }
+    }
+    else if (Model.Status == LineItemStatuses.Pending && Model.OwnerAllowsInstantCheckout())
+    {
+
+        @Html.ActionLink(Html.GlobalResource("Checkout"), MVC.InvoiceDetailAction, MVC.AccountController,
+                     new { id = Model.InvoiceID, returnUrl }, new { @class = "btn btn-default pull-right" })
+
+    }
+    else if (Model.Status == LineItemStatuses.Pending && (Model.OwnerAcceptsPayPal() || Model.CreditCardAccepted()))
+    {
+
+        @Html.ActionLink(Html.GlobalResource("Checkout"), MVC.InvoiceDetailAction, MVC.AccountController,
+                      new { id = Model.InvoiceID, returnUrl }, new { @class = "btn btn-default pull-right" })
+
+    }
+    else if (Model.Status == LineItemStatuses.Pending)
+    {
+
+        @Html.ActionLink(Html.GlobalResource("ViewInvoice"), MVC.InvoiceDetailAction, MVC.AccountController,
+                      new { id = Model.InvoiceID, returnUrl }, new { @class = "btn btn-default pull-right" })
+
+    }
+    else if (Model.Status == LineItemStatuses.Complete)
+    {
+
+        @Html.ActionLink(Html.GlobalResource("InvoicePaid"), MVC.InvoiceDetailAction, MVC.AccountController,
+                      new { id = Model.InvoiceID, returnUrl }, new { @class = "btn btn-default pull-right" })
+
+    }
+}

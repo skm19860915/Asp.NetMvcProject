@@ -1,0 +1,104 @@
+﻿@model FeedbackRating
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Feedback_Summary")
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">@Html.GlobalResource("OverallAverage")</div>
+            <table class="table">
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on" style="width:@Math.Round(Model.AverageTotal * 16,0)px"></div></div></td>
+                    <td>@Math.Round(Model.AverageTotal, 2)</td>
+                </tr>
+                <tr>
+                    <td> <div class="stars-off"><div class="stars-on stars-on-5"></div></div></td>
+                    <td> @(Model.SellerFive + Model.BuyerFive)</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-4"></div></div></td>
+                    <td>@(Model.SellerFour + Model.BuyerFour)</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-3"></div></div></td>
+                    <td>@(Model.SellerThree + Model.BuyerThree)</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-2"></div></div></td>
+                    <td>@(Model.SellerTwo + Model.BuyerTwo)</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-1"></div></div></td>
+                    <td>@(Model.SellerOne + Model.BuyerOne)</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">@Html.GlobalResource("SellerAverage")</div>
+            <table class="table">
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on" style="width:@Math.Round(Model.AverageSeller * 16,0)px"></div></div></td>
+                    <td>@Math.Round(Model.AverageSeller, 2)</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-5"></div></div></td>
+                    <td>@Model.SellerFive</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-4"></div></div></td>
+                    <td>@Model.SellerFour</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-3"></div></div></td>
+                    <td>@Model.SellerThree</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-2"></div></div></td>
+                    <td>@Model.SellerTwo</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-1"></div></div></td>
+                    <td>@Model.SellerOne</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">@Html.GlobalResource("BuyerAverage")</div>
+            <table class="table">
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on" style="width:@Math.Round(Model.AverageBuyer * 16,0)px"></div></div></td>
+                    <td>@Math.Round(Model.AverageBuyer, 2)</td>
+                </tr>
+                <tr>
+                    <td> <div class="stars-off"><div class="stars-on stars-on-5"></div></div></td>
+                    <td>@Model.BuyerFive</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-4"></div></div></td>
+                    <td>@Model.BuyerFour</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-3"></div></div></td>
+                    <td>@Model.BuyerThree</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-2"></div></div></td>
+                    <td>@Model.BuyerTwo</td>
+                </tr>
+                <tr>
+                    <td><div class="stars-off"><div class="stars-on stars-on-1"></div></div></td>
+                    <td>@Model.BuyerOne</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

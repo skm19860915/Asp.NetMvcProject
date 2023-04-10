@@ -1,0 +1,18 @@
+﻿@{
+    int pageIndex = (int)ViewData[MVC.PageIndex];
+    string eventStatusesToRetrieve = AuctionEventStatuses.Draft;
+    string fillLevel = string.Empty;
+    var pageOfEvents = EventClient.GetEventsByStatusWithFillLevel(User.Identity.Name, eventStatusesToRetrieve,
+        pageIndex, SiteClient.MaxHomePageFeatured, Fields.EndDTTM, false, fillLevel);
+}
+
+@foreach (var auctionEvent in pageOfEvents.List)
+{
+    <div data-eventid="@auctionEvent.ID">
+        @Html.Partial("Event_Row", auctionEvent)
+    </div>
+}
+@if (pageOfEvents.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(pageOfEvents);
+}

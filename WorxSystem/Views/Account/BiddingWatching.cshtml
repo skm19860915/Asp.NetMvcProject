@@ -1,0 +1,121 @@
+﻿@model Page<Listing>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+
+    //determine if inline bidding is enabled
+    List<CustomProperty> auctionProperties = ListingClient.GetListingTypeProperties(ListingTypes.Auction, "Site");
+    bool quickBidForListViewsEnabled = false;
+    var quickBidForListViewsProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.QuickBidForListViewsEnabled);
+    if (quickBidForListViewsProp != null)
+    {
+        bool.TryParse(quickBidForListViewsProp.Value, out quickBidForListViewsEnabled);
+    }
+    bool auctionsEnabled = false;
+    var auctionsEnabledProp = auctionProperties.FirstOrDefault(p => p.Field.Name == SiteProperties.Enabled);
+    if (auctionsEnabledProp != null)
+    {
+        bool.TryParse(auctionsEnabledProp.Value, out auctionsEnabled);
+    }
+    quickBidForListViewsEnabled = quickBidForListViewsEnabled && auctionsEnabled;
+
+}
+<script>
+    $(function () {
+        $('.checkall').click(function () {
+            $(".row-selection-checkbox").prop("checked", this.checked);
+        });
+
+        $('#removeMultiple').click(function () {
+            var targetHref = $(this).attr("href");
+
+            if ($(".row-selection-checkbox:checked").length == 0) {
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                    message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneListingToProceed").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+            else {
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '@Html.GlobalResourceString("RemoveFromWatchingTitle").ToJavascriptSafeString()',
+                    message: '@Html.GlobalResourceString("RemoveFromWatchingMessage").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("Remove").ToJavascriptSafeString()',
+                            cssClass: 'btn-primary',
+                            action: function () {
+                                //alert("test");
+                                $('#biddingWatching').attr('action', '@Url.Action("RemoveMultipleWatches", "Account")');
+                                $('#biddingWatching').submit();
+                                return true;
+                            }
+                        }, {
+                            label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+            }
+            return false;
+        });
+    });
+</script>
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Bidding_Watching")
+</div>
+<script>
+    $(document).ready(function () {
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+    });
+</script>
+<div class="panel panel-default clearfix">
+    @using (Html.BeginForm(new { page = 0 }))
+    {
+        <div class="row">
+            <div class="col-sm-8">
+                @if (Model.TotalItemCount > 0)
+                {
+                    using (Html.BeginForm(MVC.BiddingWatchingAction, MVC.AccountController, new { page = Request["page"], SortFilterOptions = Request["SortFilterOptions"] }, FormMethod.Post, new { id = "biddingWatching" }))
+                    {
+                        <label>
+                            <input type="checkbox" class="checkall pull-left" />
+                        </label>
+                    }
+                }
+            </div>
+            <div class="col-sm-4 form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">@Html.GlobalResource("Sort")</div>
+                    @Html.DropDownList(RainWorx.FrameWorx.Strings.MVC.SortFilterOptions, null, new { @class = "form-control" })
+                </div>
+                <input type="submit" id="submitDropDown" class="awe-hidden" />
+            </div>
+        </div>
+    }
+    @if (Model.TotalItemCount == 0)
+    {
+        <p class="no-history">
+            @Html.GlobalResource("EmptyWatchList")
+        </p>
+    }
+    @Html.Partial("PageOfWatching")
+</div>
+@if (quickBidForListViewsEnabled)
+{
+    @Html.Partial("AuctionInlineBidding_Includes")
+}

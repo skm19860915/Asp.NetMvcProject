@@ -1,0 +1,34 @@
+﻿@using System.Text.RegularExpressions
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+@model List<RainWorx.FrameWorx.MVC.Models.CSV.IColumnSpec>
+
+<div class="panel panel-default" style="margin: 5px;">
+    <div class="panel-heading">
+        <div class="pull-right">(<span style="color:red;">*</span> @Html.GlobalResource("required"))</div>
+        <strong>@Html.AdminResource("ImportCSVColumnSpecifications")</strong>
+    </div>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th style="width:30px;">@Html.GlobalResource("CSVImport_ColumnNumber")</th>
+            <th>@Html.GlobalResource("CSVImport_ColumnName")</th>
+            <th>&nbsp;</th>
+            <th style="width:90px;">@Html.GlobalResource("CSVImport_ValueType")</th>
+            <th>@Html.GlobalResource("CSVImport_Example")</th>
+            <th>@Html.GlobalResource("CSVImport_Notes")</th>
+        </tr>
+        @foreach (RainWorx.FrameWorx.MVC.Models.CSV.IColumnSpec spec in Model)
+        {
+            RainWorx.FrameWorx.MVC.Models.CSV.ColumnHelpSpec help = spec.ToHelp();
+            <tr>
+                <td>@help.ColumnString</td>
+                <td>@help.Name</td>
+                <td style="color:red;">@(help.Required ? "*" : string.Empty)</td>
+                <td>@Html.GlobalResource("CSVImport_DataType_" + help.DataType)</td>
+                <td>@help.Example</td>
+                <td>@Regex.Replace(help.Notes, "([a-zA-Z0-9]/)([a-zA-Z0-9])", "$1&#8203;$2").ToMvcHtmlString()</td>
+            </tr>
+        }
+    </table>
+</div>

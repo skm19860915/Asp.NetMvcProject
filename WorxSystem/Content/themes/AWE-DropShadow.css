@@ -1,0 +1,729 @@
+﻿/******************************************************************/
+/** Bootstrap 3 Ajustments for AuctionWorx Template: Drop-Shadow **/
+/******************************************************************/
+
+
+.container {
+    box-shadow: 0 4px 30px 6px rgba(0,0,0,0.15);
+}
+
+
+
+.navbar {
+    background: transparent;
+    margin-top: 15px;
+    border: 0px;
+}
+
+    .navbar > .navbar-collapse > .navbar-inner > .container {
+        background-color: #404040;
+        font-weight: bold;
+    }
+
+        .navbar > .navbar-collapse > .navbar-inner > .container a {
+            font-weight: bold;
+        }
+
+@media(max-width:762px) {
+    .navbar {
+        background-color: #404040;
+    }
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #ccc;
+}
+
+
+    .navbar-default .navbar-nav > li > a:hover {
+        color: #ebebeb;
+    }
+
+.navbar-default .navbar-text {
+    color: #ccc;
+}
+
+.row {
+    background-color: #f8f8f8;
+    padding-top: 15px;
+}
+
+    .row > .row {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+.thumbnail, .panel {
+    background-color: #f8f8f8;
+}
+
+/************************************************************************************************/
+/******** AuctionWorx Specific CSS with Ajustments for AuctionWorx Template: Drop-Shadow ********/
+/************************************************************************************************/
+
+body {
+    background-color: #ebebeb;
+}
+
+hr {
+    border-top: 1px solid #999;
+}
+
+li > hr {
+    margin: 0px;
+    padding: 0px;
+}
+
+/************* Header *************/
+.awe-logo {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+    .awe-logo img {
+        margin: 0px auto;
+    }
+
+.awe-logo-small {
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+    .awe-logo-small img {
+        margin: 0px auto;
+    }
+
+.awe-search-row {
+    background: transparent;
+    border: 0px;
+    margin-bottom: 0px;
+    margin-top: -20px;
+}
+
+    .awe-search-row form {
+        margin-right: -15px;
+    }
+
+    .awe-search-row > .container {
+        background: #ebebeb;
+        border-bottom: 1px solid #ccc;
+        border-top: 1px solid #ccc;
+    }
+
+@media (max-width: 767px) {
+    .awe-user-nav .navbar-text {
+        margin: 0;
+        padding: 10px 15px;
+    }
+
+    .awe-user-nav li {
+        overflow: hidden;
+    }
+
+    .awe-user-nav .navbar-btn {
+        margin-left: 15px;
+    }
+}
+
+/************* Footer *************/
+.awe-footer {
+    background: transparent;
+    padding-top: 0px;
+}
+
+    .awe-footer > .container {
+        padding-top: 5px;
+        background: #ebebeb;
+        box-shadow: 0 4px 30px 2px rgba(0,0,0,0.15);
+        border-top: 1px solid #ccc;
+    }
+
+body > .awe-footer {
+    margin-bottom: 20px;
+}
+
+.rw-icon {
+    bottom: 0px;
+    margin: 5px;
+    position: absolute;
+    right: 0px;
+    text-align: right;
+    width: 225px;
+}
+/************* General Elements*************/
+
+.awe-hidden {
+    display: none;
+}
+
+.awe-section-title {
+    font-weight: bold;
+}
+
+.awe-table-wrap {
+    white-space: nowrap;
+}
+
+.awe-form-required::after {
+    color: red;
+    content: ' *';
+}
+
+.awe-help-tips {
+    color: #000;
+    display: none;
+    margin-top: 5px;
+}
+
+.awe-full-image {
+    margin: 0px auto;
+    padding-bottom: 5px;
+}
+
+.input-validation-error {
+    background-color: #f2dede;
+    border-color: #b94a48;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    color: #b94a48;
+}
+
+    .input-validation-error:focus {
+        border-color: #953b39;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+    }
+
+.validation-summary-errors /* The summary of validation errors - display at the top of a form */ {
+    background-color: #f2dede;
+    border-radius: 4px;
+    color: #b94a48;
+    padding: 15px;
+}
+
+    .validation-summary-errors li {
+        display: block;
+        margin-bottom: -1px;
+        padding: 10px 15px;
+        position: relative;
+    }
+
+.field-validation-error {
+    color: #8a1f11;
+}
+
+
+.awe-inline-width {
+    width: 100px;
+}
+
+/************* Category&Region Navigation Menus for media max-width=767 */
+
+.awe-dropmenu {
+    margin-bottom: 10px;
+}
+
+.awe-browsenav {
+    width: 100%;
+}
+
+/************* Banners *************/
+
+.awe-banner-top {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+    .awe-banner-top img {
+        margin: 0px auto;
+    }
+
+.awe-banner-left {
+    margin-bottom: 10px;
+}
+
+.awe-banner-bottom {
+    clear: both;
+    margin-bottom: 10px;
+}
+
+/************* Homepage Gallery *************/
+
+.awe-gallery-text {
+    background-color: #F2F2F2;
+    height: 75px;
+    overflow: hidden;
+    padding: 3px;
+}
+
+    .awe-gallery-text h4 {
+        margin-top: 0px;
+        padding-top: 0px;
+    }
+
+.awe-gallery-thumbnail {
+    height: 160px;
+    margin: 10px auto;
+}
+
+    .awe-gallery-thumbnail img {
+        margin: 0px auto;
+    }
+
+    .awe-gallery-thumbnail div {
+        margin: 0px auto;
+    }
+
+.awe-gallery-details {
+    height: 45px;
+    margin: 3px 3px 0px 3px;
+    padding: 3px;
+}
+
+    .awe-gallery-details button {
+        margin-top: 3px;
+    }
+
+    .awe-gallery-details div {
+        clear: left;
+        float: left;
+    }
+
+.awe-gallery-price {
+    font-size: larger;
+    font-weight: bold;
+    line-height: 21px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.awe-gallery-qtytime {
+    margin-top: -3px;
+}
+
+
+/************* Listing Display - Browse, Search, MyAccount *************/
+.awe-listing-row-container {
+    margin: 10px;
+}
+
+.awe-listing-row {
+    width: 100%;
+}
+
+    .awe-listing-row td {
+    }
+
+    .awe-listing-row tr {
+        border: none;
+    }
+
+    .awe-listing-row h4 {
+        margin: 0px;
+        padding: 3px 0px;
+    }
+
+.awe-listing-title {
+    font-size: large;
+}
+
+.awe-listing-row-full {
+    vertical-align: top;
+    width: 100%;
+    word-break: normal;
+}
+
+.awe-listing-row-thumb {
+    padding-right: 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.awe-listingtype-pos {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+}
+
+.awe-listingbutton-pos {
+    vertical-align: bottom;
+}
+
+    .awe-listingbutton-pos button {
+        width: 120px;
+    }
+
+.awe-listing-row-ship {
+    vertical-align: bottom;
+}
+
+.awe-listing-row-data {
+    position: relative;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.awe-shipping-modal {
+    margin-bottom: 0px;
+}
+
+.awe-shipping-modal-footer {
+    margin-top: 0px;
+}
+
+
+/************* No Photo Placeholders *************/
+
+.awe-no-photo-thumbnail {
+    background: #ebebeb;
+    border: 1px solid #ccc;
+    color: #999;
+    font-size: 100%;
+    height: 150px;
+    text-align: center;
+    width: 150px;
+}
+
+.awe-no-photo-thumbnail-xs {
+    background: #ebebeb;
+    border: 1px solid #ccc;
+    color: #999;
+    font-size: 100%;
+    height: 75px;
+    text-align: center;
+    width: 75px;
+}
+
+.awe-no-photo-thumbnail-xs {
+    padding-top: 5px;
+}
+
+.awe-no-photo-thumbnail img {
+    padding-top: 50px;
+}
+
+.awe-no-photo {
+    background: #ebebeb;
+    border: 1px solid #ccc;
+    color: #999;
+    font-size: 100%;
+    margin: 0px auto;
+    padding-bottom: 25%;
+    padding-top: 25%;
+    text-align: center;
+}
+
+/************* Listing Decorations *************/
+
+.awe-sunburst-container {
+    position: relative;
+}
+
+.awe-sunburst-image {
+    left: -30px;
+    position: absolute;
+    top: -30px;
+    width: 100px;
+}
+
+.awe-sunburst-text {
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    left: -10px;
+    position: absolute;
+    text-align: center;
+    top: 12px;
+    width: 60px;
+}
+
+.awe-sunburst-image-sm {
+    left: -15px;
+    position: absolute;
+    top: -15px;
+    width: 50px;
+}
+
+.awe-sunburst-text-sm {
+    color: #fff;
+    display: none;
+    font-size: 10px;
+    font-weight: bold;
+    left: -10px;
+    overflow: hidden;
+    position: absolute;
+    text-align: center;
+    top: 8px;
+    width: 0px;
+}
+
+.awe-sunburst-decoration {
+    width: 25px;
+}
+
+.awe-highlight {
+    background-color: #fcf8e3;
+}
+
+
+/************* Listing Detail Page *************/
+
+.awe-thumbnail-scroll {
+    margin: 10px;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+.awe-action-table td {
+    width: 50%;
+}
+
+
+.awe-carousel-img-container {
+    margin-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+}
+
+.awe-youtube-iframe {
+    border-width: 0px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.awe-listing-description img {
+    /* copied from standard bootstrap .img-responsive definition */
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+
+.awe-listing-description, .awe-listing-detail-title, .awe-listing-detail-sub {
+    overflow: hidden;
+}
+
+.awe-listing-detail-sub {
+    padding-bottom: 2px;
+}
+
+@media only screen and (max-width: 600px) {
+    #iFrameYouTube {
+        width: 75%;
+        height: 75%;
+        margin: 0 auto;
+    }
+}
+
+/************* My Account *************/
+
+.awe-btngroup-margins {
+    margin-left: -25px;
+    white-space: nowrap;
+}
+
+.awe-winning-key {
+    color: green;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.awe-winning-reserve-key {
+    color: orange;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.awe-not-winning-key {
+    color: red;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+#SubmitPayPal {
+    background-image: url('../Content/Images/paypalbutton-1.gif');
+    background-position: right;
+    padding-right: 5px;
+}
+
+.awe-percent-input {
+    width: 60px;
+}
+
+/************* Feedback & Star Ratings *************/
+.awe-feedback-table td {
+    text-align: left;
+}
+
+.stars-off {
+    float: left;
+    margin-bottom: 2px;
+    width: 80px;
+}
+
+.stars-off, .stars-on {
+    background: url(../Content/Images/General/jquery.ui.stars.gif) repeat-x 0 -32px;
+    height: 16px;
+    position: relative;
+}
+
+.stars-on {
+    background-position: 0 -48px;
+    position: absolute;
+}
+
+.stars-on-1 {
+    width: 16px;
+}
+
+.stars-on-2 {
+    width: 32px;
+}
+
+.stars-on-3 {
+    width: 48px;
+}
+
+.stars-on-4 {
+    width: 64px;
+}
+
+.stars-on-5 {
+    width: 80px;
+}
+
+/************* Create / Edit Listing & Image Uploading *************/
+DIV.ProgressBar {
+    border: 1px solid black;
+    display: -moz-inline-stack;
+    display: inline-block;
+    *display: inline;
+    height: .75em;
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: 0;
+    width: 100px;
+    zoom: 1;
+}
+
+    DIV.ProgressBar DIV {
+        background-color: Green;
+        font-size: 1pt;
+        height: 100%;
+        float: left;
+    }
+
+SPAN.asyncUploader OBJECT {
+    left: 10px;
+    position: relative;
+    top: 5px;
+}
+
+.imagecontainer {
+    border: 1px solid transparent;
+    float: left;
+    height: 150px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    width: 150px;
+}
+
+.imagecontainer-highlight {
+    background-color: #CCC;
+    border: 1px solid grey;
+    float: left;
+    height: 150px;
+    margin-right: 10px;
+    width: 150px;
+}
+
+.awe-thumb-delete {
+    float: right;
+    margin-top: -22px;
+    position: relative;
+    z-index: 1;
+}
+
+.awe-thumb-rotate-CW {
+    float: left;
+    margin-top: -22px;
+    position: relative;
+    z-index: 1;
+}
+
+.awe-thumb-rotate-CCW {
+    float: left;
+    margin-top: -22px;
+    position: relative;
+    z-index: 1;
+}
+
+.awe-thumb-busy {
+    background-color: #000;
+    filter: alpha(opacity=40); /* msie */
+    opacity: 0.4;
+}
+
+.awe-thumb-buttons-hide {
+    display: none;
+}
+
+.awe-category-group {
+    display: inline;
+}
+
+h3 .awe-additional-shipping {
+    color: #fff;
+}
+
+@media (max-width: 992px) {
+    .awe-shipping-spacer {
+        margin-bottom: 15px;
+    }
+}
+/************* Search *************/
+
+#awe-listing-search-category-container .form-group {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+/************* SiteMap *************/
+
+.awe-sitemap-list li {
+    list-style: none;
+    margin-left: -20px;
+    text-align: left;
+}
+
+
+/********************************************/
+/** Bootstrap 3 Ajustments for AuctionWorx **/
+/********************************************/
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+    }
+}
+
+.navbar {
+    border-top: 2px solid #ebebeb;
+    z-index: 10;
+}
+
+.panel > .table > tbody:first-child td {
+    border-top: 1px solid #dddddd;
+}
+
+.navbar-btn.btn-xs {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.thumbnail {
+    margin-bottom: 15px;
+}
+
+select {
+    font-size: 16px;
+}

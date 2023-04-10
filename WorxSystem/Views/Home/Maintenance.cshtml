@@ -1,0 +1,28 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <base href="@Html.Base()" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@(string.IsNullOrEmpty(ViewBag.SiteTitle) ? SiteClient.Settings[SiteProperties.SiteTitle] : ViewBag.SiteTitle)</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap_js")
+    @Styles.Render("~/bundles/bootstrap_css")
+  @*  @Styles.Render("~/bundles/social_buttons_css")*@
+</head>
+<body>
+    <div class="col-12-xs" style="margin-top:5%;">
+        <div class="hidden-xs">
+            <a href=""><img src="@SiteClient.Settings["SiteLogoFileName"]" alt="" class="img-responsive center-block" /></a>
+        </div>
+        <div class="visible-xs">
+            <a href=""><img src="@SiteClient.Settings["MobileLogoFileName"]" alt="" class="img-responsive center-block" /></a>
+        </div>
+    </div>
+    @Html.GetSiteContent("MaintenanceMode")
+</body>
+</html>

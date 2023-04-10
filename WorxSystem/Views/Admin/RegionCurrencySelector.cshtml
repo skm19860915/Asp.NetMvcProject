@@ -1,0 +1,106 @@
+﻿
+<script>
+    function SetUserCulture(culture) {
+        var retVal = null;
+        Proxy.invoke("UpdateUserCulture", { culture: culture },
+                function (result) {
+                    @*moved the "reload page" command to only happen if there are multiple cultures and a different one has been selected*@
+                    //window.location.reload();
+                },
+                function (error) { window.alert(error); });
+        return retVal;
+    }
+</script>
+@if (SiteClient.EnableMultipleCultures)
+{
+    <div class="form-group">
+        <div class="input-group">
+            <div class="input-group-addon">@Html.GlobalResource("Culture")</div>
+            @Html.DropDownList("culture", Html.Cultures(), new { @class = "form-control" })
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            if ($.cookie('culture') == null || $.cookie('culture') == "") {
+                //set culture to site culture if it is not set
+                $.cookie('culture', '@SiteClient.SiteCulture', { path: '/', expires: 365 });
+            }
+            $("select#culture").val($.cookie('culture'));
+            //if culture becomes disabled...
+            if ($("select#culture").val() == null) {
+                $.cookie('culture', '@SiteClient.SiteCulture', { path: '/', expires: 365 });
+                $("select#culture").val($.cookie('culture'));
+            }
+        });
+    </script>
+}
+else
+{
+    <script>
+        $(document).ready(function () {
+            if ($.cookie('culture') == null || $.cookie('culture') != '@SiteClient.SiteCulture') {
+                $.cookie('culture', '@SiteClient.SiteCulture', { path: '/', expires: 365 });
+                SetUserCulture('@SiteClient.SiteCulture');
+            }
+        });
+    </script>
+}
+@if (SiteClient.EnableMultipleCurrencies)
+{
+    <div class="form-group">
+        <div class="input-group">
+            <div class="input-group-addon">
+                @Html.GlobalResource("Currency")
+            </div>
+            @Html.DropDownList("currency", Html.Currencies(), new { @class = "form-control" })
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            if ($.cookie('currency') == null || $.cookie('currency') == "") {
+                //set currency to site currency if it is not set
+                $.cookie('currency', '@SiteClient.SiteCurrency', { path: '/', expires: 365 });
+            }
+            $("select#currency").val($.cookie('currency'));
+            //if currency becomes disabled...
+            if ($("select#currency").val() == null) {
+                $.cookie('currency', '@SiteClient.SiteCurrency', { path: '/', expires: 365 });
+                $("select#currency").val($.cookie('currency'));
+            }
+        });
+    </script>
+}
+else
+{
+    <script>
+        $(document).ready(function () {
+            if ($.cookie('currency') == null || $.cookie('currency') != '@SiteClient.SiteCurrency') {
+                $.cookie('currency', '@SiteClient.SiteCurrency', { path: '/', expires: 365 });
+            }
+        });
+    </script>
+}
+@if (SiteClient.EnableMultipleCurrencies || SiteClient.EnableMultipleCultures)
+{
+    <p class="text-right">
+        <input type="button" class="btn btn-success" id="update" value="@Html.GlobalResource("Update")" />
+    </p>
+    <script>
+        $(document).ready(function () {
+            $("input#update").click(function () {
+                @if (SiteClient.EnableMultipleCultures)
+                {
+                    @:$.cookie('culture', $("select#culture").val(), { path: '/', expires: 365 });
+                    @:SetUserCulture($("select#culture").val());
+                    @:window.location.reload();
+                }
+
+                @if (SiteClient.EnableMultipleCurrencies)
+                {
+                    @:$.cookie('currency', $("select#currency").val(), { path: '/', expires: 365 });
+                }
+            });
+        });
+    </script>
+}

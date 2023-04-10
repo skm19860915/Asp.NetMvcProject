@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html>
+<head prefix="og: http://ogp.me/ns#">
+    <base href="@Html.Base()" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(string.IsNullOrEmpty(ViewBag.SiteTitle) ? SiteClient.Settings[SiteProperties.SiteTitle] : ViewBag.SiteTitle)</title>
+    @if (IsSectionDefined("metaContent"))
+    {
+        @RenderSection("metaContent")
+    }
+    else
+    {
+        <meta name="keywords" content="@SiteClient.Settings["MetaKeywords"]" />
+        <meta name="description" content="@SiteClient.Settings["MetaDescription"]" />
+    }
+    <meta name="robots" content="ALL" />
+    <meta name="rating" content="GENERAL" />
+    <meta name="dcterms.audience" content="Global" />
+    @Scripts.Render("~/bundles/jquery")
+    @if (!string.IsNullOrEmpty(SiteClient.TextSetting(SiteProperties.SiteFavIconFileName)))
+    {
+        if (!SiteClient.TextSetting(SiteProperties.SiteFavIconFileName).StartsWith("http"))
+        {
+            <link rel="shortcut icon" href="~/@SiteClient.TextSetting(SiteProperties.SiteFavIconFileName)" />
+        }
+        else
+        {
+            <link rel="shortcut icon" href="@SiteClient.TextSetting(SiteProperties.SiteFavIconFileName)" />
+        }
+    }
+    else
+    {
+        <link rel="shortcut icon" href="~/favicon.ico" />
+    }
+    @Styles.Render("~/bundles/bootstrap_css")
+    <link rel="stylesheet" type="text/css" href="Content/AWE_Bootstrap3.css?v=20210115">
+    <script>
+        var rwx_SignalRDisabled = @((!SiteClient.BoolSetting(SiteProperties.SignalREnabled)).ToString().ToLower());
+    </script>
+    @if (SiteClient.DemoEnabled)
+    {
+        <link rel="stylesheet" type="text/css" href="Content/AWE-Demo.css">
+    }
+    <style>
+        .listing-badge:before {
+            content: '@Html.GlobalResource("Listing_Badge_Text")';
+        }
+
+        @{
+            string headingColor = SiteClient.Settings["HeadingColor"];
+            bool centerlogo = bool.Parse(SiteClient.Settings["CenterLogo"]);
+            @:.header-splash {background-color: @headingColor;}
+            if (centerlogo)
+            {
+                @:.logo img{margin: 0 auto;}
+            }
+        }
+    </style>
+    @RenderSection("head", required: false)
+    @Html.GetSiteContent("Literal_Header")
+</head>
+<body>
+    @if (SiteClient.DemoEnabled)
+    {
+        @Html.Partial("DemoMenu")
+    }
+    <header class="header-splash">
+        <div class="container">
+            <div class="logo">
+                @if (!SiteClient.DemoEnabled)
+                {
+                    <a href="@Html.Base()">
+                        <picture>
+                            <source sizes="100vw" srcset="@SiteClient.Settings["SiteLogoFileName"]" media="(min-width: 769px)" />
+                            <source sizes="100vw" srcset="@SiteClient.Settings["MobileLogoFileName"]" media="(max-width: 768px)" />
+                            <img src="@SiteClient.Settings["SiteLogoFileName"]" alt="@SiteClient.Settings["FriendlySiteName"]" class="img-responsive" />
+                        </picture>
+                    </a>
+                }
+                else
+                {
+                    string demoLogoFilename;
+                    string demoMobileLogoFN;
+                    if (SiteClient.EnableEvents)
+                    {
+                        demoLogoFilename = "AuctionWorxLogo31EV-240x40.png";
+                        demoMobileLogoFN = "AuctionWorxLogo31EV-960x160.png";
+                    }
+                    else
+                    {
+                        demoLogoFilename = "AuctionWorxLogo31EN-240x40.png";
+                        demoMobileLogoFN = "AuctionWorxLogo31EN-960x160.png";
+                    }
+                    <a href="@Html.Base()">
+                        <picture>
+                            <source sizes="100vw" srcset="@SiteClient.Settings["SiteLogoFileName"]" media="(min-width: 769px)" />
+                            <source sizes="100vw" srcset="@SiteClient.Settings["MobileLogoFileName"]" media="(max-width: 768px)" />
+                            <img src="@SiteClient.Settings["SiteLogoFileName"]" alt="@SiteClient.Settings["FriendlySiteName"]" class="img-responsive" />
+                        </picture>
+                    </a>
+                }
+            </div>
+            @if (Context.User.IsInRole("Admin"))
+            {
+                <div class="admin clearfix hidden-xs">
+                    <a href="@Url.Action(MVC.IndexAction, MVC.AdminController)" class="btn btn-default">@Html.GlobalResource("GoToAdminControlPanel") <span class="glyphicon glyphicon-cog"></span> </a>
+                    @if (!string.IsNullOrEmpty(Html.GetCookie(MVC.FBOUserName)))
+                    {
+                        @Html.ButtonLink(Html.GlobalResource("StopImpersonating"), MVC.StopImpersonatingAction, MVC.AccountController,
+                            null, new { @class = "btn btn-danger" })
+                    }
+                </div>
+            }
+            <nav class="navbar navbar-default nav-primary" role="navigation">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#awe-main-nav" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand visible-xs" href="@Html.Base()"><span class="glyphicon glyphicon-home"></span></a>
+                </div>
+                <div class="collapse navbar-collapse" id="awe-main-nav">
+                    <ul class="nav navbar-nav hidden-xs">
+                        <li>
+                            <a href="@Html.Base()">@Html.GlobalResource("Home")</a>
+                        </li>
+                        @if (!SiteClient.EnableEvents || (SiteClient.EnableEvents && SiteClient.TextSetting(SiteProperties.HomepageContent) != "browse"))
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@Html.GlobalResource("Browse") <span class="caret"></span></a>
+                                <ul class="dropdown-menu browse-categories" role="menu">
+                                    <li>
+                                        <ul class="menu-list nav nav-pills">
+                                            <li>
+                                                @Html.ActionLink(Html.GlobalResource("AllCategories"), MVC.IndexAction, MVC.ListingController)
+                                            </li>
+                                            @Html.Partial("CategoryListTop")
+                                        </ul>
+                                    </li>
+                                    @if (bool.Parse(SiteClient.Settings[SiteProperties.EnableRegions]))
+                                    {
+                                        <li class="divider"></li>
+                                        <li>
+                                            <ul class="menu-list nav nav-pills">
+                                                @Html.Partial("RegionListTop")
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (!SiteClient.EnableEvents)
+                        {
+                            if (SiteClient.RestrictOutsideSellers)
+                            {
+                                if (Context.User.IsInRole("Seller"))
+                                {
+                                    <li>@Html.ActionLink(Html.GlobalResource("Sell"), MVC.CreateListingPage1Action, MVC.ListingController)</li>
+                                }
+                            }
+                            else
+                            {
+                                <li>@Html.ActionLink(Html.GlobalResource("Sell"), MVC.CreateListingPage1Action, MVC.ListingController)</li>
+                            }
+                        }
+                        @if (SiteClient.EnableEvents && SiteClient.TextSetting(SiteProperties.HomepageContent) != "default")
+                        {
+                            <li>
+                                @Html.ActionLink(Html.GlobalResource("EventListLinkText"), MVC.IndexAction, MVC.EventController)
+                            </li>
+                        }
+                    </ul>
+
+                    @Html.Partial("LogOnUserControl")
+                </div>
+            </nav>
+            <div class="nav-secondary clearfix">
+                @using (Html.BeginForm("Search", "Listing", FormMethod.Get, new { @class = "pull-right form-inline" }))
+                {
+                    <div class="btn-group pull-right" role="group">
+                        <a class="dropdown-toggle btn btn-sm search" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+                        <ul class="dropdown-menu advanced-search" role="menu">
+                            <li>@Html.ActionLink(Html.GlobalResource("AdvancedSearch"), "Search", "Listing")</li>
+                        </ul>
+                    </div>
+
+                    <div class="input-group">
+                        @Html.TextBox(Fields.FullTextQuery, null, new { @size = 15, @class = "form-control input-sm ", @id = "FullTextQuery1", placeholder = Html.GlobalResourceString("EnterKeywords") })
+                        <div class="input-group-btn" role="group">
+                            <button class="btn btn-default btn-sm" type="submit">@Html.GlobalResource("Search")</button>
+                        </div>
+                    </div>
+                }
+
+                <ul class="nav nav-pills">
+                    @Html.GetSiteContent("Literal_SubNavigation")
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        @RenderSection("Splash", required: false)
+        <div class="container">
+            @{MvcHtmlString everypageContent = Html.GetSiteContent("SiteHeader");}
+            @if (!MvcHtmlString.IsNullOrEmpty(everypageContent))
+            {
+                @everypageContent
+            }
+            <div class="awe-rt-SystemMessage">@Html.SystemMessages()</div>
+
+            @RenderBody()
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div id="Time" data-initial-dttm="@Html.CultureInvariantLocalDTTM(DateTime.UtcNow)"></div>
+                    <!--<p>
+                         <strong>
+                             @Html.GlobalResource("QuestionContact")
+                             @Html.ActionLink(Html.GlobalResource("ContactUs"), "Contact", "Home") &nbsp; &nbsp;
+                             @Html.GlobalResource("BrowseFAQ")
+                             @Html.ActionLink(Html.GlobalResource("FAQ"), "Help", "Home")
+                         </strong>
+                     </p>-->
+                </div>
+                <div class="col-xs-12 col-md-8">
+                    <div class="footer__links">
+                        @Html.ActionLink(Html.GlobalResource("Help"), "Help", "Home")
+                        @Html.ActionLink(Html.GlobalResource("ContactUs"), "Contact", "Home")
+                        @Html.ActionLink(Html.GlobalResource("About"), "About", "Home")
+                        @Html.ActionLink(Html.GlobalResource("TermsAndConditions"), "Terms", "Home")
+                        @Html.ActionLink(Html.GlobalResource("PrivacyPolicy"), "PrivacyPolicy", "Home")
+                        @Html.ActionLink(Html.GlobalResource("SiteMap"), "Sitemap", "Home")
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 currency">
+                    @Html.Partial("RegionCurrencySelector")
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    @Html.GetSiteContent("SiteFooter")
+
+                    @{ var siteNow = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, TimeZoneInfo.FindSystemTimeZoneById(SiteClient.SiteTimeZone)); }
+                    <div class="footer__copyright">
+                        @Html.GlobalResource("Copyright", SiteClient.Settings["LegalSiteName"], siteNow.Year) @Html.GlobalResource("CopyrightDisclaimer", SiteClient.Settings["LegalSiteName"])
+                    </div>
+                    @Html.Partial("SignalRHandler")
+                </div>
+            </div>
+        </div>
+
+    </footer>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <script>
+            var aweUserName = "@Html.FBOUserName().ToJavascriptSafeString()";
+        </script>
+    }
+    else
+    {
+        <script>
+            var aweUserName = null;
+        </script>
+    }
+
+    @Html.GetSiteContent("Literal_Footer")
+    @RenderSection("YouTubeModal", required: false)
+    <link href="Content/themes/base/jquery-ui.min.css" rel="stylesheet" />@*Styles.Render("~/bundles/jqueryuicss")*@
+    @Styles.Render("~/bundles/scrollup_css")
+    @Styles.Render("~/bundles/bootstrap_dialog_css")
+    @Scripts.Render("~/bundles/oldbrowser_js")
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    @Scripts.Render("~/bundles/bootstrap_js")
+    @Scripts.Render("~/bundles/jquery_scrollUp")
+    @if (SiteClient.BoolSetting(SiteProperties.SignalREnabled))
+    {
+        @Scripts.Render("~/bundles/signalr")
+        <script src="~/signalr/hubs"></script>
+    }
+    @Scripts.Render("~/bundles/AWE-signalr")
+    @Scripts.Render("~/bundles/generalAJAX")
+    @if (!(Html.GetCultureInfo().Calendar is System.Globalization.GregorianCalendar))
+    {
+        <script>disableDatePicker = true;</script>
+    }
+
+    @Scripts.Render("~/bundles/jquery-globalize")
+    <script>
+        var timeZoneLabel = '@(SiteClient.BoolSetting(SiteProperties.ShowTimeZoneLabel) ? Html.TimeZoneAbbreviationString(SiteClient.SiteTimeZone) : string.Empty)';
+        @{string effectiveCultureCode = null;}
+        Globalize.load(@Html.ReadJsonFileContents(Html.GetCookie(MVC.CultureCookie), "~/Scripts/globalize/json/supplemental/likelySubtags.json"));
+        Globalize.load(@Html.ReadJsonFileContents(Html.GetCookie(MVC.CultureCookie), "~/Scripts/globalize/json/supplemental/timeData.json"));
+        Globalize.load(@Html.ReadJsonFileContents(Html.GetCookie(MVC.CultureCookie), "~/Scripts/globalize/json/supplemental/weekData.json"));
+        Globalize.load(@Html.ReadJsonFileContents(Html.GetCookie(MVC.CultureCookie), "~/Scripts/globalize/json/main/{0}/ca-gregorian.json", out effectiveCultureCode));
+        Globalize.load(@Html.ReadJsonFileContents(Html.GetCookie(MVC.CultureCookie), "~/Scripts/globalize/json/main/{0}/numbers.json", out effectiveCultureCode));
+        Globalize.locale("@effectiveCultureCode");
+        /*
+            Example usage:
+            var localizedNumber = Globalize.formatNumber(12345.678, { minimumFractionDigits: 2, maximumFractionDigits: 2 } ); //format a number
+            var localizedDate = Globalize.formatDate(new Date(), { date: "full" }) + ' ' + Globalize.formatDate(new Date(), { time: "short" }); //format a date
+        */
+        $("[data-initial-dttm]").each(function () {
+            var rawValue = $(this).data("initialDttm");
+            if (rawValue) {
+                var origDTTM = new Date(rawValue);
+                var localizedDTTM = "";
+                if ($(this).hasClass("awe-short-date")) {
+                    localizedDTTM = Globalize.formatDate(origDTTM, { date: "short" }) + ' ' + Globalize.formatDate(origDTTM, { time: "short" });
+                } else if ($(this).hasClass("awe-date-only")) {
+                    localizedDTTM = Globalize.formatDate(origDTTM, { date: "short" });
+                } else {
+                    localizedDTTM = Globalize.formatDate(origDTTM, { date: "full" }) + ' ' + Globalize.formatDate(origDTTM, { time: "short" });
+                }
+                if (timeZoneLabel) localizedDTTM += (' ' + timeZoneLabel);
+                $(this).html(localizedDTTM);
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            if ('@ViewData["FullTextQuery"]' != '') $("input[name='FullTextQuery']").val('@ViewData["FullTextQuery"]');
+        });
+    </script>
+
+    <script>
+        $(function () {
+            $.scrollUp({
+                scrollName: 'scrollUp', // Element ID
+                scrollDistance: 300, // Distance from top/bottom before showing element (px)
+                scrollFrom: 'top', // 'top' or 'bottom'
+                scrollSpeed: 300, // Speed back to top (ms)
+                easingType: 'linear', // Scroll to top easing (see http://easings.net/)
+                animation: 'fade', // Fade, slide, none
+                animationInSpeed: 200, // Animation in speed (ms)
+                animationOutSpeed: 200, // Animation out speed (ms)
+                scrollText: '', // Text for element, can contain HTML (default: 'Scroll to top')
+                scrollTitle: '@Html.GlobalResource("ScrollToTop").ToJavascriptSafeString()', // Set a custom <a> title if required. Defaults to scrollText (default: false)
+                scrollImg: false, // Set true to use image
+                activeOverlay: false, // Set CSS color to display scrollUp active point, e.g '#00FFFF'
+                zIndex: 2147483647 // Z-Index for the overlay
+            });
+
+        });
+    </script>
+    <!--[if IE]><script src="/Scripts/respimage.min.js" async=""></script><![endif]-->
+    <script src="Scripts/jquery.ui.touch-punch.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+    @if (SiteClient.DemoEnabled)
+    {
+        bool demoBiddingEnabled = false;
+        bool.TryParse(System.Configuration.ConfigurationManager.AppSettings["DemoBiddingEnabled"], out demoBiddingEnabled);
+        int maxSecondsBetweenDemoBids = 10;
+        int.TryParse(System.Configuration.ConfigurationManager.AppSettings["MaxSecondsBetweenDemoBids"], out maxSecondsBetweenDemoBids);
+        int minSecondsBetweenDemoBids = 5;
+        int.TryParse(System.Configuration.ConfigurationManager.AppSettings["MinSecondsBetweenDemoBids"], out minSecondsBetweenDemoBids);
+        int maxDemoBidsPerPage = 3;
+        int.TryParse(System.Configuration.ConfigurationManager.AppSettings["MaxDemoBidsPerPage"], out maxDemoBidsPerPage);
+        if (demoBiddingEnabled)
+        {
+            <script>
+                var demoBiddingEnabled = true
+                $(document).ready(function () {
+
+                    function randomIntFromInterval(min, max) {
+                        return Math.floor(Math.random() * (max - min + 1) + min);
+                    }
+
+                    function PlaceRandomBid() {
+                        if (interestingListings && interestingListings.length > 0) {
+                            var targetListingId = interestingListings[randomIntFromInterval(0, interestingListings.length - 1)];
+                            var targetUrl = "RealTime/PlaceDemoBid/?listingId=" + targetListingId + "&_r=" + randomIntFromInterval(100000, 999999);
+                            console.log("demo bid for", targetListingId)
+                            $.get(targetUrl);
+                        }
+                    }
+
+                    function SetNextDemoBidTime(demoBidsRemaining) {
+                        if (!demoBiddingEnabled) return;
+                        console.log("demo bids remaining", demoBidsRemaining)
+                        if (demoBidsRemaining < 1) return;
+
+                        var randomSeconds = randomIntFromInterval(@minSecondsBetweenDemoBids, @maxSecondsBetweenDemoBids);
+                        setTimeout(function () {
+                            PlaceRandomBid()
+                            SetNextDemoBidTime(--demoBidsRemaining);
+                        }, randomSeconds * 1000);
+                    }
+
+                    SetNextDemoBidTime(@maxDemoBidsPerPage);
+
+                });
+
+            </script>
+        }
+    }
+</body>
+</html>
+@{Html.LogPageRenderStats();}

@@ -1,0 +1,31 @@
+﻿@model ListingType
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("Listings");
+}
+@section PageName {
+    &nbsp;&gt;&nbsp; @Html.AdminResource(Model.Name)
+}
+@using (Html.BeginForm())
+{
+    Html.Hidden(Fields.ListingTypeName, Model.Name);
+    List<CustomProperty> properties = (List<CustomProperty>)ViewData["ListingTypeProperties"];
+    @Html.Partial("PropertyGroup", properties)
+    if (Model.Name.Contains("Auction"))
+    {
+        <p>
+            <input type="submit" class="btn btn-success" value="@Html.AdminResource("SaveAuctionSettings")" name="Save" id="Save" />
+        </p>
+    }
+    else
+    {
+        <div class="action-panel">
+            <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+        </div>
+    }
+}
+@if (Model.Name.Contains("Auction"))
+{
+    @Html.Partial("ListingTypeBidIncrements", Model)
+}

@@ -1,0 +1,123 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_FavIconUploader");
+}
+
+<div class="group">
+    @if (!SiteClient.DemoEnabled)
+    {
+
+        <input type="file" id="photo" name="photo" class="awe-hidden-no-toggle" />
+                    <button class="btn btn-default awe-hidden" id="html5button" onclick="$('#html5files').click();return false;">@Html.AdminResource("UploadFavIcon")</button>
+                    <input type="file" id="html5files" name="files[]" class="awe-hidden-no-toggle" />
+
+    }
+    else
+    {
+        @Html.AdminResource("UploadYourSiteFavIcon")@: : <button class="btn btn-default" disabled="disabled">@Html.AdminResource("UploadFavIcon")</button>
+        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+    }
+    @Html.ToolTipButton("FavIconUploader_Help")
+   
+    @Html.ToolTipContent("FavIconUploader_Help", @Html.AdminResource("FavIconUploader_Help"))
+
+    <div id="progress_bar"><div class="percent">0%</div></div>
+    <hr />
+    <img src="@SiteClient.Settings[SiteProperties.SiteFavIconFileName]" alt="" />
+    <hr />
+    (@Html.AdminResource("CurrentFaviconFile"):@SiteClient.Settings[SiteProperties.SiteFavIconFileName])
+</div>
+<script>
+    function addImage(fileName, fileSize, fileType, guid, uri) {
+        $("#fileName").val(uri);
+        $("#logoForm").submit();
+    }
+</script>
+@if (!SiteClient.DemoEnabled)
+{
+<script>
+    $(document).ready(function () {
+        if (window.File && window.FileList) {
+            $("#html5files").change(handleFileSelect);
+            $("#html5button").show();
+        } else {
+            $("#photo").show();
+            $("#photo").makeAsyncUploader({
+                upload_url: $.url('Media/AsyncUploadBanner'),
+                flash_url: 'Content/swf/swfupload.swf',
+                button_image_url: 'Content/images/blankButton.png',
+                disableDuringUpload: 'INPUT[type="submit"]',
+                button_text: '@Html.AdminResource("UploadFavIcon").ToJavascriptSafeString()'
+            });
+        }
+    });
+
+    function handleFileSelect() {
+        $("#progress_bar").slideDown();
+        UploadFile(this.files[0]);
+    }
+
+    function updateProgress(evt) {
+        // evt is an ProgressEvent.
+        //While the request entity body is being uploaded and the upload complete flag is false,
+        //queue a task to fire a progress event named progress at the XMLHttpRequestUpload object
+        //about every 50ms or for every byte transmitted, whichever is least frequent.
+        //- W3 XMLHttpRequest Level 2 (Bolded for emphasis)
+        if (evt.lengthComputable) {
+            var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+            // Increase the progress bar length.
+            if (percentLoaded < 100) {
+                $('.percent').css("width", percentLoaded + "%");
+                $('.percent').text(percentLoaded + "%");
+            }
+        }
+    }
+
+    function successHandler(result) {
+        $('.percent').css("width", "100%");
+        $('.percent').text("100%");
+        addImage('unk', 'unk', 'unk', result.guid, result.uri);
+        $("#progress_bar").slideUp('slow');
+    }
+
+    function UploadFile(file) {
+        var formData = new FormData();
+        formData.append("file", file);
+        $.ajax({
+            url: $.url("Media/AsyncUploadBanner"),  //server script to process data
+            type: 'POST',
+            xhr: function () {  // custom xhr
+                var myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) { // check if upload property exists
+                    myXhr.upload.addEventListener('progress', updateProgress, false); // for handling the progress of the upload
+                }
+                return myXhr;
+            },
+            //Ajax events
+            //beforeSend: beforeSendHandler,
+            //success: successHandler,
+            //error: errorHandler,
+            // Form data
+            data: formData,
+            //Options to tell JQuery not to process data or worry about content-type
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (results) {
+            successHandler(results);
+        }).fail(function (e) {
+            alert('@Html.GlobalResource("AJAX_SorryFileNotUploaded").ToJavascriptSafeString()');
+            $("#progress_bar").slideUp('slow');
+        });
+    }
+</script>
+}
+@using (Html.BeginForm("FavIconUploader", MVC.AdminController, FormMethod.Post, new { id = "logoForm" }))
+{
+    @Html.Hidden("fileName")
+}
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+@Scripts.Render("~/bundles/imageupload")

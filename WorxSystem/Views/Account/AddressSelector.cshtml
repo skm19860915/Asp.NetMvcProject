@@ -1,0 +1,16 @@
+﻿@model List<Address>
+
+
+@foreach (Address address in Model)
+{
+    <div class="form-group">
+        <div class="input-group">
+            <span class="input-group-addon">
+                @Html.RadioButton("selectedAddressID", address.ID)
+            </span>
+            <button disabled="disabled" class="btn btn-default text-left">
+                @Html.Partial("Address", address)
+            </button>
+        </div>
+    </div>
+}

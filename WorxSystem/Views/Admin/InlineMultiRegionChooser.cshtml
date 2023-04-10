@@ -1,0 +1,14 @@
+﻿@model List<Category>
+
+@foreach (Category region in Model)
+{
+    <div>
+        <input type="hidden" name="@Fields.CategoryId" value="@region.ID.ToString()" />
+        @region.Name (<a class="RemoveRegionLink" href="#RemoveRegion">@Html.AdminResource("Remove")</a>)
+    </div>
+}
+
+<div class="form-group text-right">
+    <a class="AddRegionLink btn btn-default btn-xs" href="#AddRegion">@Html.AdminResource("AddRegion")</a>
+</div>
+

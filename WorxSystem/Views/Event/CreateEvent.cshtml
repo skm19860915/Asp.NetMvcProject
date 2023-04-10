@@ -1,0 +1,534 @@
+﻿@{
+    bool showTimePicker = bool.Parse(SiteClient.Settings["UsejQueryTimePicker"]);
+    int tierInputIndex = 1;
+    const bool incrementValuesInSeconds = true; //false = Minutes
+}
+
+@section head {
+    @if (showTimePicker)
+    {
+        @Styles.Render("~/bundles/timepicker_css")
+        @Scripts.Render("~/bundles/datetimepicker_js")
+    }
+
+    <script>
+        $(document).ready(function () {
+            var startDateInput = $('#@Fields.StartDate');
+            var startDateHelpText = null
+
+            ApplyDatePicker(startDateInput, '@Html.GetCookie("culture")', '@SiteClient.SiteCulture');
+
+            //toggle textbox help text "Leave blank to start immediately" as needed
+            if (startDateInput.val() == '') {
+                startDateInput.val(startDateHelpText);
+                startDateInput.addClass("TextboxHelpText");
+            }
+            startDateInput.focus(function () {
+                if ($(this).val() == startDateHelpText) {
+                    $(this).val('').removeClass("TextboxHelpText");
+                }
+                return true;
+            });
+            startDateInput.blur(function () {
+                if ($(this).val() == '') {
+                    $(this).val(startDateHelpText).addClass("TextboxHelpText");
+                }
+                return true;
+            });
+            startDateInput.change(function () {
+                if ($(this).val() == '') {
+                    $(this).val(startDateHelpText).addClass("TextboxHelpText");
+                } else if ($(this).val() != startDateHelpText) {
+                    $(this).removeClass("TextboxHelpText");
+                }
+                return true;
+            });
+
+            @if(showTimePicker)
+            {
+            <text>
+            $('#@Fields.StartTime').ptTimeSelect({
+                hoursLabel: '@Html.GlobalResource("Hours")',
+                minutesLabel: '@Html.GlobalResource("Minutes")',
+                containerClass: 'TimeSelectClass'
+            });
+            </text>
+            }
+            ApplyDatePicker($('#@Fields.EndDate'), '@Html.GetCookie("culture")', '@SiteClient.SiteCulture');
+
+            @if(showTimePicker)
+            {
+            <text>
+            $('#@Fields.EndTime').ptTimeSelect({
+                hoursLabel: '@Html.GlobalResource("Hours")',
+                minutesLabel: '@Html.GlobalResource("Minutes")',
+                containerClass: 'TimeSelectClass'
+            });
+            </text>
+            }
+
+        });
+    </script>
+}
+<div class="row">
+    <div class="col-xs-12">
+        @using (Html.BeginForm())
+        {
+            @Html.Hidden(Fields.ReturnUrl)
+            <div class="well well-sm section-title">
+                @Html.GlobalResource("CreateEvent")
+                <div class="pull-right hidden-xs">@Html.GlobalResource("RequiredFields", "<span class=\"required\"></span>")</div>
+            </div>
+            @Html.LocalizedValidationSummary()
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("EventDetails")
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="required col-sm-3 control-label" for="@Fields.Title">@Html.GlobalResource(Fields.Title)</label>
+                            <div class="col-sm-9">
+                                @Html.TextBox(Fields.Title, null, new { @class = "form-control", maxlength = 80 })
+                            </div>
+                        </div>
+                        @if (SiteClient.EnableEventSummary)
+                        {
+                            <div class="form-group">
+                                <div class="col-sm-9 col-sm-offset-3">@Html.ToolTipContent("EventSummary_Help", Html.GlobalResource("EventSummary_Help"))</div>
+                                <label class="col-sm-3 control-label" for="@Fields.Subtitle">@Html.GlobalResource("Summary")</label>
+                                <div class="col-xs-9 col-sm-8">
+                                    @Html.TextArea(Fields.Subtitle, new { @class = "form-control", @rows = "5", @cols = "40", @maxlength = "1000" })
+                                </div>
+                                <div class="col-xs-3 col-sm-1">
+                                    @Html.ToolTipButton("EventSummary_Help")
+                                </div>
+                            </div>
+                        }
+                        @if (SiteClient.EnableEventManagedBy)
+                        {
+                            <div class="form-group">
+                                <div class="col-sm-9 col-sm-offset-3">@Html.ToolTipContent("EventManagedby_Help", Html.GlobalResource("EventManagedby_Help"))</div>
+                                <label class="col-sm-3 control-label" for="@Fields.ManagedByName">@Html.GlobalResource(Fields.ManagedByName)</label>
+                                <div class="col-xs-9 col-sm-8">
+                                    @Html.TextBox(Fields.ManagedByName, null, new { @class = "form-control", maxlength = 80 })
+                                </div>
+                                <div class="col-xs-3 col-sm-1">
+                                    @Html.ToolTipButton("EventManagedby_Help")
+                                </div>
+                            </div>
+                        }
+                        @if (SiteClient.EnableEventDescription)
+                        {
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="@Fields.EventDescription">@Html.GlobalResource(Fields.EventDescription)</label>
+                                <div class="col-sm-9">
+                                    <script>
+                                        $(document).ready(function() {
+                                            CKEDITOR.replace('@Fields.EventDescription');
+                                        });
+                                    </script>
+                                    @Html.TextArea(Fields.EventDescription, new { @class = "form-control", @rows = "5", @cols = "40" })
+                                </div>
+                            </div>
+                        }
+                        @if (SiteClient.EnableEventTermsAndConditions)
+                        {
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="@Fields.TermsAndConditions">@Html.GlobalResource(Fields.TermsAndConditions)</label>
+                                <div class="col-sm-9">
+                                    <script>
+                                        $(document).ready(function() {
+                                            CKEDITOR.replace('@Fields.TermsAndConditions');
+                                        });
+                                    </script>
+                                    @Html.TextArea(Fields.TermsAndConditions, new { @class = "form-control", @rows = "5", @cols = "40" })
+                                </div>
+                            </div>
+                        }
+                        @if (SiteClient.EnableEventShippingInfo)
+                        {
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="@Fields.ShippingInfo">@Html.GlobalResource(Fields.ShippingInfo)</label>
+                                <div class="col-sm-9">
+                                    <script>
+                                        $(document).ready(function() {
+                                            CKEDITOR.replace('@Fields.ShippingInfo');
+                                        });
+                                    </script>
+                                    @Html.TextArea(Fields.ShippingInfo, new { @class = "form-control", @rows = "5", @cols = "40" })
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("EventImages")
+                </div>
+                <div class="panel-body">
+                    
+                    @Html.Partial("AJAXEventImageUploader", ViewData[Fields.Media])
+                    @Html.ToolTipContent("DeleteImageDisclaimer_EventImage", Html.GlobalResource("EventImage_HelpTip"))
+                    @Html.Hidden("ThumbnailRendererState_EventImage")
+                </div>
+                <div class="panel-body">
+                    @Html.Partial("AJAXEventBannerUploader", ViewData[Fields.Media])
+                    @Html.ToolTipContent("DeleteImageDisclaimer_EventBanner", Html.GlobalResource("EventImageBanner_HelpTip"))
+                    @Html.Hidden("ThumbnailRendererState_EventBanner")
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("EventAdditionalMedia")
+                </div>
+                <ul class="panel-body">
+                    @Html.Partial("AJAXUploadEventFile", ViewData[Fields.Media])
+                    @Html.Hidden("FilesRendererState")
+                </ul>
+            </div>
+
+            if (((List<CustomProperty>)ViewData[Fields.EventProperties]).Count > 0)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("CustomFields")</div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            @Html.Partial("PropertyGroup", ViewData[Fields.EventProperties])
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("Options")
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        @if (SiteClient.BoolSetting(SiteProperties.EnableBuyersPremium))
+                        {
+                            @Html.ToolTipContent("BuyersPremiumPercent_Help", Html.GlobalResource("BuyersPremiumPercent_Help"))
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="@Fields.BuyersPremiumPercent">@Html.GlobalResource(Fields.BuyersPremiumPercent) @Html.ToolTipButton("BuyersPremiumPercent_Help")</label>
+                                <div class="col-sm-4 col-md-2">
+                                    <div class="input-group">
+                                        @Html.TextBox(Fields.BuyersPremiumPercent, null, new { @class = "form-control" })
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @Html.ToolTipContent("ProxyBidding_Help", Html.GlobalResource("ProxyBiddingEvent_Help"))
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="@Fields.ProxyBidding">@Html.GlobalResource(Fields.ProxyBidding) @Html.ToolTipButton("ProxyBidding_Help")</label>
+                            <div class="checkbox col-sm-4 col-md-2">
+                                <label class="checkbox--single">
+                                    @Html.CheckBox(Fields.ProxyBidding)
+                                </label>
+                            </div>
+                        </div>
+
+                        @if (incrementValuesInSeconds)
+                        { //seconds
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    @Html.ToolTipContent("SoftClosingGroupIncrement_Help", Html.GlobalResource("SoftClosingGroupIncrement_Help"))
+                                </div>
+                                <label class="col-sm-3 control-label" for="@Fields.SoftClosingGroupIncrementSeconds">@Html.GlobalResource("SoftClosingGroupIncrement") @Html.ToolTipButton("SoftClosingGroupIncrement_Help")</label>
+                                <div class="col-sm-3">
+                                    <div class="input-group">
+                                        @Html.TextBox(Fields.SoftClosingGroupIncrementSeconds, null, new { @class = "form-control" })
+                                        <span class="input-group-addon">@Html.GlobalResource("seconds")</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @*@Html.Hidden(Fields.SoftClosingGroupIncrementSeconds, null)*@
+                        }
+                        else
+                        { //minutes
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    @Html.ToolTipContent("SoftClosingGroupIncrement_Help", Html.GlobalResource("SoftClosingGroupIncrement_Help"))
+                                </div>
+                                <label class="col-sm-3 control-label" for="@Fields.SoftClosingGroupIncrementMinutes">@Html.GlobalResource("SoftClosingGroupIncrement") @Html.ToolTipButton("SoftClosingGroupIncrement_Help")</label>
+                                <div class="col-sm-3">
+                                    <div class="input-group">
+                                        @Html.TextBox(Fields.SoftClosingGroupIncrementMinutes, null, new { @class = "form-control" })
+                                        <span class="input-group-addon">@Html.GlobalResource("minutes")</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @*@Html.Hidden(Fields.SoftClosingGroupIncrementMinutes, null)*@
+                        }
+
+                        @Html.ToolTipContent("PreviewLots_Help", Html.GlobalResource("PreviewLots_Help"))
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">@Html.GlobalResource(Fields.PreviewLots) @Html.ToolTipButton("PreviewLots_Help")</label>
+                            <div class="checkbox col-sm-4 col-md-2">
+                                <label class="checkbox--single">
+                                    @Html.CheckBox(Fields.PreviewLots, true)
+                                </label>
+                            </div>
+                        </div>
+
+                        @if (!SiteClient.BoolSetting(SiteProperties.HideTaxFields))
+                        {
+                            @Html.ToolTipContent("LotsTaxable_Help", Html.GlobalResource("LotsTaxable_Help"))
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="@Fields.LotsTaxable">@Html.GlobalResource(Fields.LotsTaxable) @Html.ToolTipButton("LotsTaxable_Help")</label>
+                                <div class="checkbox col-sm-4 col-md-2">
+                                    <label class="checkbox--single">
+                                        @Html.CheckBox(Fields.LotsTaxable, true)
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.Hidden(Fields.LotsTaxable, false)
+                        }
+
+                        @if (SiteClient.EnableMultipleCurrencies)
+                        {
+                            @Html.ToolTipContent("EventCurrency_Help", Html.GlobalResource("EventCurrency_Help"))
+                            <div class="form-group">
+                                <label class="required col-sm-3 control-label" for="@Fields.Currency">@Html.GlobalResource("Currency") @Html.ToolTipButton("EventCurrency_Help")</label>
+                                <div class="col-sm-4 col-md-3">
+                                    @Html.DropDownList(Fields.Currency, Html.Currencies(), new { @class = "form-control" })
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.Hidden(Fields.Currency, SiteClient.SiteCurrency)
+                        }
+
+                        @if (SiteClient.BoolSetting(SiteProperties.FollowAuctionLiveEnabled))
+                        {
+                            @Html.ToolTipContent("FollowLiveEnabled_Help", Html.GlobalResource("FollowLiveEnabled_Help"))
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="@Fields.FollowLiveEnabled">@Html.GlobalResource(Fields.FollowLiveEnabled) @Html.ToolTipButton("FollowLiveEnabled_Help")</label>
+                                <div class="checkbox col-sm-4 col-md-2">
+                                    <label class="checkbox--single">
+                                        @Html.CheckBox(Fields.FollowLiveEnabled)
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.Hidden(Fields.FollowLiveEnabled, false)
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">@Html.GlobalResource("Duration")</div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+
+                        @*<div class="form-group">
+                                <label class="required col-sm-3 control-label" for="@Fields.TimeZone">@Html.GlobalResource(Fields.TimeZone)</label>
+                                <div class="col-sm-6">
+                                    @Html.DropDownList(Fields.TimeZone, Html.TimeZoneSelectList(SiteClient.SiteTimeZone), new { @class = "form-control" })
+                                </div>
+                            </div>*@
+                        @Html.Hidden(Fields.TimeZone, SiteClient.SiteTimeZone)
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="@Fields.StartDate">@Html.GlobalResource("StartDTTM")</label>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    @Html.TextBox(Fields.StartDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    @Html.TextBox(Fields.StartTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="required col-sm-3 control-label" for="@Fields.EndDate">@Html.GlobalResource("EndDTTM")</label>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    @Html.TextBox(Fields.EndDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    @Html.TextBox(Fields.EndTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (incrementValuesInSeconds)
+                        { //seconds
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    @Html.ToolTipContent("ClosingGroupIncrement_Help", Html.GlobalResource("ClosingGroupIncrement_Help"))
+                                </div>
+                                <label class="col-sm-3 control-label" for="@Fields.ClosingGroupIncrementSeconds">@Html.GlobalResource("ClosingGroupIncrement") @Html.ToolTipButton("ClosingGroupIncrement_Help")</label>
+                                <div class="col-sm-3">
+                                    <div class="input-group">
+                                        @Html.TextBox(Fields.ClosingGroupIncrementSeconds, null, new { @class = "form-control" })
+                                        <span class="input-group-addon">@Html.GlobalResource("seconds")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        { //minutes
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    @Html.ToolTipContent("ClosingGroupIncrement_Help", Html.GlobalResource("ClosingGroupIncrement_Help"))
+                                </div>
+                                <label class="col-sm-3 control-label" for="@Fields.ClosingGroupIncrementMinutes">@Html.GlobalResource("ClosingGroupIncrement") @Html.ToolTipButton("ClosingGroupIncrement_Help")</label>
+                                <div class="col-sm-3">
+                                    <div class="input-group">
+                                        @Html.TextBox(Fields.ClosingGroupIncrementMinutes, null, new { @class = "form-control" })
+                                        <span class="input-group-addon">@Html.GlobalResource("minutes")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("MinBidIncrements")
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-5">@Html.GlobalResource("IncrementHelp")</div>
+                        <div class="col-md-7">
+                            <a href="#EditIncrements" role="button" data-toggle="collapse" class="btn btn-default" aria-expanded="false">@Html.GlobalResource("EditIncrements") &nbsp; <span class="caret"></span></a>
+                            <div id="EditIncrements" class="collapse">
+                                <table class="table">
+                                    <thead><tr><th>@Html.GlobalResource("ForPricesAbove")</th><th>@Html.GlobalResource("BidIncrement")</th><th>&nbsp;</th></tr></thead>
+                                    <tbody id="INC_IncrementTableBody">
+                                        @{
+                                            var priceLevels = (Dictionary<int, string>)ViewData[Fields.PriceLevels];
+                                            var increments = (Dictionary<int, string>)ViewData[Fields.Increments];
+                                            bool isFirstIncrement = true;
+                                        }
+                                        @foreach (int i in priceLevels.Keys.OrderBy(i => i))
+                                        {
+                                            string priceKey = "INC_PriceLevel_" + (i).ToString();
+                                            string incrementKey = "INC_Increment_" + (i).ToString();
+                                            <tr>
+                                                <td>
+                                                    @if (isFirstIncrement)
+                                                    {
+                                                        @Html.TextBox(priceKey, 0, new { @class = "form-control", @readonly = "readonly" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBox(priceKey, priceLevels[i], new { @class = "form-control" })
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @Html.TextBox(incrementKey, increments[i], new { @class = "form-control" })
+
+                                                </td>
+                                                <td>
+                                                    @if (!isFirstIncrement)
+                                                    {
+                                                        <button class="close deleteIncrement"><span class="glyphicon glyphicon-remove"></span></button>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            if (tierInputIndex <= i)
+                                            {
+                                                tierInputIndex = i + 1;
+                                            }
+                                            isFirstIncrement = false;
+                                        }
+                                        @if (isFirstIncrement)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.TextBox("INC_PriceLevel_0", 0, new { @class = "form-control", @readonly = "readonly" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBox("INC_Increment_0", null, new { @class = "form-control" })
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-default pull-right" id="addIncrement">@Html.GlobalResource("AddIncrement")</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="well">
+                <script>
+                    $(document).ready(function() {
+                        $("#create").click(function() {
+                            $(this).attr('disabled', 'disabled');
+                            $(this).fadeTo(0, 0.5);
+                            $(this).closest('form').submit();
+                        });
+                    });
+                </script>
+                <input type="submit" class="btn btn-primary" id="create" name="create" value="@Html.GlobalResource("CreateEvent")" />
+            </div>
+                                            }
+    </div>
+</div>
+<script>
+
+    var CreateEvent_IncrementTierCounter = @tierInputIndex;
+
+    function AddIncrement(priceLevel, increment) {
+        CreateEvent_IncrementTierCounter++;
+        var priceInputName = "INC_PriceLevel_" + CreateEvent_IncrementTierCounter;
+        var incrInputName = "INC_Increment_" + CreateEvent_IncrementTierCounter;
+        var incContainer = $('#INC_IncrementTableBody');
+        $('<tr>' +
+            '<td>' +
+                '<div class="form-group">' +
+                    '<input class="form-control" id="' + priceInputName + '" name="' + priceInputName + '" type="text" value="' + priceLevel + '" />' +
+                '</div>' +
+            '</td>' +
+            '<td>' +
+                '<div class="form-group">' +
+                    '<input class="form-control" id="' + incrInputName + '" name="' + incrInputName + '" type="text" value="' + increment + '" />' +
+                '</div>' +
+            '</td>' +
+            '<td>' +
+                '<button class="btn btn-danger deleteIncrement">@Html.GlobalResource("Delete").ToJavascriptSafeString()</button>' +
+            '</td>' +
+        '</tr>').appendTo(incContainer);
+    }
+
+    $(document).ready(function () {
+        $('#addIncrement').click(function () {
+            event.preventDefault();
+            AddIncrement('', '');
+        });
+
+        $('#INC_IncrementTableBody').on('click', '.deleteIncrement', function () {
+            event.preventDefault();
+            $(this).closest('tr').remove();
+        });
+    });
+</script>
+
+<script src="Scripts/ckeditor/ckeditor.js"></script>
+@Scripts.Render("~/bundles/imageupload")

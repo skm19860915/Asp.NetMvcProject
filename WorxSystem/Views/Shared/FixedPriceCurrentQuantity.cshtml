@@ -1,0 +1,40 @@
+<div class="form-group">
+    <label class="required col-sm-3 control-label">
+        @Html.Resource("FixedPriceListing, CurrentQuantity")
+    </label>
+    <div class="col-sm-3">
+        @Html.TextBox(Fields.CurrentQuantity, null, new { @class = "form-control" })
+    </div>
+</div>
+@if ((bool)ViewData[SiteProperties.EnableMakeOffer])
+{
+    <div class="form-group">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-8">
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBox(Fields.MakeOfferAllowed, null)
+                    @Html.Resource("FixedPriceListing, AcceptOffers")
+                </label>
+            </div>
+        </div>
+    </div>
+}
+@if (!SiteClient.BoolSetting(SiteProperties.HideTaxFields))
+{
+    <div class="form-group">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-8">
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBox(Fields.IsTaxable, null)
+                    @Html.Resource("FixedPriceListing, IsTaxable")
+                </label>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @Html.Hidden(Fields.IsTaxable, MVC.FalseValue)
+}

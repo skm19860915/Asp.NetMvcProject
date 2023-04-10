@@ -1,0 +1,95 @@
+﻿@model Lot
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+    bool anAdmin = User.IsInRole("Admin");
+    var listingActiveOfferStatuses = (Dictionary<int, bool>)ViewData["ActiveOfferListings"];
+}
+<ul class="dropdown-menu dropdown-menu-right">
+    @if (Model.Listing.Properties != null && Model.Listing.Properties.Any(p =>
+        p.Field.Name == Fields.MakeOfferAllowed && !string.IsNullOrWhiteSpace(p.Value) && bool.Parse(p.Value)))
+    {
+        <li>
+            @if (listingActiveOfferStatuses != null && listingActiveOfferStatuses[Model.Listing.ID] == true)
+            {
+                <a href="@Html.GetActionUrl(MVC.ManageOffersAction, MVC.ListingController, new { ListingID = Model.Listing.ID, returnUrl })">
+                    @Html.GlobalResource("PendingOffers")
+                    <span class="text-danger"><strong>!</strong></span>
+                </a>
+            }
+            else
+            {
+                @Html.ActionLink(Html.GlobalResource("ManageOffers"), MVC.ManageOffersAction, MVC.ListingController,
+                    new { ListingID = Model.Listing.ID, returnUrl }, null)
+            }
+        </li>
+    }
+    <li>
+        @Html.ActionLink(Html.GlobalResource("Validate"), MVC.ValidateDraftLotAction, MVC.EventController, new { id = Model.ID, returnUrl },
+            new { @class = "awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusFailedValidation" })
+    </li>
+    <li>
+        @Html.ActionLink(Html.GlobalResource("ViewLot"), MVC.LotDetailsAction, MVC.EventController, new { id = Model.ID }, null)
+    </li>
+    @if (anAdmin)
+    {
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditLotAction, MVC.EventController, new { id = Model.ID, returnUrl },
+                new { @class = "awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusFailedValidation awe-rt-ShowStatusValidated awe-rt-ShowStatusAwaitingPayment awe-rt-ShowStatusPreview awe-rt-ShowStatusPending awe-rt-ShowStatusActive" })
+        </li>
+    }
+    else //non-admin can't edit when awaiting payment
+    {
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Edit"), MVC.EditLotAction, MVC.EventController, new { id = Model.ID, returnUrl },
+                new { @class = "awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusFailedValidation awe-rt-ShowStatusValidated awe-rt-ShowStatusPreview awe-rt-ShowStatusPending awe-rt-ShowStatusActive" })
+        </li>
+    }
+    <li>
+        @Html.ActionLink(Html.GlobalResource("ListSimilar"), MVC.CreateLotPage1Action, MVC.EventController, new { SimilarLotID = Model.ID, returnUrl }, null)
+    </li>
+    <li class="divider"></li>
+
+    <li>
+        @Html.ActionLink(Html.GlobalResource("PayFees"), MVC.FeesAction, MVC.AccountController,
+            new { @class = "awe-rt-hideable awe-rt-ShowStatusAwaitingPayment" })
+    </li>
+   
+    <li>
+        @Html.ActionLink(Html.GlobalResource("EndEarly"), MVC.EndLotEarlyAction, MVC.EventController, new { id = Model.ID, returnUrl },
+            new { @class = "awe-end-lot-early-link awe-rt-hideable awe-rt-ShowStatusActive" })
+    </li>
+    <li>
+        @Html.ActionLink(Html.GlobalResource("Cancel"), MVC.EndLotEarlyAction, MVC.EventController, new { id = Model.ID, returnUrl },
+            new { @class = "awe-end-lot-early-link awe-rt-hideable awe-rt-ShowStatusPending awe-rt-ShowStatusPreview" })
+    </li>
+    @if (anAdmin) // admin can always delete a lot
+    {
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteLotAction, MVC.EventController, new { id = Model.ID, returnUrl },
+                new { @class = "awe-delete-lot-link" })
+        </li>
+    }
+    else // non-admin can only delete lots with certain statuses
+    {
+        <li>
+            @Html.ActionLink(Html.GlobalResource("Delete"), MVC.DeleteLotAction, MVC.EventController, new { id = Model.ID, returnUrl },
+                new { @class = "awe-delete-lot-link awe-rt-hideable awe-rt-ShowStatusDraft awe-rt-ShowStatusFailedValidation awe-rt-ShowStatusValidated awe-rt-ShowStatusSuccessful awe-rt-ShowStatusUnsuccessful" })
+        </li>
+    }
+</ul>
+<script>
+    $(document).ready(function () {
+        //initial update Lot action buttons
+        var showAllLinksTest = false;
+        if (showAllLinksTest) {
+            console.log("showAllLinksTest: true");
+        } else {
+            $('[data-listingid="@(Model.Listing.ID)"] .awe-rt-hideable').each(function () {
+                $(this).hide();
+            });
+            $('[data-listingid="@(Model.Listing.ID)"] .awe-rt-ShowStatus@(Model.Listing.Status)').each(function () {
+                $(this).show();
+            });
+        }
+    });
+</script>

@@ -1,0 +1,65 @@
+﻿@model Listing
+
+@{
+    Layout = "~/Views/Shared/_NoLayout.cshtml";
+
+    bool largeBidAmtConfReqd = false;
+    if (ViewData.ContainsKey("LargeBidAmountConfirmationRequired"))
+    {
+        largeBidAmtConfReqd = (bool)ViewData["LargeBidAmountConfirmationRequired"];
+    }
+    bool CCRequired = ((bool?)ViewData["CCRequired"]) ?? false;
+}
+
+@if (!Context.User.Identity.IsAuthenticated)
+{
+    <text>LOGON_NEEDED</text>
+}
+else if (CCRequired)
+{
+    <text>CC_NEEDED</text>
+}
+else if (Model == null)
+{
+    @Html.LocalizedValidationSummary()
+    <button id="modalCancelButton" class="btn btn-default">@Html.GlobalResource("Cancel")</button>
+}
+else if (largeBidAmtConfReqd)
+{
+    decimal lowBidAmount = (decimal)ViewData["LowBidAmount"];
+    decimal highBidAmount = (decimal)ViewData["HighBidAmount"];
+    <p class="text-danger">
+        <strong>@Html.Resource(Model.Type.Name + "Listing,PleaseSelectTheAmountYouIntendedToEnter")</strong>
+    </p>
+    <p>
+        <div class="radio">
+            <label for="ConfBidAmt_Low">
+                <input id="ConfBidAmt_Low" name="ConfBidAmt" value="@Html.DecimalToPlainCurrencyMvcHtmlString(lowBidAmount)" type="radio" checked="checked">
+                @Html.LocalCurrency(lowBidAmount, Model.Currency.Code)
+            </label>
+        </div>
+        <div class="radio">
+            <label for="ConfBidAmt_High">
+                <input id="ConfBidAmt_High" name="ConfBidAmt" value="@Html.DecimalToPlainCurrencyMvcHtmlString(highBidAmount)" type="radio">
+                @Html.LocalCurrency(highBidAmount, Model.Currency.Code)
+            </label>
+        </div>
+    </p>
+    <div class="modal-footer">
+        <button id="modalCancelButton" class="btn btn-link">@Html.GlobalResource("Cancel")</button>
+        <button id="modalConfirmLargeBidButton" class="btn btn-success">@Html.Resource(Model.Type.Name + "Listing,ConfirmListingActionAmount")</button>
+    </div>
+}
+else
+{
+    @Html.Partial(Model.Type.Name + "BuyerFees", Model)
+    <p class="text-success">
+        <strong>
+            @Html.Partial(Model.Type.Name + "ActionConfirmationBox", Model)
+        </strong>
+    </p>
+    <div class="modal-footer">
+        <button id="modalCancelButton" class="btn btn-link">@Html.GlobalResource("Cancel")</button>
+        <button id="modalSubmitButton" class="btn btn-success">@Html.GlobalResource("Submit")</button>
+    </div>
+}

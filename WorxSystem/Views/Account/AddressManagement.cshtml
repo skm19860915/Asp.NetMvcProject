@@ -1,0 +1,96 @@
+﻿@model List<Address>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+@{
+    var creditCardCounts = (Dictionary<int, int>)ViewData["CreditCardCounts"];
+    int totalCardCount = creditCardCounts.Sum(c => c.Value);
+}
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Account_Addresses")
+</div>
+@foreach (Address address in Model)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @Html.Partial("Address", address)
+        </div>
+        <div class="panel-footer">
+            <div class="btn-group">
+                @if (address.ID == (int)ViewData["PrimaryAddressID"])
+                {
+                    <button class="btn btn-success" disabled="disabled">@Html.GlobalResource("PrimaryAddress")</button>
+                    @Html.ButtonLink(Html.GlobalResource("Edit"), "EditAddress", new { addressID = address.ID }, new { @class = "btn btn-default" })
+                }
+                else
+                {
+                    @Html.ButtonLink(Html.GlobalResource("SetPrimary"), "SetPrimaryAddress", new { addressID = address.ID }, new { @class = "btn btn-default" })
+                    @Html.ButtonLink(Html.GlobalResource("Edit"), "EditAddress", new { addressID = address.ID }, new { @class = "btn btn-default" })
+                    string deleteWarningClass = string.Empty;
+                    if (creditCardCounts[address.ID] > 0)
+                    {
+                        if (creditCardCounts[address.ID] == totalCardCount && SiteClient.BoolSetting(SiteProperties.RequireCreditCardOnRegistration))
+                        {
+                            deleteWarningClass = "awe-cc-delete-denied ";
+                        }
+                        else
+                        {
+                            deleteWarningClass = "awe-cc-delete-warning ";
+                        }
+                    }
+                    @Html.ActionLink(Html.GlobalResource("Delete"), "DeleteAddress", new { addressID = address.ID }, new { @class = deleteWarningClass + "btn btn-default" })
+                }
+            </div>
+        </div>
+    </div>
+}
+<div class="form-group">
+    @Html.ButtonLink(Html.GlobalResource("AddNew"), MVC.CreateAddressAction, null, null, new { @class = "btn btn-default" })
+</div>
+<script>
+    $(document).ready(function () {
+        $(".awe-cc-delete-warning").click(function () {
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '@Html.GlobalResourceString("DeleteAddressConfirmationTitle").ToJavascriptSafeString()',
+                message: '@Html.GlobalResourceString("DeleteAddressConfirmationMessage").ToJavascriptSafeString()',
+                buttons: [{
+                    label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                    cssClass: 'btn-danger',
+                    action: function () {
+                        window.location = $.htmlDecode(targetHref);
+                    }
+                }, {
+                    label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                    action: function (dialogItself) {
+                        dialogItself.close();
+                    }
+                }]
+            });
+            return false;
+        });
+        $(".awe-cc-delete-denied").click(function () {
+            var targetHref = '@Url.Action(MVC.AddCreditCardAction)';
+            BootstrapDialog.show({
+                type: 'type-warning',
+                title: '@Html.GlobalResourceString("DeleteAddressDeniedTitle").ToJavascriptSafeString()',
+                message: '@Html.GlobalResourceString("DeleteAddressDeniedMessage").ToJavascriptSafeString()',
+                buttons: [{
+                    label: '@Html.GlobalResourceString("AddNewCreditCard").ToJavascriptSafeString()',
+                    cssClass: 'btn-primary',
+                    action: function () {
+                        window.location = $.htmlDecode(targetHref);
+                    }
+                }, {
+                    label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                    action: function (dialogItself) {
+                        dialogItself.close();
+                    }
+                }]
+            });
+            return false;
+        });
+    });
+</script>

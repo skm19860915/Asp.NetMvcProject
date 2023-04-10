@@ -1,0 +1,92 @@
+﻿@model string
+@{
+    string backUrl = string.IsNullOrEmpty((string)ViewData["backUrl"])
+        ? Html.GetActionUrl(MVC.UserManagementAction)
+        : (string)ViewData["backUrl"];
+
+    
+        User targetUser = (User)ViewData["User"];
+    }
+<div class="pull-right impersonate">
+    @if (User.Identity.Name != targetUser.UserName)
+    { //can't impersonate self!
+
+        @Html.ButtonLink(Html.AdminResource("Impersonate"), MVC.ImpersonateAction, new { id = targetUser.ID, backUrl },
+                new { @id = "ImpersonateButton", @class = "btn btn-info btn-sm" })
+    }
+    <a href="@backUrl" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> @Html.AdminResource("BackToList")</a>
+</div>
+
+    
+<ul class="nav nav-tabs userManagement">
+    
+    @{
+        string tabClass;
+        MvcHtmlString tabText;
+        if (Model == "summary" || string.IsNullOrEmpty(Model))
+        {
+            tabClass = "active";
+            tabText = Html.ActionLink(Html.AdminResource("Summary"), MVC.UserSummaryAction, new { @id = targetUser.ID, backUrl });
+        }
+        else
+        {
+            tabClass = "";
+            tabText = Html.ActionLink(Html.AdminResource("Summary"), MVC.UserSummaryAction, new { @id = targetUser.ID, backUrl });
+        }
+    }
+    <li class="@tabClass">@tabText</li>
+    @if (Model == "accountinfo")
+    {
+        tabClass = "active";
+        tabText = Html.ActionLink(Html.AdminResource("AccountInfo"), MVC.EditUserAction, new { @id = targetUser.ID, backUrl });
+    }
+    else
+    {
+        tabClass = "";
+        tabText = Html.ActionLink(Html.AdminResource("AccountInfo"), MVC.EditUserAction, new { @id = targetUser.ID, backUrl });
+    }
+
+    <li class="@tabClass">@tabText</li>
+    @if (Model == "addresses")
+    {
+        tabClass = "active";
+        tabText = Html.ActionLink(Html.AdminResource("Addresses"), MVC.UserAddressesAction, new { @id = targetUser.ID, backUrl });
+    }
+    else
+    {
+        tabClass = "";
+        tabText = Html.ActionLink(Html.AdminResource("Addresses"), MVC.UserAddressesAction, new { @id = targetUser.ID, backUrl });
+    }
+
+    <li class="@tabClass">@tabText</li>
+    @{
+        if (Html.SitePropertyBoolValue("CreditCardsEnabled"))
+        {
+            if (Model == "creditcards" || string.IsNullOrEmpty(Model))
+            {
+                tabClass = "active";
+                tabText = Html.ActionLink(Html.AdminResource("CreditCards"), MVC.UserCreditCardsAction, new { @id = targetUser.ID, backUrl });
+            }
+            else
+            {
+                tabClass = "";
+                tabText = Html.ActionLink(Html.AdminResource("CreditCards"), MVC.UserCreditCardsAction, new { @id = targetUser.ID, backUrl });
+            }
+
+            <li class="@tabClass">@tabText</li>
+        }
+
+        if (Model == "feedback" || string.IsNullOrEmpty(Model))
+        {
+            tabClass = "active";
+            tabText = Html.ActionLink(Html.AdminResource("Feedback"), MVC.UserFeedbackAction, new { @id = targetUser.ID, backUrl });
+        }
+        else
+        {
+            tabClass = "";
+            tabText = Html.ActionLink(Html.AdminResource("Feedback"), MVC.UserFeedbackAction, new { @id = targetUser.ID, backUrl });
+        }
+    }
+    <li class="@tabClass">@tabText</li>
+   
+</ul>

@@ -1,0 +1,250 @@
+﻿@{ 
+    List<Address> currentUserAddresses = (List<Address>)ViewData[MVC.ViewData_AddressList];
+    int billgAddrId = (int)ViewData[MVC.ViewData_PayerBillingAddressId];
+    var billingAddress = currentUserAddresses.FirstOrDefault(adr => adr.ID == billgAddrId);
+    if (billingAddress == null)
+    {
+        billingAddress = currentUserAddresses.FirstOrDefault();
+    }
+
+}
+@section head {
+    <script>
+        $(document).ready(function () {
+            $("#readonlyaddressarea").find("input,select").prop("readonly", true);
+        });
+    </script>
+    @if (!SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled))
+    {
+        <script>
+            $(document).ready(function () {
+                $("input[type='submit']").click(function (event) {
+                    //prevent form submission temporarily
+                    event.preventDefault();
+                    //disable submit button
+                    $(this).prop("disabled", true);
+                    //submit container form
+                    $(this).parents("form").first().submit();
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            $(document).ready(function () {
+                Stripe.setPublishableKey('@SiteClient.TextSetting(SiteProperties.StripeConnect_SiteFeesPublishableApiKey).ToJavascriptSafeString()');
+
+                var $form = $("#RegistrationForm");
+                $form.submit(function (event) {
+                    var existingToken = $("#@Fields.StripeToken").val();
+                    if (existingToken == null || existingToken == "") {
+                        //copy name/zip values to hidden stripe fields
+                        $("#stripe_name").val($("#FirstName").val() + " " + $("#LastName").val());
+                        $("#stripe_address_zip").val($("#ZipPostal").val());
+
+                        // Disable the submit button to prevent repeated clicks:
+                        $form.find("#CompleteRegistrationButton").prop("disabled", true);
+
+                        // Request a token from Stripe:
+                        Stripe.card.createToken($form, stripeResponseHandler);
+
+                        // Prevent the form from being submitted:
+                        return false;
+                    }
+                });
+
+                function stripeResponseHandler(status, response) {
+                    // Grab the form:
+                    var $form = $("#RegistrationForm");
+
+                    if (response.error)
+                    { // Problem!
+
+                        // Show the errors on the form:
+                        $form.find('.payment-errors').html($('<div style="margin-bottom:10px;" class="alert alert-danger text-center" />').text(response.error.message)).focus();
+                        $form.find("#CompleteRegistrationButton").prop('disabled', false); // Re-enable submission
+
+                    }
+                    else
+                    { // Token was created!
+
+                        // Get the token ID:
+                        var token = response.id;
+
+                        // Insert the token ID into the form so it gets submitted to the server:
+                        $("#@Fields.StripeToken").val(token);
+
+                        // Submit the form:
+                        $form.get(0).submit();
+                        console.log("NOT submitting form, to hold for any JS errors...");
+                    }
+                }
+            });
+        </script>
+    }
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="well well-sm section-title">
+            TESTING CARD AUTH ONLY...
+        </div>
+        <h1>NOTE: This test form requires being logged in as a user with an address already defined.</h1>
+        <div id="Form_Registration">
+            @Html.LocalizedValidationSummary()
+            @using (Html.BeginForm("TestCardAuthOnly", MVC.AccountController, FormMethod.Post, new { @id = "RegistrationForm" }))
+            {
+                @Html.Hidden(MVC.Field_Provider, AccountingClient.GetSaleBatchPaymentProviderName())
+
+                List<CustomProperty> userProps = (List<CustomProperty>)ViewData[Fields.Properties];
+                if (userProps.Count > 0)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Basic Information
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                @foreach (CustomProperty userProp in userProps.OrderBy(p => p.Field.DisplayOrder))
+                                {
+                                    CustomField customField = userProp.Field;
+                                    string customFieldCss = (customField.Type != CustomFieldType.Boolean && customField.Required)
+                                        ? "required col-sm-3 control-label"
+                                        : "col-sm-3 control-label";
+                                    <div class="form-group">
+                                        <label for="@customField.Name" class="@customFieldCss">
+                                            @Html.CustomFieldResource(customField.Name)
+                                        </label>
+                                        <div class="col-sm-6">
+                                            @{ Html.RenderCustomField(customField, new { @class = "form-control", @readonly="readonly" }, true); }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div id="readonlyaddressarea">
+                    @Html.Partial("InitialAddress", billingAddress)
+                </div>
+
+                if (SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled))
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("CreditCardInformation")
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                @Html.Hidden(Fields.StripeToken)
+                                <div class="payment-errors"></div>
+                                <input type="hidden" id="stripe_name" data-stripe="name" />
+                                <input type="hidden" id="stripe_address_zip" data-stripe="address_zip" />
+
+                                <div class="form-group">
+                                    <label class="required col-sm-3 col-xs-1 control-label"><strong style="font-size: larger">#</strong></label>
+                                    <div class="col-sm-6 col-xs-10">
+                                        <input data-stripe="number" type="text" class="CreditCardNumber OnChangeCheckNew form-control" placeholder="@Html.GlobalResource("CardNumber")" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="required col-sm-3 col-xs-1 control-label"><span class="glyphicon glyphicon-calendar"></span></label>
+                                    <div class="col-sm-2 col-xs-5">
+                                        @*@Html.MonthDropDownList(Fields.ExpirationMonth, " ", new { @class = "CreditCardExpMonth OnChangeCheckNew form-control" })*@
+                                        <select data-stripe="exp_month" class="CreditCardExpMonth OnChangeCheckNew form-control">
+                                            <option value=""> </option>
+                                            @foreach (var monthOption in Html.MonthOptions())
+                                            {
+                                                <option value="@monthOption.Value">@monthOption.Text</option>
+                                            }
+                                        </select>
+                                        <span class="help-block">@Html.GlobalResource("Month")</span>
+                                    </div>
+                                    <div class="col-sm-2 col-xs-5">
+                                        @*@Html.YearDropDownList(Fields.ExpirationYear, " ", new { @class = "CreditCardExpYear OnChangeCheckNew form-control" })*@
+                                        <select data-stripe="exp_year" class="CreditCardExpYear OnChangeCheckNew form-control">
+                                            <option value=""> </option>
+                                            @foreach (var yearOption in Html.YearOptions())
+                                            {
+                                                <option value="@yearOption.Value">@yearOption.Text</option>
+                                            }
+                                        </select>
+                                        <span class="help-block">@Html.GlobalResource("Year")</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="required col-sm-3 col-xs-1 control-label"><span class="glyphicon glyphicon-lock"></span> </label>
+                                    <div class="col-sm-6 col-xs-10">
+                                        @*@Html.TextBox(Fields.VerificationCode, string.Empty, new { @class = "CreditCardCVV OnChangeCheckNew form-control", placeholder = @Html.GlobalResource("VerificationCode") })*@
+                                        <input data-stripe="cvc" type="text" class="CreditCardCVV OnChangeCheckNew form-control" placeholder="@Html.GlobalResource("VerificationCode")" />
+                                    </div>
+                                    <div class="col-sm-1 col-xs-1">
+                                        @Html.ToolTipButton("CVV_Help")
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-sm-offset-2">@Html.ToolTipContent("CVV_Help", Html.GlobalResource("CVV_Help"))</div>
+                            </div>
+                        </div>
+
+                        <div class="panel-footer">
+                            <div class="pull-right hidden-xs">@Html.GlobalResource("RequiredFields", "<span class=\"required\"></span>")</div>
+                            <input type="submit" id="CompleteRegistrationButton" class="btn btn-success" value="@Html.GlobalResource("CompleteRegistration")" />
+                        </div>
+
+
+                    </div>
+                }
+                else
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @Html.GlobalResource("CreditCardInformation")
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="@Fields.CardType" class="required col-sm-3 control-label">@Html.GlobalResource("CardType")</label>
+                                    <div class="col-sm-6">
+                                        @Html.DropDownList("CardType", (IEnumerable<SelectListItem>)ViewData[Fields.CreditCardTypes], Html.GlobalResourceString("SelectACreditCardType"), new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="@Fields.CardNumber" class="required col-sm-3 control-label">@Html.GlobalResource("CardNumber")</label>
+                                    <div class="col-sm-6">
+                                        @Html.TextBox(Fields.CardNumber, null, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="@Fields.ExpirationMonth" class="required col-sm-3 control-label">@Html.GlobalResource("ExpirationMonth")</label>
+                                    <div class="col-sm-3">
+                                        @Html.MonthDropDownList(Fields.ExpirationMonth, string.Empty, new { @class = "form-control", placeholder = @Html.GlobalResource("Month") })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="@Fields.ExpirationYear" class="required col-sm-3 control-label">@Html.GlobalResource("Year")</label>
+                                    <div class="col-sm-3">
+                                        @Html.YearDropDownList(Fields.ExpirationYear, string.Empty, new { @class = "form-control", placeholder = @Html.GlobalResource("Year") })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="panel-footer">
+                            <div class="pull-right hidden-xs">@Html.GlobalResource("RequiredFields", "<span class=\"required\"></span>")</div>
+                            <input type="submit" id="CompleteRegistrationButton" class="btn btn-success" value="Validate Card Info" />
+                        </div>
+
+
+                    </div>
+                }
+            }
+
+        </div>
+
+    </div>
+</div>
+
+

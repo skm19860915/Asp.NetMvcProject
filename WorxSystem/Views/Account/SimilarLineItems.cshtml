@@ -1,0 +1,38 @@
+﻿@model List<LineItem>
+@* This view exists in both the Account and Admin view folders, be sure you're editing the correct one *@
+@{
+    List<int> lineItemIds = new List<int>(Model.Count);
+}
+<p><strong>@Html.GlobalResource("SimilarLineItems")</strong></p>
+@foreach (LineItem lineItem in Model)
+{
+    lineItemIds.Add(lineItem.ID);
+    <p>
+        @Html.ActionLink(Html.GlobalResource("Add"), "AddLineItem",
+            new { invoiceID = ViewData["InvoiceID"], lineItemID = lineItem.ID, returnUrl = ViewData[Fields.ReturnUrl] }, new { @class = "btn btn-xs btn-default" })
+        &nbsp;
+        @lineItem.Description
+    </p>
+}
+@if (lineItemIds.Count > 1)
+{
+    <p>
+        <a class="btn btn-xs btn-default" id="AddAllLineItems">@Html.GlobalResource("AddAll")</a>
+    </p>
+    <script>
+        $(document).ready(function () {
+            $("#AddAllLineItems").on("click", function (event) {
+                event.preventDefault();
+                $("body").first().append('<form id="AddAllLineItemsForm" action="@Html.GetActionUrl("AddAllLineItems")" method="POST" />')
+                $("#AddAllLineItemsForm").append('<input type="hidden" name="returnUrl" value="@((((string)ViewData[Fields.ReturnUrl]) ?? string.Empty).ToJavascriptSafeString())" />');
+                $("#AddAllLineItemsForm").append('<input type="hidden" name="invoiceID" value="@ViewData["InvoiceId"]" />');
+                @foreach(int lineItemId in lineItemIds)
+                {
+                    <text>$("#AddAllLineItemsForm").append('<input type="hidden" name="lineItemIds" value="@lineItemId" />');</text>
+                }
+                //alert("form contents" + $("#AddAllLineItemsForm").html());
+                $("#AddAllLineItemsForm").submit();
+            });
+        });
+    </script>
+}

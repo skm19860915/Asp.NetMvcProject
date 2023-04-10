@@ -1,0 +1,18 @@
+﻿@model Decoration
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h4 class="h4row">@Html.AdminResource("EditDecoration")</h4>
+
+@using (Html.BeginForm("EditDecoration", "Admin", new { id = Model.ID }))
+{
+    @Html.AdminResource("Name")@: : @Html.TextBox("Name", Model.Name)<br />
+    @Html.AdminResource("Description")@: : @Html.TextArea("Description", Model.Description)<br />
+    @Html.AdminResource("Amount")@: : @Html.TextBox("Amount", Model.Amount)<br />
+    @Html.AdminResource("FormatString")@: : @Html.TextBox("FormatString", Model.FormatString)<br />
+    @Html.AdminResource("ValidFields")@: : @Html.TextBox("ValidFields", Model.ValidFields)<br />
+    @Html.AdminResource("PayToProceed")@: : @Html.CheckBox("PayToProceed", Model.PayToProceed)<br />
+    <input type="submit" class="DefaultButton" value="@Html.AdminResource("Save")" name="Save" id="Save" />
+}

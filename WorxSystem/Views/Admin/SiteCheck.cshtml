@@ -1,0 +1,63 @@
+﻿@model RainWorx.FrameWorx.MVC.Models.SiteCheck
+<div class="panel panel-default" id="@Model.Title.Replace(" ", "").Replace("/", "")">
+    <div class="panel-heading">
+        <h4>
+            @Model.Title  - <small>
+                @switch (Model.Disposition)
+                {
+                    case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Pass:
+                        <strong class="text-success">PASS</strong>
+                        break;
+                    case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Fail:
+                        <strong class="text-danger">FAIL</strong>
+                        break;
+                    case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Warning:
+                        <strong class="text-warning">WARNING</strong>
+                        break;
+                    case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Inconclusive:
+                        <strong class="text-info">INCONCLUSIVE</strong>
+                        break;
+                }
+            </small>
+        </h4>
+    </div>
+    <table class="table">
+        @foreach (RainWorx.FrameWorx.MVC.Models.CheckItem checkItem in Model.CheckItems)
+        {
+
+            <tr>
+                <td width="200px;"><strong>@checkItem.Title</strong></td>
+                <td>
+                    @switch (checkItem.Disposition)
+                {
+                    case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Pass:
+                            <strong class="text-success">PASS</strong>
+                            break;
+                        case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Fail:
+                            <strong class="text-danger">FAIL</strong>
+                            break;
+                        case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Warning:
+                            <strong class="text-warning">WARNING</strong>
+                            break;
+                        case RainWorx.FrameWorx.MVC.Models.ResultDisposition.Inconclusive:
+                            <strong class="text-info">INCONCLUSIVE</strong>
+                            break;
+                    }
+                </td>
+                <td>
+                    <p>
+                        <strong>
+                            @checkItem.CheckText
+                        </strong>
+                    </p>
+                    @if (!String.IsNullOrEmpty(checkItem.ResultText))
+                    {
+                        <p>
+                            @checkItem.ResultText.ToMvcHtmlString()
+                        </p>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>

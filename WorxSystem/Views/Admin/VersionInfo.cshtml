@@ -1,0 +1,105 @@
+﻿@model RainWorx.FrameWorx.DTO.LicenseInfo
+@using System.Reflection
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_VersionInfo");
+}
+
+<h2 class="sub-header">License Information</h2>
+
+@if (Model.Valid)
+{
+    <strong>&middot;</strong>@:&nbsp;<font color="green">License is Valid</font><br />
+    <strong>&middot;</strong>@:&nbsp;Name: @Model.Name<br />
+    @*if (!SiteClient.DemoEnabled)
+    {
+         <b>&middot;</b>@:&nbsp;Serial #: @Model.SerialNumber<br />
+    }*@
+    <strong>&middot;</strong>@:&nbsp;Edition: @(SiteClient.EnableEvents ? "Events" : "Enterprise")
+}
+else
+{
+    <strong>&middot;</strong>@:&nbsp;<font color="red">License is Invalid: @Html.AdminResource(Model.Reason)</font><br />
+    <strong>&middot;</strong>@:&nbsp;License Key: @Model.LicenseKey<br />
+    <strong>&middot;</strong>@:&nbsp;Please contact <a href="mailto:support@rainworx.com">RainWorx</a> for further information.<br />
+    <strong>&middot;</strong>@:&nbsp;Installed Edition: @(SiteClient.EnableEvents ? "Events" : "Enterprise")
+}
+
+<h2 class="sub-header">
+    Component Times</h2>
+    @{
+        SystemInfo sysInfo = CommonClient.GetSystemInfo();
+    }
+    <strong>&middot;</strong>&nbsp;MVC Date/Time: @sysInfo.MVCDTTM<br />
+    <strong>&middot;</strong>&nbsp;BLL Date/Time: @sysInfo.BLLDTTM<br />
+    <strong>&middot;</strong>&nbsp;DAL Date/Time: @sysInfo.DALDTTM<br />
+    @{
+        long ticks = Math.Abs(sysInfo.MVCDTTM.Ticks - sysInfo.BLLDTTM.Ticks) +
+                            Math.Abs(sysInfo.MVCDTTM.Ticks - sysInfo.DALDTTM.Ticks);
+        double secondDifference = 1.0 * ticks / TimeSpan.TicksPerSecond;
+    }
+<div class="group">
+    @if (secondDifference > 2)
+    {
+        @:System Second Difference: <font color="red">@secondDifference</font><br />
+}
+    else
+    {
+        @:System Second Difference: <font color="green">@secondDifference</font><br />
+}
+</div>
+    <input class="btn btn-default" id="showVersionInfo" type="button" value="@Html.AdminResource("ShowHideExtendedVersionInfo")" />
+    <script>
+        $(document).ready(function () {
+            $("#showVersionInfo").click(function () {
+                $("#versionInfo").toggle();
+            });
+        });
+    </script>
+
+    <div id="versionInfo" class="awe-hidden">
+        <h2 class="sub-header">
+            Model/View/Controller (MVC) - Loaded Assemblies</h2>
+            <div>
+                @{
+                    Dictionary<string, string> mvcAssemblies = new Dictionary<string, string>();
+
+                    Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    foreach (Assembly assembly in loadedAssemblies)
+                    {
+                        if (assembly.FullName != null && assembly.FullName.Contains("RainWorx"))
+                        {
+                            <strong>&middot;</strong>@:&nbsp;@assembly.GetName().Name, Version=@assembly.GetName().Version<br />
+                }
+            }
+                }
+            </div>
+
+            @{
+                Dictionary<string, string> assemblyInfo = CommonClient.GetVersionInfo(); }
+        <h2 class="sub-header">
+            Business Logic Layer (BLL) - Loaded Assemblies</h2>
+            <div>
+                @foreach (var item in assemblyInfo)
+            {
+                if (!item.Key.Equals("dbversion") && item.Value != null && item.Value.Contains("RainWorx"))
+                {
+                        <strong>&middot;</strong>@:&nbsp;@item.Value.Substring(0, item.Value.IndexOf(',', item.Value.IndexOf(',') + 1))<br />
+            }
+            }
+            </div>
+        <h2 class="sub-header">
+            Data Access Layer (DAL) - Version</h2>
+            <div>
+                @foreach (var item in assemblyInfo)
+            {
+                if (item.Key.Equals("dbversion"))
+                {
+                        <strong>&middot;</strong>@:&nbsp;Database Version = @item.Value<br />
+            }
+            }
+            </div>
+        
+</div>
+<p>&nbsp;</p>

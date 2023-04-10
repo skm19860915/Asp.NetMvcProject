@@ -1,0 +1,4965 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="AccountCreatedSuccessfully" xml:space="preserve">
+    <value>Account Created Successfully</value>
+  </data>
+  <data name="AccountSettings" xml:space="preserve">
+    <value>Account Settings</value>
+  </data>
+  <data name="AccountSettingsFailure" xml:space="preserve">
+    <value>Failed to update Account Settings</value>
+  </data>
+  <data name="AccountSettingsSuccess" xml:space="preserve">
+    <value>Account Settings updated</value>
+  </data>
+  <data name="AccountSummary" xml:space="preserve">
+    <value>Account Summary</value>
+  </data>
+  <data name="ActionDTTM" xml:space="preserve">
+    <value>Date/Time</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ActiveListings" xml:space="preserve">
+    <value>Active Listings</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddCreditCardSuccess" xml:space="preserve">
+    <value>Successfully added Credit Card</value>
+  </data>
+  <data name="AddInvoiceAdjustmentSuccess" xml:space="preserve">
+    <value>Successfully added Invoice Adjustment</value>
+  </data>
+  <data name="AdditionalDetails" xml:space="preserve">
+    <value>Additional Details</value>
+  </data>
+  <data name="AdditionalInformation" xml:space="preserve">
+    <value>Additional Information</value>
+  </data>
+  <data name="AddLineItemSuccess" xml:space="preserve">
+    <value>Successfully added Line Item</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Add New</value>
+  </data>
+  <data name="AddNewSalesTaxRate" xml:space="preserve">
+    <value>Add New Sales Tax Rate</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="AddressInformation" xml:space="preserve">
+    <value>Address Information</value>
+  </data>
+  <data name="AddressStreet1" xml:space="preserve">
+    <value>Street Address</value>
+  </data>
+  <data name="AddressStreet2" xml:space="preserve">
+    <value>Street Address 2</value>
+  </data>
+  <data name="Adjustments" xml:space="preserve">
+    <value>Adjustments</value>
+  </data>
+  <data name="AdvancedSearch" xml:space="preserve">
+    <value>Advanced Search</value>
+  </data>
+  <data name="Agreements" xml:space="preserve">
+    <value>Agreements</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="AnswerToSecurityQuestion" xml:space="preserve">
+    <value>Answer to Security Question</value>
+  </data>
+  <data name="Any" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="AppendedCommentLeadingText" xml:space="preserve">
+    <value>&lt;p&gt;</value>
+  </data>
+  <data name="AppendedCommentTrailingText" xml:space="preserve">
+    <value>&lt;/p&gt;</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Auction" xml:space="preserve">
+    <value>Auction</value>
+  </data>
+  <data name="AuditLink" xml:space="preserve">
+    <value>Audit</value>
+  </data>
+  <data name="AuthorizeNetAIM" xml:space="preserve">
+    <value>Authorize.NET</value>
+  </data>
+  <data name="AwaitUserVerificationEmail" xml:space="preserve">
+    <value>An email has been sent to the email address provided.  Please follow the instructions it contains.</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="BackToMessaging" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="BiddingActive" xml:space="preserve">
+    <value>Active Bidding</value>
+  </data>
+  <data name="BiddingNotWon" xml:space="preserve">
+    <value>Bidding Not Won</value>
+  </data>
+  <data name="BiddingWon" xml:space="preserve">
+    <value>Bidding Won</value>
+  </data>
+  <data name="BidHistoryTitle" xml:space="preserve">
+    <value>Bid History</value>
+  </data>
+  <data name="BillingAddress" xml:space="preserve">
+    <value>Billing Address</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="Buyer" xml:space="preserve">
+    <value>Buyer</value>
+  </data>
+  <data name="BuyerAtoZ" xml:space="preserve">
+    <value>Buyer, A to Z</value>
+  </data>
+  <data name="BuyerAverage" xml:space="preserve">
+    <value>Buyer Average</value>
+  </data>
+  <data name="BuyerFeedback" xml:space="preserve">
+    <value>Buyer Feedback</value>
+  </data>
+  <data name="BuyerZtoA" xml:space="preserve">
+    <value>Buyer, Z to A</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CardNumber" xml:space="preserve">
+    <value>Card Number</value>
+  </data>
+  <data name="CardType" xml:space="preserve">
+    <value>Card Type</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="ChangePasswordFailure" xml:space="preserve">
+    <value>Failed to Change Password</value>
+  </data>
+  <data name="ChangePasswordSuccess" xml:space="preserve">
+    <value>Successfully Changed Password</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>Checkout</value>
+  </data>
+  <data name="ChooseImages" xml:space="preserve">
+    <value>Add Image(s)</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="ClearListingForm" xml:space="preserve">
+    <value>Clear Form</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CloseDateNewToOld" xml:space="preserve">
+    <value>End Date, New to Old</value>
+  </data>
+  <data name="CloseDateOldToNew" xml:space="preserve">
+    <value>End Date, Old to New</value>
+  </data>
+  <data name="ColorKey" xml:space="preserve">
+    <value>Color Key</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>Comments</value>
+  </data>
+  <data name="CompleteRegistration" xml:space="preserve">
+    <value>Complete Registration</value>
+  </data>
+  <data name="ConfirmEmail" xml:space="preserve">
+    <value>Confirm Email</value>
+  </data>
+  <data name="ConfirmNewPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="ConfirmRegistration" xml:space="preserve">
+    <value>Confirm Registration</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="ContactSeller" xml:space="preserve">
+    <value>Contact Seller</value>
+  </data>
+  <data name="ContactUs" xml:space="preserve">
+    <value>Contact Us</value>
+  </data>
+  <data name="ContactUser" xml:space="preserve">
+    <value>Contact User</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>&amp;copy; &amp;nbsp; Copyright {1} {0}.  All Rights Reserved.</value>
+  </data>
+  <data name="CopyrightDisclaimer" xml:space="preserve">
+    <value>No part of this web page may be reproduced in any way without the prior written permission of {0}.</value>
+  </data>
+  <data name="CountryTerritory" xml:space="preserve">
+    <value>Country or Territory</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="CreateAddressFailure" xml:space="preserve">
+    <value>Failed to Create Address</value>
+  </data>
+  <data name="CreateAddressSuccess" xml:space="preserve">
+    <value>Successfully Created Address</value>
+  </data>
+  <data name="CreateAnAccount" xml:space="preserve">
+    <value>Create an Account</value>
+  </data>
+  <data name="CreateASecurityQuestion" xml:space="preserve">
+    <value>Create a Security Question</value>
+  </data>
+  <data name="CreatedDTTM" xml:space="preserve">
+    <value>Created Date/Time</value>
+  </data>
+  <data name="CreateInvoice" xml:space="preserve">
+    <value>Create Invoice</value>
+  </data>
+  <data name="CreateInvoiceSuccess" xml:space="preserve">
+    <value>Successfully Created Invoice</value>
+  </data>
+  <data name="CreateListing" xml:space="preserve">
+    <value>Create Listing</value>
+  </data>
+  <data name="CreateListingNextStep" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="CreateLogin" xml:space="preserve">
+    <value>Create Login</value>
+  </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>Create New</value>
+  </data>
+  <data name="CreationDate" xml:space="preserve">
+    <value>Account created on</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Credit</value>
+  </data>
+  <data name="CreditCards" xml:space="preserve">
+    <value>Credit Cards</value>
+  </data>
+  <data name="Culture" xml:space="preserve">
+    <value>Culture</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>Current Password</value>
+  </data>
+  <data name="CurrentPrice" xml:space="preserve">
+    <value>Current Price</value>
+  </data>
+  <data name="CustomFields" xml:space="preserve">
+    <value>Additional Details</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>Date Created</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="Debit" xml:space="preserve">
+    <value>Debit</value>
+  </data>
+  <data name="PrimaryCreditCard" xml:space="preserve">
+    <value>Primary Credit Card</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteAddressSuccess" xml:space="preserve">
+    <value>Successfully Deleted Address</value>
+  </data>
+  <data name="DeleteCreditCardSuccess" xml:space="preserve">
+    <value>Successfully Deleted Credit Card</value>
+  </data>
+  <data name="DeleteImageDisclaimer" xml:space="preserve">
+    <value>&lt;p&gt;
+&lt;strong&gt;Rotate:&lt;/strong&gt; Change the orientation of your image.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Delete:&lt;/strong&gt; Remove the image from the listing.
+&lt;/p&gt;</value>
+  </data>
+  <data name="DeleteMessageSuccess" xml:space="preserve">
+    <value>Successfully Deleted Message</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="DummySuccess" xml:space="preserve">
+    <value>Force Payment Success (for testing purposes)</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="EditAddressFailure" xml:space="preserve">
+    <value>Failed to Edit Address</value>
+  </data>
+  <data name="EditAddressSuccess" xml:space="preserve">
+    <value>Successfully Edited Address</value>
+  </data>
+  <data name="EditListing" xml:space="preserve">
+    <value>Edit Listing</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
+  <data name="EndDateTime" xml:space="preserve">
+    <value>End Date/Time</value>
+  </data>
+  <data name="EndDTTM" xml:space="preserve">
+    <value>End Date/Time</value>
+  </data>
+  <data name="EndEarly" xml:space="preserve">
+    <value>End Early</value>
+  </data>
+  <data name="EndingDateTime" xml:space="preserve">
+    <value>Ending Date/Time</value>
+  </data>
+  <data name="EndingFirst" xml:space="preserve">
+    <value>Ending First</value>
+  </data>
+  <data name="EndingLast" xml:space="preserve">
+    <value>Ending Last</value>
+  </data>
+  <data name="EndingSoon" xml:space="preserve">
+    <value>Ending Soon</value>
+  </data>
+  <data name="EndingWithin" xml:space="preserve">
+    <value>Ending Within</value>
+  </data>
+  <data name="Ends" xml:space="preserve">
+    <value>Ends</value>
+  </data>
+  <data name="EnterKeywords" xml:space="preserve">
+    <value>Enter Keywords</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="Expiration" xml:space="preserve">
+    <value>Expiration</value>
+  </data>
+  <data name="ExpirationMonth" xml:space="preserve">
+    <value>Expiration Month</value>
+  </data>
+  <data name="ExpirationYear" xml:space="preserve">
+    <value>Expiration Year</value>
+  </data>
+  <data name="Extend10Minutes" xml:space="preserve">
+    <value>Extend 10 Min.</value>
+  </data>
+  <data name="Extend10MinutesSuccess" xml:space="preserve">
+    <value>Successfully Extended this Listing 10 Minutes</value>
+  </data>
+  <data name="FailedPasswordAnswerAttemptCount" xml:space="preserve">
+    <value>Failed Password Answer Attempt Count</value>
+  </data>
+  <data name="FailedPasswordAnswerAttemptWindowStart" xml:space="preserve">
+    <value>Failed Password Answer Attempt Window Start Date/Time</value>
+  </data>
+  <data name="FailedPasswordAttemptCount" xml:space="preserve">
+    <value>Failed Password Attempt Count</value>
+  </data>
+  <data name="FailedPasswordAttemptWindowStart" xml:space="preserve">
+    <value>Failed Password Attempt Window Start Date/Time</value>
+  </data>
+  <data name="FeaturedListings" xml:space="preserve">
+    <value>Featured Listings</value>
+  </data>
+  <data name="FeedbackFor" xml:space="preserve">
+    <value>Feedback For</value>
+  </data>
+  <data name="FeedbackSent" xml:space="preserve">
+    <value>Feedback Sent</value>
+  </data>
+  <data name="FeedbackSummary" xml:space="preserve">
+    <value>Feedback Summary</value>
+  </data>
+  <data name="FeesFailure" xml:space="preserve">
+    <value>Failed to pay Fees</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="FixedPrice" xml:space="preserve">
+    <value>Fixed Price</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Forgot Password</value>
+  </data>
+  <data name="ForgotPasswordEmailSent" xml:space="preserve">
+    <value>Forgot Password Email Sent</value>
+  </data>
+  <data name="ForgotPasswordFailure" xml:space="preserve">
+    <value>Failed to send Forgot Password email</value>
+  </data>
+  <data name="ForgotPasswordInstructions" xml:space="preserve">
+    <value>Enter the email address associated with your account; press "Submit" button. An email will be sent to your account with instructions to sign into your account and update your password.</value>
+  </data>
+  <data name="ForgotPasswordSuccess" xml:space="preserve">
+    <value>Successfully sent Forgot Password email</value>
+  </data>
+  <data name="ForgotYourPassword" xml:space="preserve">
+    <value>Forgot Your Password?</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="GeneralErrorMessage" xml:space="preserve">
+    <value>Sorry, an error occurred while processing your request.</value>
+  </data>
+  <data name="GoToAdminControlPanel" xml:space="preserve">
+    <value>Admin Control Panel</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HistoricalFees" xml:space="preserve">
+    <value>Historical Fees</value>
+  </data>
+  <data name="HistoryFor" xml:space="preserve">
+    <value>History For</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Hour" xml:space="preserve">
+    <value>Hour</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="IAgreeToTheTermsAndConditions" xml:space="preserve">
+    <value>I agree to the {0}</value>
+  </data>
+  <data name="ID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="Images" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="IncludeCompletedListings" xml:space="preserve">
+    <value>Include Completed Listings</value>
+  </data>
+  <data name="InStock" xml:space="preserve">
+    <value>In-Stock</value>
+  </data>
+  <data name="Invoice" xml:space="preserve">
+    <value>Invoice</value>
+  </data>
+  <data name="InvoiceDetailFailure" xml:space="preserve">
+    <value>Failed to get Invoice Detail</value>
+  </data>
+  <data name="InvoiceHistory" xml:space="preserve">
+    <value>Invoice History</value>
+  </data>
+  <data name="InvoiceNumber" xml:space="preserve">
+    <value>Invoice Number</value>
+  </data>
+  <data name="InvoicePaid" xml:space="preserve">
+    <value>Invoice Paid</value>
+  </data>
+  <data name="InvoicePending" xml:space="preserve">
+    <value>Invoice Pending</value>
+  </data>
+  <data name="InvoicePurchases" xml:space="preserve">
+    <value>Invoice Purchases</value>
+  </data>
+  <data name="InvoiceSales" xml:space="preserve">
+    <value>Invoice Sales</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="LastActivityDate" xml:space="preserve">
+    <value>Last Activity Date/Time</value>
+  </data>
+  <data name="LastIP" xml:space="preserve">
+    <value>Last IP Address</value>
+  </data>
+  <data name="LastLockoutDate" xml:space="preserve">
+    <value>Last Lockout Date/Time</value>
+  </data>
+  <data name="LastLoginDate" xml:space="preserve">
+    <value>Last signed in</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Licensing" xml:space="preserve">
+    <value>Licensing</value>
+  </data>
+  <data name="Listing" xml:space="preserve">
+    <value>Listing</value>
+  </data>
+  <data name="ListingFields" xml:space="preserve">
+    <value>Listing Fields</value>
+  </data>
+  <data name="ListingID" xml:space="preserve">
+    <value>Listing ID</value>
+  </data>
+  <data name="ListingID0To9" xml:space="preserve">
+    <value>Listing ID, 0 to 9</value>
+  </data>
+  <data name="ListingID9to0" xml:space="preserve">
+    <value>Listing ID, 9 to 0</value>
+  </data>
+  <data name="ListingNumber" xml:space="preserve">
+    <value>Listing Number</value>
+  </data>
+  <data name="ListingOptions" xml:space="preserve">
+    <value>Listing Options</value>
+  </data>
+  <data name="Listings" xml:space="preserve">
+    <value>Listings</value>
+  </data>
+  <data name="ListingsSuccessful" xml:space="preserve">
+    <value>Successful Listings</value>
+  </data>
+  <data name="ListingType" xml:space="preserve">
+    <value>Listing Type</value>
+  </data>
+  <data name="ListingTypes" xml:space="preserve">
+    <value>Listing Types</value>
+  </data>
+  <data name="LoginInformation" xml:space="preserve">
+    <value>Login Information</value>
+  </data>
+  <data name="LogOff" xml:space="preserve">
+    <value>Sign Out</value>
+  </data>
+  <data name="Logon" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Minute" xml:space="preserve">
+    <value>Minute</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>Minutes</value>
+  </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value>My Account</value>
+  </data>
+  <data name="MyBid" xml:space="preserve">
+    <value>My Bid</value>
+  </data>
+  <data name="MyBids" xml:space="preserve">
+    <value>My Bids</value>
+  </data>
+  <data name="MyListings" xml:space="preserve">
+    <value>My Listings</value>
+  </data>
+  <data name="MySummaryCountActiveBidListings" xml:space="preserve">
+    <value>Listings being bid on</value>
+  </data>
+  <data name="MySummaryCountActiveListings" xml:space="preserve">
+    <value>Active listings</value>
+  </data>
+  <data name="MySummaryCountNotWonListings" xml:space="preserve">
+    <value>Listings not won</value>
+  </data>
+  <data name="MySummaryCountPurchasedItemFeedbackNeeded" xml:space="preserve">
+    <value>Won listings need feedback</value>
+  </data>
+  <data name="MySummaryCountPurchaseLineitems" xml:space="preserve">
+    <value>Listings won</value>
+    <comment>This is actually # of Won "Line Items"</comment>
+  </data>
+  <data name="MySummaryCountSaleLineitems" xml:space="preserve">
+    <value>Successful listings</value>
+    <comment>This is actually # of Successful "Line Items"</comment>
+  </data>
+  <data name="MySummaryCountSoldItemFeedbackNeeded" xml:space="preserve">
+    <value>Successful listings need feedback</value>
+  </data>
+  <data name="MySummaryCountSuccessListings" xml:space="preserve">
+    <value>Successful listings</value>
+    <comment>This may or may not be implemented in the future</comment>
+  </data>
+  <data name="MySummaryCountUnpaidPurchasedListings" xml:space="preserve">
+    <value>Won listings awaiting payment</value>
+  </data>
+  <data name="MySummaryCountUnpaidPurchaseInvoices" xml:space="preserve">
+    <value>Purchase invoices awaiting payment</value>
+  </data>
+  <data name="MySummaryCountUnpaidSalesInvoices" xml:space="preserve">
+    <value>Sales Invoices awaiting payment</value>
+  </data>
+  <data name="MySummaryCountUnpaidSoldItems" xml:space="preserve">
+    <value>Successful listings awaiting payment</value>
+  </data>
+  <data name="MySummaryCountUnsuccessListings" xml:space="preserve">
+    <value>Unsuccessful listings</value>
+  </data>
+  <data name="MySummaryCountWatchedListings" xml:space="preserve">
+    <value>Listings being watched</value>
+  </data>
+  <data name="MySummaryCountWonListings" xml:space="preserve">
+    <value>Listings won</value>
+    <comment>This may or may not be implemented in the future</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Newest" xml:space="preserve">
+    <value>Newest</value>
+  </data>
+  <data name="NewestSales" xml:space="preserve">
+    <value>Newest Sales</value>
+  </data>
+  <data name="NewMessage" xml:space="preserve">
+    <value>New Message</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="Newsletter" xml:space="preserve">
+    <value>Newsletter</value>
+  </data>
+  <data name="NewUserNameHelpText" xml:space="preserve">
+    <value>Your username will be shown when you bid, buy, and sell.</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="NoPhoto" xml:space="preserve">
+    <value>NO PHOTO</value>
+  </data>
+  <data name="NoStatesDefinedForCountry" xml:space="preserve">
+    <value>No States are defined for the selected Country</value>
+  </data>
+  <data name="NumberOfBids" xml:space="preserve">
+    <value>Number of Bids</value>
+  </data>
+  <data name="NumberWatching" xml:space="preserve">
+    <value>Number Watching</value>
+  </data>
+  <data name="OldestSales" xml:space="preserve">
+    <value>Oldest Sales</value>
+  </data>
+  <data name="OneDay" xml:space="preserve">
+    <value>1 Day</value>
+  </data>
+  <data name="OneHour" xml:space="preserve">
+    <value>1 Hour</value>
+  </data>
+  <data name="Or" xml:space="preserve">
+    <value>Or</value>
+  </data>
+  <data name="OriginalPrice" xml:space="preserve">
+    <value>Original Price</value>
+  </data>
+  <data name="Outbid" xml:space="preserve">
+    <value>Outbid</value>
+  </data>
+  <data name="OverallAverage" xml:space="preserve">
+    <value>Overall Average</value>
+  </data>
+  <data name="Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="PasswordChangeSuccessful" xml:space="preserve">
+    <value>Successfully changed Password</value>
+  </data>
+  <data name="PasswordInformation" xml:space="preserve">
+    <value>Update Password</value>
+  </data>
+  <data name="PasswordRequirements" xml:space="preserve">
+    <value>Your Password must be at least 6 characters long.</value>
+  </data>
+  <data name="PasswordsCaseSensitive" xml:space="preserve">
+    <value>Passwords are case sensitive</value>
+  </data>
+  <data name="PaymentDeclined" xml:space="preserve">
+    <value>Payment was Declined</value>
+  </data>
+  <data name="PaymentHistory" xml:space="preserve">
+    <value>Payment History</value>
+  </data>
+  <data name="PaymentInvalidCardNumber" xml:space="preserve">
+    <value>Invalid Credit Card Number</value>
+  </data>
+  <data name="PaymentOptions" xml:space="preserve">
+    <value>Payment Options</value>
+  </data>
+  <data name="PayPalStandard" xml:space="preserve">
+    <value>PayPal</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="PriceHighLow" xml:space="preserve">
+    <value>Price, Highest</value>
+  </data>
+  <data name="PriceHighToLow" xml:space="preserve">
+    <value>Price, Highest</value>
+  </data>
+  <data name="PriceLowHigh" xml:space="preserve">
+    <value>Price, Lowest</value>
+  </data>
+  <data name="PriceLowToHigh" xml:space="preserve">
+    <value>Price, Lowest</value>
+  </data>
+  <data name="PriceRange" xml:space="preserve">
+    <value>Price Range</value>
+  </data>
+  <data name="PrimaryAddress" xml:space="preserve">
+    <value>Primary Address</value>
+  </data>
+  <data name="PropertyManagementSuccess" xml:space="preserve">
+    <value>Successfully Saved Settings</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Query" xml:space="preserve">
+    <value>Query</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Rate</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="ReadMessage" xml:space="preserve">
+    <value>Read Message</value>
+  </data>
+  <data name="RearrangeImageDisclaimer" xml:space="preserve">
+    <value>Re-arrange Images: Left-click and drag to correct position.</value>
+  </data>
+  <data name="ReceiveNewsletter" xml:space="preserve">
+    <value>Receive Newsletter</value>
+  </data>
+  <data name="RegardingListing" xml:space="preserve">
+    <value>re: Listing</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Region</value>
+  </data>
+  <data name="Regions" xml:space="preserve">
+    <value>Regions</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="RejectedReason" xml:space="preserve">
+    <value>Rejected Reason</value>
+  </data>
+  <data name="Relist" xml:space="preserve">
+    <value>Relist</value>
+  </data>
+  <data name="RelistChecked" xml:space="preserve">
+    <value>Relist Checked</value>
+  </data>
+  <data name="RemainingTime" xml:space="preserve">
+    <value>Remaining Time</value>
+  </data>
+  <data name="RememberPassword" xml:space="preserve">
+    <value>Remember Me</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="RemoveImage" xml:space="preserve">
+    <value>Remove Image</value>
+  </data>
+  <data name="RemoveLineItemSuccess" xml:space="preserve">
+    <value>Successfully removed Line Item</value>
+  </data>
+  <data name="Reply" xml:space="preserve">
+    <value>Reply</value>
+  </data>
+  <data name="ReportAbuse" xml:space="preserve">
+    <value>Report Abuse</value>
+  </data>
+  <data name="RequiredFields" xml:space="preserve">
+    <value>All fields marked with "{0}&amp;nbsp;" are required.</value>
+  </data>
+  <data name="ReservePrice" xml:space="preserve">
+    <value>Reserve Price</value>
+  </data>
+  <data name="ResetCode" xml:space="preserve">
+    <value>Reset Code</value>
+  </data>
+  <data name="ResetPassword" xml:space="preserve">
+    <value>Reset Password</value>
+  </data>
+  <data name="ResetPasswordSuccess" xml:space="preserve">
+    <value>Successfully Reset Password</value>
+  </data>
+  <data name="Rollback" xml:space="preserve">
+    <value>Rollback</value>
+  </data>
+  <data name="SalesTax" xml:space="preserve">
+    <value>Sales Tax</value>
+  </data>
+  <data name="SalesTaxManagement" xml:space="preserve">
+    <value>Sales Tax Management</value>
+  </data>
+  <data name="SalesTaxManagementSuccess" xml:space="preserve">
+    <value>Successfully saved Sales Tax Information</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveNewCardInformation" xml:space="preserve">
+    <value>Save New Credit Card Information?</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="RefineSearch" xml:space="preserve">
+    <value>Refine Search</value>
+  </data>
+  <data name="Second" xml:space="preserve">
+    <value>Second</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>Seconds</value>
+  </data>
+  <data name="SecurityQuestion" xml:space="preserve">
+    <value>Security Question</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="SelectACountry" xml:space="preserve">
+    <value>Select a Country</value>
+  </data>
+  <data name="SelectACreditCard" xml:space="preserve">
+    <value>Select a Credit Card</value>
+  </data>
+  <data name="SelectACreditCardType" xml:space="preserve">
+    <value>Select a Credit Card Type</value>
+  </data>
+  <data name="SelectAShippingOption" xml:space="preserve">
+    <value>Select a Shipping Option</value>
+  </data>
+  <data name="SelectAValue" xml:space="preserve">
+    <value>Select a Value</value>
+  </data>
+  <data name="SelectCategory" xml:space="preserve">
+    <value>Select a Category</value>
+  </data>
+  <data name="SelectCategoryFirst" xml:space="preserve">
+    <value>Select Category First</value>
+  </data>
+  <data name="SelectCountryFirst" xml:space="preserve">
+    <value>Select Country First</value>
+  </data>
+  <data name="Seller" xml:space="preserve">
+    <value>Seller</value>
+  </data>
+  <data name="SellerAddress" xml:space="preserve">
+    <value>Seller Address</value>
+  </data>
+  <data name="SellerAverage" xml:space="preserve">
+    <value>Seller Average</value>
+  </data>
+  <data name="SellerFeedback" xml:space="preserve">
+    <value>Seller Feedback</value>
+  </data>
+  <data name="SellerUserNameAToZ" xml:space="preserve">
+    <value>Seller User Name, A to Z</value>
+  </data>
+  <data name="SellerUserNameZToA" xml:space="preserve">
+    <value>Seller User Name, Z to A</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="SendListingMessageSuccess" xml:space="preserve">
+    <value>Successfully sent Listing Message</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="SetBillingAddress" xml:space="preserve">
+    <value>Set Billing Address</value>
+  </data>
+  <data name="SetBillingAddressSuccess" xml:space="preserve">
+    <value>Successfully set Billing Address</value>
+  </data>
+  <data name="SetDefaultCreditCardSuccess" xml:space="preserve">
+    <value>Primary Credit Card updated</value>
+  </data>
+  <data name="SetPrimary" xml:space="preserve">
+    <value>Set Primary</value>
+  </data>
+  <data name="SetPrimaryAddressSuccess" xml:space="preserve">
+    <value>Primary Address updated</value>
+  </data>
+  <data name="SetShippingAddress" xml:space="preserve">
+    <value>Set Shipping Address</value>
+  </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>Shipping</value>
+  </data>
+  <data name="ShippingAddress" xml:space="preserve">
+    <value>Shipping Address</value>
+  </data>
+  <data name="ShippingMethod" xml:space="preserve">
+    <value>Shipping Method</value>
+  </data>
+  <data name="ShippingOptionRequiredBeforePayment" xml:space="preserve">
+    <value>Shipping Option Is Required Before Payment</value>
+  </data>
+  <data name="ShippingOptions" xml:space="preserve">
+    <value>Shipping Options</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="SignInForMoreOptions" xml:space="preserve">
+    <value>{0} for more options</value>
+  </data>
+  <data name="SimilarLineItems" xml:space="preserve">
+    <value>Additional Listings</value>
+  </data>
+  <data name="SiteFeeInvoice" xml:space="preserve">
+    <value>Site Fee Invoice</value>
+  </data>
+  <data name="SiteMap" xml:space="preserve">
+    <value>Site Map</value>
+  </data>
+  <data name="StandardFields" xml:space="preserve">
+    <value>Standard Fields</value>
+  </data>
+  <data name="StandardListingFields" xml:space="preserve">
+    <value>Standard Listing Fields</value>
+  </data>
+  <data name="StartDTTM" xml:space="preserve">
+    <value>Start Date/Time</value>
+  </data>
+  <data name="StartedInThePast" xml:space="preserve">
+    <value>Started in the Past</value>
+  </data>
+  <data name="StartingPrice" xml:space="preserve">
+    <value>Starting Price</value>
+  </data>
+  <data name="StartOver" xml:space="preserve">
+    <value>Start Over</value>
+  </data>
+  <data name="StateRegion" xml:space="preserve">
+    <value>State/Region</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Step1Of2" xml:space="preserve">
+    <value>Step 1 of 2</value>
+  </data>
+  <data name="Step2Of2" xml:space="preserve">
+    <value>Step 2 of 2</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="SubmitBid" xml:space="preserve">
+    <value>Submit Bid</value>
+  </data>
+  <data name="SubmitFeedback" xml:space="preserve">
+    <value>Submit Feedback</value>
+  </data>
+  <data name="SubmitFeedbackFailure" xml:space="preserve">
+    <value>Failed to Submit Feedback</value>
+  </data>
+  <data name="SubmitFeedbackSuccess" xml:space="preserve">
+    <value>Successfully Submitted Feedback</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>Subtitle</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>Subtotal</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>Successful</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="TermsAndConditions" xml:space="preserve">
+    <value>Terms &amp; Conditions</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="TitleAtoZ" xml:space="preserve">
+    <value>Title, A to Z</value>
+  </data>
+  <data name="TitleZtoA" xml:space="preserve">
+    <value>Title, Z to A</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="TotalPrice" xml:space="preserve">
+    <value>Total Price</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Unit Price</value>
+  </data>
+  <data name="Unpaid" xml:space="preserve">
+    <value>Unpaid</value>
+  </data>
+  <data name="Unsuccessful" xml:space="preserve">
+    <value>Unsuccessful</value>
+  </data>
+  <data name="UnsuccessfulListings" xml:space="preserve">
+    <value>Unsuccessful Listings</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="UpdateInvoiceShippingSuccess" xml:space="preserve">
+    <value>Successfully Updated Invoice Shipping Option</value>
+  </data>
+  <data name="UploadImages" xml:space="preserve">
+    <value>Upload Images</value>
+  </data>
+  <data name="UseFormBelowToChangePassword" xml:space="preserve">
+    <value>Use the form below to change your password</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="UserNotExist" xml:space="preserve">
+    <value>User does not exist</value>
+  </data>
+  <data name="UserVerificationSuccess" xml:space="preserve">
+    <value>Successfully Verified User</value>
+  </data>
+  <data name="VerificationCode" xml:space="preserve">
+    <value>Verification Code</value>
+  </data>
+  <data name="ViewListing" xml:space="preserve">
+    <value>View Listing</value>
+  </data>
+  <data name="ViewMessages" xml:space="preserve">
+    <value>View Messages</value>
+  </data>
+  <data name="WatchItem" xml:space="preserve">
+    <value>Watch Item</value>
+  </data>
+  <data name="WatchList" xml:space="preserve">
+    <value>Watch List</value>
+  </data>
+  <data name="WatchThisItem" xml:space="preserve">
+    <value>Watch This Item</value>
+  </data>
+  <data name="WinningBid" xml:space="preserve">
+    <value>Winning Bid</value>
+  </data>
+  <data name="WinningBidBelowReserve" xml:space="preserve">
+    <value>Winning Bid is Below Reserve</value>
+  </data>
+  <data name="WithinSearchResults" xml:space="preserve">
+    <value>[Within Search Results]</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="YourContactInformation" xml:space="preserve">
+    <value>Your Contact Information</value>
+  </data>
+  <data name="ZipPostal" xml:space="preserve">
+    <value>Zip/Postal</value>
+  </data>
+  <data name="DateSent" xml:space="preserve">
+    <value>Date Sent</value>
+  </data>
+  <data name="YouHaveNoMessages" xml:space="preserve">
+    <value>You have no messages.</value>
+  </data>
+  <data name="AppendANoteToTheDescription" xml:space="preserve">
+    <value>Append a note to the description</value>
+  </data>
+  <data name="SelectAState" xml:space="preserve">
+    <value>Select a State</value>
+  </data>
+  <data name="NoPermissionToSell" xml:space="preserve">
+    <value>Unable to Post Listing</value>
+  </data>
+  <data name="NoPermissionToSellText" xml:space="preserve">
+    <value>You do not currently have permission to post listings.  Contact the site administrator.</value>
+  </data>
+  <data name="False" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Featured_Description" xml:space="preserve">
+    <value>Your Listing will be randomly displayed on the homepage</value>
+  </data>
+  <data name="Featured_Location" xml:space="preserve">
+    <value>Featured</value>
+  </data>
+  <data name="True" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="AddressBook" xml:space="preserve">
+    <value>Addresses</value>
+  </data>
+  <data name="MinimumToMaximum" xml:space="preserve">
+    <value>Minimum To Maximum</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="FeesDue" xml:space="preserve">
+    <value>Fees</value>
+  </data>
+  <data name="NoFeesDue" xml:space="preserve">
+    <value>No Fees Due.</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About Us</value>
+  </data>
+  <data name="SelectAddress" xml:space="preserve">
+    <value>Select Address</value>
+  </data>
+  <data name="ResetTokenIncorrect" xml:space="preserve">
+    <value>Please check your Reset Code and try again</value>
+  </data>
+  <data name="UserVerification" xml:space="preserve">
+    <value>User Verification</value>
+  </data>
+  <data name="VerificationTokenIncorrect" xml:space="preserve">
+    <value>Please check your Verification Code and try again</value>
+  </data>
+  <data name="EndEarlyWarning_CantBeUndone" xml:space="preserve">
+    <value>THIS ACTION CANNOT BE UNDONE</value>
+  </data>
+  <data name="EndEarlyWarning_Really" xml:space="preserve">
+    <value>Really end this listing early?</value>
+  </data>
+  <data name="Sell" xml:space="preserve">
+    <value>Sell</value>
+  </data>
+  <data name="EmailInvoice" xml:space="preserve">
+    <value>Email Invoice</value>
+  </data>
+  <data name="AwaitingPayment" xml:space="preserve">
+    <value>Awaiting Payment</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Closing" xml:space="preserve">
+    <value>Closing</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>Deleted</value>
+  </data>
+  <data name="Ending" xml:space="preserve">
+    <value>Ending</value>
+  </data>
+  <data name="ListingActions" xml:space="preserve">
+    <value>Your Listing Options</value>
+  </data>
+  <data name="ListingActionsFor" xml:space="preserve">
+    <value>Listing Options For </value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>Updating</value>
+  </data>
+  <data name="MaxImagesInformational" xml:space="preserve">
+    <value>Max {0}</value>
+  </data>
+  <data name="CancelChangesWarning" xml:space="preserve">
+    <value>All changes on this page will be lost, continue?</value>
+  </data>
+  <data name="DeleteWarning_CantBeUndone" xml:space="preserve">
+    <value>THIS ACTION CANNOT BE UNDONE</value>
+  </data>
+  <data name="DeleteWarning_Really" xml:space="preserve">
+    <value>Really delete this listing?</value>
+  </data>
+  <data name="FreeForm" xml:space="preserve">
+    <value>Free Form</value>
+  </data>
+  <data name="EmailFees" xml:space="preserve">
+    <value>Email Fees</value>
+  </data>
+  <data name="EmailSent" xml:space="preserve">
+    <value>Email Sent</value>
+  </data>
+  <data name="UploadLogo" xml:space="preserve">
+    <value>Upload Logo</value>
+  </data>
+  <data name="StopImpersonating" xml:space="preserve">
+    <value> Stop Impersonating User</value>
+  </data>
+  <data name="Impersonating" xml:space="preserve">
+    <value>Impersonating</value>
+  </data>
+  <data name="CreditCardNum" xml:space="preserve">
+    <value>Credit Card Number</value>
+  </data>
+  <data name="CreditCardType" xml:space="preserve">
+    <value>Credit Card Type</value>
+  </data>
+  <data name="Existing" xml:space="preserve">
+    <value>Existing</value>
+  </data>
+  <data name="PayWith" xml:space="preserve">
+    <value> Pay With</value>
+  </data>
+  <data name="PayWithCreditCard" xml:space="preserve">
+    <value>Complete Payment &amp;gt;</value>
+  </data>
+  <data name="PleaseSelect" xml:space="preserve">
+    <value>Select...</value>
+  </data>
+  <data name="ToPayByCreditCardClickPayWithCreditCard" xml:space="preserve">
+    <value>Pay with a Credit Card.</value>
+  </data>
+  <data name="ToPayWithPayPalClickButtonBelow" xml:space="preserve">
+    <value>To make payment using PayPal click here:</value>
+  </data>
+  <data name="NoListingsFound" xml:space="preserve">
+    <value>No Listings Found</value>
+  </data>
+  <data name="PaymentProcessedSuccessfully" xml:space="preserve">
+    <value>Your payment has been successfully processed.</value>
+  </data>
+  <data name="ToPayWithUnlistedMethodClickSend" xml:space="preserve">
+    <value>To make payment with a method not listed above, enter a message to the seller below and click "Send"</value>
+  </data>
+  <data name="UnknownPaymentMethod" xml:space="preserve">
+    <value>An unknown payment method has been specified.</value>
+  </data>
+  <data name="PaymentInstructions" xml:space="preserve">
+    <value>Payment Instructions</value>
+  </data>
+  <data name="SellerAcceptsPayPal" xml:space="preserve">
+    <value>Seller Accepts PayPal</value>
+  </data>
+  <data name="ManualPayment" xml:space="preserve">
+    <value>Manual Payment</value>
+  </data>
+  <data name="MarkPaid" xml:space="preserve">
+    <value>Mark Paid</value>
+  </data>
+  <data name="ListingNotFound" xml:space="preserve">
+    <value>Listing not found</value>
+  </data>
+  <data name="AllMessages" xml:space="preserve">
+    <value>All Messages</value>
+  </data>
+  <data name="Message_Subject_Reply_Prefix" xml:space="preserve">
+    <value>RE: </value>
+  </data>
+  <data name="ActionSuccess" xml:space="preserve">
+    <value>Your submission was successful!</value>
+  </data>
+  <data name="ListingChangedDuringProcessing" xml:space="preserve">
+    <value>This listing changed during processing, please submit again.</value>
+  </data>
+  <data name="StatusAtoZ" xml:space="preserve">
+    <value>Status, A to Z</value>
+  </data>
+  <data name="StatusZtoA" xml:space="preserve">
+    <value>Status, Z to A</value>
+  </data>
+  <data name="EndedListings" xml:space="preserve">
+    <value>Ended Listings</value>
+  </data>
+  <data name="ListerPerformingAction" xml:space="preserve">
+    <value>As the Seller, you cannot bid or purchase your own items.</value>
+  </data>
+  <data name="AdditionalMedia" xml:space="preserve">
+    <value>Additional Media</value>
+  </data>
+  <data name="YouTubeVideo" xml:space="preserve">
+    <value>YouTube Video</value>
+  </data>
+  <data name="YouTubeVideoURL" xml:space="preserve">
+    <value>YouTube Video URL</value>
+  </data>
+  <data name="AddWatchSuccess" xml:space="preserve">
+    <value>Successfully Added Watch</value>
+  </data>
+  <data name="RemoveWatchSuccess" xml:space="preserve">
+    <value>Successfully Removed Watched Listing</value>
+  </data>
+  <data name="RemoveMultipleWatchesSuccess" xml:space="preserve">
+    <value>Successfully Removed Watched Listings</value>
+  </data>
+  <data name="CurrentlyWatching" xml:space="preserve">
+    <value>Watching!</value>
+  </data>
+  <data name="FeedbackAlreadyExists" xml:space="preserve">
+    <value>You have already left feedback for this user for this item.</value>
+  </data>
+  <data name="FeedbackNotAllowed" xml:space="preserve">
+    <value>Feedback is not allowed between these two users for this listing</value>
+  </data>
+  <data name="BidAmountTooLow" xml:space="preserve">
+    <value>Bid amount too low</value>
+  </data>
+  <data name="RegisterSuccess" xml:space="preserve">
+    <value>Registration Successful -  Please sign in below.</value>
+  </data>
+  <data name="UserVerificationFailure" xml:space="preserve">
+    <value>User Verification Failed</value>
+  </data>
+  <data name="ManageExistingCC" xml:space="preserve">
+    <value>Manage Existing Credit Cards</value>
+  </data>
+  <data name="Bold_Description" xml:space="preserve">
+    <value>Add a Bold style to your listing's title in search results.</value>
+  </data>
+  <data name="Highlight_Description" xml:space="preserve">
+    <value>Highlights your listing to stand out</value>
+  </data>
+  <data name="Italic_Description" xml:space="preserve">
+    <value>Adds an Italic style to your Listing's Title</value>
+  </data>
+  <data name="YouTubeReferenceHelper" xml:space="preserve">
+    <value>Copy the URL from your browser while viewing your chosen YouTube video.&lt;br/&gt;&lt;br/&gt;http://www.youtube.com/watch?v=3f7l-Z4NF70 is an example of a YouTube Video URL.</value>
+  </data>
+  <data name="ImageFees" xml:space="preserve">
+    <value>First Image: {0}, Each Additional Image: {1}</value>
+  </data>
+  <data name="CantLowerProxyBid" xml:space="preserve">
+    <value>You cannot lower your previously higher proxy bid.</value>
+  </data>
+  <data name="ProxyBeatingNewBid" xml:space="preserve">
+    <value>Another bidder's proxy bid is beating your new bid.</value>
+  </data>
+  <data name="UserEmailAlreadyExists" xml:space="preserve">
+    <value>User Email Already Exists (email must be unique)</value>
+  </data>
+  <data name="Infinity" xml:space="preserve">
+    <value>&amp;#8734;</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="Classified" xml:space="preserve">
+    <value>Classified</value>
+  </data>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>Listing Deleted Successfully</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="AuthorizeDotNet" xml:space="preserve">
+    <value>Authorize.Net</value>
+  </data>
+  <data name="Banners" xml:space="preserve">
+    <value>Banners</value>
+  </data>
+  <data name="Bidding" xml:space="preserve">
+    <value>Bidding</value>
+  </data>
+  <data name="BillingAndFees" xml:space="preserve">
+    <value>Billing &amp; Fees</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="CreditCardTypes" xml:space="preserve">
+    <value>Stored Credit Cards</value>
+    <comment>renamed in v1.2 from 'Credit Card Types'</comment>
+  </data>
+  <data name="Cultures" xml:space="preserve">
+    <value>Cultures</value>
+  </data>
+  <data name="Currencies" xml:space="preserve">
+    <value>Currencies</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Display" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="EditFees" xml:space="preserve">
+    <value>Edit Fees</value>
+  </data>
+  <data name="Ended" xml:space="preserve">
+    <value>Ended</value>
+  </data>
+  <data name="Extend" xml:space="preserve">
+    <value>Extend</value>
+  </data>
+  <data name="Feedback" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="FeeInvoices_New" xml:space="preserve">
+    <value>Fee Invoices (New)</value>
+  </data>
+  <data name="FeeInvoices_Paid" xml:space="preserve">
+    <value>Fee Invoices (Paid)</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="International" xml:space="preserve">
+    <value>International</value>
+  </data>
+  <data name="Invoices" xml:space="preserve">
+    <value>Invoices</value>
+  </data>
+  <data name="Languages" xml:space="preserve">
+    <value>Languages</value>
+  </data>
+  <data name="ListingPreferences" xml:space="preserve">
+    <value>Listing Preferences</value>
+  </data>
+  <data name="Logo" xml:space="preserve">
+    <value>Site Logo</value>
+  </data>
+  <data name="Management" xml:space="preserve">
+    <value>Management</value>
+  </data>
+  <data name="Messaging" xml:space="preserve">
+    <value>Messaging</value>
+  </data>
+  <data name="NotWon" xml:space="preserve">
+    <value>Not Won</value>
+  </data>
+  <data name="Outbox" xml:space="preserve">
+    <value>Outbox</value>
+  </data>
+  <data name="Past" xml:space="preserve">
+    <value>Past</value>
+  </data>
+  <data name="Payment" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="PaymentProviders" xml:space="preserve">
+    <value>Payment Providers</value>
+  </data>
+  <data name="PayPal" xml:space="preserve">
+    <value>PayPal</value>
+  </data>
+  <data name="Purchases" xml:space="preserve">
+    <value>Purchases</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>Setup</value>
+  </data>
+  <data name="SiteFees" xml:space="preserve">
+    <value>Site Fees</value>
+  </data>
+  <data name="SitePreferences" xml:space="preserve">
+    <value>Site Preferences</value>
+  </data>
+  <data name="Taxes" xml:space="preserve">
+    <value>Taxes</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Watching" xml:space="preserve">
+    <value>Watching</value>
+  </data>
+  <data name="Won" xml:space="preserve">
+    <value>Won</value>
+  </data>
+  <data name="CustomFieldsAdmin" xml:space="preserve">
+    <value>Custom Fields</value>
+  </data>
+  <data name="ListSimilar" xml:space="preserve">
+    <value>List Similar</value>
+  </data>
+  <data name="ActionNeeded" xml:space="preserve">
+    <value>Action needed</value>
+  </data>
+  <data name="_trace" xml:space="preserve">
+    <value>0</value>
+    <comment>set this value to "1" to highlight missing strings</comment>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="ActingUserIsNotAuthorized" xml:space="preserve">
+    <value>You Are Not Authorized</value>
+  </data>
+  <data name="ActingUserIsNotInRequiredRole" xml:space="preserve">
+    <value>Acting User Is Not In Required Role</value>
+  </data>
+  <data name="ActingUserIsNotRequiredUser" xml:space="preserve">
+    <value>Acting User Is Not Required User</value>
+  </data>
+  <data name="ActingUserNameNotSpecified" xml:space="preserve">
+    <value>Acting UserName Not Specified</value>
+  </data>
+  <data name="BillingAddressRequiredBeforePayment" xml:space="preserve">
+    <value>Billing Address Is Required Before Payment</value>
+  </data>
+  <data name="CreditCardNotOwnedByUser" xml:space="preserve">
+    <value>Credit Card Not Found</value>
+    <comment>Note this message is intentionally ambiguous</comment>
+  </data>
+  <data name="CurrencyNotSupported" xml:space="preserve">
+    <value>Currency Not Supported</value>
+  </data>
+  <data name="InvalidDuration" xml:space="preserve">
+    <value>Invalid Duration Option</value>
+  </data>
+  <data name="InvalidIPN" xml:space="preserve">
+    <value>Invalid IPN</value>
+  </data>
+  <data name="InvalidStateForListing" xml:space="preserve">
+    <value>Invalid State For Listing</value>
+  </data>
+  <data name="InvoiceAlreadyPaid" xml:space="preserve">
+    <value>Invoice Already Paid</value>
+  </data>
+  <data name="InvoiceNotFound" xml:space="preserve">
+    <value>Invoice Not Found</value>
+  </data>
+  <data name="InvoiceTypeNotSupported" xml:space="preserve">
+    <value>Invoice Type Not Supported</value>
+  </data>
+  <data name="ListingNotExist" xml:space="preserve">
+    <value>Listing Does Not Exist</value>
+  </data>
+  <data name="MissingPaymentProviderForIPN" xml:space="preserve">
+    <value>Missing Payment Provider For IPN</value>
+  </data>
+  <data name="PasswordIncorrect" xml:space="preserve">
+    <value>Password Incorrect</value>
+  </data>
+  <data name="RequiredArgumentMissing" xml:space="preserve">
+    <value>Required Argument Is Missing</value>
+  </data>
+  <data name="RequiredArgumentNull" xml:space="preserve">
+    <value>Required Argument Is Empty</value>
+  </data>
+  <data name="RequiredArgumentOutOfBounds" xml:space="preserve">
+    <value>Required Argument Is Out Of Bounds</value>
+  </data>
+  <data name="ShippingAddressRequiredBeforePayment" xml:space="preserve">
+    <value>Shipping Address Is Required Before Payment</value>
+  </data>
+  <data name="UnexpectedTransactionType" xml:space="preserve">
+    <value>Unexpected Transaction Type</value>
+  </data>
+  <data name="AddInvoiceAdjustmentFailure" xml:space="preserve">
+    <value>Add Invoice Adjustment Failed</value>
+  </data>
+  <data name="AddLineItemFailure" xml:space="preserve">
+    <value>Add Line Item Failed</value>
+  </data>
+  <data name="ConfirmInvoicePaymentFailure" xml:space="preserve">
+    <value>Confirm Invoice Payment Failed</value>
+  </data>
+  <data name="ConfirmInvoicePaymentSuccess" xml:space="preserve">
+    <value>Payment confirmed</value>
+  </data>
+  <data name="CreateInvoiceFailure" xml:space="preserve">
+    <value>Create Invoice Failed</value>
+  </data>
+  <data name="DeleteAddressFailure" xml:space="preserve">
+    <value>Delete Address Failed</value>
+  </data>
+  <data name="DeleteCreditCardFailure" xml:space="preserve">
+    <value>Delete Credit Card Failed</value>
+  </data>
+  <data name="DeleteMessageFailure" xml:space="preserve">
+    <value>Delete Message Failed</value>
+  </data>
+  <data name="SetInvoicePaidFailure" xml:space="preserve">
+    <value>Setting Invoice Paid Status Failed</value>
+  </data>
+  <data name="SetInvoicePaidSuccess" xml:space="preserve">
+    <value>Setting Invoice Paid Status Succeeded</value>
+  </data>
+  <data name="NoWindowsAuth" xml:space="preserve">
+    <value>Windows Authentication is not allowed</value>
+  </data>
+  <data name="PaymentNotification" xml:space="preserve">
+    <value>Payment notification</value>
+  </data>
+  <data name="RemoveLineItemFailure" xml:space="preserve">
+    <value>Remove Line Item Failed</value>
+  </data>
+  <data name="ReportAbuseFailure" xml:space="preserve">
+    <value>Report Abuse Failed</value>
+  </data>
+  <data name="ReportAbuseSuccess" xml:space="preserve">
+    <value>Successfully sent Report Abuse email</value>
+  </data>
+  <data name="RollbackReason" xml:space="preserve">
+    <value>Rollback reason</value>
+  </data>
+  <data name="SalesTaxManagementFailure" xml:space="preserve">
+    <value>Sales Tax Management Failed</value>
+  </data>
+  <data name="SendListingMessageFailure" xml:space="preserve">
+    <value>Send Listing Message Failed</value>
+  </data>
+  <data name="SetBillingAddressFailure" xml:space="preserve">
+    <value>Set Billing Address Failed</value>
+  </data>
+  <data name="SetDefaultCreditCardFailure" xml:space="preserve">
+    <value>Set Default Credit Card Failed</value>
+  </data>
+  <data name="SetPrimaryAddressFailure" xml:space="preserve">
+    <value>Set Primary Address Failed</value>
+  </data>
+  <data name="SetShippingAddressFailure" xml:space="preserve">
+    <value>Set Shipping Address Failed</value>
+  </data>
+  <data name="SetShippingAddressSuccess" xml:space="preserve">
+    <value>Successfully set Shipping Address</value>
+  </data>
+  <data name="SummaryFailure" xml:space="preserve">
+    <value>Summary Failed</value>
+  </data>
+  <data name="UpdateInvoiceCommentsFailure" xml:space="preserve">
+    <value>Update Invoice Comments Failed</value>
+  </data>
+  <data name="UpdateInvoiceCommentsSuccess" xml:space="preserve">
+    <value>Successfully saved invoice comments</value>
+  </data>
+  <data name="UpdateInvoiceShippingFailure" xml:space="preserve">
+    <value>Update Invoice Shipping Failed</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="ChangeInvoiceShippingWarning1" xml:space="preserve">
+    <value>Changing the shipping amount will clear adjustment and comment changes.</value>
+  </data>
+  <data name="ChangeInvoiceShippingWarning2" xml:space="preserve">
+    <value>Click [OK] to proceed.</value>
+  </data>
+  <data name="ShippingOptionsFor" xml:space="preserve">
+    <value>Shipping Options for</value>
+  </data>
+  <data name="ViewAllShippingOptsLink" xml:space="preserve">
+    <value>View All Shipping Options</value>
+  </data>
+  <data name="AJAX_SorryFileNotUploaded" xml:space="preserve">
+    <value>Sorry, your file wasn't uploaded or is not a valid image format.</value>
+  </data>
+  <data name="AddVideo" xml:space="preserve">
+    <value>Add Video</value>
+  </data>
+  <data name="AJAX_InvalidYoutubeUrl" xml:space="preserve">
+    <value>Please enter a valid YouTube Video URL, such as 'http://www.youtube.com/watch?v=Abcd-123456'.</value>
+  </data>
+  <data name="AllFeedback" xml:space="preserve">
+    <value>All Feedback</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>Date/Time</value>
+  </data>
+  <data name="FeedbackAsBuyer" xml:space="preserve">
+    <value>Feedback from sellers</value>
+  </data>
+  <data name="FeedbackAsSeller" xml:space="preserve">
+    <value>Feedback from buyers</value>
+  </data>
+  <data name="FeedbackForUserName" xml:space="preserve">
+    <value>Feedback for {0}</value>
+  </data>
+  <data name="FeedbackFromUserName" xml:space="preserve">
+    <value>Feedback from {0}</value>
+  </data>
+  <data name="FeedbackLeftForOthers" xml:space="preserve">
+    <value>Feedback left for others</value>
+  </data>
+  <data name="LeftBy" xml:space="preserve">
+    <value>Left By</value>
+  </data>
+  <data name="LeftFor" xml:space="preserve">
+    <value>Left For</value>
+  </data>
+  <data name="Past_1_Month" xml:space="preserve">
+    <value>Past 1 month</value>
+  </data>
+  <data name="Past_X_Months" xml:space="preserve">
+    <value>Past {0} months</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User not found</value>
+  </data>
+  <data name="NewestPurchases" xml:space="preserve">
+    <value>Newest Purchases</value>
+  </data>
+  <data name="OldestPurchases" xml:space="preserve">
+    <value>Oldest Purchases</value>
+  </data>
+  <data name="PurchaseDate" xml:space="preserve">
+    <value>Purchase Date/Time</value>
+  </data>
+  <data name="SaleDate" xml:space="preserve">
+    <value>Sale Date/Time</value>
+  </data>
+  <data name="SellerAcceptsCreditCards" xml:space="preserve">
+    <value>Seller Accepts Credit Cards</value>
+  </data>
+  <data name="Conversion" xml:space="preserve">
+    <value>Conversion</value>
+  </data>
+  <data name="XhoursAgo" xml:space="preserve">
+    <value>{0} ago</value>
+    <comment>{0} is number of hours</comment>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="CommentsShownToBuyer" xml:space="preserve">
+    <value>Comments (shown to buyer)</value>
+  </data>
+  <data name="SaveComments" xml:space="preserve">
+    <value>Save Comments</value>
+  </data>
+  <data name="AddressDescription_Help" xml:space="preserve">
+    <value>Example: Home, or Work.</value>
+  </data>
+  <data name="ExpirationDate" xml:space="preserve">
+    <value>Expiration Date</value>
+  </data>
+  <data name="Last4OnCard" xml:space="preserve">
+    <value>Last 4 digits on card</value>
+  </data>
+  <data name="CreateListingPage2Failure" xml:space="preserve">
+    <value>Create Listing Failed</value>
+  </data>
+  <data name="CreateListingPage2Success" xml:space="preserve">
+    <value>Listing created</value>
+  </data>
+  <data name="RelistFailure" xml:space="preserve">
+    <value>Relist Failed</value>
+  </data>
+  <data name="RelistSuccess" xml:space="preserve">
+    <value>Item relisted</value>
+  </data>
+  <data name="InvoiceTotalMustNotBeNegative" xml:space="preserve">
+    <value>Invoice total must not be negative</value>
+  </data>
+  <data name="FullyTaxable" xml:space="preserve">
+    <value>Fully Taxable</value>
+  </data>
+  <data name="NotTaxable" xml:space="preserve">
+    <value>Not Taxable</value>
+  </data>
+  <data name="PartiallyTaxable" xml:space="preserve">
+    <value>Partially Taxable</value>
+  </data>
+  <data name="Adjustment" xml:space="preserve">
+    <value>Adjustment</value>
+  </data>
+  <data name="BidNaN" xml:space="preserve">
+    <value>Bid must be a decimal</value>
+  </data>
+  <data name="QuantityNaN" xml:space="preserve">
+    <value>Quantity must be an integer</value>
+  </data>
+  <data name="InvoiceNotPaid" xml:space="preserve">
+    <value>Invoice Not Paid</value>
+  </data>
+  <data name="MarkNotPaid" xml:space="preserve">
+    <value>Mark Not Paid</value>
+  </data>
+  <data name="MarkNotShipped" xml:space="preserve">
+    <value>Mark Not Shipped</value>
+  </data>
+  <data name="MarkShipped" xml:space="preserve">
+    <value>Mark Shipped</value>
+  </data>
+  <data name="SetInvoiceShippedFailure" xml:space="preserve">
+    <value>Setting Invoice Shipped Status Failed</value>
+  </data>
+  <data name="SetInvoiceShippedSuccess" xml:space="preserve">
+    <value>Setting Invoice Shipped Status Succeeded</value>
+  </data>
+  <data name="AutoRelist" xml:space="preserve">
+    <value>Auto Relist</value>
+  </data>
+  <data name="MarkMultipleInvoicesPaidSuccess" xml:space="preserve">
+    <value>Selected Invoices Mark Paid</value>
+  </data>
+  <data name="MarkMultipleInvoicesShippedSuccess" xml:space="preserve">
+    <value>Selected Invoices Mark Shipped</value>
+  </data>
+  <data name="AuditButton_Help" xml:space="preserve">
+    <value>View additional information only visible to Administrators.</value>
+  </data>
+  <data name="AuditFor" xml:space="preserve">
+    <value>Audit For</value>
+  </data>
+  <data name="GoodTilCanceled" xml:space="preserve">
+    <value>Good 'Til Canceled</value>
+  </data>
+  <data name="GtcDateValue" xml:space="preserve">
+    <value>Good 'Til Canceled</value>
+  </data>
+  <data name="SalesTaxShippingOption_Help" xml:space="preserve">
+    <value>Indicates how shipping should be taxed.  &lt;br/&gt;&lt;br/&gt;Not Taxable: Shipping will not be taxed when this tax rate is used to calculate total sales tax.&lt;br/&gt;&lt;br/&gt;Partially Taxable: A percentage of the shipping cost will be taxable, equivalent to the percentage of taxable items contributing to the subtotal.&lt;br/&gt;&lt;br/&gt;Fully Taxable: The total shipping cost will be taxable.</value>
+  </data>
+  <data name="ShippingIs" xml:space="preserve">
+    <value>Shipping is</value>
+  </data>
+  <data name="SellAnotherItem" xml:space="preserve">
+    <value>Sell Another Item</value>
+  </data>
+  <data name="Archived" xml:space="preserve">
+    <value>Archived</value>
+  </data>
+  <data name="FeedbackNotReceived" xml:space="preserve">
+    <value>Feedback Not Received</value>
+  </data>
+  <data name="FeedbackRequired" xml:space="preserve">
+    <value>Feedback Required</value>
+  </data>
+  <data name="Invoiced" xml:space="preserve">
+    <value>Invoiced</value>
+  </data>
+  <data name="NeedInvoice" xml:space="preserve">
+    <value>Need Invoice</value>
+  </data>
+  <data name="PasswordResetMessage" xml:space="preserve">
+    <value>After you receive the reset code that was emailed to you, please enter it below along with your email address and new password.</value>
+  </data>
+  <data name="ArchiveSales" xml:space="preserve">
+    <value>Archive Selected Sales</value>
+  </data>
+  <data name="RestoreSales" xml:space="preserve">
+    <value>Restore Selected Sales</value>
+  </data>
+  <data name="SetLineItemsArchivedFailure" xml:space="preserve">
+    <value>Set Line Items Archived Failed</value>
+  </data>
+  <data name="SetLineItemsArchivedSuccess" xml:space="preserve">
+    <value>Archive status updated</value>
+  </data>
+  <data name="YouMustSelectAtLeastOneSaleToProceed" xml:space="preserve">
+    <value>You must select at least one sale to proceed</value>
+  </data>
+  <data name="Shipped" xml:space="preserve">
+    <value>Shipped</value>
+  </data>
+  <data name="ErrorCurrencyNotEnabled" xml:space="preserve">
+    <value>The requested currency [{0}] is not enabled</value>
+  </data>
+  <data name="InvalidCurrencyAmount" xml:space="preserve">
+    <value>Invalid Amount</value>
+  </data>
+  <data name="ViewActiveListings" xml:space="preserve">
+    <value>View Active Listings</value>
+  </data>
+  <data name="DownloadReport" xml:space="preserve">
+    <value>Download Report</value>
+  </data>
+  <data name="YouMustSelectAtLeastOneListingToProceed" xml:space="preserve">
+    <value>You must select at least one listing to proceed</value>
+  </data>
+  <data name="RelistSelected" xml:space="preserve">
+    <value>Relist Selected</value>
+  </data>
+  <data name="EditPaymentSettings" xml:space="preserve">
+    <value>Edit payment settings</value>
+  </data>
+  <data name="EditTaxSettings" xml:space="preserve">
+    <value>Edit tax settings</value>
+  </data>
+  <data name="NoteSettingsApplyToAllListings" xml:space="preserve">
+    <value>Note: These settings apply to all of your listings.</value>
+  </data>
+  <data name="PaymentAndTaxDetails" xml:space="preserve">
+    <value>Payment and Tax Details</value>
+  </data>
+  <data name="TaxRates" xml:space="preserve">
+    <value>Tax Rates</value>
+  </data>
+  <data name="ViewInvoice" xml:space="preserve">
+    <value>View Invoice</value>
+  </data>
+  <data name="ListingFeesRevenueReport" xml:space="preserve">
+    <value>Listing Fees Revenue</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="SalesTransactionReport" xml:space="preserve">
+    <value>Sales Transactions</value>
+  </data>
+  <data name="NoTax" xml:space="preserve">
+    <value>Exempt</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>Tax</value>
+  </data>
+  <data name="PropertyManagement_ImplementationFailure" xml:space="preserve">
+    <value>Settings Not Saved</value>
+  </data>
+  <data name="PropertyManagement_ImplementationSuccess" xml:space="preserve">
+    <value>Successfully Saved Settings</value>
+  </data>
+  <data name="UpdateSalesTaxRatesSuccess" xml:space="preserve">
+    <value>Successfully Saved Sales Tax Rates</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="InvoiceDeleted" xml:space="preserve">
+    <value>Invoice Deleted</value>
+  </data>
+  <data name="ListedBy" xml:space="preserve">
+    <value>Listed by</value>
+  </data>
+  <data name="SalesTaxAlreadyExists" xml:space="preserve">
+    <value>A tax rate is already defined for this state</value>
+  </data>
+  <data name="PleaseMakePaymentToCompleteThePurchase" xml:space="preserve">
+    <value>Please make payment to complete the purchase</value>
+  </data>
+  <data name="CantRelistActiveListing" xml:space="preserve">
+    <value>An active listing can't be relisted.  Try 'List similar' instead.</value>
+  </data>
+  <data name="CantRelistSuccessfulListing" xml:space="preserve">
+    <value>A successful listing can't be relisted.  Try 'List similar' instead.</value>
+  </data>
+  <data name="EndEarlyFailure" xml:space="preserve">
+    <value>End Early Failed</value>
+  </data>
+  <data name="EndEarlySuccess" xml:space="preserve">
+    <value>Listing is ending early</value>
+  </data>
+  <data name="EnterYourDescription" xml:space="preserve">
+    <value>Enter your description..</value>
+  </data>
+  <data name="LastLineitemRemovedInvoiceDeleted" xml:space="preserve">
+    <value>Last line item removed: Invoice successfully deleted</value>
+  </data>
+  <data name="CreditCardInformation" xml:space="preserve">
+    <value>Credit Card Information</value>
+  </data>
+  <data name="xSuccessfullyRelisted" xml:space="preserve">
+    <value>{0} successfully relisted</value>
+    <comment>{0} is number of listings relisted</comment>
+  </data>
+  <data name="AllBanners" xml:space="preserve">
+    <value>All Banners</value>
+  </data>
+  <data name="Bold_Decoration" xml:space="preserve">
+    <value>Bold Title</value>
+  </data>
+  <data name="BOTTOM" xml:space="preserve">
+    <value>BOTTOM</value>
+  </data>
+  <data name="Highlight_Decoration" xml:space="preserve">
+    <value>Highlight</value>
+  </data>
+  <data name="Italic_Decoration" xml:space="preserve">
+    <value>Italic</value>
+  </data>
+  <data name="LEFT" xml:space="preserve">
+    <value>LEFT</value>
+  </data>
+  <data name="Times" xml:space="preserve">
+    <value>Times</value>
+  </data>
+  <data name="TOP" xml:space="preserve">
+    <value>TOP</value>
+  </data>
+  <data name="LogoffDueToPasswordChange" xml:space="preserve">
+    <value>Login information changed - please login to continue</value>
+  </data>
+  <data name="BackToListing" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="AddAll" xml:space="preserve">
+    <value>Add All</value>
+  </data>
+  <data name="ConfirmActionFailure" xml:space="preserve">
+    <value>Confirm Action Failed</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="RequestValidationErrorMessage" xml:space="preserve">
+    <value>HTML characters such as &amp;quot;&amp;lt;&amp;quot; or &amp;quot;&amp;gt;&amp;quot; are not allowed in this form.</value>
+  </data>
+  <data name="RequestValidationErrorTitle" xml:space="preserve">
+    <value>Potentially dangerous text detected</value>
+  </data>
+  <data name="PaymentPreferencesManagement" xml:space="preserve">
+    <value>Payment Preferences Management</value>
+  </data>
+  <data name="PendingListings" xml:space="preserve">
+    <value>Scheduled Listings</value>
+  </data>
+  <data name="StartingDateTime" xml:space="preserve">
+    <value>Starting Date/Time</value>
+  </data>
+  <data name="StartingFirst" xml:space="preserve">
+    <value>Starting First</value>
+  </data>
+  <data name="StartingLast" xml:space="preserve">
+    <value>Starting Last</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="StartingTime" xml:space="preserve">
+    <value>Starts In</value>
+  </data>
+  <data name="AdditionalFees" xml:space="preserve">
+    <value>Additional Fees</value>
+  </data>
+  <data name="PostListingFee" xml:space="preserve">
+    <value>Post Listing Fee</value>
+  </data>
+  <data name="FinalSaleFee" xml:space="preserve">
+    <value>Seller Final Fee</value>
+  </data>
+  <data name="RollingBack" xml:space="preserve">
+    <value>Rolling Back</value>
+  </data>
+  <data name="RemoveWatch" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="RemoveMultipleWatches" xml:space="preserve">
+    <value>Remove Selected</value>
+  </data>
+  <data name="RemoveFromWatchingMessage" xml:space="preserve">
+    <value>Remove selected listings from watching?</value>
+  </data>
+  <data name="AuctionBanner" xml:space="preserve">
+    <value>Auction</value>
+  </data>
+  <data name="ClassifiedAdBanner" xml:space="preserve">
+    <value>Classified</value>
+  </data>
+  <data name="FixedPriceBanner" xml:space="preserve">
+    <value>Fixed Price</value>
+  </data>
+  <data name="ScheduledPayments" xml:space="preserve">
+    <value>Fee Payment Options</value>
+  </data>
+  <data name="Declined" xml:space="preserve">
+    <value>Declined</value>
+  </data>
+  <data name="PleaseWait" xml:space="preserve">
+    <value>Please Wait</value>
+  </data>
+  <data name="ChooseImages_HTML5" xml:space="preserve">
+    <value>Add Image(s)</value>
+  </data>
+  <data name="FavIcon" xml:space="preserve">
+    <value>FavIcon</value>
+  </data>
+  <data name="LineageString_Account_Addresses" xml:space="preserve">
+    <value>Account &amp;gt; Addresses</value>
+  </data>
+  <data name="LineageString_Account_CreditCards" xml:space="preserve">
+    <value>Account &amp;gt; Credit Cards</value>
+  </data>
+  <data name="LineageString_Account_Details" xml:space="preserve">
+    <value>Account &amp;gt; Details</value>
+  </data>
+  <data name="LineageString_Account_Password" xml:space="preserve">
+    <value>Account &amp;gt; Password</value>
+  </data>
+  <data name="LineageString_Bidding_Active" xml:space="preserve">
+    <value>Bidding &amp;gt; Active</value>
+  </data>
+  <data name="LineageString_Bidding_NotWon" xml:space="preserve">
+    <value>Bidding &amp;gt; Not Won</value>
+  </data>
+  <data name="LineageString_Bidding_Watching" xml:space="preserve">
+    <value>Bidding &amp;gt; Watching</value>
+  </data>
+  <data name="LineageString_Bidding_Won" xml:space="preserve">
+    <value>Bidding &amp;gt; Won</value>
+  </data>
+  <data name="LineageString_Feedback_Buyer" xml:space="preserve">
+    <value>Feedback &amp;gt; Buyer</value>
+  </data>
+  <data name="LineageString_Feedback_Seller" xml:space="preserve">
+    <value>Feedback &amp;gt; Seller</value>
+  </data>
+  <data name="LineageString_Feedback_Summary" xml:space="preserve">
+    <value>Feedback &amp;gt; Summary</value>
+  </data>
+  <data name="LineageString_ListingPreferences_Taxes" xml:space="preserve">
+    <value>Listing Preferences &amp;gt; Taxes</value>
+  </data>
+  <data name="LineageString_Listings_Active" xml:space="preserve">
+    <value>Listings &amp;gt; Active</value>
+  </data>
+  <data name="LineageString_Listings_Ended" xml:space="preserve">
+    <value>Listings &amp;gt; Ended</value>
+  </data>
+  <data name="LineageString_Listings_Pending" xml:space="preserve">
+    <value>Listings &amp;gt; Scheduled</value>
+  </data>
+  <data name="LineageString_Listings_Successful" xml:space="preserve">
+    <value>Listings &amp;gt; Successful</value>
+  </data>
+  <data name="LineageString_Listings_Unsuccessful" xml:space="preserve">
+    <value>Listings &amp;gt; Unsuccessful</value>
+  </data>
+  <data name="LineageString_Messaging_AllMessages" xml:space="preserve">
+    <value>Messaging &amp;gt; All Messages</value>
+  </data>
+  <data name="LineageString_Messaging_Inbox" xml:space="preserve">
+    <value>Messaging &amp;gt; Inbox</value>
+  </data>
+  <data name="LineageString_Messaging_Outbox" xml:space="preserve">
+    <value>Messaging &amp;gt; Outbox</value>
+  </data>
+  <data name="LineageString_SiteFees_Past" xml:space="preserve">
+    <value>Site Fees &amp;gt; Past</value>
+  </data>
+  <data name="PaymentPendingSellerAcceptance" xml:space="preserve">
+    <value>Payment Pending Seller Acceptance</value>
+  </data>
+  <data name="UpTo_X_Y_Fee" xml:space="preserve">
+    <value>Up to {0} - {1} fee</value>
+  </data>
+  <data name="X_AndOver_Y_Fee" xml:space="preserve">
+    <value>{0} and over - {1} fee</value>
+  </data>
+  <data name="MySummaryCountScheduledListings" xml:space="preserve">
+    <value>Scheduled listings</value>
+  </data>
+  <data name="ImportCSV" xml:space="preserve">
+    <value>Import CSV</value>
+  </data>
+  <data name="LeaveBlankToStartImmediately" xml:space="preserve">
+    <value>Leave blank to start immediately</value>
+  </data>
+  <data name="StartAndDuration" xml:space="preserve">
+    <value>Start and Duration</value>
+  </data>
+  <data name="StartAndEndDate" xml:space="preserve">
+    <value>Start and End Date</value>
+  </data>
+  <data name="StartNow" xml:space="preserve">
+    <value>Start Now</value>
+  </data>
+  <data name="StartNowFailure" xml:space="preserve">
+    <value>Start Now Failed</value>
+  </data>
+  <data name="StartNowSuccess" xml:space="preserve">
+    <value>Listing successfully started</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="Maintenance" xml:space="preserve">
+    <value>Maintenance</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="PaymentDetails" xml:space="preserve">
+    <value>Payment Details</value>
+  </data>
+  <data name="ItemIsActiveConfirmation" xml:space="preserve">
+    <value>&lt;strong&gt;Congratulations!&lt;/strong&gt;  Your item is listed.</value>
+  </data>
+  <data name="ItemIsPendingConfirmation" xml:space="preserve">
+    <value>&lt;strong&gt;Congratulations!&lt;/strong&gt;  Your item is scheduled to be listed.</value>
+  </data>
+  <data name="AvailableIn" xml:space="preserve">
+    <value>Starts</value>
+  </data>
+  <data name="EndsIn" xml:space="preserve">
+    <value>Ends In:</value>
+  </data>
+  <data name="Scheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="StartsIn" xml:space="preserve">
+    <value>Starts In</value>
+  </data>
+  <data name="EventLog" xml:space="preserve">
+    <value>Event Log</value>
+  </data>
+  <data name="EmailTemplates" xml:space="preserve">
+    <value>Email Templates</value>
+  </data>
+  <data name="reset_parenthesis" xml:space="preserve">
+    <value>(reset)</value>
+  </data>
+  <data name="ForFinalSalePriceUpToEllipse" xml:space="preserve">
+    <value>For Final Sale Price Up To...</value>
+  </data>
+  <data name="MoreInfo_Parens" xml:space="preserve">
+    <value>(more info)</value>
+  </data>
+  <data name="Over_Xdollars" xml:space="preserve">
+    <value>Over {0}</value>
+  </data>
+  <data name="AllBuyerFees" xml:space="preserve">
+    <value>All Buyer Fees</value>
+  </data>
+  <data name="and" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="BuyersPremium" xml:space="preserve">
+    <value>Buyer's Premium</value>
+  </data>
+  <data name="Edit_Parens" xml:space="preserve">
+    <value>(edit)</value>
+  </data>
+  <data name="InvalidBuyersPremiumPercent" xml:space="preserve">
+    <value>Buyer's Premium Percent must be a valid number between 0 and 100.</value>
+  </data>
+  <data name="Plus_Xpct_BuyersPremium_Parens" xml:space="preserve">
+    <value>(+{0} Buyer's Premium)</value>
+  </data>
+  <data name="UpdateInvoiceBuyersPremiumFailure" xml:space="preserve">
+    <value>Update Invoice Buyers Premium Failed</value>
+  </data>
+  <data name="UpdateInvoiceBuyersPremiumSuccess" xml:space="preserve">
+    <value>Buyer's Premium Updated</value>
+  </data>
+  <data name="MoreOptions" xml:space="preserve">
+    <value>More Options</value>
+  </data>
+  <data name="ContactSellerButton" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-envelope"&gt;&lt;/span&gt; Contact Seller</value>
+  </data>
+  <data name="CustomValueNotSet" xml:space="preserve">
+    <value>(not set)</value>
+  </data>
+  <data name="RemoveWatch_small" xml:space="preserve">
+    <value>&amp;times;</value>
+  </data>
+  <data name="ViewAllShippingOptsLink_Small" xml:space="preserve">
+    <value>Shipping Options</value>
+  </data>
+  <data name="NewAddress" xml:space="preserve">
+    <value>New Address</value>
+  </data>
+  <data name="AddAddress" xml:space="preserve">
+    <value>Add Address</value>
+  </data>
+  <data name="MobileLogo" xml:space="preserve">
+    <value>Mobile Logo</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>remaining</value>
+  </data>
+  <data name="CreditCard" xml:space="preserve">
+    <value>Credit Card</value>
+  </data>
+  <data name="Delete_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-remove"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-ok-sign"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
+  <data name="Sunburst_Decoration" xml:space="preserve">
+    <value>"{0}" Banner</value>
+  </data>
+  <data name="Sunburst_Description" xml:space="preserve">
+    <value>Add a banner to your listing.</value>
+  </data>
+  <data name="Listing_Badge_Text" xml:space="preserve">
+    <value>SALE</value>
+  </data>
+  <data name="BrowseFAQ" xml:space="preserve">
+    <value>Or, browse our</value>
+  </data>
+  <data name="FAQ" xml:space="preserve">
+    <value>FAQ</value>
+  </data>
+  <data name="QuestionContact" xml:space="preserve">
+    <value>Have a question? Please</value>
+  </data>
+  <data name="CategoryMenu" xml:space="preserve">
+    <value>Select Category</value>
+  </data>
+  <data name="RegionMenu" xml:space="preserve">
+    <value>Select Region</value>
+  </data>
+  <data name="AddNewAddress" xml:space="preserve">
+    <value>Add New Address</value>
+  </data>
+  <data name="NewCreditCard" xml:space="preserve">
+    <value>New Credit Card</value>
+  </data>
+  <data name="ViewInvoiceDetails" xml:space="preserve">
+    <value>View Invoice Details</value>
+  </data>
+  <data name="Search_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-search"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="ArrowButton" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-chevron-right"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="CMS" xml:space="preserve">
+    <value>CMS</value>
+  </data>
+  <data name="ListSimilar_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-new-window"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Relist_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-repeat"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Cancel_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-stop"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Checkout_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-shopping-cart"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Contact_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-comment"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="CreateInvoice_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-shopping-cart"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Edit_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-pencil"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="EndEarly_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-stop"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="FeedbackSent_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-user"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="InvoicePaid_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-shopping-cart"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="StartNow_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-time"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="SubmitFeedback_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-user"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="ViewInvoice_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-shopping-cart"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="ViewListing_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-eye-open"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="ScrollToTop" xml:space="preserve">
+    <value>Scroll to top</value>
+  </data>
+  <data name="MyAccountNavigation" xml:space="preserve">
+    <value>My Account Navigation</value>
+  </data>
+  <data name="GenericErrorTitle" xml:space="preserve">
+    <value>Sorry, an error occurred while processing your request.</value>
+  </data>
+  <data name="PrintInvoice" xml:space="preserve">
+    <value>Print Invoice</value>
+  </data>
+  <data name="AuctionDetails" xml:space="preserve">
+    <value>Auction Details</value>
+  </data>
+  <data name="ListingOptions_small" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="MoreInfo" xml:space="preserve">
+    <value>More Info</value>
+  </data>
+  <data name="BidHistory_small" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="ContactSeller_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-envelope"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="ListingDetails" xml:space="preserve">
+    <value>Listing Details</value>
+  </data>
+  <data name="PurchaseHistory_small" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="ViewSellersOtherListings_small" xml:space="preserve">
+    <value>View More Listings</value>
+  </data>
+  <data name="StopImpersonating_small" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="AddNewCreditCard" xml:space="preserve">
+    <value>Add New Credit Card</value>
+  </data>
+  <data name="DeleteAddressConfirmationMessage" xml:space="preserve">
+    <value>The address you are about to delete has one or more credit cards associated with it, which will also be deleted.  Are you sure?</value>
+  </data>
+  <data name="DeleteAddressConfirmationTitle" xml:space="preserve">
+    <value>Delete Address Confirmation</value>
+  </data>
+  <data name="DeleteAddressDeniedMessage" xml:space="preserve">
+    <value>All of your credit cards are currently associated with this address.  In order to delete it, you must first add credit card information using a different address.</value>
+  </data>
+  <data name="DeleteAddressDeniedTitle" xml:space="preserve">
+    <value>Delete Address Not Allowed</value>
+  </data>
+  <data name="AbandonChanges" xml:space="preserve">
+    <value>Abandon Changes</value>
+  </data>
+  <data name="AbandonChangesConfirmationTitle" xml:space="preserve">
+    <value>Abandon Changes Confirmation</value>
+  </data>
+  <data name="DeleteConfirmationTitle" xml:space="preserve">
+    <value>Delete Confirmation</value>
+  </data>
+  <data name="EndEarlyConfirmationTitle" xml:space="preserve">
+    <value>End Early Confirmation</value>
+  </data>
+  <data name="StatesRegions" xml:space="preserve">
+    <value>States / Regions</value>
+  </data>
+  <data name="RemoveFromWatchingTitle" xml:space="preserve">
+    <value>Remove Watches Confirmation</value>
+  </data>
+  <data name="AdditionalCost" xml:space="preserve">
+    <value>Additional Cost</value>
+  </data>
+  <data name="AdditionalItemAmount" xml:space="preserve">
+    <value>Additional Item Amount</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="ShippingOptions_Help" xml:space="preserve">
+    <value>&lt;p&gt;
+    Step 1. Select Shipping Service&lt;br /&gt;
+    Step 2. Enter COST of shipment&lt;br /&gt;
+    Step 3. Enter ADDITIONAL COST, the amount to charge for shipping this item if combined with other purchases
+&lt;/p&gt;
+&lt;p&gt;
+    Notes:
+    &lt;ul style="margin: 0px;"&gt;
+        &lt;li&gt;Enter 0 under Cost to indicate free shipping.&lt;/li&gt;
+        &lt;li&gt;Enter 0 under Additional Cost to indicate free shipping of this item when combined with other purchases.&lt;/li&gt;
+        &lt;li&gt;When a buyer purchases multiple items, the listing with the highest initial shipping COST is used as the base shipping cost with the ADDITIONAL COST added according to each combined item.&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/p&gt;</value>
+  </data>
+  <data name="XxxAsAdditionalItem" xml:space="preserve">
+    <value>{0} as additional item</value>
+  </data>
+  <data name="AdminBypass" xml:space="preserve">
+    <value>Free (Admin)</value>
+  </data>
+  <data name="OnlyPaidInvoicesCanBeMarkedShipped" xml:space="preserve">
+    <value>Only &lt;strong&gt;PAID&lt;/strong&gt; invoices can be marked as "SHIPPED."</value>
+  </data>
+  <data name="QTY" xml:space="preserve">
+    <value>QTY</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="DemoFieldDisabledForThisUser" xml:space="preserve">
+    <value>This field cannot be changed for this user while the system is in demo mode.</value>
+  </data>
+  <data name="CreateAllInvoices" xml:space="preserve">
+    <value>Create All Invoices</value>
+  </data>
+  <data name="NoInvoicesToCreate" xml:space="preserve">
+    <value>There were no invoices to create</value>
+  </data>
+  <data name="oneInvoiceSuccessfullyCreated" xml:space="preserve">
+    <value>1 invoice was successfully created</value>
+  </data>
+  <data name="xInvoicesSuccessfullyCreated" xml:space="preserve">
+    <value>{0} invoices were successfully created</value>
+    <comment>{0} is number of invoices created</comment>
+  </data>
+  <data name="CreateLot" xml:space="preserve">
+    <value>Create Lot</value>
+  </data>
+  <data name="LotFields" xml:space="preserve">
+    <value>Lot Fields</value>
+  </data>
+  <data name="LotNumber" xml:space="preserve">
+    <value>Lot #</value>
+  </data>
+  <data name="LotOptions" xml:space="preserve">
+    <value>Lot Options</value>
+  </data>
+  <data name="LotType" xml:space="preserve">
+    <value>Lot Type</value>
+  </data>
+  <data name="StandardLotFields" xml:space="preserve">
+    <value>Lot Details</value>
+  </data>
+  <data name="DoNotImport" xml:space="preserve">
+    <value>Do Not Import</value>
+  </data>
+  <data name="ImportUsers" xml:space="preserve">
+    <value>Import Users</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="Message_Body_Reply_Prefix" xml:space="preserve">
+    <value>\n----------------Previous Message----------------\n</value>
+  </data>
+  <data name="DataManagement" xml:space="preserve">
+    <value>Data Management</value>
+  </data>
+  <data name="PaymentCancelled" xml:space="preserve">
+    <value>Payment Cancelled</value>
+  </data>
+  <data name="PaymentReceived" xml:space="preserve">
+    <value>Payment Received</value>
+  </data>
+  <data name="SendMessageFailure" xml:space="preserve">
+    <value>Send Message Failed</value>
+  </data>
+  <data name="SendMessageSuccess" xml:space="preserve">
+    <value>Your message has been sent</value>
+  </data>
+  <data name="RefreshAlert" xml:space="preserve">
+    <value>This listing has been edited since the page was last loaded.  Click the icon to reload the page.</value>
+  </data>
+  <data name="Starting" xml:space="preserve">
+    <value>Starting</value>
+  </data>
+  <data name="Error_Closing" xml:space="preserve">
+    <value>Error Closing</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="BuyNowNotAvailable" xml:space="preserve">
+    <value>Buy Now is not available</value>
+  </data>
+  <data name="Failure" xml:space="preserve">
+    <value>Failure</value>
+  </data>
+  <data name="ListingNotActive" xml:space="preserve">
+    <value>This Listing is Not Active</value>
+  </data>
+  <data name="QuantityTooHigh" xml:space="preserve">
+    <value>Quantity must be a number equal to or less than the number available</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="ApplyFilter" xml:space="preserve">
+    <value>Apply Filter</value>
+  </data>
+  <data name="InvoiceNum" xml:space="preserve">
+    <value>Invoice #</value>
+  </data>
+  <data name="ListingNum" xml:space="preserve">
+    <value>Listing #</value>
+  </data>
+  <data name="NotShipped" xml:space="preserve">
+    <value>Not Shipped</value>
+  </data>
+  <data name="TotalHighToLow" xml:space="preserve">
+    <value>Total, High to Low</value>
+  </data>
+  <data name="TotalLowToHigh" xml:space="preserve">
+    <value>Total, Low to High</value>
+  </data>
+  <data name="ArchiveInvoices" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="MarkMultipleInvoicesArchivedFailure" xml:space="preserve">
+    <value>Mark Invoices Archived Failed</value>
+  </data>
+  <data name="MarkMultipleInvoicesArchivedSuccess" xml:space="preserve">
+    <value>The selected invoices were successfully updated</value>
+  </data>
+  <data name="RestoreInvoices" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="YouMustSelectAtLeastOneInvoiceToProceed" xml:space="preserve">
+    <value>You must select at least one invoice to proceed</value>
+  </data>
+  <data name="ViewInvoiceToX" xml:space="preserve">
+    <value>#{0} ({1})</value>
+    <comment>{0} is invoice id number, {1} is buyer username</comment>
+  </data>
+  <data name="ANumberBetween0AndX" xml:space="preserve">
+    <value>a number between 0 and {0}</value>
+  </data>
+  <data name="CheckoutForInvoiceX" xml:space="preserve">
+    <value>Checkout ({0})</value>
+  </data>
+  <data name="ViewInvoiceX" xml:space="preserve">
+    <value>View Invoice ({0})</value>
+  </data>
+  <data name="BuyersPremiumPercent" xml:space="preserve">
+    <value>Buyer's Premium</value>
+  </data>
+  <data name="ClosingGroupIncrement" xml:space="preserve">
+    <value>Closing Group Increment</value>
+  </data>
+  <data name="CreateEvent" xml:space="preserve">
+    <value>Create Event</value>
+  </data>
+  <data name="EventDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="EventDetails" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="EventOptions" xml:space="preserve">
+    <value>Event Options</value>
+  </data>
+  <data name="ProxyBidding" xml:space="preserve">
+    <value>Proxy Bidding</value>
+  </data>
+  <data name="NoBuyersPremium" xml:space="preserve">
+    <value>No Buyer's Premium</value>
+  </data>
+  <data name="TaxableItem" xml:space="preserve">
+    <value>Taxable Item</value>
+  </data>
+  <data name="TaxExemptItem" xml:space="preserve">
+    <value>Tax Exempt Item</value>
+  </data>
+  <data name="BpExempt" xml:space="preserve">
+    <value>BP Exempt</value>
+  </data>
+  <data name="BuyersPremium_Abbrv" xml:space="preserve">
+    <value>BP</value>
+  </data>
+  <data name="BuyersPremium_Small" xml:space="preserve">
+    <value>B%</value>
+  </data>
+  <data name="EnterAmount" xml:space="preserve">
+    <value>Enter amount...</value>
+  </data>
+  <data name="TaxableItem_Small" xml:space="preserve">
+    <value>T</value>
+  </data>
+  <data name="TaxAndBpExempt" xml:space="preserve">
+    <value>Tax/BP Exempt</value>
+  </data>
+  <data name="TaxExempt" xml:space="preserve">
+    <value>Tax Exempt</value>
+  </data>
+  <data name="AJAX_SorryGenericFileNotUploaded" xml:space="preserve">
+    <value>Sorry, your file wasn't uploaded.</value>
+  </data>
+  <data name="ChooseFiles" xml:space="preserve">
+    <value>Choose Files</value>
+  </data>
+  <data name="ChooseFiles_HTML5" xml:space="preserve">
+    <value>Add File(s)</value>
+  </data>
+  <data name="DeleteFileDisclaimer" xml:space="preserve">
+    <value>Delete File: Left-click the &lt;span class="text-danger"&gt;RED&lt;/span&gt; "X".</value>
+  </data>
+  <data name="NoGeneratorRegisteredToHandleExtension" xml:space="preserve">
+    <value>Sorry, your file isn't a valid type.</value>
+  </data>
+  <data name="UploadPDFs" xml:space="preserve">
+    <value>Upload PDF(s)</value>
+  </data>
+  <data name="ListingImage" xml:space="preserve">
+    <value>Listing Image</value>
+  </data>
+  <data name="EventAdditionalMedia" xml:space="preserve">
+    <value>Additional Media</value>
+  </data>
+  <data name="EventImages" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="AJAX_TooManyImages" xml:space="preserve">
+    <value>Image not uploaded, delete existing image first.</value>
+  </data>
+  <data name="ChooseImage_HTML5" xml:space="preserve">
+    <value>Add Image</value>
+  </data>
+  <data name="TimeZone" xml:space="preserve">
+    <value>Time Zone</value>
+  </data>
+  <data name="UploadEventBanner" xml:space="preserve">
+    <value>Upload Event Banner</value>
+  </data>
+  <data name="UploadEventImage" xml:space="preserve">
+    <value>Upload Event Image</value>
+  </data>
+  <data name="AddWatchFailure" xml:space="preserve">
+    <value>Add Watch Failed</value>
+  </data>
+  <data name="DeleteLotFailure" xml:space="preserve">
+    <value>Delete Lot Failed</value>
+  </data>
+  <data name="DeleteLotSuccess" xml:space="preserve">
+    <value>Lot successfully deleted</value>
+  </data>
+  <data name="EndLotEarlyFailure" xml:space="preserve">
+    <value>End Lot Early Failed</value>
+  </data>
+  <data name="EndLotEarlySuccess" xml:space="preserve">
+    <value>Lot successfully ended early</value>
+  </data>
+  <data name="EventDetailsHeader" xml:space="preserve">
+    <value>Event Details</value>
+  </data>
+  <data name="EventTitleX" xml:space="preserve">
+    <value>Event: {0}</value>
+  </data>
+  <data name="LotNumberX" xml:space="preserve">
+    <value>Lot #: {0}</value>
+  </data>
+  <data name="RemoveWatchFailure" xml:space="preserve">
+    <value>Remove Watch Failed</value>
+  </data>
+  <data name="EventNotFound" xml:space="preserve">
+    <value>Event not found</value>
+  </data>
+  <data name="RotateImage" xml:space="preserve">
+    <value>Rotate</value>
+  </data>
+  <data name="ActivityHighToLow" xml:space="preserve">
+    <value>Activity, Highest</value>
+  </data>
+  <data name="ActivityLowToHigh" xml:space="preserve">
+    <value>Activity, Lowest</value>
+  </data>
+  <data name="ArchivePurchases" xml:space="preserve">
+    <value>Archive Selected Purchases</value>
+  </data>
+  <data name="RestorePurchases" xml:space="preserve">
+    <value>Restore Selected Purchases</value>
+  </data>
+  <data name="ManagedByName" xml:space="preserve">
+    <value>Managed By</value>
+  </data>
+  <data name="RelistingLotNotAllowed" xml:space="preserve">
+    <value>Relisting a Lot is not allowed.  Use List Similar instead.</value>
+  </data>
+  <data name="ShippingInfo" xml:space="preserve">
+    <value>Shipping Info</value>
+  </data>
+  <data name="LineItemInvoiced" xml:space="preserve">
+    <value>One or more of the selected Line Items are associated with an Invoice.  Please remove Line Items from Invoices before proceeding</value>
+  </data>
+  <data name="UnvoidSales" xml:space="preserve">
+    <value>Un-Void Selected Sales</value>
+  </data>
+  <data name="Voided" xml:space="preserve">
+    <value>Voided</value>
+  </data>
+  <data name="VoidLineItemsFailure" xml:space="preserve">
+    <value>Failed to void line item(s)</value>
+  </data>
+  <data name="VoidLineItemsSuccess" xml:space="preserve">
+    <value>Successfully updated voided line item(s)</value>
+  </data>
+  <data name="VoidSales" xml:space="preserve">
+    <value>Void Selected Sales</value>
+  </data>
+  <data name="ManagedByX" xml:space="preserve">
+    <value>Managed by {0}</value>
+  </data>
+  <data name="Auctioneer" xml:space="preserve">
+    <value>Auctioneer</value>
+  </data>
+  <data name="EventUsesProxy" xml:space="preserve">
+    <value>This Auction Uses &lt;strong&gt;Proxy Bidding&lt;/strong&gt;.</value>
+  </data>
+  <data name="FirstLotCloses" xml:space="preserve">
+    <value>First Lot Closes</value>
+  </data>
+  <data name="Lots" xml:space="preserve">
+    <value>Lots</value>
+  </data>
+  <data name="ShippingInformation" xml:space="preserve">
+    <value>Shipping Information</value>
+  </data>
+  <data name="ClosingGroupManagement" xml:space="preserve">
+    <value>Manage Event Closing Groups</value>
+  </data>
+  <data name="NewGroupDragHere" xml:space="preserve">
+    <value>New Group (Drag lot here.)</value>
+  </data>
+  <data name="ConnectionSlow" xml:space="preserve">
+    <value>Connection Slow</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="Reconnected" xml:space="preserve">
+    <value>Reconnected</value>
+  </data>
+  <data name="Reconnecting" xml:space="preserve">
+    <value>Reconnecting</value>
+  </data>
+  <data name="Started" xml:space="preserve">
+    <value>Connection Established for Real-Time Updates</value>
+  </data>
+  <data name="AuctionLotSettings" xml:space="preserve">
+    <value>Auction Lots</value>
+  </data>
+  <data name="Increment" xml:space="preserve">
+    <value>Increment</value>
+  </data>
+  <data name="Increments" xml:space="preserve">
+    <value>Increments</value>
+  </data>
+  <data name="PriceLevel" xml:space="preserve">
+    <value>Price Level</value>
+  </data>
+  <data name="SalesReport" xml:space="preserve">
+    <value>Sales Report</value>
+  </data>
+  <data name="SoftClosingGroupIncrement" xml:space="preserve">
+    <value>Auto Extend Increment</value>
+  </data>
+  <data name="ApplyFilters" xml:space="preserve">
+    <value>Apply Filters</value>
+  </data>
+  <data name="ExportCSV" xml:space="preserve">
+    <value>Export CSV</value>
+  </data>
+  <data name="NoResultsToDisplay" xml:space="preserve">
+    <value>No Results To Display</value>
+  </data>
+  <data name="ResetFilters" xml:space="preserve">
+    <value>Reset Filters</value>
+  </data>
+  <data name="AlreadyWatching" xml:space="preserve">
+    <value>You are already watching this listing</value>
+  </data>
+  <data name="UseHTMLEditor" xml:space="preserve">
+    <value>Use HTML Editor?</value>
+  </data>
+  <data name="SoftClosingGroupManagement" xml:space="preserve">
+    <value>Manage Auto Extend Groups</value>
+  </data>
+  <data name="SalesInvoicesReport" xml:space="preserve">
+    <value>Sales Invoices</value>
+  </data>
+  <data name="ClassifiedDetails" xml:space="preserve">
+    <value>Classified Details</value>
+  </data>
+  <data name="EventCurrencyInfo" xml:space="preserve">
+    <value>All Prices Listed in </value>
+  </data>
+  <data name="EventID" xml:space="preserve">
+    <value>Event ID</value>
+  </data>
+  <data name="EventManagedby_Help" xml:space="preserve">
+    <value>Name of the business, group, or individual contact person managing this event.</value>
+  </data>
+  <data name="EventSubtitle_Help" xml:space="preserve">
+    <value>Summarize your event.  This content will be displayed alongside the title and on each individual lot.</value>
+  </data>
+  <data name="ProxyBidding_Help" xml:space="preserve">
+    <value>&lt;p&gt;Enabled: Bids are automatically entered on behalf of the bidder for the lowest amount required to win the item.&lt;/p&gt;
+&lt;p&gt;Disabled: User's maximum bid is placed immediately when entered, and no automatic bids are placed on users' behalf.&lt;/p&gt;</value>
+  </data>
+  <data name="UploadMediaPDF_Help" xml:space="preserve">
+    <value>Select PDF files to associate with your listing.  Each file can be given a separate display name after it has been uploaded. </value>
+  </data>
+  <data name="ClosingGroupIncrement_Help" xml:space="preserve">
+    <value>The amount of time between staggered lot closing times.</value>
+  </data>
+  <data name="EventCurrency_Help" xml:space="preserve">
+    <value>Select the currency for all event bidding and transactions.</value>
+  </data>
+  <data name="SoftClosingGroupIncrement_Help" xml:space="preserve">
+    <value>The amount of time to extend a lot (or multiple lots) closing time when bidding is still active; similar to sniper protection.  Affects all lots within same Auto Extend Group.</value>
+  </data>
+  <data name="RecaptchaSecurity" xml:space="preserve">
+    <value>CAPTCHA</value>
+  </data>
+  <data name="BuyersPremiumPercent_Help" xml:space="preserve">
+    <value>A percentage additional charge on the winning bid of the lot that must be paid by the winner.</value>
+  </data>
+  <data name="EventSummary_Help" xml:space="preserve">
+    <value>Summarize your event details.  This short description will appear on the Homepage and at the top of each auction lot.</value>
+  </data>
+  <data name="LineItemAlreadyInvoiced" xml:space="preserve">
+    <value>That line item has already been assigned to another invoice</value>
+  </data>
+  <data name="NewGroup" xml:space="preserve">
+    <value>New Group</value>
+  </data>
+  <data name="ToggleDropdown" xml:space="preserve">
+    <value>Toggle Dropdown</value>
+  </data>
+  <data name="EventCurrency" xml:space="preserve">
+    <value>Currency:</value>
+  </data>
+  <data name="SuccessfulEventCreation" xml:space="preserve">
+    <value>Event Created</value>
+  </data>
+  <data name="WatchVideo" xml:space="preserve">
+    <value>Watch Video</value>
+  </data>
+  <data name="CreateALot" xml:space="preserve">
+    <value>Create Lot</value>
+  </data>
+  <data name="CreateNewEvent" xml:space="preserve">
+    <value>Create New Event</value>
+  </data>
+  <data name="EventTimeZone" xml:space="preserve">
+    <value>Event Time</value>
+  </data>
+  <data name="DateChanged" xml:space="preserve">
+    <value>Date Changed</value>
+  </data>
+  <data name="EndTimeHistory" xml:space="preserve">
+    <value>End Time History</value>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="ExtensionReason_BUYNOW_ORIGIN" xml:space="preserve">
+    <value>purchased</value>
+  </data>
+  <data name="ExtensionReason_ENDEARLY_ORIGIN" xml:space="preserve">
+    <value>ended early</value>
+  </data>
+  <data name="ExtensionReason_SOFT_TARGET" xml:space="preserve">
+    <value>sniper protection</value>
+  </data>
+  <data name="ExtensionReason_SYSTEM_CALCULATED" xml:space="preserve">
+    <value>system</value>
+  </data>
+  <data name="ListingExtensionHistory" xml:space="preserve">
+    <value>Listing Extension History</value>
+  </data>
+  <data name="NewEndDTTM" xml:space="preserve">
+    <value>New End Date/Time</value>
+  </data>
+  <data name="Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="RelatedListing" xml:space="preserve">
+    <value>Related Listing</value>
+  </data>
+  <data name="EditEvent" xml:space="preserve">
+    <value>Edit Event</value>
+  </data>
+  <data name="EditEventSuccess" xml:space="preserve">
+    <value>Event Updated</value>
+  </data>
+  <data name="PayFees" xml:space="preserve">
+    <value>Pay Fees</value>
+  </data>
+  <data name="ArchiveEvents" xml:space="preserve">
+    <value>Archive Selected Events</value>
+  </data>
+  <data name="EndingSoonest" xml:space="preserve">
+    <value>Ending Soonest</value>
+  </data>
+  <data name="LineageString_EventsPublished" xml:space="preserve">
+    <value>Events &amp;gt; Published</value>
+  </data>
+  <data name="Oldest" xml:space="preserve">
+    <value>Oldest</value>
+  </data>
+  <data name="RestoreEvents" xml:space="preserve">
+    <value>Restore Selected Events</value>
+  </data>
+  <data name="YouMustSelectAtLeastOneEventToProceed" xml:space="preserve">
+    <value>You must select at least one event to proceed</value>
+  </data>
+  <data name="EventMustBeArchivedToUnarchive" xml:space="preserve">
+    <value>Event must be archived to restore</value>
+  </data>
+  <data name="EventMustBeClosedToArchive" xml:space="preserve">
+    <value>Event must be closed to archive</value>
+  </data>
+  <data name="SetEventsArchivedFailure" xml:space="preserve">
+    <value>Failed to update Archived status</value>
+  </data>
+  <data name="SetEventsArchivedSuccess" xml:space="preserve">
+    <value>Archived status successfully updated</value>
+  </data>
+  <data name="Archive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="Archive_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-folder-close"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="CreateLot_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-plus"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Publish_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-check"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="Restore_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-folder-open"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="View_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-eye-open"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="CantAddLineItemToPaidInvoice" xml:space="preserve">
+    <value>Unpaid sale line item can't be added to a paid invoice</value>
+  </data>
+  <data name="AddAnotherLot" xml:space="preserve">
+    <value>Add Another Lot</value>
+  </data>
+  <data name="CreateLotPage2Success" xml:space="preserve">
+    <value>Your lot has been created</value>
+  </data>
+  <data name="FeePaymentRequiredToCreateListing" xml:space="preserve">
+    <value>Outstanding fees must be paid before creating new listings.</value>
+  </data>
+  <data name="ActivateListingsFailure" xml:space="preserve">
+    <value>Failed to activate one or more listings</value>
+  </data>
+  <data name="ActivateSelected" xml:space="preserve">
+    <value>Activate Selected</value>
+  </data>
+  <data name="CSVImport_ColumnName" xml:space="preserve">
+    <value>Column Name</value>
+  </data>
+  <data name="CSVImport_ColumnNumber" xml:space="preserve">
+    <value>Col #</value>
+  </data>
+  <data name="CSVImport_CSVHelp" xml:space="preserve">
+    <value>CSV Help</value>
+  </data>
+  <data name="CSVImport_DataType_Boolean" xml:space="preserve">
+    <value>True/False</value>
+  </data>
+  <data name="CSVImport_DataType_DateTime" xml:space="preserve">
+    <value>Date/Time</value>
+  </data>
+  <data name="CSVImport_DataType_Decimal" xml:space="preserve">
+    <value>Decimal</value>
+  </data>
+  <data name="CSVImport_DataType_Enum" xml:space="preserve">
+    <value>Choice</value>
+  </data>
+  <data name="CSVImport_DataType_Int" xml:space="preserve">
+    <value>Integer</value>
+  </data>
+  <data name="CSVImport_DataType_String" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="CSVImport_Example" xml:space="preserve">
+    <value>Example</value>
+  </data>
+  <data name="CSVImport_Example_Description" xml:space="preserve">
+    <value>&lt;p&gt;My Description&lt;/p&gt;</value>
+  </data>
+  <data name="CSVImport_Example_Image" xml:space="preserve">
+    <value>http://rainworx.com/test.jpg</value>
+  </data>
+  <data name="CSVImport_Example_Subtitle" xml:space="preserve">
+    <value>My Subtitle</value>
+  </data>
+  <data name="CSVImport_Example_Title" xml:space="preserve">
+    <value>My Title</value>
+  </data>
+  <data name="CSVImport_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CSVImport_Notes_AutoRelist" xml:space="preserve">
+    <value>Maximum number of times to automatically relist the listing if it is unsuccessful.  Set to zero, or omit to prevent auto-relisting.</value>
+  </data>
+  <data name="CSVImport_Notes_Badge" xml:space="preserve">
+    <value>Set to true to add a ‘Sale’ banner to the listing</value>
+  </data>
+  <data name="CSVImport_Notes_Bold" xml:space="preserve">
+    <value>Set to true to for the Listing ID and Title to appear Bold</value>
+  </data>
+  <data name="CSVImport_Notes_Category" xml:space="preserve">
+    <value>Category ID</value>
+  </data>
+  <data name="CSVImport_Notes_Currency" xml:space="preserve">
+    <value>One of the following values:{0}</value>
+  </data>
+  <data name="CSVImport_Notes_CustomFieldChoice" xml:space="preserve">
+    <value>(for {1})</value>
+  </data>
+  <data name="CSVImport_Notes_CustomFieldOptional" xml:space="preserve">
+    <value>Since this field is not required, it can be one of the following values, or blank:{0}</value>
+  </data>
+  <data name="CSVImport_Notes_CustomFieldRequired" xml:space="preserve">
+    <value>Since this field is required, it must be one of the following values for Categories to which it has been assigned:{0}</value>
+  </data>
+  <data name="CSVImport_Notes_Description" xml:space="preserve">
+    <value>Listing Description</value>
+  </data>
+  <data name="CSVImport_Notes_Duration" xml:space="preserve">
+    <value>Number of Days for a Listing to be open.  &lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; if the "Listing Duration Option" for the given Listing Type is "Duration Only" or "Start &amp; Duration".</value>
+  </data>
+  <data name="CSVImport_Notes_EndDTTM" xml:space="preserve">
+    <value>Date/Time Listing should end.  &lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; if the "Listing Duration Option" for the given Listing Type is "Start &amp; End" or "End Only".</value>
+  </data>
+  <data name="CSVImport_Notes_EventID" xml:space="preserve">
+    <value>Event ID</value>
+  </data>
+  <data name="CSVImport_Notes_Featured" xml:space="preserve">
+    <value>Set to true to for the Listing to appear in the Featured Listings section</value>
+  </data>
+  <data name="CSVImport_Notes_FixedPrice" xml:space="preserve">
+    <value>Optional Buy-Now Price for Auctions (disregarded for other Listing Types)</value>
+  </data>
+  <data name="CSVImport_Notes_GoodTilCanceled" xml:space="preserve">
+    <value>&lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; for Fixed Price or Classified listings (disregarded when ListingType is Auction).  Set to "true" to cause a listing to remain active until successful or cancelled.  Set to "false" to prevent Good Til Canceled.</value>
+  </data>
+  <data name="CSVImport_Notes_Highlight" xml:space="preserve">
+    <value>Set to true to for the Listing Title to appear Highlighted</value>
+  </data>
+  <data name="CSVImport_Notes_Image" xml:space="preserve">
+    <value>URI to an image file to download for this listing as image # {0}. If you use file:// then your physical web root is located at "{1}".  Therefore, if you are referencing files you've uploaded to your site, the value of this field would be something like "file:///{2}" (note the three slashes after "file:" for local files AND backslashes should be changed to forward slashes).</value>
+  </data>
+  <data name="CSVImport_Notes_Image1Addendum" xml:space="preserve">
+    <value>&lt;p&gt;&lt;strong&gt;This will be the primary listing image.&lt;/strong&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="CSVImport_Notes_ListingType" xml:space="preserve">
+    <value>One of the following values:{0}</value>
+  </data>
+  <data name="CSVImport_Notes_LotNumber" xml:space="preserve">
+    <value>Lot Number (alphanumeric)</value>
+  </data>
+  <data name="CSVImport_Notes_Price" xml:space="preserve">
+    <value>Listing Price (&lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; Starting Bid for Auctions, &lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; Purchase Price for Fixed Price, Optional Price for Classifieds)</value>
+  </data>
+  <data name="CSVImport_Notes_Quantity" xml:space="preserve">
+    <value>&lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; Quantity for Fixed Price (disregarded for other Listing Types)</value>
+  </data>
+  <data name="CSVImport_Notes_Region" xml:space="preserve">
+    <value>Region ID</value>
+  </data>
+  <data name="CSVImport_Notes_ReservePrice" xml:space="preserve">
+    <value>Optional Reserve Price for Auctions (disregarded for other Listing Types)</value>
+  </data>
+  <data name="CSVImport_Notes_SellersUsername" xml:space="preserve">
+    <value>Seller's Username</value>
+  </data>
+  <data name="CSVImport_Notes_Shipping1" xml:space="preserve">
+    <value>&lt;b&gt;Shipping options format:&lt;/b&gt;
+&lt;div class="code"&gt;
+{0}
+&lt;/div&gt;
+&lt;p&gt;(Shipping options format is a Shipping Method Id, followed by a colon ":", followed by the price for that method, optionally followed by another colon ":" and the price per additional item.  This may be repeated multiple times, for multiple shipping options; however, each must be separated by a pipe "|").  Shipping Methods should not appear more than once in this value.  {1} and {2} are always based on the currency specified for the Listing.&lt;/p&gt;
+&lt;b&gt;Valid Shipping Methods:&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
+&lt;table class='codeTable'&gt;
+&lt;tr&gt;&lt;th&gt;Shipping Method Id&lt;/th&gt;&lt;th&gt;&amp;nbsp;&amp;nbsp;&lt;/th&gt;&lt;th&gt;Shipping Method Name&lt;/th&gt;&lt;/tr&gt;
+{3}
+&lt;/table&gt;</value>
+  </data>
+  <data name="CSVImport_Notes_Shipping2" xml:space="preserve">
+    <value>&lt;p&gt;For example, if the item should have two shipping options, the first via "{0}" for {1} and the second via "{2}" for {3} (and an additional item amount of {4} for each option), then the value of this field should be as follows:&lt;/p&gt;&lt;div class="code"&gt;{5}&lt;/div&gt;</value>
+  </data>
+  <data name="CSVImport_Notes_Shipping3" xml:space="preserve">
+    <value>&lt;p&gt;For example, if the item should have one shipping options, via "{0}" for {1} (and an additional item amount of {2}), then the value of this field should be as follows:&lt;/p&gt;&lt;div class="code"&gt;{3}&lt;/div&gt;</value>
+  </data>
+  <data name="CSVImport_Notes_StartDTTM" xml:space="preserve">
+    <value>Date/Time Listing should start.  &lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; if the "Listing Duration Option" for the given Listing Type is "Start &amp; Duration" or "Start &amp; End".</value>
+  </data>
+  <data name="CSVImport_Notes_Subtitle" xml:space="preserve">
+    <value>Listing Subtitle</value>
+  </data>
+  <data name="CSVImport_Notes_Title" xml:space="preserve">
+    <value>Listing Title</value>
+  </data>
+  <data name="CSVImport_Notes_YouTubeID" xml:space="preserve">
+    <value>YouTube video ID (the 11 character code after "v=" in a YouTube URL) to a YouTube video</value>
+  </data>
+  <data name="CSVImport_ValueType" xml:space="preserve">
+    <value>Value Type</value>
+  </data>
+  <data name="LineageString_Listings_Drafts" xml:space="preserve">
+    <value>Listings &amp;gt; Drafts</value>
+  </data>
+  <data name="required" xml:space="preserve">
+    <value>required</value>
+  </data>
+  <data name="SaveAndActivate" xml:space="preserve">
+    <value>Save &amp;amp; Activate</value>
+  </data>
+  <data name="SaveDraft" xml:space="preserve">
+    <value>Save Draft</value>
+  </data>
+  <data name="xSuccessfullyActivated" xml:space="preserve">
+    <value>{0} successfully activated</value>
+    <comment>{0} is number of listings activated</comment>
+  </data>
+  <data name="LineageString_EventsArchived" xml:space="preserve">
+    <value>Events &amp;gt; Archived</value>
+  </data>
+  <data name="LineageString_EventsClosed" xml:space="preserve">
+    <value>Events &amp;gt; Closed</value>
+  </data>
+  <data name="LineageString_EventsDrafts" xml:space="preserve">
+    <value>Events &amp;gt; Drafts</value>
+  </data>
+  <data name="LineageString_LotsByEvent" xml:space="preserve">
+    <value>Events &amp;gt; {0} &amp;gt; Event ID #{2} &amp;gt; Manage Auction</value>
+    <comment>{0} is MyEvents subcategory name, {1} is event title, {2} is event ID</comment>
+  </data>
+  <data name="LotNumberAtoZ" xml:space="preserve">
+    <value>Lot Number, A to Z</value>
+  </data>
+  <data name="LotNumberZtoA" xml:space="preserve">
+    <value>Lot Number, Z to A</value>
+  </data>
+  <data name="LotOrder" xml:space="preserve">
+    <value>Lot Order</value>
+  </data>
+  <data name="LotOrderHighLow" xml:space="preserve">
+    <value>Lot Order, High to Low</value>
+  </data>
+  <data name="LotOrderLowHigh" xml:space="preserve">
+    <value>Lot Order, Low to High</value>
+  </data>
+  <data name="MyEvents" xml:space="preserve">
+    <value>My Events</value>
+  </data>
+  <data name="NumberOfLots" xml:space="preserve">
+    <value># of Lots</value>
+  </data>
+  <data name="Published" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="PublishEventFailure" xml:space="preserve">
+    <value>Publish event failed</value>
+  </data>
+  <data name="PublishEventSuccess" xml:space="preserve">
+    <value>Event published</value>
+  </data>
+  <data name="SaveAndPublish" xml:space="preserve">
+    <value>Save &amp;amp; Publish</value>
+  </data>
+  <data name="SaveAndValidate" xml:space="preserve">
+    <value>Save &amp;amp; Validate</value>
+  </data>
+  <data name="ViewLot" xml:space="preserve">
+    <value>View Lot</value>
+  </data>
+  <data name="EditEventFailure" xml:space="preserve">
+    <value>Edit Event Failed</value>
+  </data>
+  <data name="PreviewLots" xml:space="preserve">
+    <value>Preview Lots</value>
+  </data>
+  <data name="PreviewLots_Help" xml:space="preserve">
+    <value>&lt;p&gt;Enabled: This event and associated lots will be viewable immediately after the event is published, regardless of start date/time.&lt;/p&gt;
+&lt;p&gt;Disabled: This event and associated lots will not be viewable until the start date/time has arrived.&lt;/p&gt;</value>
+  </data>
+  <data name="ValidateAllDrafts" xml:space="preserve">
+    <value>Validate All Drafts</value>
+  </data>
+  <data name="ValidateAllDraftsSuccess" xml:space="preserve">
+    <value>Draft validation successfully started</value>
+  </data>
+  <data name="ValidateAllDrafts_Results_BodyFooter" xml:space="preserve">
+    <value>&lt;br&gt;&lt;br&gt;&lt;small&gt;If applicable, a list of all validation errors is attached&lt;/small&gt;</value>
+  </data>
+  <data name="ValidateAllDrafts_Results_BodyHeader" xml:space="preserve">
+    <value>Draft Lot Validation has been completed.&lt;br&gt;&lt;br&gt;</value>
+  </data>
+  <data name="ValidateAllDrafts_Results_CompletedDTTM" xml:space="preserve">
+    <value>Validation Completed: {0}&lt;br&gt;&lt;br&gt;</value>
+    <comment>{0} is job end DTTM</comment>
+  </data>
+  <data name="ValidateAllDrafts_Results_DraftLotCount" xml:space="preserve">
+    <value>Total Lots Processed: {0}&lt;br&gt;</value>
+    <comment>{0} is draft lot count</comment>
+  </data>
+  <data name="ValidateAllDrafts_Results_EventTitle" xml:space="preserve">
+    <value>Event Title: {1} ({0})&lt;br&gt;&lt;br&gt;</value>
+    <comment>{0} is event ID, {1} is event title</comment>
+  </data>
+  <data name="ValidateAllDrafts_Results_InvalidCount" xml:space="preserve">
+    <value>Lots Failing Validation: {0}&lt;br&gt;</value>
+    <comment>{0} is failed validation count</comment>
+  </data>
+  <data name="ValidateAllDrafts_Results_Row_Error" xml:space="preserve">
+    <value>ERROR: {0}</value>
+    <comment>{0} is error message</comment>
+  </data>
+  <data name="ValidateAllDrafts_Results_Row_LotNumber" xml:space="preserve">
+    <value>---------- Lot Number {0}</value>
+    <comment>{0} is lot number</comment>
+  </data>
+  <data name="ValidateAllDrafts_Results_Subject" xml:space="preserve">
+    <value>Lot Validation Results for Event #{0}</value>
+    <comment>{0} is event ID</comment>
+  </data>
+  <data name="ValidateAllDrafts_Results_ValidatedCount" xml:space="preserve">
+    <value>Lots Validated Successfully: {0}&lt;br&gt;</value>
+    <comment>{0} is validated count</comment>
+  </data>
+  <data name="ValidateAllDrafts_ErrorNotification_Subject" xml:space="preserve">
+    <value>An error occurred while validating drafts for event #{0}</value>
+    <comment>{0} is event ID</comment>
+  </data>
+  <data name="Drafts" xml:space="preserve">
+    <value>Drafts</value>
+  </data>
+  <data name="EventClosingGroupIncrementNotEditable_Help" xml:space="preserve">
+    <value>Closing Group Increment can only be changed if the event has not started closing yet.</value>
+  </data>
+  <data name="EventEndDttmNotEditable_Help" xml:space="preserve">
+    <value>End Date/Time can only be changed if the event has not started closing yet.</value>
+  </data>
+  <data name="EventStartDttmNotEditable_Help" xml:space="preserve">
+    <value>Start Date/Time can only be changed if the event has not started yet.</value>
+  </data>
+  <data name="Xminutes" xml:space="preserve">
+    <value>{0} Minutes</value>
+    <comment>{0} is number of minutes</comment>
+  </data>
+  <data name="DeleteImageDisclaimerEventBanner" xml:space="preserve">
+    <value>&lt;p&gt;
+&lt;strong&gt;The "Event Banner" is displayed on your Event Details page.&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Rotate:&lt;/strong&gt; Change the orientation of your image.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Delete:&lt;/strong&gt; Remove the image from the listing.
+&lt;/p&gt;</value>
+  </data>
+  <data name="DeleteImageDisclaimerEventImage" xml:space="preserve">
+    <value>&lt;p&gt;
+&lt;strong&gt;The "Event Image" is shown when events are displayed in a list.&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Rotate:&lt;/strong&gt; Change the orientation of your image.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Delete:&lt;/strong&gt; Remove the image from the listing.
+&lt;/p&gt;</value>
+  </data>
+  <data name="DisplayName" xml:space="preserve">
+    <value>Display Name</value>
+  </data>
+  <data name="PublishEventCompleted" xml:space="preserve">
+    <value>Publish completed!</value>
+  </data>
+  <data name="PublishEventStarted" xml:space="preserve">
+    <value>Publish in progress...</value>
+  </data>
+  <data name="ValidateAllDraftsCompleted_CheckEmail" xml:space="preserve">
+    <value>Draft Validation completed!  Please check your email for details.</value>
+  </data>
+  <data name="ValidateAllDraftsStarted" xml:space="preserve">
+    <value>Draft Validation in progress...</value>
+  </data>
+  <data name="DeleteEventWarning_Really" xml:space="preserve">
+    <value>Really delete this event? All associated Lots will also be deleted.</value>
+  </data>
+  <data name="EndEarlyEventWarning_Really" xml:space="preserve">
+    <value>Really end this event early?</value>
+  </data>
+  <data name="DeleteLotWarning_Really" xml:space="preserve">
+    <value>Really delete this lot?</value>
+  </data>
+  <data name="EndEarlyLotWarning_Really" xml:space="preserve">
+    <value>Really end this lot early?</value>
+  </data>
+  <data name="CantPublishEventsWithDraftLotsMessage" xml:space="preserve">
+    <value>&lt;p&gt;This event has one or more draft lots associated with it.&lt;/p&gt;&lt;p&gt;Please validate or delete all draft lots and try again.&lt;/p&gt;</value>
+    <comment>this string must not contain any newline characters</comment>
+  </data>
+  <data name="CantPublishEventsWithDraftLotsTitle" xml:space="preserve">
+    <value>Event Can't be Published</value>
+  </data>
+  <data name="ClosingGroupsFailure" xml:space="preserve">
+    <value>Lot Order Update Failed</value>
+  </data>
+  <data name="ClosingGroupsSuccess" xml:space="preserve">
+    <value>Lot Order Updated</value>
+  </data>
+  <data name="LineageString_ClosingGroupManagement" xml:space="preserve">
+    <value>Events &amp;gt;  Manage Lot Order</value>
+  </data>
+  <data name="LineageString_SoftClosingGroupManagement" xml:space="preserve">
+    <value>Events &amp;gt; Manage Auto Extend Groups</value>
+  </data>
+  <data name="ManageLotOrder" xml:space="preserve">
+    <value>Manage Lot Order</value>
+  </data>
+  <data name="ManageSoftClosingGroups" xml:space="preserve">
+    <value>Manage Auto Extend Groups</value>
+  </data>
+  <data name="NumberOfDraftLots" xml:space="preserve">
+    <value># of Drafts</value>
+  </data>
+  <data name="PayFees_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-usd"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="ViewDraftLots" xml:space="preserve">
+    <value>View Draft Lots</value>
+  </data>
+  <data name="DeleteEventFailure" xml:space="preserve">
+    <value>Delete Event Failed</value>
+  </data>
+  <data name="DeleteEventSuccess" xml:space="preserve">
+    <value>Event Deleted</value>
+  </data>
+  <data name="EndEventEarlyFailure" xml:space="preserve">
+    <value>End Event Early Failed</value>
+  </data>
+  <data name="EndEventEarlySuccess" xml:space="preserve">
+    <value>Event Ended Early</value>
+  </data>
+  <data name="EndedEarliest" xml:space="preserve">
+    <value>Ended Earliest</value>
+  </data>
+  <data name="EndedRecently" xml:space="preserve">
+    <value>Ended Recently</value>
+  </data>
+  <data name="BidCountHighToLow" xml:space="preserve">
+    <value># Bids, Highest</value>
+  </data>
+  <data name="BidCountLowToHigh" xml:space="preserve">
+    <value># Bids, Lowest</value>
+  </data>
+  <data name="ManageAuctions" xml:space="preserve">
+    <value>Manage Auctions</value>
+  </data>
+  <data name="ImportCategories" xml:space="preserve">
+    <value>Import Categories</value>
+  </data>
+  <data name="ImportListings" xml:space="preserve">
+    <value>Import Listings</value>
+  </data>
+  <data name="ImportRegions" xml:space="preserve">
+    <value>Import Regions</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>All Categories</value>
+  </data>
+  <data name="JumpToLot" xml:space="preserve">
+    <value>Jump to Lot Number</value>
+  </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="MyAccountHome" xml:space="preserve">
+    <value>My Account Home</value>
+  </data>
+  <data name="MyAuctions" xml:space="preserve">
+    <value>My Auctions</value>
+  </data>
+  <data name="InvoiceID" xml:space="preserve">
+    <value>Invoice&amp;nbsp;#</value>
+  </data>
+  <data name="LineageString_Bidding_Invoices" xml:space="preserve">
+    <value>Bidding &gt; Invoices</value>
+  </data>
+  <data name="LineageString_Events_Invoices" xml:space="preserve">
+    <value>Events &gt; Invoices</value>
+  </data>
+  <data name="LineageString_Events_Sales" xml:space="preserve">
+    <value>Events &gt; Sales</value>
+  </data>
+  <data name="LineageString_Listings_Invoices" xml:space="preserve">
+    <value>Listings &gt; Invoices</value>
+  </data>
+  <data name="LineageString_Listings_SalesReport" xml:space="preserve">
+    <value>Listings &gt; Sales Report</value>
+  </data>
+  <data name="SalesTransactions_csv" xml:space="preserve">
+    <value>SalesTransactions.csv</value>
+  </data>
+  <data name="QtyAvailable" xml:space="preserve">
+    <value># Available:</value>
+  </data>
+  <data name="ClearFilter" xml:space="preserve">
+    <value>Clear Filter</value>
+  </data>
+  <data name="DisplayOptions" xml:space="preserve">
+    <value>Display Options</value>
+  </data>
+  <data name="HasImage" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="LotImageStatus" xml:space="preserve">
+    <value>Does the lot have images?</value>
+  </data>
+  <data name="LotPricing" xml:space="preserve">
+    <value>Lot Pricing</value>
+  </data>
+  <data name="NoImage" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="NoPaymentHistory" xml:space="preserve">
+    <value>No Payment Records</value>
+  </data>
+  <data name="CantRelistDraftListing" xml:space="preserve">
+    <value>A draft listing can't be relisted.  Try 'List similar' instead.</value>
+  </data>
+  <data name="xNotActivated" xml:space="preserve">
+    <value>{0} could not be activated</value>
+  </data>
+  <data name="AddIncrement" xml:space="preserve">
+    <value>Add New Increment Level</value>
+  </data>
+  <data name="BidIncrement" xml:space="preserve">
+    <value>Bid Increment</value>
+  </data>
+  <data name="EditIncrements" xml:space="preserve">
+    <value>Edit or Review Event Bid Increments</value>
+  </data>
+  <data name="IncrementHelp" xml:space="preserve">
+    <value>&lt;p&gt;Bid increments determine the &lt;em&gt;minimum&lt;/em&gt; valid bid amount a user may enter when placing a bid on an auction.&lt;/p&gt;&lt;p&gt;A user may bid any amount equal to or greater than the (Current Price) + (Bid Increment).&lt;/p&gt;&lt;p&gt;Increments are applied at each 'price level' up to the next defined 'price level'.&lt;/p&gt;</value>
+  </data>
+  <data name="MinBidIncrements" xml:space="preserve">
+    <value>Minimum Bid Increments</value>
+  </data>
+  <data name="ActivateListing_small" xml:space="preserve">
+    <value>&lt;span class="glyphicon glyphicon-folder-ok"&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="NoFeedbackHistory" xml:space="preserve">
+    <value>No Feedback History</value>
+  </data>
+  <data name="FilterBy" xml:space="preserve">
+    <value>Filter By:</value>
+  </data>
+  <data name="FinalPrice" xml:space="preserve">
+    <value>Final Price</value>
+  </data>
+  <data name="NoActiveBids" xml:space="preserve">
+    <value>You have no active bids.</value>
+  </data>
+  <data name="NoBiddingHistory" xml:space="preserve">
+    <value>No bidding history.</value>
+  </data>
+  <data name="NoDraftListings" xml:space="preserve">
+    <value>There are no draft listings.</value>
+  </data>
+  <data name="PriceNotSet" xml:space="preserve">
+    <value>Price Not Set</value>
+  </data>
+  <data name="NoActiveListings" xml:space="preserve">
+    <value>You have no active listings.</value>
+  </data>
+  <data name="NoEndedListings" xml:space="preserve">
+    <value>No listings.</value>
+  </data>
+  <data name="NoPurchaseInvoices" xml:space="preserve">
+    <value>No purchase invoices.</value>
+  </data>
+  <data name="NoSalesInvoices" xml:space="preserve">
+    <value>No sale invoices.</value>
+  </data>
+  <data name="NoScheduledListings" xml:space="preserve">
+    <value>You have no scheduled listings.</value>
+  </data>
+  <data name="NoSuccessfulListings" xml:space="preserve">
+    <value>You have no successful listings.</value>
+  </data>
+  <data name="NoUnsuccessfulListings" xml:space="preserve">
+    <value>No listings.</value>
+  </data>
+  <data name="CheckoutWithCreditCard" xml:space="preserve">
+    <value>Checkout with &lt;strong&gt;Credit Card&lt;/strong&gt;</value>
+  </data>
+  <data name="CVV_Help" xml:space="preserve">
+    <value>Your card security/verification code is NOT your PIN number.  The 3 or 4 digit code is printed or embossed on your credit card.</value>
+  </data>
+  <data name="EmptyWatchList" xml:space="preserve">
+    <value>You are not watching any listings.</value>
+  </data>
+  <data name="NoWonListings" xml:space="preserve">
+    <value>No Purchases.</value>
+  </data>
+  <data name="PayWithPayPal" xml:space="preserve">
+    <value>Checkout with &lt;strong&gt;PayPal&lt;/strong&gt;</value>
+  </data>
+  <data name="SelectFromExistingCC" xml:space="preserve">
+    <value>Select From Existing Cards</value>
+  </data>
+  <data name="EventNumber" xml:space="preserve">
+    <value>Event #</value>
+  </data>
+  <data name="SalesTransactions_Event_X_csv" xml:space="preserve">
+    <value>SalesTransactions_Event_{0}.csv</value>
+    <comment>{0} is Event ID</comment>
+  </data>
+  <data name="Xseconds" xml:space="preserve">
+    <value>{0} Seconds</value>
+    <comment>{0} is number of seconds</comment>
+  </data>
+  <data name="ActivateListing" xml:space="preserve">
+    <value>Activate Listing</value>
+  </data>
+  <data name="ManageLots" xml:space="preserve">
+    <value>Manage Auction</value>
+  </data>
+  <data name="Publish" xml:space="preserve">
+    <value>Publish</value>
+  </data>
+  <data name="PublishEvent" xml:space="preserve">
+    <value>Publish Event</value>
+  </data>
+  <data name="UnArchive" xml:space="preserve">
+    <value>Un-Archive</value>
+  </data>
+  <data name="ValidateAllDraftLots" xml:space="preserve">
+    <value>Validate All Draft Lots</value>
+  </data>
+  <data name="StartsclosingIn" xml:space="preserve">
+    <value>Starts Closing In: </value>
+  </data>
+  <data name="FewestBids" xml:space="preserve">
+    <value>Fewest Bids</value>
+  </data>
+  <data name="MostBids" xml:space="preserve">
+    <value>Most Bids</value>
+  </data>
+  <data name="FailedValidation" xml:space="preserve">
+    <value>Failed Validation</value>
+  </data>
+  <data name="Validate" xml:space="preserve">
+    <value>Validate</value>
+  </data>
+  <data name="ValidateDraftLotFailure" xml:space="preserve">
+    <value>Validate Draft Lot Failed</value>
+  </data>
+  <data name="ValidateDraftLotSuccess" xml:space="preserve">
+    <value>Lot Validated</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="AutoExtendGroupManagementNotAvailableOnceEventIsClosing" xml:space="preserve">
+    <value>Auto Extend Group Management is no longer available because this event has started closing</value>
+  </data>
+  <data name="LotOrderManagementNotAvailableOnceEventIsClosing" xml:space="preserve">
+    <value>Lot Order Management is no longer available because this event has started closing</value>
+  </data>
+  <data name="LotNotFound" xml:space="preserve">
+    <value>Lot Not Found</value>
+  </data>
+  <data name="ClosedAuctions" xml:space="preserve">
+    <value>CLOSED AUCTIONS</value>
+  </data>
+  <data name="CurrentAuctions" xml:space="preserve">
+    <value>CURRENT AUCTIONS</value>
+  </data>
+  <data name="UpcomingAuctions" xml:space="preserve">
+    <value>UPCOMING AUCTIONS</value>
+  </data>
+  <data name="Auctions" xml:space="preserve">
+    <value>Auctions</value>
+  </data>
+  <data name="EventCustomFields" xml:space="preserve">
+    <value>Event Custom Fields</value>
+  </data>
+  <data name="LotCustomFields" xml:space="preserve">
+    <value>Lot Custom Fields</value>
+  </data>
+  <data name="RemoveFromInvoiceAndVoidSale" xml:space="preserve">
+    <value>Remove from Invoice and Void Sale</value>
+  </data>
+  <data name="UnVoidSale" xml:space="preserve">
+    <value>Un-Void Sale</value>
+  </data>
+  <data name="VoidInvoicedSaleWarningText" xml:space="preserve">
+    <value>Voiding this sale will also automatically remove it from the invoice and potentially delete the invoice.</value>
+  </data>
+  <data name="VoidInvoicedSaleWarningTitle" xml:space="preserve">
+    <value>This sale has already been invoiced</value>
+  </data>
+  <data name="VoidSale" xml:space="preserve">
+    <value>Void Sale</value>
+  </data>
+  <data name="MySummaryCountClosedEvents" xml:space="preserve">
+    <value>Completed Auctions</value>
+  </data>
+  <data name="MySummaryCountClosingEvents" xml:space="preserve">
+    <value>Auctions Closing Now</value>
+  </data>
+  <data name="MySummaryCountDraftEvents" xml:space="preserve">
+    <value>Draft Auction Events</value>
+  </data>
+  <data name="MySummaryCountPublishedEvents" xml:space="preserve">
+    <value>Published Auction Events</value>
+  </data>
+  <data name="MySummaryCountUnpaidSoldLots" xml:space="preserve">
+    <value>Sold Lots awaiting payment</value>
+  </data>
+  <data name="StartEarly" xml:space="preserve">
+    <value>Start Early</value>
+  </data>
+  <data name="StartEventEarlyFailure" xml:space="preserve">
+    <value>Start Event Early Failed</value>
+  </data>
+  <data name="StartEventEarlySuccess" xml:space="preserve">
+    <value>Event Started</value>
+  </data>
+  <data name="CantPublishEventEndingInPast" xml:space="preserve">
+    <value>This event can't be published because it has an End Date/Time in the past</value>
+  </data>
+  <data name="CreateEventSuccess" xml:space="preserve">
+    <value>Event Created</value>
+  </data>
+  <data name="EventRequired" xml:space="preserve">
+    <value>Event Required</value>
+  </data>
+  <data name="EventRequired_Text" xml:space="preserve">
+    <value>You must create an Event to add a Lot</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="SoftClosingGroupsFailure" xml:space="preserve">
+    <value>Auto Extend Groups Update Failed</value>
+  </data>
+  <data name="SoftClosingGroupsSuccess" xml:space="preserve">
+    <value>Auto Extend Groups Successfully Updated</value>
+  </data>
+  <data name="SelectRegion" xml:space="preserve">
+    <value>Select a Region</value>
+  </data>
+  <data name="ChangeRegion" xml:space="preserve">
+    <value>Change Region</value>
+  </data>
+  <data name="SetRegion" xml:space="preserve">
+    <value>Set Region</value>
+  </data>
+  <data name="BuyNowPrice" xml:space="preserve">
+    <value>Buy Now Price</value>
+  </data>
+  <data name="LotID" xml:space="preserve">
+    <value>Lot ID</value>
+  </data>
+  <data name="Lots_By_Event_X_csv" xml:space="preserve">
+    <value>Lots_By_Event_{0}.csv</value>
+  </data>
+  <data name="Reserve" xml:space="preserve">
+    <value>Reserve</value>
+  </data>
+  <data name="EventEndDate" xml:space="preserve">
+    <value>Event End Date</value>
+  </data>
+  <data name="EventManagedBy" xml:space="preserve">
+    <value>Event Managed By</value>
+  </data>
+  <data name="EventStartDate" xml:space="preserve">
+    <value>Event Start Date</value>
+  </data>
+  <data name="EventTitle" xml:space="preserve">
+    <value>Event Title</value>
+  </data>
+  <data name="NoEventsAvailable" xml:space="preserve">
+    <value>No Events Available -OR- Event Status Pending</value>
+  </data>
+  <data name="CopyLots" xml:space="preserve">
+    <value>Copy Lots...</value>
+  </data>
+  <data name="CopySelectedLots" xml:space="preserve">
+    <value>Copy Selected Lots</value>
+  </data>
+  <data name="LineageString_CopyLots" xml:space="preserve">
+    <value>Events &amp;gt; Copy Lots</value>
+  </data>
+  <data name="MissingSourceEventID" xml:space="preserve">
+    <value>Missing Source Event ID</value>
+  </data>
+  <data name="MissingTargetEventID" xml:space="preserve">
+    <value>Missing Target Event ID</value>
+  </data>
+  <data name="ToEvent" xml:space="preserve">
+    <value>To Event</value>
+  </data>
+  <data name="xNotCreated" xml:space="preserve">
+    <value>{0} could not be created</value>
+  </data>
+  <data name="xSuccessfullyCreated" xml:space="preserve">
+    <value>{0} successfully created</value>
+  </data>
+  <data name="YouMustSelectAtLeastOneLotToCopy" xml:space="preserve">
+    <value>You must select at least one lot to copy</value>
+  </data>
+  <data name="AuthenticationSucceeded_RegitrationNeeded" xml:space="preserve">
+    <value>Please provide a few more details to finish setting up your account</value>
+  </data>
+  <data name="AddXxxSignIn" xml:space="preserve">
+    <value>Add {0} sign in</value>
+  </data>
+  <data name="facebook" xml:space="preserve">
+    <value>Facebook</value>
+  </data>
+  <data name="google" xml:space="preserve">
+    <value>Google</value>
+  </data>
+  <data name="OrSignInWithYourUsernameAndPassword" xml:space="preserve">
+    <value>...or sign in with your username and password</value>
+  </data>
+  <data name="RemoveProviderLoginFailure" xml:space="preserve">
+    <value>Remove Provider Login Failed</value>
+  </data>
+  <data name="RemoveXxxSignIn" xml:space="preserve">
+    <value>Remove {0} sign in</value>
+    <comment>{0} is the external provider name, e.g. "Facebook", "Google"</comment>
+  </data>
+  <data name="SignInWithXxx" xml:space="preserve">
+    <value>Sign in with {0}</value>
+    <comment>{0} is the external provider name, e.g. "Facebook", "Google"</comment>
+  </data>
+  <data name="SuccessfullyAddedXxxSignIn" xml:space="preserve">
+    <value>Successfully added {0} sign in</value>
+  </data>
+  <data name="SuccessfullyRemovedXxxSignIn" xml:space="preserve">
+    <value>Successfully removed {0} sign in</value>
+    <comment>{0} is the external provider name, e.g. "Facebook", "Google"</comment>
+  </data>
+  <data name="VAT" xml:space="preserve">
+    <value>VAT</value>
+  </data>
+  <data name="AwaitingPaymentConfirmation" xml:space="preserve">
+    <value>Awaiting Payment Confirmation</value>
+  </data>
+  <data name="PaymentPending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="FeeCategories" xml:space="preserve">
+    <value>Fee Categories</value>
+  </data>
+  <data name="DeleteListingsFailure" xml:space="preserve">
+    <value>delete listing failed</value>
+  </data>
+  <data name="DeleteMultipleListingsWarning_Really" xml:space="preserve">
+    <value>Really delete these listings?</value>
+  </data>
+  <data name="DeleteSelected" xml:space="preserve">
+    <value>Delete Selected</value>
+  </data>
+  <data name="xSuccessfullyDeleted" xml:space="preserve">
+    <value>{0} successfully deleted</value>
+  </data>
+  <data name="CSVImport_Example_PdfAttachments" xml:space="preserve">
+    <value>http://rainworx.com/test1.pdf{0}My Test PDF{1}|http://rainworx.com/test2.pdf{0}My 2nd Test PDF{1}</value>
+    <comment>{0} is literal left curly brace, {1} is literal right curly brace</comment>
+  </data>
+  <data name="CSVImport_Notes_PdfAttachments" xml:space="preserve">
+    <value>One or more URIs to PDF file(s) to download for this listing as PDF attachments, separated by horizontal bar(s) (|). Each URI may optionally be followed by a friendly title for the attachment by adding the title in curly braces ({2}, {3}).  If a friendly title is not included then the filename will be used instead.  If you use file:// then your physical web root is located at "{0}".  Therefore, if you are referencing files you've uploaded to your site, the value of this field would be something like "file:///{1}" (note the three slashes after "file:" for local files AND backslashes (\) should be changed to forward slashes (/)).</value>
+    <comment>{0} is physicial file path, {1} is uri path, {2} is literal left curly brace, {3} is literal right curly brace</comment>
+  </data>
+  <data name="AnswerQuestionSuccess" xml:space="preserve">
+    <value>Thank you for answering the question</value>
+  </data>
+  <data name="AnswerThisQuestion" xml:space="preserve">
+    <value>answer question</value>
+  </data>
+  <data name="Answer_short" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="CantAskQuestionOnOwnListing" xml:space="preserve">
+    <value>You can't post a question on your own listing.</value>
+  </data>
+  <data name="DeleteThisQuestionAnswer" xml:space="preserve">
+    <value>delete question/answer</value>
+  </data>
+  <data name="EnterYourAnswer" xml:space="preserve">
+    <value>Enter your answer</value>
+  </data>
+  <data name="EnterYourQuestion" xml:space="preserve">
+    <value>Enter your question</value>
+  </data>
+  <data name="ListingAnswerHelpText" xml:space="preserve">
+    <value>Maximum 250 characters</value>
+  </data>
+  <data name="ListingQuestionHelpText" xml:space="preserve">
+    <value>Maximum 250 characters</value>
+  </data>
+  <data name="LoginRequiredToPostQuestion" xml:space="preserve">
+    <value>You must be signed in to post a question</value>
+  </data>
+  <data name="PostAQuestion" xml:space="preserve">
+    <value>Post a question</value>
+  </data>
+  <data name="PostedBy" xml:space="preserve">
+    <value>posted by</value>
+  </data>
+  <data name="PostListingQuestionSuccess" xml:space="preserve">
+    <value>Thank you for posting a question</value>
+  </data>
+  <data name="QuestionNotExist" xml:space="preserve">
+    <value>Question not found</value>
+  </data>
+  <data name="QuestionsAndAnswers" xml:space="preserve">
+    <value>Questions &amp; Answers</value>
+  </data>
+  <data name="Question_short" xml:space="preserve">
+    <value>Q</value>
+  </data>
+  <data name="SignInToPostAQuestion" xml:space="preserve">
+    <value>Sign in to post a question</value>
+  </data>
+  <data name="ThereAreNoQuestionsForThisListing" xml:space="preserve">
+    <value>There are no questions for this listing.</value>
+  </data>
+  <data name="DeleteQuestionFailure" xml:space="preserve">
+    <value>Delete Listing Question Failed</value>
+  </data>
+  <data name="DeleteQuestionSuccess" xml:space="preserve">
+    <value>Listing Question Deleted</value>
+  </data>
+  <data name="DeleteQuestionWarning_Really" xml:space="preserve">
+    <value>Really delete this question?</value>
+  </data>
+  <data name="LoginRequiredToAnswerQuestion" xml:space="preserve">
+    <value>You must be signed in to answer a question</value>
+  </data>
+  <data name="Regarding_short" xml:space="preserve">
+    <value>RE:</value>
+  </data>
+  <data name="xCharsRemaining" xml:space="preserve">
+    <value>(remaining:&amp;nbsp;{0})</value>
+    <comment>{0} is the number of characters remaining</comment>
+  </data>
+  <data name="ApplyCommentToAllInvoices" xml:space="preserve">
+    <value>Apply comment to all invoices</value>
+  </data>
+  <data name="ApplyCommentToAllInvoices_Help" xml:space="preserve">
+    <value>If checked: all other invoices will also be updated with this comment.</value>
+  </data>
+  <data name="EventSummaryCount_CurrentTotal" xml:space="preserve">
+    <value>Current total of lots with reserve met</value>
+  </data>
+  <data name="EventSummaryCount_CurrentTotalBelowReserve" xml:space="preserve">
+    <value>Current total of lots below reserve</value>
+  </data>
+  <data name="EventSummaryCount_ItemsBelowReserve" xml:space="preserve">
+    <value># of lots below reserve</value>
+  </data>
+  <data name="EventSummaryCount_ItemsWithBids" xml:space="preserve">
+    <value># of lots with bids</value>
+  </data>
+  <data name="EventSummaryCount_MaxBidsTotal" xml:space="preserve">
+    <value>Total of all maximum proxy bids</value>
+  </data>
+  <data name="EventSummaryCount_ParticipatingBidders" xml:space="preserve">
+    <value>Participating bidders</value>
+  </data>
+  <data name="EventSummaryCount_TotalBids" xml:space="preserve">
+    <value># of bids</value>
+  </data>
+  <data name="EventSummaryCount_TotalItems" xml:space="preserve">
+    <value># of lots</value>
+  </data>
+  <data name="EventSummaryCount_WinningBidders" xml:space="preserve">
+    <value>Winning bidders</value>
+  </data>
+  <data name="LineageString_EventSummary" xml:space="preserve">
+    <value>Events &amp;gt; {0} &amp;gt; {1} ({2}) &amp;gt; Summary</value>
+    <comment>{0} is MyEvents subcategory name, {1} is event title, {2} is event ID</comment>
+  </data>
+  <data name="EmailAllEventInvoicesFailure" xml:space="preserve">
+    <value>Email All Event Invoices Failed</value>
+  </data>
+  <data name="EmailAllEventInvoicesSuccess" xml:space="preserve">
+    <value>
+Event Invoices Sent</value>
+  </data>
+  <data name="EmailAllInvoicesForThisEvent" xml:space="preserve">
+    <value>Email All Event Invoices</value>
+  </data>
+  <data name="LotsTaxable" xml:space="preserve">
+    <value>Lots Taxable</value>
+  </data>
+  <data name="LotsTaxable_Help" xml:space="preserve">
+    <value>&lt;p&gt;Enabled: Lots in this event will be taxable by default&lt;/p&gt;
+&lt;p&gt;Disabled: Lots in this event will NOT be taxable by default&lt;/p&gt;
+&lt;p&gt;Note: Regardless of this value, specific invoices can still be edited to change the taxable status of particular sale lineitems.&lt;/p&gt;</value>
+  </data>
+  <data name="EmailAllInvoices" xml:space="preserve">
+    <value>Email All Invoices</value>
+  </data>
+  <data name="EmailMultipleInvoicesFailure" xml:space="preserve">
+    <value>No Invoices Sent</value>
+  </data>
+  <data name="EmailMultipleInvoicesPartialSuccess" xml:space="preserve">
+    <value>{1} invoices were successfully sent out of {0} requested.  The following invoices could not be sent: {2}</value>
+    <comment>{0} is Requested Count, {1} is Success Count, {2} is comma-separated list of invoice IDs</comment>
+  </data>
+  <data name="EmailMultipleInvoicesSuccess" xml:space="preserve">
+    <value>All Selected Invoices Sent</value>
+  </data>
+  <data name="PrintAllInvoices" xml:space="preserve">
+    <value>Print All Invoices</value>
+  </data>
+  <data name="PrintAllInvoicesForThisEvent" xml:space="preserve">
+    <value>Print All Event Invoices</value>
+  </data>
+  <data name="ViewInvoices" xml:space="preserve">
+    <value>View Invoices</value>
+  </data>
+  <data name="GroupAll" xml:space="preserve">
+    <value>Group All</value>
+  </data>
+  <data name="GroupXLotsTogether" xml:space="preserve">
+    <value>Group Multiple Lots</value>
+  </data>
+  <data name="NumOfLotsPerGroup" xml:space="preserve">
+    <value># of Lots per Group</value>
+  </data>
+  <data name="Proceed" xml:space="preserve">
+    <value>Proceed</value>
+  </data>
+  <data name="QuickGroupNLotsPerGroupTitle" xml:space="preserve">
+    <value>How many lots per group?</value>
+  </data>
+  <data name="QuickGroupWarningTitle" xml:space="preserve">
+    <value>Re-calculate Groups Confirmation</value>
+  </data>
+  <data name="QuickGroupWarning_CantBeUndone" xml:space="preserve">
+    <value>THIS ACTION CANNOT BE UNDONE</value>
+  </data>
+  <data name="QuickGroupWarning_Really" xml:space="preserve">
+    <value>Re-calculate all groups?</value>
+  </data>
+  <data name="RecalculateClosingGroupsFailure" xml:space="preserve">
+    <value>Recalculate Closing Groups Failed</value>
+  </data>
+  <data name="RecalculateClosingGroupsSuccess" xml:space="preserve">
+    <value>Closing groups successfully recalculated</value>
+  </data>
+  <data name="UnGroupAll" xml:space="preserve">
+    <value>Un-Group All</value>
+  </data>
+  <data name="CopyLotOrderGroups" xml:space="preserve">
+    <value>Copy Lot Order Groups</value>
+  </data>
+  <data name="RecalculateSoftClosingGroupsFailure" xml:space="preserve">
+    <value>Recalculate Auto Extend Groups Failed</value>
+  </data>
+  <data name="RecalculateSoftClosingGroupsSuccess" xml:space="preserve">
+    <value>Auto-extend groups successfully re-calculated</value>
+  </data>
+  <data name="StripeAccountConnectionFailed" xml:space="preserve">
+    <value>An error occurred while attempting to connect to your Stripe.com account</value>
+  </data>
+  <data name="ClickToRefreshNow" xml:space="preserve">
+    <value>Click to refresh now</value>
+  </data>
+  <data name="HandleStripeConnectResponseSuccess" xml:space="preserve">
+    <value>Your Stripe account has been added successfully</value>
+  </data>
+  <data name="LiveUpdatesAppearToBeDisconnected" xml:space="preserve">
+    <value>Live updates appear to be disconnected</value>
+  </data>
+  <data name="ReorderLotsByLotNumber" xml:space="preserve">
+    <value>Also re-order lots by Lot Number</value>
+  </data>
+  <data name="TimeRemaining" xml:space="preserve">
+    <value>Time Remaining</value>
+  </data>
+  <data name="StripeConnect" xml:space="preserve">
+    <value>Stripe</value>
+  </data>
+  <data name="ConnectWithStripe" xml:space="preserve">
+    <value>Connect with Stripe</value>
+  </data>
+  <data name="CopySiteFeesStripeCredentialsFailure" xml:space="preserve">
+    <value>Copy Site Stripe Credentials failed</value>
+  </data>
+  <data name="CopySiteFeesStripeCredentialsSuccess" xml:space="preserve">
+    <value>Copied Site Stripe credentials for use with sales payments for this user</value>
+  </data>
+  <data name="DeleteCardFailure" xml:space="preserve">
+    <value>Delete Card Failed</value>
+  </data>
+  <data name="DeleteCardSuccess" xml:space="preserve">
+    <value>Card successfully deleted</value>
+  </data>
+  <data name="DisconnectFromStripe" xml:space="preserve">
+    <value>Disconnect from Stripe</value>
+  </data>
+  <data name="DisconnectSiteFeesStripeCredentialsFailure" xml:space="preserve">
+    <value>Disconnect Site Stripe Credentials failed</value>
+  </data>
+  <data name="DisconnectSiteFeesStripeCredentialsSuccess" xml:space="preserve">
+    <value>Stripe Credentials Deleted</value>
+  </data>
+  <data name="UseSiteFeeStripeAccount" xml:space="preserve">
+    <value>Use Site Stripe Credentials</value>
+  </data>
+  <data name="CreditCardCheckoutAvailableForInvoiceTotalsOfXandAbove" xml:space="preserve">
+    <value>Credit Card checkout available for invoice totals of {0} and above.</value>
+    <comment>{0} is a value such as "$0.50"</comment>
+  </data>
+  <data name="RegistrationOptions" xml:space="preserve">
+    <value>Registration Options</value>
+  </data>
+  <data name="SaveConfiguration" xml:space="preserve">
+    <value>Save Configuration</value>
+  </data>
+  <data name="SelectedFileIsTooLarge" xml:space="preserve">
+    <value>The file you selected, "[FILE_NAME]" ([FILE_SIZE]), is too large. The maximum size allowed is [MAX_FILE_SIZE].</value>
+  </data>
+  <data name="LotNumX" xml:space="preserve">
+    <value>Lot # {0}</value>
+  </data>
+  <data name="next" xml:space="preserve">
+    <value>next</value>
+  </data>
+  <data name="prev" xml:space="preserve">
+    <value>prev</value>
+  </data>
+  <data name="ApplyCommentToAllInvoices_Events_Help" xml:space="preserve">
+    <value>If checked: all other invoices from the same event will also be updated with this comment.</value>
+  </data>
+  <data name="CopyLotsToThisEvent" xml:space="preserve">
+    <value>Copy Lots to...</value>
+  </data>
+  <data name="DeletedSelectedLots" xml:space="preserve">
+    <value>Deleted Selected Lots</value>
+  </data>
+  <data name="DeleteLots" xml:space="preserve">
+    <value>Delete Lots...</value>
+  </data>
+  <data name="DeleteLotsWarning_Really" xml:space="preserve">
+    <value>Really delete these lot(s)?</value>
+  </data>
+  <data name="MoveLots" xml:space="preserve">
+    <value>Move Lots...</value>
+  </data>
+  <data name="MoveLotsToThisEvent" xml:space="preserve">
+    <value>Move Lots to...</value>
+  </data>
+  <data name="MoveSelectedLots" xml:space="preserve">
+    <value>Move Selected Lots</value>
+  </data>
+  <data name="YouMustSelectAtLeastOneLotToProceed" xml:space="preserve">
+    <value>You must select at least one lot to proceed</value>
+  </data>
+  <data name="CSVImport_Notes_AutoRelist_MixedMode" xml:space="preserve">
+    <value>&lt;br&gt;**Disregarded when EventID is specified</value>
+  </data>
+  <data name="CSVImport_Notes_Currency_MixedMode" xml:space="preserve">
+    <value>**Disregarded when EventID is specified</value>
+  </data>
+  <data name="CSVImport_Notes_Duration_MixedMode" xml:space="preserve">
+    <value>&lt;br&gt;**Disregarded when EventID is specified</value>
+  </data>
+  <data name="CSVImport_Notes_EndDTTM_MixedMode" xml:space="preserve">
+    <value>&lt;br&gt;**Disregarded when EventID is specified</value>
+  </data>
+  <data name="CSVImport_Notes_EventID_MixedMode" xml:space="preserve">
+    <value>**Optional, but forces ListingType to "Auction" when a value is provided</value>
+  </data>
+  <data name="CSVImport_Notes_GoodTilCanceled_MixedMode" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CSVImport_Notes_ListingType_MixedMode" xml:space="preserve">
+    <value>**Disregarded when EventID is specified</value>
+  </data>
+  <data name="CSVImport_Notes_LotNumber_MixedMode" xml:space="preserve">
+    <value>**Disregarded when EventID is NOT specified</value>
+  </data>
+  <data name="CSVImport_Notes_SellersUsername_MixedMode" xml:space="preserve">
+    <value>**Disregarded when EventID is specified</value>
+  </data>
+  <data name="CSVImport_Notes_StartDTTM_MixedMode" xml:space="preserve">
+    <value>&lt;br&gt;**Disregarded when EventID is specified</value>
+  </data>
+  <data name="UndoReset" xml:space="preserve">
+    <value>Undo reset</value>
+  </data>
+  <data name="Plus_Xpct_BuyersPremium" xml:space="preserve">
+    <value>A {0} Buyer's Premium will be applied to the final price.</value>
+  </data>
+  <data name="ShippingServiceCosts" xml:space="preserve">
+    <value>Shipping and Handling (as an add-on item)</value>
+  </data>
+  <data name="ShippingServiceProvider" xml:space="preserve">
+    <value>Service Provider</value>
+  </data>
+  <data name="AdditionalDocuments" xml:space="preserve">
+    <value>Additional Documents</value>
+  </data>
+  <data name="ItemNumber" xml:space="preserve">
+    <value>Item # {0}</value>
+  </data>
+  <data name="ListingPageViews" xml:space="preserve">
+    <value>{0} Page Views</value>
+  </data>
+  <data name="LotItemNumber" xml:space="preserve">
+    <value>Lot # {0}</value>
+  </data>
+  <data name="ViewSellersOtherListings" xml:space="preserve">
+    <value>View Seller's Other Listings</value>
+  </data>
+  <data name="WatchCount" xml:space="preserve">
+    <value>{0}&amp;nbsp;Watching</value>
+  </data>
+  <data name="ListingEndDateTime" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="ListingStartDateTime" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="BuyerFee" xml:space="preserve">
+    <value>Buyer Fee</value>
+  </data>
+  <data name="EventBiddingEnded" xml:space="preserve">
+    <value>Bidding Closed</value>
+  </data>
+  <data name="EventBiddingOpen" xml:space="preserve">
+    <value>Bidding Open</value>
+  </data>
+  <data name="EventBiddingPreview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="ViewAllLots" xml:space="preserve">
+    <value>View All Lots</value>
+  </data>
+  <data name="LineageString_EventSummary_short" xml:space="preserve">
+    <value>Events &gt; {0} &gt; Summary</value>
+    <comment>{0} is MyEvents subcategory name (i.e. draft, published, etc.)</comment>
+  </data>
+  <data name="RemainingCharacters" xml:space="preserve">
+    <value>remaining characters</value>
+  </data>
+  <data name="AcceptOffer" xml:space="preserve">
+    <value>Accept offer</value>
+  </data>
+  <data name="BuyersMessage" xml:space="preserve">
+    <value>Buyer's Message</value>
+  </data>
+  <data name="DeclineOffer" xml:space="preserve">
+    <value>Decline offer</value>
+  </data>
+  <data name="MakeACounteroffer" xml:space="preserve">
+    <value>Make a counteroffer</value>
+  </data>
+  <data name="OfferExpiresIn" xml:space="preserve">
+    <value>Offer expires in</value>
+  </data>
+  <data name="OfferPrice" xml:space="preserve">
+    <value>Offer Price</value>
+  </data>
+  <data name="Offers" xml:space="preserve">
+    <value>Offers</value>
+  </data>
+  <data name="OffersFor" xml:space="preserve">
+    <value>Offers For</value>
+  </data>
+  <data name="xMadeYouAnOffer" xml:space="preserve">
+    <value>&lt;strong&gt;{0}&lt;/strong&gt; made you an offer.</value>
+  </data>
+  <data name="AcceptOfferSuccess" xml:space="preserve">
+    <value>You have accepted an offer</value>
+  </data>
+  <data name="AwaitingResponse" xml:space="preserve">
+    <value>Awaiting Response</value>
+  </data>
+  <data name="ContactBuyer" xml:space="preserve">
+    <value>ContactBuyer</value>
+  </data>
+  <data name="Countered" xml:space="preserve">
+    <value>Countered</value>
+  </data>
+  <data name="CounterofferMessage" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="CounterofferPrice" xml:space="preserve">
+    <value>Counteroffer Price</value>
+  </data>
+  <data name="DeclineOfferSuccess" xml:space="preserve">
+    <value>Offer Declined</value>
+  </data>
+  <data name="Expired" xml:space="preserve">
+    <value>Expired</value>
+  </data>
+  <data name="ExpiresInX" xml:space="preserve">
+    <value>Expires {0}</value>
+  </data>
+  <data name="LineageString_Bidding_Offers" xml:space="preserve">
+    <value>Bidding &gt; Offers</value>
+  </data>
+  <data name="ManageOffers" xml:space="preserve">
+    <value>Manage Offers</value>
+  </data>
+  <data name="NoOffersFound" xml:space="preserve">
+    <value>No offers found</value>
+  </data>
+  <data name="OfferAlreadyAccepted" xml:space="preserve">
+    <value>Offer Already Accepted</value>
+  </data>
+  <data name="OfferAlreadyCountered" xml:space="preserve">
+    <value>You have already sent a counteroffer</value>
+  </data>
+  <data name="OfferAlreadyDeclined" xml:space="preserve">
+    <value>This offer has already been declined</value>
+  </data>
+  <data name="OfferAmountMustBeLowerThanBuyNowPrice" xml:space="preserve">
+    <value>Offer amount must be lower than the Buy Now price</value>
+  </data>
+  <data name="OfferAmountMustBeLowerThanPrice" xml:space="preserve">
+    <value>Offer amount must be lower than the current price</value>
+  </data>
+  <data name="OfferDetails" xml:space="preserve">
+    <value>Offer Details</value>
+  </data>
+  <data name="OfferHistory" xml:space="preserve">
+    <value>Offer History</value>
+  </data>
+  <data name="OfferIsExpired" xml:space="preserve">
+    <value>This offer has expired</value>
+  </data>
+  <data name="OfferNotExist" xml:space="preserve">
+    <value>Offer not found</value>
+  </data>
+  <data name="PendingOffers" xml:space="preserve">
+    <value>Pending Offers</value>
+  </data>
+  <data name="SellersMessage" xml:space="preserve">
+    <value>Seller's Message</value>
+  </data>
+  <data name="SendCounteroffer" xml:space="preserve">
+    <value>Send Counteroffer</value>
+  </data>
+  <data name="SubmitCounterofferFailure" xml:space="preserve">
+    <value>Submit Counteroffer Failed</value>
+  </data>
+  <data name="SubmitCounterofferSuccess" xml:space="preserve">
+    <value>Your counteroffer has been submitted</value>
+  </data>
+  <data name="YouCantMakeAnOfferToYourself" xml:space="preserve">
+    <value>You cannot submit an offer on your own listings.</value>
+  </data>
+  <data name="YouHaveAlreadySubmittedAnOfferForThisItem" xml:space="preserve">
+    <value>You have already submitted an offer for this item</value>
+  </data>
+  <data name="YouMadeAnOfferTox" xml:space="preserve">
+    <value>&lt;strong&gt;You&lt;/strong&gt; made an offer to &lt;strong&gt;{0}&lt;/strong&gt;.</value>
+  </data>
+  <data name="YourOfferHasBeenSubmitted" xml:space="preserve">
+    <value>Your offer has been submitted.</value>
+  </data>
+  <data name="LotSystemIDNum" xml:space="preserve">
+    <value>System ID # {0}</value>
+  </data>
+  <data name="SubmitOffer" xml:space="preserve">
+    <value>Submit Offer</value>
+  </data>
+  <data name="ShippingChangeNotAllowedOnPaidInvoice" xml:space="preserve">
+    <value>Shipping Change Not Allowed On Paid Invoice</value>
+  </data>
+  <data name="CurrentListingDetails" xml:space="preserve">
+    <value>Current Listing/Lot Details</value>
+  </data>
+  <data name="ManageOffersFor" xml:space="preserve">
+    <value>Manage Offers:  {0}</value>
+  </data>
+  <data name="OfferExpiresX" xml:space="preserve">
+    <value>Offer Expires: {0}</value>
+  </data>
+  <data name="OfferPriceX" xml:space="preserve">
+    <value>Offer Price: {0}</value>
+  </data>
+  <data name="OffersByUser" xml:space="preserve">
+    <value>Offers By User</value>
+  </data>
+  <data name="OffersByUser_helptext" xml:space="preserve">
+    <value>Select user from list above to view all offers by that user.</value>
+  </data>
+  <data name="QuantiryX" xml:space="preserve">
+    <value>Quantity: {0}</value>
+  </data>
+  <data name="StatusX" xml:space="preserve">
+    <value>Status: {0}</value>
+  </data>
+  <data name="AcceptedOffer" xml:space="preserve">
+    <value>Accepted Offer</value>
+  </data>
+  <data name="DeclineMessage" xml:space="preserve">
+    <value>Decline Message</value>
+  </data>
+  <data name="xItemsWithAcceptedOffers" xml:space="preserve">
+    <value>{0} items with accepted offers</value>
+    <comment>{0} is the total Quantity of all accepted offers for this listing</comment>
+  </data>
+  <data name="PendingOffer" xml:space="preserve">
+    <value>Pending Offer</value>
+  </data>
+  <data name="QuantityX" xml:space="preserve">
+    <value>Quantity: {0}</value>
+  </data>
+  <data name="CSVImport_Notes_AcceptOffers" xml:space="preserve">
+    <value>Optional for Fixed Price and/or Auction listings when Make Offer is enabled for these types; disregarded when ListingType is Classified or when it is disabled for the specified type.  Set to "true" to allow users to make an offer for this item.  Set to "false" to prevent offers.</value>
+  </data>
+  <data name="CSVImport_Notes_AcceptOffers_MixedMode" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AddtoWatchList" xml:space="preserve">
+    <value>Add to Watch List</value>
+  </data>
+  <data name="ListingStatus" xml:space="preserve">
+    <value>Listing Status</value>
+  </data>
+  <data name="RegisterNow" xml:space="preserve">
+    <value>Register Now</value>
+  </data>
+  <data name="ProxyBiddingEvent_Help" xml:space="preserve">
+    <value>Enabled (checked) - Proxy bidding will be enabled for this auction event.  Bids will automatically be entered on the bidders behalf, up to their maximum proxy bid amount. &lt;br /&gt;&amp;nbsp&lt;br /&gt; When proxy bidding is not enabled, a user's maximum bid is placed immediately.</value>
+  </data>
+  <data name="EventBiddingClosing" xml:space="preserve">
+    <value>Accepting Final Bids</value>
+  </data>
+  <data name="EventRequiredModalHeading" xml:space="preserve">
+    <value>No eligible auction events exist to copy/move lots...</value>
+  </data>
+  <data name="EventRequiredModalMessage" xml:space="preserve">
+    <value>Lots can only be copied or moved to a Draft event.</value>
+  </data>
+  <data name="Clone" xml:space="preserve">
+    <value>List Similar</value>
+  </data>
+  <data name="MessageBuyer" xml:space="preserve">
+    <value>Contact Buyer</value>
+  </data>
+  <data name="MessageSeller" xml:space="preserve">
+    <value>Contact Seller</value>
+  </data>
+  <data name="SendMessage" xml:space="preserve">
+    <value>Send Message</value>
+  </data>
+  <data name="ItemIsDraftConfirmation" xml:space="preserve">
+    <value>&lt;strong&gt;Success&lt;/strong&gt; - Listing Draft Created</value>
+  </data>
+  <data name="ExternalLoginFailed" xml:space="preserve">
+    <value>External login failed, please try again later.</value>
+  </data>
+  <data name="LinkLoginCallbackFailure" xml:space="preserve">
+    <value>Adding external login failed</value>
+  </data>
+  <data name="LinkLoginCallbackSuccess" xml:space="preserve">
+    <value>Successfully added external login</value>
+  </data>
+  <data name="LockedOut" xml:space="preserve">
+    <value>Locked out</value>
+  </data>
+  <data name="RegisterSuccess_EmailVerificationNeeded" xml:space="preserve">
+    <value>Registration Successful -  Please check your email.</value>
+  </data>
+  <data name="RemoveLoginFailure" xml:space="preserve">
+    <value>Removing external login failed</value>
+  </data>
+  <data name="RemoveLoginSuccess" xml:space="preserve">
+    <value>Successfully removed external login</value>
+  </data>
+  <data name="ThisAccountHasBeenLockedOutPleaseTryAgainLater" xml:space="preserve">
+    <value>This account has been locked out, please try again later.</value>
+  </data>
+  <data name="UserIsNotVerified" xml:space="preserve">
+    <value>Your account has not been verified.  Please check your email and enter the code below.</value>
+  </data>
+  <data name="EventImageBanner_HelpTip" xml:space="preserve">
+    <value>&lt;p&gt;The Event Banner will appear across the event's page.  
+&lt;p/&gt;
+&lt;strong&gt;Maximum Event Banner width: 1350px&lt;/strong&gt;
+&lt;br /&gt;
+Larger images will be resized to fit the available space.</value>
+  </data>
+  <data name="EventImage_HelpTip" xml:space="preserve">
+    <value>&lt;p&gt;The Event Image will appear on the homepage under current, upcoming, and closed auctions.  A company logo is often used as the Event Image.
+&lt;p/&gt;
+&lt;strong&gt;Optimal Event Image size: 150px x 150px&lt;/strong&gt;
+&lt;br /&gt;
+Larger images will be resized to fit the available space.</value>
+  </data>
+  <data name="RequestPublishEventFailure" xml:space="preserve">
+    <value>Request Publish Event Failed</value>
+  </data>
+  <data name="RequestPublishEventSuccess" xml:space="preserve">
+    <value>Your request to publish this event has been sent.</value>
+  </data>
+  <data name="FeedbackCharacterLimit" xml:space="preserve">
+    <value>maximum 80 characters</value>
+  </data>
+  <data name="AuthNetEnabled_CredentialsNeeded" xml:space="preserve">
+    <value>Warning! Authorize.Net is enabled but has not been properly configured.</value>
+  </data>
+  <data name="StripeEnabled_CredentialsNeeded" xml:space="preserve">
+    <value>Warning! Stripe is enabled but has not been properly configured.</value>
+  </data>
+  <data name="BuyerID" xml:space="preserve">
+    <value>Buyer ID</value>
+  </data>
+  <data name="ImportFeedbacks" xml:space="preserve">
+    <value>Import Feedback</value>
+  </data>
+  <data name="AddressNotDefined" xml:space="preserve">
+    <value>No Address Selected</value>
+  </data>
+  <data name="BuyerFinalFee" xml:space="preserve">
+    <value>Buyer Final Fee</value>
+  </data>
+  <data name="More" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="FollowAuctionLive" xml:space="preserve">
+    <value>Follow Auction Live</value>
+  </data>
+  <data name="FollowLive" xml:space="preserve">
+    <value>Follow Live</value>
+  </data>
+  <data name="EventActivityReport" xml:space="preserve">
+    <value>Event Activity</value>
+  </data>
+  <data name="HighestBid" xml:space="preserve">
+    <value>Highest Bid</value>
+  </data>
+  <data name="ProxyBid" xml:space="preserve">
+    <value>Proxy Bid</value>
+  </data>
+  <data name="ReservePriceMet" xml:space="preserve">
+    <value>Reserve Price Met</value>
+  </data>
+  <data name="EventListLinkText" xml:space="preserve">
+    <value>Auctions</value>
+  </data>
+  <data name="Sold" xml:space="preserve">
+    <value>Sold</value>
+  </data>
+  <data name="NotSet" xml:space="preserve">
+    <value>Not Set</value>
+  </data>
+  <data name="ScheduledStart" xml:space="preserve">
+    <value>Scheduled Start</value>
+  </data>
+  <data name="ToggleEventDetails" xml:space="preserve">
+    <value>View Auction Details</value>
+  </data>
+  <data name="CopyLotNumbers" xml:space="preserve">
+    <value>Copy Lot Numbers</value>
+  </data>
+  <data name="GenerateNewLotNumbers" xml:space="preserve">
+    <value>Generate New Lot Numbers</value>
+  </data>
+  <data name="GenerateNewLotNumbers_Info" xml:space="preserve">
+    <value>Lots must be assigned a unique number within each Auction Event. Would you like the system to generate &lt;b&gt;a new Lot Number&lt;/b&gt; for each copied Lot?</value>
+  </data>
+  <data name="GenerateNewLotNumbers_title" xml:space="preserve">
+    <value>Generate New Lot Numbers?</value>
+  </data>
+  <data name="AutomaticallyHideEndedLots" xml:space="preserve">
+    <value>Auto hide ended lots</value>
+  </data>
+  <data name="ShowMore" xml:space="preserve">
+    <value>Show More</value>
+  </data>
+  <data name="FollowLiveEnabled" xml:space="preserve">
+    <value>Follow Auction Live</value>
+  </data>
+  <data name="FollowLiveEnabled_Help" xml:space="preserve">
+    <value>&lt;p&gt;When the auction event begins closing, users will have the option to "Follow Auction Live" which automatically redirects them to the next lot closing.&lt;/p&gt;
+&lt;p&gt;IMPORTANT: To prepare the lots to close one at a time and in the proper order, by default all lots will be added to the same auto-extend group.&lt;/p&gt;</value>
+  </data>
+  <data name="ViewItem" xml:space="preserve">
+    <value>View Item</value>
+  </data>
+  <data name="ViewSELLERUSERNAMEListings" xml:space="preserve">
+    <value>View {0}'s Listings</value>
+    <comment>{0} is the username of the listing owner</comment>
+  </data>
+  <data name="ChangeCategory" xml:space="preserve">
+    <value>Change Category</value>
+  </data>
+  <data name="ChangePrimaryListingCategory_Help" xml:space="preserve">
+    <value>&lt;p&gt;Your final category selection must not have any subcategories.&lt;/p&gt;
+&lt;p&gt;Note: It is only possible to change the category while this listing is still saved as a draft. Once the listing has been activated the category cannot be changed.&lt;/p&gt;</value>
+  </data>
+  <data name="SubCategoryMenu" xml:space="preserve">
+    <value>Select Subcategory</value>
+  </data>
+  <data name="CSVImport_Notes_IsTaxable" xml:space="preserve">
+    <value>&lt;span style="color:red;"&gt;REQUIRED&lt;/span&gt; Set to "True" if tax applies to this item, otherwise set to "False"</value>
+  </data>
+  <data name="AcceptOffers_Help" xml:space="preserve">
+    <value>(Optional) Allow buyers to submit offers separate from bidding or buy now purchases.</value>
+  </data>
+  <data name="EventRequiredForNewLotModalHeading" xml:space="preserve">
+    <value>Missing Auction Event</value>
+  </data>
+  <data name="EventRequiredForNewLotModalMessage" xml:space="preserve">
+    <value>At least one auction event must exist before a lot can be created.</value>
+  </data>
+  <data name="AddCardSuccess" xml:space="preserve">
+    <value>Credit Card information was succesfully saved.</value>
+  </data>
+  <data name="CreditCardRequiredForBuyers" xml:space="preserve">
+    <value>You must have a credit card on file before placing bids, making purchases or submitting offers.</value>
+  </data>
+  <data name="CreditCardRequiredForSellers" xml:space="preserve">
+    <value>You must have a credit card on file before posting items.</value>
+  </data>
+  <data name="SalesPreferences" xml:space="preserve">
+    <value>Sales Payment Options</value>
+  </data>
+  <data name="StripeCardManagement" xml:space="preserve">
+    <value>Credit Cards</value>
+  </data>
+  <data name="NoInvoicesPaid" xml:space="preserve">
+    <value>No Invoices Paid</value>
+  </data>
+  <data name="oneInvoiceSuccessfullyPaid" xml:space="preserve">
+    <value>1 invoice was successfully paid</value>
+  </data>
+  <data name="ProcessPayments" xml:space="preserve">
+    <value>Process Payments</value>
+  </data>
+  <data name="xInvoicesSuccessfullyPaid" xml:space="preserve">
+    <value>{0} invoices were successfully paid</value>
+    <comment>{0} is number of paid invoices</comment>
+  </data>
+  <data name="oneInvoiceNotPaid" xml:space="preserve">
+    <value>1 invoice was not paid</value>
+  </data>
+  <data name="UnpaidNoCard" xml:space="preserve">
+    <value>Unpaid, No&amp;nbsp;Card</value>
+  </data>
+  <data name="xInvoicesNotPaid" xml:space="preserve">
+    <value>{0} invoices were not paid</value>
+    <comment>{0} is number of unpaid invoices</comment>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Minimum" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="ForPricesAbove" xml:space="preserve">
+    <value>For prices at or above...</value>
+  </data>
+  <data name="SaleNotFound_PleaseCheckTheUrlAndTryAgain" xml:space="preserve">
+    <value>Sale Not Found. Please check the URL and try again.</value>
+  </data>
+  <data name="PublishEvent_CantBeUndone" xml:space="preserve">
+    <value>THIS ACTION CANNOT BE UNDONE</value>
+  </data>
+  <data name="PublishEvent_ConfirmationTitle" xml:space="preserve">
+    <value>Publish Event Confirmation</value>
+  </data>
+  <data name="PublishEvent_Really" xml:space="preserve">
+    <value>Publish this event?</value>
+  </data>
+  <data name="Add10m" xml:space="preserve">
+    <value>Add 10m</value>
+  </data>
+  <data name="BidderIsOwner" xml:space="preserve">
+    <value>Bidder Is Owner</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="ForBuyersIn" xml:space="preserve">
+    <value>for buyers in</value>
+  </data>
+  <data name="Lot" xml:space="preserve">
+    <value>Lot</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Post" xml:space="preserve">
+    <value>Post</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="UserNameAtoZ" xml:space="preserve">
+    <value>Username A to Z</value>
+  </data>
+  <data name="UserNameZtoA" xml:space="preserve">
+    <value>Username Z to A</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="allfieldsrequired" xml:space="preserve">
+    <value>All Fields Required</value>
+  </data>
+  <data name="CardInfoEntered" xml:space="preserve">
+    <value>Card info entered</value>
+  </data>
+  <data name="ResetLotNumbers" xml:space="preserve">
+    <value>Reset Lot Numbers</value>
+  </data>
+  <data name="ResetLotNumbersConfirmationTitle" xml:space="preserve">
+    <value>Reset Lot Numbers Confirmation</value>
+  </data>
+  <data name="ResetLotNumbersSuccess" xml:space="preserve">
+    <value>Lot Numbers Successfully Reset</value>
+  </data>
+  <data name="ResetLotNumbersWarning_CantBeUndone" xml:space="preserve">
+    <value>THIS ACTION CANNOT BE UNDONE</value>
+  </data>
+  <data name="ResetLotNumbersWarning_Really" xml:space="preserve">
+    <value>Really reset the lot numbers?</value>
+  </data>
+  <data name="SqlExceptionErrorMessage" xml:space="preserve">
+    <value>Please try back soon!</value>
+  </data>
+  <data name="SqlExceptionErrorTitle" xml:space="preserve">
+    <value>Sorry, an error occurred while processing your request.</value>
+  </data>
+  <data name="CopySelected" xml:space="preserve">
+    <value>Copy Selected</value>
+  </data>
+  <data name="YouMustSelectAtLeastOneListingToCopy" xml:space="preserve">
+    <value>You must select at least one listing to copy</value>
+  </data>
+  <data name="ConnectedAccountX" xml:space="preserve">
+    <value>Connected Account: {0}</value>
+    <comment>{0} is the Stripe seller id</comment>
+  </data>
+  <data name="SiteCredentials" xml:space="preserve">
+    <value>Site Credentials</value>
+  </data>
+  <data name="CopySelectedListings" xml:space="preserve">
+    <value>Copy Selected Listings</value>
+  </data>
+  <data name="NoArchivedSales" xml:space="preserve">
+    <value>You have no archived sales.</value>
+  </data>
+  <data name="NoVoidedSales" xml:space="preserve">
+    <value>You have no voided sales.</value>
+  </data>
+  <data name="OneListingCopiedAsADraft" xml:space="preserve">
+    <value>1 Listing copied as a Draft</value>
+  </data>
+  <data name="xListingsCopiedAsDrafts" xml:space="preserve">
+    <value>{0} Listings copied as Drafts</value>
+    <comment>{0} is the number of listings copied</comment>
+  </data>
+</root>

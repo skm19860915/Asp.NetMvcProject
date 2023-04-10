@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CheckErrorCouldNotConnect" xml:space="preserve">
+    <value>The licence server could not be contacted. Either the server does not have an active Internet connection, or a firewall is blocking communication.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorLocked" xml:space="preserve">
+    <value>Your licence has been disabled by RainWorx.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorMachineChanged" xml:space="preserve">
+    <value>The machine has changed since the licence was registered.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorNoClientsRemaining" xml:space="preserve">
+    <value>There were no unused clients remaining for the licence.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorNoSuchLicence" xml:space="preserve">
+    <value>The licence does not exist on the server.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorNotTSLicence" xml:space="preserve">
+    <value>The environment is Terminal Services or Citrix, but the licence is not for use under Citrix.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorNotVirtualLicence" xml:space="preserve">
+    <value>The environment is VMWare or MS Virtual PC, but the licence is not for use under virtualisation.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorNotYetRegistered" xml:space="preserve">
+    <value>GearShift is not yet registered on this machine.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorNoWmi" xml:space="preserve">
+    <value>The WMI service is not available on this machine.  WMI is required for licensing.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorProxyAuthenticationRequired" xml:space="preserve">
+    <value>You must specify WebProxyCredentials.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorTampered" xml:space="preserve">
+    <value>It appears that either the licence, licence response, or cache has been tampered with.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorUnspecified" xml:space="preserve">
+    <value>An unspecified licensing error occurred.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorWrongProduct" xml:space="preserve">
+    <value>The licence is for a different product.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckErrorWrongVersion" xml:space="preserve">
+    <value>The version of the application exceeds the maximum version of the licence.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorCouldNotConnect" xml:space="preserve">
+    <value>The licence server could not be contacted. Either the server does not have an active Internet connection, or a firewall is blocking communication.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorCouldNotReadLicence" xml:space="preserve">
+    <value>To activate GearShift you must place your licence file in the location specified in the web.config file.</value>
+  </data>
+  <data name="RegisterErrorLicenceFilenameNullOrEmpty" xml:space="preserve">
+    <value>An empty or null licence filename was passed.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorLocked" xml:space="preserve">
+    <value>Your licence has been disabled by RainWorx.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorNoClientsRemaining" xml:space="preserve">
+    <value>There were no unused clients remaining for the licence.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorNoSuchLicence" xml:space="preserve">
+    <value>The licence does not exist on the server.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorNotTSLicence" xml:space="preserve">
+    <value>The environment is Terminal Services or Citrix, but the licence is not for use under Citrix.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorNotVirtualLicence" xml:space="preserve">
+    <value>The environment is VMWare or MS Virtual PC, but the licence is not for use under virtualisation.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorNoWmi" xml:space="preserve">
+    <value>The WMI service is not available on this machine.  WMI is required for licensing.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorProxyAuthenticationRequired" xml:space="preserve">
+    <value>You must specify WebProxyCredentials.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorTampered" xml:space="preserve">
+    <value>It appears that either the licence, licence response, or cache has been tampered with.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorUnspecified" xml:space="preserve">
+    <value>An unspecified licensing error occurred.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorUnsupportedOS" xml:space="preserve">
+    <value>Windows 95, 98 and 98 SE are not supported.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorWrongProduct" xml:space="preserve">
+    <value>The version of the application exceeds the maximum version of the licence.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterErrorWrongVersion" xml:space="preserve">
+    <value>The version of the application exceeds the maximum version of the licence.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="Unregistered" xml:space="preserve">
+    <value>You have successfully deactivated GearShift on this machine.  If you do not want it to automatically re-activate, please move your licence file now.</value>
+  </data>
+  <data name="CheckFeatureDemoExpired" xml:space="preserve">
+    <value>Your Demo licence of GearShift is expired.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckFeatureNone" xml:space="preserve">
+    <value>You have a valid licence, but it does not grant you the right to use GearShift.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="CheckFeaturePeriodicExpired" xml:space="preserve">
+    <value>Your Periodic license of GearShift is expired.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterFeatureDemoExpired" xml:space="preserve">
+    <value>Your Demo licence of GearShift is expired.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterFeatureNone" xml:space="preserve">
+    <value>You have a valid licence, but it does not grant you the right to use GearShift.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+  <data name="RegisterFeaturePeriodicExpired" xml:space="preserve">
+    <value>Your Periodic license of GearShift is expired.  Please contact RainWorx support to resolve the issue.</value>
+  </data>
+</root>

@@ -1,0 +1,172 @@
+﻿@model Event
+@using System.Configuration
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+
+    bool tempBool1;
+    bool enableResetLotNumsBtn = bool.TryParse(ConfigurationManager.AppSettings["EnableResetLotNumsBtn"], out tempBool1) ? tempBool1 : false;
+}
+<div class="text-right event__button-container">
+    @if (SiteClient.PayToProceed && Model.Status != AuctionEventStatuses.AwaitingPayment)
+    {
+        bool hasLotsAwaitingPayment = EventClient.GetLotCountByListingStatus(User.Identity.Name, Model.ID, ListingStatuses.AwaitingPayment) > 0;
+        if (hasLotsAwaitingPayment)
+        {
+            @Html.ActionLink(Html.GlobalResource("PayFees"), MVC.FeesAction, MVC.AccountController,
+                null, new { @class = "btn btn-default" })
+        }
+    }
+    @switch (Model.Status)
+    {
+        case AuctionEventStatuses.Draft:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("MoveLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Move", returnUrl }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("DeleteLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Delete", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController,
+                    new { EventID = Model.ID, returnUrl }, new { @class = "btn btn-default" })
+                @Html.ActionLink(Html.GlobalResource("ManageLotOrder"), MVC.ClosingGroupsAction, MVC.AccountController,
+                    new { id = Model.ID }, new { @class = "btn btn-default" })
+                if (enableResetLotNumsBtn)
+                {
+                    @Html.ActionLink(Html.GlobalResource("ResetLotNumbers"), MVC.ResetLotNumbersAction, MVC.AccountController,
+                        new { eventId = Model.ID }, new { @class = "btn btn-default awe-reset-lot-nums-link" })
+                }
+                <a href="#ValidateAllDrafts" class="ValidateAllDraftsLink btn btn-default">@Html.GlobalResource("ValidateAllDrafts")</a>
+                if (EventClient.GetLotCountByListingStatus(User.Identity.Name, Model.ID, ListingStatuses.Draft) > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.LotsByEventAction, MVC.AccountController,
+                        new { id = Model.ID, ViewFilterOption = "Draft" }, new { @class = "btn btn-default awe-cant-publish" })
+                }
+                else if (SiteClient.BoolSetting(SiteProperties.RequireAdminToPublishEvent) && !User.IsInRole("Admin"))
+                {
+                    @Html.ActionLink(Html.GlobalResource("PublishEvent"), "RequestPublishEvent", MVC.EventController,
+                        new { id = Model.ID }, new { @class = "btn btn-default" })
+                }
+                else
+                {
+                    @Html.ActionLink(Html.GlobalResource("PublishEvent"), MVC.PublishEventAction, MVC.EventController,
+                        new { id = Model.ID }, new { @class = "btn btn-default awe-confirm-publish" })
+                }
+                break;
+            }
+        case AuctionEventStatuses.Publishing:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController,
+                    new { EventID = Model.ID, returnUrl }, new { @class = "btn btn-default" })
+                @Html.ActionLink(Html.GlobalResource("ManageLotOrder"), MVC.ClosingGroupsAction, MVC.AccountController,
+                    new { id = Model.ID }, new { @class = "btn btn-default" })
+                if (enableResetLotNumsBtn)
+                {
+                    @Html.ActionLink(Html.GlobalResource("ResetLotNumbers"), MVC.ResetLotNumbersAction, MVC.AccountController,
+                        new { eventId = Model.ID }, new { @class = "btn btn-default awe-reset-lot-nums-link" })
+                }
+                <a href="#ValidateAllDrafts" class="ValidateAllDraftsLink btn btn-default">@Html.GlobalResource("ValidateAllDrafts")</a>
+                break;
+            }
+        case AuctionEventStatuses.Active:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController,
+                    new { EventID = Model.ID, returnUrl }, new { @class = "btn btn-default" })
+                @Html.ActionLink(Html.GlobalResource("ManageLotOrder"), MVC.ClosingGroupsAction, MVC.AccountController,
+                    new { id = Model.ID }, new { @class = "btn btn-default" })
+                if (enableResetLotNumsBtn)
+                {
+                    @Html.ActionLink(Html.GlobalResource("ResetLotNumbers"), MVC.ResetLotNumbersAction, MVC.AccountController,
+                        new { eventId = Model.ID }, new { @class = "btn btn-default awe-reset-lot-nums-link" })
+                }
+                break;
+            }
+        case AuctionEventStatuses.Scheduled:
+        case AuctionEventStatuses.Preview:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("CreateLot"), MVC.CreateLotPage1Action, MVC.EventController,
+                    new { EventID = Model.ID, returnUrl }, new { @class = "btn btn-default" })
+                @Html.ActionLink(Html.GlobalResource("ManageLotOrder"), MVC.ClosingGroupsAction, MVC.AccountController,
+                    new { id = Model.ID }, new { @class = "btn btn-default" })
+                if (enableResetLotNumsBtn)
+                {
+                    @Html.ActionLink(Html.GlobalResource("ResetLotNumbers"), MVC.ResetLotNumbersAction, MVC.AccountController,
+                        new { eventId = Model.ID }, new { @class = "btn btn-default awe-reset-lot-nums-link" })
+                }
+                @Html.ActionLink(Html.GlobalResource("StartEarly"), MVC.StartEventEarlyAction, MVC.EventController,
+                    new { id = Model.ID, returnUrl }, new { @class = "btn btn-default" })
+                break;
+            }
+        case AuctionEventStatuses.Closing:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("SalesReport"), MVC.SalesTransactionReportAction, MVC.AccountController,
+                    new { eventID = Model.ID }, new { @class = "btn btn-default" })
+                @Html.ActionLink(Html.GlobalResource("Invoices"), MVC.InvoiceEventSalesAction, MVC.AccountController,
+                    new { EventID = Model.ID }, new { @class = "btn btn-default" })
+                break;
+            }
+        case AuctionEventStatuses.Closed:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("DeleteLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Delete", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("CreateAllInvoices"), MVC.CreateAllInvoicesAction, MVC.AccountController,
+                    new { eventID = Model.ID, returnUrl }, new { @class = "btn btn-default disable-on-click" })
+                @Html.ActionLink(Html.GlobalResource("SalesReport"), MVC.SalesTransactionReportAction, MVC.AccountController,
+                    new { eventID = Model.ID }, new { @class = "btn btn-default" })
+                @Html.ActionLink(Html.GlobalResource("Invoices"), MVC.InvoiceEventSalesAction, MVC.AccountController,
+                    new { EventID = Model.ID }, new { @class = "btn btn-default" })
+                break;
+            }
+        case AuctionEventStatuses.Archived:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                    @Html.ActionLink(Html.GlobalResource("DeleteLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Delete", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("UnArchive"), MVC.SetEventsArchivedAction, MVC.AccountController,
+                    new { EventIDs = Model.ID, archived = false, returnUrl }, new { @class = "btn btn-default" })
+                break;
+            }
+        case AuctionEventStatuses.AwaitingPayment:
+            {
+                if (Model.LotCount > 0)
+                {
+                    @Html.ActionLink(Html.GlobalResource("CopyLots"), MVC.CopyLotsAction,
+                        new { FromEventID = Model.ID, lotAction = "Copy", returnUrl }, new { @class = "btn btn-default" })
+                }
+                @Html.ActionLink(Html.GlobalResource("PayFees"), MVC.FeesAction, MVC.AccountController,
+                    null, new { @class = "btn btn-default" })
+                break;
+            }
+    }
+</div>

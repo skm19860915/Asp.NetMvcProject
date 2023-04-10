@@ -1,0 +1,94 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">RainWorx AuctionWorx ASP.NET Web API</a></p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <div id="TestResults"></div>
+</div>
+@section scripts
+{
+    <script>
+        function DisplayTestResult(testName, disposition, status, detail) {
+            var now = new Date();
+            var testResults = $("#TestResults");
+            var testResult = $("<div class='testresult'></div>").appendTo(testResults);
+            $("<span>" + testName + " @@ " + now + ": </span>").appendTo(testResult);
+            if (disposition == "SUCCESS") {
+                $("<span class='successResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            } else {
+                $("<span class='failureResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            }
+            $("<div class='detailResult'>" + JSON.stringify(detail) + "</div>").appendTo(testResult);
+        }
+
+        function Test(testName, url, method, expectation) {
+            $.ajax({
+                url: url,
+                type: method,
+                //data: JSON.stringify(newTitle),
+                contentType: "application/json",
+                processData: false,
+                async: false
+            }).always(function (data) {
+                if (expectation == data.status) {
+                    DisplayTestResult(testName, "SUCCESS", data.status, data.detail);
+                } else {
+                    DisplayTestResult(testName, "FAIL", data.status, data.detail);
+                }
+            });
+        }
+
+        $(document).ready(function () {            
+            //create listing
+            Test('Create Listing with No Auth', 'TestListing/CreateListing', 'POST', 401);
+            Test('Create Listing with User that doesn\'t exist', 'TestListing/CreateListing?auth=nouser', 'POST', 401);
+            Test('Create Listing with Existing User, but bad key', 'TestListing/CreateListing?auth=badkey', 'POST', 401);
+            Test('Create Listing with Admin User', 'TestListing/CreateListing?auth=admin', 'POST', 201);
+
+            //get listing
+            Test('Get Listing with No Auth', 'TestListing/GetListing?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID', 'POST', 401);
+            Test('Get Listing with User that doesn\'t exist', 'TestListing/GetListing?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&auth=nouser', 'POST', 401);
+            Test('Get Listing with Existing User, but bad key', 'TestListing/GetListing?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&auth=badkey', 'POST', 401);
+            Test('Get Listing with ANY User', 'TestListing/GetListing?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&auth=nonadmin', 'POST', 200);
+            Test('Get Listing that doesn\'t exist with Admin User', 'TestListing/GetListing?id=-1&auth=admin', 'POST', 404);
+
+            //delete listing
+            Test('Listing Delete with No Auth', 'TestListing/DeleteListing?id=-1', 'POST', 401);
+            Test('Listing Delete with User that doesn\'t exist', 'TestListing/DeleteListing?id=-1&auth=nouser', 'POST', 401);
+            Test('Listing Delete with Existing User, but bad key', 'TestListing/DeleteListing?id=-1&auth=badkey', 'POST', 401);
+            Test('Listing Delete with Unauthorized User', 'TestListing/DeleteListing?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&auth=nonadmin', 'POST', 403);
+            Test('Listing Delete with Admin User', 'TestListing/DeleteListing?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.ListingID&auth=admin', 'POST', 204);
+
+            //Update Category
+            Test('Update Listing with No Auth', 'TestListing/UpdateListing', 'POST', 401);
+            Test('Update Listing with User that doesn\'t exist', 'TestListing/UpdateListing?auth=nouser', 'POST', 401);
+            Test('Update Listing with Existing User, but bad key', 'TestListing/UpdateListing?auth=badkey', 'POST', 401);
+            Test('Update Listing with Unauthorized User', 'TestListing/UpdateListing?auth=nonadmin', 'POST', 403);
+            Test('Update Listing with Admin User', 'TestListing/UpdateListing?auth=admin', 'POST', 204);
+
+            //Update Category
+            Test('Get Listing Types with No Auth', 'TestListing/GetListingTypes', 'POST', 401);
+            Test('Get Listing Types with User that doesn\'t exist', 'TestListing/GetListingTypes?auth=nouser', 'POST', 401);
+            Test('Get Listing Types with Existing User, but bad key', 'TestListing/GetListingTypes?auth=badkey', 'POST', 401);
+            Test('Get Listing Types with Any User', 'TestListing/GetListingTypes?auth=nonadmin', 'POST', 200);
+            Test('Get Listing Types with Admin User', 'TestListing/GetListingTypes?auth=admin', 'POST', 200);
+
+            Test('Get Listing Properties with No Auth', 'TestListing/GetListingTypeProperties?name=Auction', 'POST', 401);
+            Test('Get Listing Properties with User that doesn\'t exist', 'TestListing/GetListingTypeProperties?name=Auction&auth=nouser', 'POST', 401);
+            Test('Get Listing Properties with Existing User, but bad key', 'TestListing/GetListingTypeProperties?name=Auction&auth=badkey', 'POST', 401);
+            Test('Get Listing Properties with Any User', 'TestListing/GetListingTypeProperties?name=Auction&auth=nonadmin', 'POST', 200);
+            Test('Get Listing Properties with Admin User', 'TestListing/GetListingTypeProperties?name=Auction&auth=admin', 'POST', 200);
+
+            Test('Search Listings with No Auth', 'TestListing/SearchListings', 'POST', 401);
+            Test('Search Listings with User that doesn\'t exist', 'TestListing/SearchListings?auth=nouser', 'POST', 401);
+            Test('Search Listings with Existing User, but bad key', 'TestListing/SearchListings?auth=badkey', 'POST', 401);
+            Test('Search Listings with Any User', 'TestListing/SearchListings?auth=nonadmin', 'POST', 200);
+            Test('Search Listings with Admin User', 'TestListing/SearchListings?auth=admin', 'POST', 200);
+        });                
+        
+    </script>
+}

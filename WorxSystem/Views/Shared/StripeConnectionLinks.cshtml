@@ -1,0 +1,46 @@
+﻿@model CustomProperty
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+    bool isAccountConnected = false;
+    bool.TryParse(Model.Value, out isAccountConnected);
+    bool isAdmin = User.Identity.IsAuthenticated && User.IsInRole("Admin");
+    string stripeSellerUserId = UserClient.GetProperty(User.Identity.Name, Html.FBOUserName(), StdUserProps.StripeConnect_SellerUserId);
+}
+@Html.Hidden(Model.Field.Name, Model.Value)
+@if (!isAccountConnected)
+{
+    string stripeResponseUri = SiteClient.TextSetting(SiteProperties.SecureURL);
+    if (stripeResponseUri.Right(1) == "/")
+    {
+        stripeResponseUri = stripeResponseUri.Left(stripeResponseUri.Length - 1);
+    }
+    stripeResponseUri += Html.GetActionUrl(MVC.HandleStripeConnectResponseAction, MVC.StripeController);
+    string stripeConnectionUri = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id="
+        + HttpUtility.UrlEncode(SiteClient.TextSetting(SiteProperties.StripeConnect_ClientId))
+        + "&scope=read_write&redirect_uri="
+        + HttpUtility.UrlEncode(stripeResponseUri);
+    <a class="stripe-connect" href="@stripeConnectionUri" target="_parent">
+        <span>@Html.GlobalResource("ConnectWithStripe")</span>
+    </a>
+    if (isAdmin)
+    {
+        <a class="stripe-connect" href="@Html.GetActionUrl(MVC.CopySiteFeesStripeCredentialsAction, MVC.StripeController, new { returnUrl })">
+            <span>@Html.GlobalResource("UseSiteFeeStripeAccount")</span>
+        </a>
+    }
+}
+else
+{
+    if (isAdmin && string.IsNullOrWhiteSpace(stripeSellerUserId))
+    {
+        <a class="stripe-connect" href="@Html.GetActionUrl(MVC.DisconnectSiteFeesStripeCredentialsAction, MVC.StripeController, new { returnUrl })">
+            <span>@Html.GlobalResource("DisconnectFromStripe")</span>
+        </a>
+    }
+    else
+    {
+        <a class="stripe-connect" id="DisconnectStripeLink" href="https://dashboard.stripe.com/account/applications">
+            <span>@Html.GlobalResource("DisconnectFromStripe")</span>
+        </a>
+    }
+}

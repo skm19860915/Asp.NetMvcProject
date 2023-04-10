@@ -1,0 +1,16 @@
+﻿@model Listing
+@{
+    var offers = (List<Offer>)ViewData["Offers"];
+    string returnUrl = Request.Url.PathAndQuery;
+}
+@if (offers != null)
+{
+    int acceptedOfferCount = offers.Where(o => o.Status == OfferStatuses.Accepted).Sum(o => o.Quantity);
+    var showUserNames = SiteClient.BoolSetting(SiteProperties.ShowBidHistoryUserNames);
+    if (acceptedOfferCount > 0)
+    {
+        <div class="alert alert-success history__offer">
+            @Html.GlobalResource("xItemsWithAcceptedOffers", acceptedOfferCount)
+        </div>
+    }
+}

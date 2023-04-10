@@ -1,0 +1,87 @@
+﻿@{
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        if ($("#username").attr("value") != "") $("#password").attr("value", "demo");
+        $("a").click(function () {
+            if (window.parent) {
+                window.parent.location = $(this).attr("href");
+                return false;
+            }
+            return true;
+        });
+    });
+</script>
+<nav class="navbar navbar-inverse navbar-fixed-top awe-demo-nav">
+    <p class="navbar-text awe-demo-title hidden-xs">
+        <span class="glyphicon glyphicon-tint"></span>
+        @if (SiteClient.EnableEvents)
+        {
+            <span class="awe-demo-bright">AuctionWorx : Events Edition - Online Demo</span>
+        }
+        else
+        {
+            <span class="awe-demo-bright">AuctionWorx Enterprise - Online Demo</span>
+        }
+    <p class="navbar-text awe-demo-title visible-xs">
+        <span class="glyphicon glyphicon-tint"></span>
+        @if (SiteClient.EnableEvents)
+        {
+            <span class="awe-demo-bright">AuctionWorx : Events Edition - Online Demo</span>
+        }
+        else
+        {
+            <span class="awe-demo-bright">AuctionWorx Enterprise - Online Demo</span>
+        }
+    </p>
+    <p class="navbar-text hidden-xs awe-reset-caption">
+        @{
+            TimeZoneInfo rwhqTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            DateTime rwhqNow = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, rwhqTimeZone);
+            TimeSpan timeUntilReset;
+            if (SiteClient.EnableEvents)
+            {
+                //every 3 days, originally scheduled to reset Jan 19 2016 at 11:57 pm
+                DateTime baseDttm = new DateTime(2016, 1, 19, 23, 57, 0);
+                while (baseDttm < rwhqNow)
+                {
+                    baseDttm = baseDttm.AddDays(3);
+                }
+                timeUntilReset = baseDttm.Subtract(rwhqNow);
+            }
+            else
+            {
+                //every 24 hours, originally scheduled to reset Jan 20 2016 at 12:22 am
+                DateTime baseDttm = new DateTime(2016, 1, 20, 0, 22, 0);
+                while (baseDttm < rwhqNow)
+                {
+                    baseDttm = baseDttm.AddDays(1);
+                }
+                timeUntilReset = baseDttm.Subtract(rwhqNow);
+            }
+        }
+        Next data reset in 
+        @timeUntilReset.Hours @(timeUntilReset.Hours != 1 ? "Hours" : "Hour"), 
+        @timeUntilReset.Minutes @(timeUntilReset.Minutes != 1 ? "Minutes" : "Minute")
+    </p>
+    <div class="navbar-right hidden-xs hidden-sm">
+        <a class="btn btn-warning navbar-btn btn-xs" href="@Url.Action(MVC.IndexAction, MVC.HomeController)"><span class="glyphicon glyphicon-home"></span> &nbsp;Back to Main Demo</a>
+        <a class="btn btn-success navbar-btn btn-xs" href="http://www.rainworx.com/Contact/EnterpriseSales" target="_blank"><span class="glyphicon glyphicon-envelope"></span> &nbsp;Contact Sales</a>
+        <a class="btn btn-primary navbar-btn btn-xs" href="http://www.rainworx.com" target="_blank">Back to RainWorx.com &nbsp;<span class="glyphicon glyphicon-share-alt"></span></a>
+    </div>
+    <div class="navbar-right visible-sm">
+        <a class="btn btn-warning navbar-btn btn-xs" href="@Url.Action(MVC.IndexAction, MVC.HomeController)"><span class="glyphicon glyphicon-home"></span> &nbsp;Main Demo</a>
+        <a class="btn btn-success navbar-btn btn-xs" href="http://www.rainworx.com/Contact/EnterpriseSales" target="_blank"><span class="glyphicon glyphicon-envelope"></span> &nbsp;Contact Sales</a>
+        <a class="btn btn-primary navbar-btn btn-xs" href="http://www.rainworx.com" target="_blank">RainWorx.com &nbsp;<span class="glyphicon glyphicon-share-alt"></span></a>
+    </div>
+    <div class="pull-right visible-xs">
+        <a class="btn btn-warning navbar-btn btn-xs" href="@Url.Action(MVC.IndexAction, MVC.HomeController)"><span class="glyphicon glyphicon-home"></span> &nbsp;Main</a>
+        <a class="btn btn-success navbar-btn btn-xs" href="http://www.rainworx.com/Contact/EnterpriseSales" target="_blank"><span class="glyphicon glyphicon-envelope"></span></a>
+        <a class="btn btn-primary navbar-btn btn-xs" href="http://www.rainworx.com" target="_blank">RW&nbsp;<span class="glyphicon glyphicon-share-alt"></span></a>
+    </div>
+</nav>
+
+
+                  

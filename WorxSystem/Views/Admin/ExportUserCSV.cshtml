@@ -1,0 +1,72 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("ExportCSV");
+}
+@section PageName {
+    <a href="@Url.Action(MVC.UserManagementAction)" class="btn btn-default btn-xs pull-right"> <span class="glyphicon glyphicon-chevron-left"></span> @Html.AdminResource("BackToList")</a>
+    - @Html.LocalInteger((int)ViewData["count"]) @Html.AdminResource("Records")
+}
+@section head {
+    <script>
+        $(function () {
+            $("#accordion").accordion({ header: '#header', collapsible: true, active: false });
+            $("#exportOptions").change(function () {
+                var options = $(this).val().split('|');
+                if (options[0] == 'true') {
+                    $("#includeHeaders").attr('checked', 'checked');
+                } else {
+                    $("#includeHeaders").removeAttr('checked');
+                }
+                $("#columnSpec").val(options[1]);
+            });
+        });
+    </script>
+}
+
+<p>@Html.AdminResource("ExportUserCSVInstructions")</p>
+@using (Html.BeginForm())
+{
+    @Html.Hidden("userid", ViewData["userid"])
+    @Html.Hidden("username", ViewData["username"])
+    @Html.Hidden("first", ViewData["first"])
+    @Html.Hidden("last", ViewData["last"])
+    @Html.Hidden("email", ViewData["email"])
+    @Html.Hidden("status", ViewData["status"])
+    @Html.Hidden("role", ViewData["role"])
+    @Html.Hidden("sort", ViewData["sort"])
+    @Html.Hidden("descending", ViewData["descending"])
+
+    <label class="control-label">@Html.AdminResource("PredefinedCSVSpecifications")</label>
+    <div class="form-group">
+        <select id="exportOptions" class="form-control">
+            <option value="true|FirstName=First Name,LastName=Last Name,Email=Email Address">@Html.AdminResource("FirstLastEmailWHeader")</option>
+            <option value="false|FirstName,LastName,Email">@Html.AdminResource("FirstLastEmailWOHeader")</option>
+            <option value="true|ID=id,UserName=User Name,Email=Email Address,FirstName=First Name,LastName=Last Name,Street1=Street,City=City,StateRegion=State,ZipPostal=Zip,Country.Code=Country">@Html.AdminResource("ExtendedInfoWHeader")</option>
+            <option value="false|ID,UserName,Email,FirstName,LastName,Street1,City,StateRegion,ZipPostal,Country.Code">@Html.AdminResource("ExtendedInfoWOHeader")</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="@Html.AdminResource("Export")" class="btn btn-success" />
+    </div>
+        <div class="panel panel-default collapsable">
+            <div class="panel-heading collapsed" data-toggle="collapse" data-target="#CSVCustomSettings">
+                <span>@Html.AdminResource("CustomSettings")</span>
+</div>
+            <div class="panel-body form-horizontal collapse" id="CSVCustomSettings">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("IncludeHeaderQuestion")</label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.CheckBox("includeHeaders", true)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("ColumnSpecification")</label>
+                    <div class="col-xs-12 col-sm-8">
+                        @Html.TextBox("columnSpec", "FirstName=First Name,LastName=Last Name,Email=Email Address", new { @class="form-control input-sm"})
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+}

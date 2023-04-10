@@ -1,0 +1,12 @@
+﻿@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="col-xs-12">
+    <div class="well well-sm section-title">
+        CSV Report
+    </div>
+    @Html.ButtonLink(Html.GlobalResourceString("DownloadReport"), "DownloadCSVReport", "Account", new { id = (int)ViewData["id"], compress = (bool?)ViewData["compress"] }, new { @class = "btn btn-default" })
+</div>
+
+

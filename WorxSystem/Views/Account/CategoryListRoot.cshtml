@@ -1,0 +1,257 @@
+﻿@using System.Configuration;
+@model List<Hierarchy<int, Category>>
+@{ 
+    User impersonatedUser = null;
+    if (User.Identity.IsAuthenticated && !User.Identity.Name.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase))
+    {
+        //admin user is impersonating another user, check the impersonated user's roles
+        impersonatedUser = UserClient.GetUserByUserName(User.Identity.Name, Html.FBOUserName());
+    }
+    bool enableMyAccountNavCollapse = false;
+    bool tempBool1;
+    if (bool.TryParse(ConfigurationManager.AppSettings["EnableMyAccountNavCollapse"], out tempBool1))
+    {
+        enableMyAccountNavCollapse = tempBool1;
+    }
+}
+@foreach (Hierarchy<int, Category> categoryTree in Model.OrderBy(c => c.Current.DisplayOrder))
+{
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.RolesAllowed))
+    {
+        if (impersonatedUser != null)
+        {
+            if (!impersonatedUser.Roles.Any(r => r.Name.Equals(categoryTree.Current.RolesAllowed, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+        }
+        else
+        {
+            if (!User.IsInRole(categoryTree.Current.RolesAllowed)) { continue; }
+        }
+    }
+
+    if (!string.IsNullOrEmpty(categoryTree.Current.EnabledCustomProperty))
+    {
+        if (categoryTree.Current.EnabledCustomProperty.StartsWith("#"))
+        {
+            if (!bool.Parse(categoryTree.Current.EnabledCustomProperty.Substring(1))) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.Contains("&&") ||
+                 categoryTree.Current.EnabledCustomProperty.Contains("||"))
+        {
+            if (!Html.EvaluateComplexEnabledCustomProperty(categoryTree.Current.EnabledCustomProperty)) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_!"))
+        {
+            //render this category if no listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(8);
+            bool skip = false;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = true;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("LTPROP_"))
+        {
+            //render this category if any listing types have a 'true' value for the specified property
+            string propName = categoryTree.Current.EnabledCustomProperty.Substring(7);
+            bool skip = true;
+            foreach (var listingType in ListingClient.ListingTypes)
+            {
+                var property = ListingClient.GetListingTypeProperties(listingType.Name, "Site").FirstOrDefault(p =>
+                    p.Field.Name == propName && !string.IsNullOrWhiteSpace(p.Value));
+                if (property != null && bool.Parse(property.Value) == true)
+                {
+                    skip = false;
+                }
+            }
+            if (skip) { continue; }
+        }
+        else if (categoryTree.Current.EnabledCustomProperty.StartsWith("!"))
+        {
+            if (bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty.Substring(1)])) { continue; }
+        }
+        else
+        {
+            if (!bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty])) { continue; }
+        }
+    }
+    if (categoryTree.ChildHierarchies.Count == 0)
+    {
+        <div class="well well-sm hidden-xs hidden-sm">
+            @if (!string.IsNullOrEmpty(categoryTree.Current.MVCAction))
+            {
+                @Html.ActionLink(Html.GlobalResource(categoryTree.Current.Name), categoryTree.Current.MVCAction)
+            }
+            else
+            {
+                @Html.GlobalResource(categoryTree.Current.Name)
+            }
+        </div>
+    }
+    else
+    {
+        <div class="panel panel-default hidden-xs hidden-sm nav-section-container">
+            @if (string.IsNullOrEmpty(categoryTree.Current.MVCAction))
+            {
+                <div class="panel-heading nav-section-label">
+                    @Html.GlobalResource(categoryTree.Current.Name)
+                </div>
+            }
+            else
+            {
+                <div class="panel-heading nav-section-label">
+                    @Html.ActionLink(Html.GlobalResource(categoryTree.Current.Name), categoryTree.Current.MVCAction)
+                </div>
+            }
+            <ul class="nav nav-pills nav-stacked">
+                @Html.Partial("CategoryList", categoryTree.ChildHierarchies)
+            </ul>
+        </div>
+    }
+}
+<div class="dropdown visible-sm visible-xs">
+    <button class="dropdown-toggle btn btn-default btn-block" data-toggle="dropdown">
+        @Html.GlobalResource("MyAccountNavigation")&nbsp;<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu myaccount-menu__dropdown">
+        <li>@Html.ActionLink(Html.GlobalResource("Summary"), "Summary")</li>
+        @foreach (Hierarchy<int, Category> categoryTree in Model.OrderBy(c => c.Current.DisplayOrder))
+        {
+
+            if (!string.IsNullOrEmpty(categoryTree.Current.RolesAllowed))
+            {
+                if (impersonatedUser != null)
+                {
+                    if (!impersonatedUser.Roles.Any(r => r.Name.Equals(categoryTree.Current.RolesAllowed, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (!User.IsInRole(categoryTree.Current.RolesAllowed)) { continue; }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(categoryTree.Current.EnabledCustomProperty))
+            {
+                if (categoryTree.Current.EnabledCustomProperty.StartsWith("#"))
+                {
+                    if (!bool.Parse(categoryTree.Current.EnabledCustomProperty.Substring(1))) { continue; }
+                }
+                else if (categoryTree.Current.EnabledCustomProperty.Contains("&&") ||
+                         categoryTree.Current.EnabledCustomProperty.Contains("||"))
+                {
+                    if (!Html.EvaluateComplexEnabledCustomProperty(categoryTree.Current.EnabledCustomProperty)) { continue; }
+                }
+                else if (categoryTree.Current.EnabledCustomProperty.StartsWith("!"))
+                {
+                    if (bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty.Substring(1)])) { continue; }
+                }
+                else
+                {
+                    if (!bool.Parse(SiteClient.Settings[categoryTree.Current.EnabledCustomProperty]))
+                    {
+                        continue;
+                    }
+                }
+            }
+            if (string.IsNullOrEmpty(categoryTree.Current.MVCAction))
+            {
+                <li class="divider"></li>
+                <li><a class="awe-nav-pointer"><strong>@Html.GlobalResource(categoryTree.Current.Name)</strong></a></li>
+            }
+            else
+            {
+                <li class="divider"></li>
+                <li> @Html.ActionLink(Html.GlobalResource(categoryTree.Current.Name), categoryTree.Current.MVCAction)</li>
+            }
+
+            @Html.Partial("CategoryList", categoryTree.ChildHierarchies)
+        }
+    </ul>
+</div>
+
+@if (enableMyAccountNavCollapse)
+{
+    <script>
+        $(document).ready(function () {
+
+            function LoadNavState() {
+                //load current visiblity state for each nav section
+                var currentState = $.cookie("MyAccountCollapsePrefs");
+                console.log("currentState (loaded from cookie): ", currentState);
+                var sections = $(".nav-section-container");
+                if (!currentState) {
+                    currentState = new Array(sections.length + 1).join('E');
+                    $.cookie('MyAccountCollapsePrefs', currentState, { expires: 365 });
+                    console.log("currentState cookie set to: ", currentState);
+                };
+
+                var sectIndex = 0;
+                sections.each(function () {
+                    var sectionState = currentState.substring(sectIndex, sectIndex + 1);
+                    if (sectionState == "C") {
+                        $(this).addClass("sub-nav-collapsed").find(".panel-heading").append('<small class="toggle-sub-nav glyphicon glyphicon-plus"></small>');
+                    } else {
+                        $(this).find(".panel-heading").append('<small class="toggle-sub-nav glyphicon glyphicon-minus"></small>');
+                    }
+                    sectIndex++;
+                });
+            }
+
+            function SaveNavState() {
+                var currentState = "";
+                var sections = $(".nav-section-container");
+                sections.each(function () {
+                    if ($(this).hasClass("sub-nav-collapsed")) {
+                        currentState += "C";
+                    } else {
+                        currentState += "E";
+                    }
+                });
+                $.cookie('MyAccountCollapsePrefs', currentState, { expires: 365 });
+                console.log("currentState cookie set to: ", currentState);
+            }
+
+            $(document).on("click", ".nav-section-label", function () {
+                var toggleIcon = $(this).find("small.toggle-sub-nav");
+                var sectionLabel = $(this);
+                var sectionContainer = sectionLabel.parent();
+                if (sectionContainer.hasClass("sub-nav-collapsed")) {
+                    toggleIcon.removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                    sectionContainer.removeClass("sub-nav-collapsed");
+                } else {
+                    toggleIcon.removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                    sectionContainer.addClass("sub-nav-collapsed");
+                }
+                SaveNavState();
+            });
+
+            LoadNavState();
+        });
+    </script>
+    <style>
+        .toggle-sub-nav {
+            float:right;
+            cursor: pointer;
+            color: rgb(221, 221, 221);
+        }
+        .sub-nav-collapsed ul { 
+            display:none;
+        }
+        .nav-section-label {
+            cursor: pointer;
+        }
+    </style>
+    <span class="gli"></span>
+}

@@ -1,0 +1,3835 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddMultiple" xml:space="preserve">
+    <value>Add Multiple</value>
+  </data>
+  <data name="AdminControlPanel" xml:space="preserve">
+    <value>Admin Control Panel</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Assign" xml:space="preserve">
+    <value>Assign</value>
+  </data>
+  <data name="AssignFieldToCategories" xml:space="preserve">
+    <value>Assign Field To Categories</value>
+  </data>
+  <data name="CategoryDetail" xml:space="preserve">
+    <value>Category Detail</value>
+  </data>
+  <data name="CategoryEditor" xml:space="preserve">
+    <value>Category Editor</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>Comments</value>
+  </data>
+  <data name="ContentEditor" xml:space="preserve">
+    <value>Content Editor</value>
+  </data>
+  <data name="ContentManagement" xml:space="preserve">
+    <value>Content Management</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="CreateItemField" xml:space="preserve">
+    <value>Create Listing Field</value>
+  </data>
+  <data name="CreationDate" xml:space="preserve">
+    <value>Account created on</value>
+  </data>
+  <data name="Culture" xml:space="preserve">
+    <value>Culture</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="CurrencyManagement" xml:space="preserve">
+    <value>Currency Management</value>
+  </data>
+  <data name="CustomFields" xml:space="preserve">
+    <value>Custom Fields</value>
+  </data>
+  <data name="DecorationsManagement" xml:space="preserve">
+    <value>Decorations Management</value>
+  </data>
+  <data name="DefaultSiteCurrency" xml:space="preserve">
+    <value>Default Site Currency</value>
+  </data>
+  <data name="DefaultValue" xml:space="preserve">
+    <value>Default Value</value>
+  </data>
+  <data name="Deferred" xml:space="preserve">
+    <value>Deferred</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>Display Order</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="EditDecoration" xml:space="preserve">
+    <value>Edit Decoration</value>
+  </data>
+  <data name="EditEventFees" xml:space="preserve">
+    <value>Edit Fee</value>
+  </data>
+  <data name="EditFeeTier" xml:space="preserve">
+    <value>Edit Fee Tier</value>
+  </data>
+  <data name="EditItemField" xml:space="preserve">
+    <value>Edit Listing Field</value>
+  </data>
+  <data name="Editing" xml:space="preserve">
+    <value>Editing</value>
+  </data>
+  <data name="EditLocation" xml:space="preserve">
+    <value>Edit Location</value>
+  </data>
+  <data name="EditTiers" xml:space="preserve">
+    <value>Edit Tiers</value>
+  </data>
+  <data name="EditUser" xml:space="preserve">
+    <value>Edit User</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="EnterNewIncrement" xml:space="preserve">
+    <value>Enter New Increment</value>
+  </data>
+  <data name="LineageString_EventFeeManagement" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Listing Fees</value>
+  </data>
+  <data name="ExtendListings" xml:space="preserve">
+    <value>Extend Listings</value>
+  </data>
+  <data name="FailedPasswordAnswerAttemptCount" xml:space="preserve">
+    <value>Failed Password Answer Attempts</value>
+  </data>
+  <data name="FailedPasswordAnswerAttemptWindowStart" xml:space="preserve">
+    <value>Failed Password Answer on</value>
+  </data>
+  <data name="FailedPasswordAttemptCount" xml:space="preserve">
+    <value>Failed Password Attempts</value>
+  </data>
+  <data name="FailedPasswordAttemptWindowStart" xml:space="preserve">
+    <value>Failed Password on</value>
+  </data>
+  <data name="FieldManagement" xml:space="preserve">
+    <value>{0} Field Management</value>
+  </data>
+  <data name="FormatString" xml:space="preserve">
+    <value>Format String</value>
+  </data>
+  <data name="GroupName" xml:space="preserve">
+    <value>Group Name</value>
+  </data>
+  <data name="ID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Impersonate" xml:space="preserve">
+    <value>Impersonate</value>
+  </data>
+  <data name="Increment" xml:space="preserve">
+    <value>Increment</value>
+  </data>
+  <data name="IncrementManagement" xml:space="preserve">
+    <value>Increment Management</value>
+  </data>
+  <data name="IsApproved" xml:space="preserve">
+    <value>Is Approved</value>
+  </data>
+  <data name="IsLockedOut" xml:space="preserve">
+    <value>Is Restricted</value>
+  </data>
+  <data name="IsVerified" xml:space="preserve">
+    <value>Is Verified</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Listing</value>
+  </data>
+  <data name="LastActivityDate" xml:space="preserve">
+    <value>Last active on</value>
+  </data>
+  <data name="LastIP" xml:space="preserve">
+    <value>Last IP address</value>
+  </data>
+  <data name="LastLockoutDate" xml:space="preserve">
+    <value>Restricted on</value>
+  </data>
+  <data name="LastLoginDate" xml:space="preserve">
+    <value>Last signed in</value>
+  </data>
+  <data name="ListingID" xml:space="preserve">
+    <value>Listing ID</value>
+  </data>
+  <data name="ListingTypes" xml:space="preserve">
+    <value>Listing Types</value>
+  </data>
+  <data name="ManageFieldEnumeration" xml:space="preserve">
+    <value>Add Options</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>Minutes</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Newsletter" xml:space="preserve">
+    <value>Newsletter</value>
+  </data>
+  <data name="PriceLevel" xml:space="preserve">
+    <value>Price Level</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SelectSupportedCurrencies" xml:space="preserve">
+    <value>Select Supported Currencies</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Unassign" xml:space="preserve">
+    <value>Unassign</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ValidFields" xml:space="preserve">
+    <value>Valid Fields</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="AddDomesticDHLOptions" xml:space="preserve">
+    <value>Add Domestic DHL Options</value>
+  </data>
+  <data name="AddDomesticFedexOptions" xml:space="preserve">
+    <value>Add Domestic Fedex Options</value>
+  </data>
+  <data name="AddDomesticUPSOptions" xml:space="preserve">
+    <value>Add Domestic UPS Options</value>
+  </data>
+  <data name="AddDomesticUSPSOptions" xml:space="preserve">
+    <value>Add Domestic USPS Options</value>
+  </data>
+  <data name="AddInternationalDHLOptions" xml:space="preserve">
+    <value>Add International DHLOptions</value>
+  </data>
+  <data name="AddInternationalFedexOptions" xml:space="preserve">
+    <value>Add International Fedex Options</value>
+  </data>
+  <data name="AddInternationalUPSOptions" xml:space="preserve">
+    <value>Add International UPS Options</value>
+  </data>
+  <data name="AddInternationalUSPSOptions" xml:space="preserve">
+    <value>Add International USPS Options</value>
+  </data>
+  <data name="DatePaid" xml:space="preserve">
+    <value>Date Paid</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>From Date</value>
+  </data>
+  <data name="Go" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="InvoiceID" xml:space="preserve">
+    <value>Invoice ID</value>
+  </data>
+  <data name="LanguageManagement" xml:space="preserve">
+    <value>Language Management</value>
+  </data>
+  <data name="LocationsManagement" xml:space="preserve">
+    <value>Locations Management</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="RegionEditor" xml:space="preserve">
+    <value>Region Editor</value>
+  </data>
+  <data name="ShippingMethod" xml:space="preserve">
+    <value>Shipping Method</value>
+  </data>
+  <data name="SiteFeesReportNew" xml:space="preserve">
+    <value>Fee Invoices (New)</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>To Date</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>User Management</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="AddDecorationSuccess" xml:space="preserve">
+    <value>Add Decoration Success</value>
+  </data>
+  <data name="AddEventFeeSuccess" xml:space="preserve">
+    <value>Add Event Fee Success</value>
+  </data>
+  <data name="AddFeeTierSuccess" xml:space="preserve">
+    <value>Add Fee Tier Success</value>
+  </data>
+  <data name="AssignFieldSuccess" xml:space="preserve">
+    <value>Assign Field Success</value>
+  </data>
+  <data name="ChooseDefaultCulture" xml:space="preserve">
+    <value>Choose Default Culture</value>
+  </data>
+  <data name="CreateFieldSuccess" xml:space="preserve">
+    <value>Create Field Success</value>
+  </data>
+  <data name="CultureManagement" xml:space="preserve">
+    <value>Culture Management</value>
+  </data>
+  <data name="DeleteFieldSuccess" xml:space="preserve">
+    <value>Delete Field Success</value>
+  </data>
+  <data name="EditDecorationSuccess" xml:space="preserve">
+    <value>Edit Decoration Success</value>
+  </data>
+  <data name="EditEventFeesSuccess" xml:space="preserve">
+    <value>Edit Event Fees Success</value>
+  </data>
+  <data name="EditFeeTierSuccess" xml:space="preserve">
+    <value>Edit Fee Tier Success</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="InUseByListingProperty" xml:space="preserve">
+    <value>In Use By Listing Property</value>
+  </data>
+  <data name="PropertyManagementSuccess" xml:space="preserve">
+    <value>Successfully Saved Settings</value>
+  </data>
+  <data name="SaveFieldSuccess" xml:space="preserve">
+    <value>Save Field Success</value>
+  </data>
+  <data name="ShippingMethods" xml:space="preserve">
+    <value>Shipping Methods</value>
+  </data>
+  <data name="ShippingMethodsSuccess" xml:space="preserve">
+    <value>Shipping Methods Success</value>
+  </data>
+  <data name="ToggleListingTypeSuccess" xml:space="preserve">
+    <value>Toggle Listing Type Success</value>
+  </data>
+  <data name="UnassignFieldFromCategoryDetailSuccess" xml:space="preserve">
+    <value>Unassign Field From Category Detail Success</value>
+  </data>
+  <data name="UnassignFieldSuccess" xml:space="preserve">
+    <value>Unassign Field Success</value>
+  </data>
+  <data name="LineageString_VersionInfo" xml:space="preserve">
+    <value>Advanced &amp;gt; Version</value>
+  </data>
+  <data name="ContentEditorSuccess" xml:space="preserve">
+    <value>Content Editor Success</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>Deactivate Licence on this machine?</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Add New</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="BillingAddress" xml:space="preserve">
+    <value>Billing Address</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>Date Created</value>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="InvoiceNumber" xml:space="preserve">
+    <value>Invoice Number</value>
+  </data>
+  <data name="ListingType" xml:space="preserve">
+    <value>Listing Type</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="SiteFeeInvoice" xml:space="preserve">
+    <value>Site Fee Invoice</value>
+  </data>
+  <data name="SiteFeesReportPaid" xml:space="preserve">
+    <value>Fee Invoices (Paid)</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="LineageString_LogoUploader" xml:space="preserve">
+    <value>Site Preferences &amp;gt; Site Logo</value>
+  </data>
+  <data name="PayToProceed" xml:space="preserve">
+    <value>Pay to Proceed</value>
+  </data>
+  <data name="UploadYourSiteLogo" xml:space="preserve">
+    <value>Upload your site logo</value>
+  </data>
+  <data name="DeleteDecorationSuccess" xml:space="preserve">
+    <value>Decoration Deleted Successfully</value>
+  </data>
+  <data name="EditLocationSuccess" xml:space="preserve">
+    <value>Successfully Edited Location</value>
+  </data>
+  <data name="DeleteEventFeeSuccess" xml:space="preserve">
+    <value>Successfully Deleted Event Fee</value>
+  </data>
+  <data name="LowerBoundInclusive" xml:space="preserve">
+    <value>Lower Bound</value>
+  </data>
+  <data name="UpperBoundExclusive" xml:space="preserve">
+    <value>Upper Bound</value>
+  </data>
+  <data name="ValueType" xml:space="preserve">
+    <value>Value Type</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="AdditionalImages" xml:space="preserve">
+    <value>Additional Images</value>
+  </data>
+  <data name="Bold" xml:space="preserve">
+    <value>Bold</value>
+  </data>
+  <data name="CancelChanges" xml:space="preserve">
+    <value>Cancel Changes</value>
+  </data>
+  <data name="Featured" xml:space="preserve">
+    <value>Featured</value>
+  </data>
+  <data name="FeeName" xml:space="preserve">
+    <value>Fee Name</value>
+  </data>
+  <data name="FinalSaleFee" xml:space="preserve">
+    <value>Seller Final Fee</value>
+  </data>
+  <data name="FirstImage" xml:space="preserve">
+    <value>First Image</value>
+  </data>
+  <data name="ForValuesUnder" xml:space="preserve">
+    <value>For values under...</value>
+  </data>
+  <data name="Highlight" xml:space="preserve">
+    <value>Highlight</value>
+  </data>
+  <data name="Italic" xml:space="preserve">
+    <value>Italic</value>
+  </data>
+  <data name="PostListingFee" xml:space="preserve">
+    <value>Post Fee</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>Subtitle</value>
+  </data>
+  <data name="EditFees" xml:space="preserve">
+    <value>Edit Fees</value>
+  </data>
+  <data name="AssignFieldFromCategoryDetailSuccess" xml:space="preserve">
+    <value>Custom fields associated successfully</value>
+  </data>
+  <data name="AddNewDecor" xml:space="preserve">
+    <value>Add New Decoration</value>
+  </data>
+  <data name="AddNewListingFee" xml:space="preserve">
+    <value>Add New Listing Fee</value>
+  </data>
+  <data name="AddNewTier" xml:space="preserve">
+    <value>Add New Tier</value>
+  </data>
+  <data name="EditFeeTiers" xml:space="preserve">
+    <value>Edit Fee Tiers</value>
+  </data>
+  <data name="EditFeeTiers_HelpText" xml:space="preserve">
+    <value>Select fee value to edit tier.</value>
+  </data>
+  <data name="FeeDescription" xml:space="preserve">
+    <value>Fee Description</value>
+  </data>
+  <data name="FeeValue" xml:space="preserve">
+    <value>Fee Value</value>
+  </data>
+  <data name="LineageString_EditEventFeeManagement" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Listing Fees  &amp;gt; Edit Fee</value>
+  </data>
+  <data name="LineageString_OptionFee" xml:space="preserve">
+    <value>Billing &amp;amp; Fees &amp;gt; Optional Fees</value>
+  </data>
+  <data name="Or" xml:space="preserve">
+    <value>Or</value>
+  </data>
+  <data name="SelectEvent" xml:space="preserve">
+    <value>Select Event</value>
+  </data>
+  <data name="SelectListingType" xml:space="preserve">
+    <value>Select Listing Type</value>
+  </data>
+  <data name="AdminHelpText_PayToProceed" xml:space="preserve">
+    <value>Select this option to require listing fee payments from sellers up front.</value>
+  </data>
+  <data name="LineageString_EditFees" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Edit Fees</value>
+  </data>
+  <data name="ClearCache" xml:space="preserve">
+    <value>Clear Cache</value>
+  </data>
+  <data name="LineageString_CategoryDetail" xml:space="preserve">
+    <value>Categories &amp;gt; Edit &amp;gt; Details</value>
+  </data>
+  <data name="LineageString_CategoryEditor" xml:space="preserve">
+    <value>Categories &amp;gt; Edit</value>
+  </data>
+  <data name="LineageString_ContentEditor" xml:space="preserve">
+    <value>CMS &amp;gt; Content &amp;gt; Details</value>
+  </data>
+  <data name="LineageString_ContentGeneral" xml:space="preserve">
+    <value>CMS &amp;gt; Content</value>
+  </data>
+  <data name="LineageString_CultureManagement" xml:space="preserve">
+    <value>International &amp;gt; Cultures</value>
+  </data>
+  <data name="LineageString_CurrencyManagement" xml:space="preserve">
+    <value>International &amp;gt; Currencies</value>
+  </data>
+  <data name="LineageString_EditUser" xml:space="preserve">
+    <value>Users &amp;gt; Management &amp;gt; Edit User</value>
+  </data>
+  <data name="LineageString_ExtendListings" xml:space="preserve">
+    <value>Advanced &amp;gt; Extend</value>
+  </data>
+  <data name="LineageString_IncrementManagement" xml:space="preserve">
+    <value>Listings &amp;gt;  Bid Increment Management</value>
+  </data>
+  <data name="LineageString_LanguageManagement" xml:space="preserve">
+    <value>International &amp;gt; Languages</value>
+  </data>
+  <data name="LineageString_ListingsGeneral" xml:space="preserve">
+    <value>Listings &amp;gt; General</value>
+  </data>
+  <data name="LineageString_RegionGeneral" xml:space="preserve">
+    <value>Regions &amp;gt; Edit</value>
+  </data>
+  <data name="LineageString_ShippingMethods" xml:space="preserve">
+    <value>Listings &amp;gt; Shipping</value>
+  </data>
+  <data name="LineageString_SiteFeesReportNew" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Fee Invoices (New)</value>
+  </data>
+  <data name="LineageString_SiteFeesReportPaid" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Fee Invoices (Paid)</value>
+  </data>
+  <data name="LineageString_UserManagement" xml:space="preserve">
+    <value>Users &amp;gt; Management</value>
+  </data>
+  <data name="AdminSummary" xml:space="preserve">
+    <value>Admin Summary</value>
+  </data>
+  <data name="AdminSummaryCountActiveListings" xml:space="preserve">
+    <value>Active Listings</value>
+  </data>
+  <data name="AdminSummaryCountAllListings" xml:space="preserve">
+    <value>Total Listings</value>
+  </data>
+  <data name="AdminSummaryCountListingsWithTransactions" xml:space="preserve">
+    <value>Listings with Bids/Purchases</value>
+  </data>
+  <data name="AdminSummaryCountRegisteredUsers" xml:space="preserve">
+    <value>Registered Users</value>
+  </data>
+  <data name="SiteStatistics" xml:space="preserve">
+    <value>Site Statistics</value>
+  </data>
+  <data name="AboutUs" xml:space="preserve">
+    <value>About Us</value>
+  </data>
+  <data name="ContactUs" xml:space="preserve">
+    <value>Contact Us</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HomepageAnnouncement" xml:space="preserve">
+    <value>Homepage Announcement</value>
+  </data>
+  <data name="IdHighToLow" xml:space="preserve">
+    <value>ID (High to Low)</value>
+  </data>
+  <data name="IdLowToHigh" xml:space="preserve">
+    <value>ID (Low to High)</value>
+  </data>
+  <data name="LastLoginDateNewToOld" xml:space="preserve">
+    <value>Last Login Date (New to Old)</value>
+  </data>
+  <data name="LastLoginDateOldToNew" xml:space="preserve">
+    <value>Last Login Date (Old to New)</value>
+  </data>
+  <data name="LocalizedName" xml:space="preserve">
+    <value>Localized Name (In Current Language)</value>
+  </data>
+  <data name="PaidDateNewToOld" xml:space="preserve">
+    <value>Paid Date (New to Old)</value>
+  </data>
+  <data name="PaidDateOldToNew" xml:space="preserve">
+    <value>Paid Date (Old to New)</value>
+  </data>
+  <data name="PayerUserNameAToZ" xml:space="preserve">
+    <value>Payer User Name (A to Z)</value>
+  </data>
+  <data name="PayerUserNameZToA" xml:space="preserve">
+    <value>Payer User Name (Z to A)</value>
+  </data>
+  <data name="RegistrationCopy" xml:space="preserve">
+    <value>Registration Copy</value>
+  </data>
+  <data name="SignInCopy" xml:space="preserve">
+    <value>Sign-In Copy</value>
+  </data>
+  <data name="SiteHeader" xml:space="preserve">
+    <value>Site Header</value>
+  </data>
+  <data name="TermsAndConditions" xml:space="preserve">
+    <value>Terms &amp;amp; Conditions</value>
+  </data>
+  <data name="TotalHighToLow" xml:space="preserve">
+    <value>Total (High to Low)</value>
+  </data>
+  <data name="TotalLowToHigh" xml:space="preserve">
+    <value>Total (Low to High)</value>
+  </data>
+  <data name="UserNameAToZ" xml:space="preserve">
+    <value>UserName (A to Z)</value>
+  </data>
+  <data name="UserNameZToA" xml:space="preserve">
+    <value>UserName (Z to A)</value>
+  </data>
+  <data name="UserVerificationCopy" xml:space="preserve">
+    <value>User Verification Copy</value>
+  </data>
+  <data name="EditFeesSuccess" xml:space="preserve">
+    <value>Successfully Edited Fees</value>
+  </data>
+  <data name="DatabaseVersion" xml:space="preserve">
+    <value>Database Version</value>
+  </data>
+  <data name="CategoryEditor_AddNew" xml:space="preserve">
+    <value>Add New Categories</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CancelChangesWarning1" xml:space="preserve">
+    <value>All changes will be lost.</value>
+  </data>
+  <data name="CancelChangesWarning2" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="CustomUserDeferredHelpText" xml:space="preserve">
+    <value>When checked this field will be hidden at registration.  It will still be displayed on the "My Account &gt; Details" and "Admin Control Panel &gt; Edit User" views.</value>
+  </data>
+  <data name="DeleteWarning_CantBeUndone" xml:space="preserve">
+    <value>THIS ACTION CANNOT BE UNDONE</value>
+  </data>
+  <data name="DeleteWarning_Really" xml:space="preserve">
+    <value>Really delete this field?  If any Listings (for Listing fields) or Users (for User fields) use this field or Events (for Event fields), that data will be DELETED.  (Individual Listings or Users or Events however, will remain intact.)</value>
+  </data>
+  <data name="DeleteWarning_ReallyDeleteCategory" xml:space="preserve">
+    <value>Really delete this category?</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="AddRegions" xml:space="preserve">
+    <value>Add Regions</value>
+  </data>
+  <data name="AddSubcategories" xml:space="preserve">
+    <value>Add Categories</value>
+  </data>
+  <data name="CurrentlySelected" xml:space="preserve">
+    <value>Currently Selected</value>
+  </data>
+  <data name="DeleteWarning_ReallyDeleteRegion" xml:space="preserve">
+    <value>Really delete this region?</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="RootItemCategoryTitle" xml:space="preserve">
+    <value>(Root)</value>
+  </data>
+  <data name="CategoryEditor_AddNewInstructions" xml:space="preserve">
+    <value>&lt;p&gt;&lt;strong&gt;Enter new category names in a comma separated format.&lt;/strong&gt; They will appear as sub-categories of the category selected above. New 'top' level categories should be added to the (Root).&lt;/p&gt;&lt;p&gt;Example: Athletic Apparel, Coats &amp; Jackets, Dresses, Intimates &amp; Sleep, Pants &amp; Shorts, Skirts, Suits &amp; Blazers, Sweaters, Tops &amp; Blouses&lt;/p&gt;&lt;p&gt;&lt;small&gt;&lt;em&gt;If you will be translating the software into multiple languages, each category name will represent the 'key' in the key/value pair. Do not use spaces or special characters. Each category name will need to be added to the &amp;quot;CategoriesRegions.resx&amp;quot; language file and the translated 'value' can contain spaces and special characters.&lt;br /&gt;&amp;nbsp;&lt;br /&gt;Example: AthleticApparel, CoatsJackets, Dresses, IntimatesSleep, PantsShorts, Skirts, SuitsBlazers, Sweaters, TopsBlouses &lt;/small&gt;&lt;/em&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="RegionEditor_AddNew" xml:space="preserve">
+    <value>Add New Region</value>
+  </data>
+  <data name="RegionEditor_AddNewInstructions" xml:space="preserve">
+    <value>(Enter new regions in comma separated format.  New regions will appear at the end of the region list.)</value>
+  </data>
+  <data name="LanguageManagement_Help" xml:space="preserve">
+    <value>Only enable languages with fully localized language files.</value>
+  </data>
+  <data name="ClearCache_Help" xml:space="preserve">
+    <value>Clears the Category and Custom Field cache.</value>
+  </data>
+  <data name="LanguageManagementFailure" xml:space="preserve">
+    <value>Language Management Failed</value>
+  </data>
+  <data name="LanguageManagementSuccess" xml:space="preserve">
+    <value>Configuration Saved </value>
+  </data>
+  <data name="ILLEGAL_FORMAT" xml:space="preserve">
+    <value>Bad Format</value>
+  </data>
+  <data name="ILLEGAL_PRODUCTCODE" xml:space="preserve">
+    <value>Bad Product Code</value>
+  </data>
+  <data name="SERIALNUMBER_NOTFOUND" xml:space="preserve">
+    <value>License Key Not Found</value>
+  </data>
+  <data name="ShowHideExtendedVersionInfo" xml:space="preserve">
+    <value>Show/Hide Extended Version Information</value>
+  </data>
+  <data name="Attributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Context" xml:space="preserve">
+    <value>Context</value>
+  </data>
+  <data name="ContextAtoZ" xml:space="preserve">
+    <value>Context (A to Z)</value>
+  </data>
+  <data name="ContextZtoA" xml:space="preserve">
+    <value>Context (Z to A)</value>
+  </data>
+  <data name="NameAtoZ" xml:space="preserve">
+    <value>Name (A to Z)</value>
+  </data>
+  <data name="NameZtoA" xml:space="preserve">
+    <value>Name (Z to A)</value>
+  </data>
+  <data name="TypeAtoZ" xml:space="preserve">
+    <value>Type (A to Z)</value>
+  </data>
+  <data name="TypeZtoA" xml:space="preserve">
+    <value>Type (Z to A)</value>
+  </data>
+  <data name="AttributesFailure" xml:space="preserve">
+    <value>Attributes Failed to Save</value>
+  </data>
+  <data name="AttributesSuccess" xml:space="preserve">
+    <value>Attributes Saved Successfully</value>
+  </data>
+  <data name="Images" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="EmailFees" xml:space="preserve">
+    <value>Email Fees</value>
+  </data>
+  <data name="EmailSent" xml:space="preserve">
+    <value>Email Sent</value>
+  </data>
+  <data name="SetInvoicePaidSuccess" xml:space="preserve">
+    <value>Setting Invoice Paid Status Succeeded</value>
+  </data>
+  <data name="MarkPaid" xml:space="preserve">
+    <value>Mark Paid</value>
+  </data>
+  <data name="CategoryHasChildCategories" xml:space="preserve">
+    <value>This category cannot be deleted because it has child categories.  Delete the child categories first.</value>
+  </data>
+  <data name="CategoryInUseByListing" xml:space="preserve">
+    <value>This category cannot be deleted because it is in use by existing listings.</value>
+  </data>
+  <data name="RegionHasChildCategories" xml:space="preserve">
+    <value>This region cannot be deleted because it has child regions.  Delete the child regions first.</value>
+  </data>
+  <data name="RegionInUseByListing" xml:space="preserve">
+    <value>This region cannot be deleted because it is in use by existing listings.</value>
+  </data>
+  <data name="Banners" xml:space="preserve">
+    <value>Banners</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="CreateBanner" xml:space="preserve">
+    <value>Create Banner</value>
+  </data>
+  <data name="Link" xml:space="preserve">
+    <value>Full Link URL</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Display Location</value>
+  </data>
+  <data name="UploadImage" xml:space="preserve">
+    <value>Upload Image</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Add Category</value>
+  </data>
+  <data name="AddRegion" xml:space="preserve">
+    <value>Add Region</value>
+  </data>
+  <data name="AllSubcategories" xml:space="preserve">
+    <value>All Subcategories</value>
+  </data>
+  <data name="AllSubregions" xml:space="preserve">
+    <value>All Subregions</value>
+  </data>
+  <data name="Regions" xml:space="preserve">
+    <value>Regions</value>
+  </data>
+  <data name="DeleteBanner" xml:space="preserve">
+    <value>Delete Banner</value>
+  </data>
+  <data name="UpdateBanner" xml:space="preserve">
+    <value>Update Banner</value>
+  </data>
+  <data name="CreateBannerSuccess" xml:space="preserve">
+    <value>Banner Created</value>
+  </data>
+  <data name="DeleteBannerSuccess" xml:space="preserve">
+    <value>Banner Deleted</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="OptionalInParens" xml:space="preserve">
+    <value>(optional)</value>
+  </data>
+  <data name="UpdateBannerSuccess" xml:space="preserve">
+    <value>Banner Updated</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View:</value>
+  </data>
+  <data name="DeleteLineItemWarning1" xml:space="preserve">
+    <value>This line item will be permanently deleted.</value>
+  </data>
+  <data name="DeleteLineItemWarning2" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="RemoveLineItemSuccess" xml:space="preserve">
+    <value>Line item successfully deleted</value>
+  </data>
+  <data name="EditUserSuccess" xml:space="preserve">
+    <value>Account Info updated</value>
+  </data>
+  <data name="UserNameAlreadyExists" xml:space="preserve">
+    <value>UserName Already Exists (username must be unique)</value>
+  </data>
+  <data name="AlphaSortCategories" xml:space="preserve">
+    <value>Alphabetically Sort Child Categories</value>
+  </data>
+  <data name="AlphaSortRegions" xml:space="preserve">
+    <value>Alphabetically Sort Child Regions</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="Literal_Footer" xml:space="preserve">
+    <value>Footer Scripts</value>
+  </data>
+  <data name="Literal_Header" xml:space="preserve">
+    <value>Header Scripts</value>
+  </data>
+  <data name="Literal_SocialNetworking" xml:space="preserve">
+    <value>Social Networking Scripts</value>
+  </data>
+  <data name="SiteFooter" xml:space="preserve">
+    <value>Site Footer</value>
+  </data>
+  <data name="Auction" xml:space="preserve">
+    <value>Auction</value>
+  </data>
+  <data name="BidIncrements" xml:space="preserve">
+    <value>Bid Increments</value>
+  </data>
+  <data name="Classified" xml:space="preserve">
+    <value>Classified</value>
+  </data>
+  <data name="FixedPrice" xml:space="preserve">
+    <value>Fixed Price</value>
+  </data>
+  <data name="Listings" xml:space="preserve">
+    <value>Listings</value>
+  </data>
+  <data name="UpdateBidIncrementsSuccess" xml:space="preserve">
+    <value>Bid Increments Updated</value>
+  </data>
+  <data name="ListingTypePropertiesSuccess" xml:space="preserve">
+    <value>Listing type properties updated</value>
+  </data>
+  <data name="YouTubeVideo" xml:space="preserve">
+    <value>YouTube Video</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="UpdateBannerPropertiesSuccess" xml:space="preserve">
+    <value>Banner Settings Updated</value>
+  </data>
+  <data name="FlatFee" xml:space="preserve">
+    <value>Post Classified Fee</value>
+  </data>
+  <data name="UserEmailAlreadyExists" xml:space="preserve">
+    <value>User Email Already Exists (email must be unique)</value>
+  </data>
+  <data name="ApplyChangesToSubCategories" xml:space="preserve">
+    <value>Apply custom field assignments to subcategories</value>
+  </data>
+  <data name="YouMustSelectAFieldFirst" xml:space="preserve">
+    <value>You must select a field first</value>
+  </data>
+  <data name="ApplyChangesToSubCategories_Help" xml:space="preserve">
+    <value>Your changes will be applied to this category and all descendant sub-categories. Toggle "OFF" to only apply changes to this specific category.</value>
+  </data>
+  <data name="Assigned" xml:space="preserve">
+    <value>Assigned</value>
+  </data>
+  <data name="Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="AcceptedCreditCards" xml:space="preserve">
+    <value>Accepted Credit Cards</value>
+  </data>
+  <data name="CreditCardsSuccess" xml:space="preserve">
+    <value>Credit Card Settings Updated</value>
+  </data>
+  <data name="LineageString_CreditCards" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Stored Credit Cards</value>
+    <comment>renamed from "Billing &amp; Fees &gt; Payment Providers &gt; Credit Card Types" in v1.2</comment>
+  </data>
+  <data name="ActingUserIsNotAuthorized" xml:space="preserve">
+    <value>Acting User Is Not Authorized</value>
+  </data>
+  <data name="ActingUserIsNotInRequiredRole" xml:space="preserve">
+    <value>Acting User Is Not In RequiredRole</value>
+  </data>
+  <data name="ActingUserIsNotRequiredUser" xml:space="preserve">
+    <value>Acting User Is Not RequiredUser</value>
+  </data>
+  <data name="ActingUserNameNotSpecified" xml:space="preserve">
+    <value>Acting UserName Not Specified</value>
+  </data>
+  <data name="CategoryAlreadyExists" xml:space="preserve">
+    <value>Category Already Exists</value>
+  </data>
+  <data name="CurrencyNotSupported" xml:space="preserve">
+    <value>Currency Not Supported</value>
+  </data>
+  <data name="Failure" xml:space="preserve">
+    <value>Failure</value>
+  </data>
+  <data name="HasChildCategories" xml:space="preserve">
+    <value>Has Child Categories</value>
+  </data>
+  <data name="InUseByListing" xml:space="preserve">
+    <value>In Use By Listing</value>
+  </data>
+  <data name="InUseByListingActionProperty" xml:space="preserve">
+    <value>In Use By Listing Action Property</value>
+  </data>
+  <data name="InUseByShippingOption" xml:space="preserve">
+    <value>In Use By Shipping Option</value>
+  </data>
+  <data name="InUseBySiteProperty" xml:space="preserve">
+    <value>In Use By Site Property</value>
+  </data>
+  <data name="InUseByUserProperty" xml:space="preserve">
+    <value>In Use By User Property</value>
+  </data>
+  <data name="InvoiceNotFound" xml:space="preserve">
+    <value>Invoice Not Found</value>
+  </data>
+  <data name="InvoiceTypeNotSupported" xml:space="preserve">
+    <value>Invoice Type Not Supported</value>
+  </data>
+  <data name="RequiredArgumentMissing" xml:space="preserve">
+    <value>Required Argument Missing</value>
+  </data>
+  <data name="RequiredArgumentNull" xml:space="preserve">
+    <value>Required Argument is Empty</value>
+  </data>
+  <data name="RequiredArgumentOutOfBounds" xml:space="preserve">
+    <value>Required Argument Out Of Bounds</value>
+  </data>
+  <data name="RoleNameNotUnique" xml:space="preserve">
+    <value>Role Name Not Unique</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="AddDecorationFailure" xml:space="preserve">
+    <value>Add Decoration Failed</value>
+  </data>
+  <data name="AddEnumerationFailure" xml:space="preserve">
+    <value>Add Option Failed</value>
+  </data>
+  <data name="AddEnumerationSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="AddEventFeeFailure" xml:space="preserve">
+    <value>Add Event Fee Failed</value>
+  </data>
+  <data name="AddFeeTierFailure" xml:space="preserve">
+    <value>Add Fee Tier Failed</value>
+  </data>
+  <data name="AddInvoiceAdjustmentFailure" xml:space="preserve">
+    <value>Add Invoice Adjustment Failed</value>
+  </data>
+  <data name="AddInvoiceAdjustmentSuccess" xml:space="preserve">
+    <value>Invoice adjustment added</value>
+  </data>
+  <data name="AddMiscSiteFeeFailure" xml:space="preserve">
+    <value>Add Misc Site Fee Failed</value>
+  </data>
+  <data name="AddMiscSiteFeeSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="AddStandardShippingMethodsFailure" xml:space="preserve">
+    <value>Add Standard Shipping Methods Failed</value>
+  </data>
+  <data name="AddStandardShippingMethodsSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="AssignListingTypeFromCategoryDetailFailure" xml:space="preserve">
+    <value>Assign Listing Type From Category Detail Failed</value>
+  </data>
+  <data name="AssignListingTypeFromCategoryDetailSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="AttributesSuccess1" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="ContentEditorFailure" xml:space="preserve">
+    <value>Content Editor Failed</value>
+  </data>
+  <data name="CreateBannerFailure" xml:space="preserve">
+    <value>Create Banner Failed</value>
+  </data>
+  <data name="CreateBannerSuccess1" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="CreateFieldFailure" xml:space="preserve">
+    <value>Create Field Failed</value>
+  </data>
+  <data name="CreditCardsSuccess1" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="CultureManagementFailure" xml:space="preserve">
+    <value>Culture Management Failed</value>
+  </data>
+  <data name="CultureManagementSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="CurrencyConversionFailure" xml:space="preserve">
+    <value>Currency Conversion Failed</value>
+  </data>
+  <data name="CurrencyConversionSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="CurrencyManagementFailure" xml:space="preserve">
+    <value>Currency Management Failed</value>
+  </data>
+  <data name="CurrencyManagementSuccess" xml:space="preserve">
+    <value>Configuration Saved</value>
+  </data>
+  <data name="DeleteBannerFailure" xml:space="preserve">
+    <value>Delete Banner Failed</value>
+  </data>
+  <data name="DeleteBannerSuccess1" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="DeleteDecorationFailure" xml:space="preserve">
+    <value>Delete Decoration Failed</value>
+  </data>
+  <data name="DeleteEnumerationFailure" xml:space="preserve">
+    <value>Delete Option Failed</value>
+  </data>
+  <data name="DeleteEnumerationSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="DeleteEventFeeFailure" xml:space="preserve">
+    <value>Delete Event Fee Failed</value>
+  </data>
+  <data name="DeleteFieldFailure" xml:space="preserve">
+    <value>Delete Field Failed</value>
+  </data>
+  <data name="EditDecorationFailure" xml:space="preserve">
+    <value>Edit Decoration Failed</value>
+  </data>
+  <data name="EditEventFeesFailure" xml:space="preserve">
+    <value>Edit Event Fees Failed</value>
+  </data>
+  <data name="EditFeesFailure" xml:space="preserve">
+    <value>Edit Fees Failed</value>
+  </data>
+  <data name="EditFeeTierFailure" xml:space="preserve">
+    <value>Edit Fee Tier Failed</value>
+  </data>
+  <data name="EditLocationFailure" xml:space="preserve">
+    <value>Edit Location Failed</value>
+  </data>
+  <data name="EditUserFailure" xml:space="preserve">
+    <value>Edit User Failed</value>
+  </data>
+  <data name="Extend10MinutesFailure" xml:space="preserve">
+    <value>Extend 10 Minutes Failed</value>
+  </data>
+  <data name="Extend10MinutesSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="ExtendListingsFailure" xml:space="preserve">
+    <value>Extend Listings Failed</value>
+  </data>
+  <data name="ExtendListingsSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="ImpersonateFailure" xml:space="preserve">
+    <value>Impersonate Failed</value>
+  </data>
+  <data name="ImpersonateSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="IncrementManagementFailure" xml:space="preserve">
+    <value>Increment Management Failed</value>
+  </data>
+  <data name="IncrementManagementSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="InvoiceDetailFailure" xml:space="preserve">
+    <value>Invoice Detail Failed</value>
+  </data>
+  <data name="ListingTypePropertiesFailure" xml:space="preserve">
+    <value>Listing Type Properties Failed</value>
+  </data>
+  <data name="SetInvoicePaidFailure" xml:space="preserve">
+    <value>Setting Invoice Paid Status Failed</value>
+  </data>
+  <data name="PropertyManagementFailure" xml:space="preserve">
+    <value>Property Management Failed</value>
+  </data>
+  <data name="RemoveLineItemFailure" xml:space="preserve">
+    <value>Remove Line Item Failed</value>
+  </data>
+  <data name="SaveFieldFailure" xml:space="preserve">
+    <value>Save Field Failed</value>
+  </data>
+  <data name="ShippingMethodsFailure" xml:space="preserve">
+    <value>Shipping Methods Failed</value>
+  </data>
+  <data name="ToggleListingTypeFailure" xml:space="preserve">
+    <value>Toggle Listing Type Failed</value>
+  </data>
+  <data name="UnassignListingTypeFromCategoryDetailFailure" xml:space="preserve">
+    <value>Unassign Listing Type From Category Detail Failed</value>
+  </data>
+  <data name="UnassignListingTypeFromCategoryDetailSuccess" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="UpdateBannerFailure" xml:space="preserve">
+    <value>Update Banner Failed</value>
+  </data>
+  <data name="UpdateBannerPropertiesFailure" xml:space="preserve">
+    <value>Update Banner Properties Failed</value>
+  </data>
+  <data name="UpdateBidIncrementsFailure" xml:space="preserve">
+    <value>Update Bid Increments Failed</value>
+  </data>
+  <data name="UpdateShippingPropertiesFailure" xml:space="preserve">
+    <value>Update Shipping Properties Failed</value>
+  </data>
+  <data name="UpdateShippingPropertiesSuccess" xml:space="preserve">
+    <value>Shipping Settings Updated</value>
+  </data>
+  <data name="AdminEditUserPassword_Help" xml:space="preserve">
+    <value>Only set this value to reset the user's password.  Otherwise, leave it blank.</value>
+  </data>
+  <data name="CustomFieldDeletingForbidden" xml:space="preserve">
+    <value>You cannot delete this custom field.</value>
+  </data>
+  <data name="CustomFieldEditingForbidden" xml:space="preserve">
+    <value>You cannot edit this custom field.</value>
+  </data>
+  <data name="AllDescendantCategories" xml:space="preserve">
+    <value>All associated subcategories</value>
+  </data>
+  <data name="CategoryDeletionConfirmation_Title" xml:space="preserve">
+    <value>Category Deletion Confirmation</value>
+  </data>
+  <data name="CategoryDeletionRepercussionWarning" xml:space="preserve">
+    <value>If you delete this category, you will also be deleting:</value>
+  </data>
+  <data name="DescendantListings" xml:space="preserve">
+    <value>associated listings</value>
+  </data>
+  <data name="DirectChildCategories" xml:space="preserve">
+    <value>immediate subcategories</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="YesPermanentlyDelete" xml:space="preserve">
+    <value>Yes, Permanently Delete</value>
+  </data>
+  <data name="AllDescendantRegions" xml:space="preserve">
+    <value>All associated subregions</value>
+  </data>
+  <data name="DirectChildRegions" xml:space="preserve">
+    <value>immediate subregions</value>
+  </data>
+  <data name="RegionDeletionConfirmation_Title" xml:space="preserve">
+    <value>Region Deletion Confirmation</value>
+  </data>
+  <data name="RegionDeletionRepercussionWarning" xml:space="preserve">
+    <value>If you delete this region, you will also be deleting:</value>
+  </data>
+  <data name="YouMustSelectAListingTypeFirst" xml:space="preserve">
+    <value>You must select a Listing Type first</value>
+  </data>
+  <data name="UpdateCreditCardPropertiesFailure" xml:space="preserve">
+    <value>Update Credit Card Properties Failed</value>
+  </data>
+  <data name="UpdateCreditCardPropertiesSuccess" xml:space="preserve">
+    <value>Credit Card Settings Updated</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Buyer" xml:space="preserve">
+    <value>Buyer</value>
+  </data>
+  <data name="Deactivated" xml:space="preserve">
+    <value>Deactivated</value>
+  </data>
+  <data name="First" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="Last" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="ResetFilters" xml:space="preserve">
+    <value>Reset Filters</value>
+  </data>
+  <data name="Restricted" xml:space="preserve">
+    <value>Restricted</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Seller" xml:space="preserve">
+    <value>Seller</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Unapproved" xml:space="preserve">
+    <value>Unapproved</value>
+  </data>
+  <data name="Unverified" xml:space="preserve">
+    <value>Unverified</value>
+  </data>
+  <data name="DeactivateUser" xml:space="preserve">
+    <value>Deactivate User</value>
+  </data>
+  <data name="Deactivate_Button" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="DeleteUser" xml:space="preserve">
+    <value>Delete User</value>
+  </data>
+  <data name="DeleteUserFailure" xml:space="preserve">
+    <value>Delete User Failed</value>
+  </data>
+  <data name="DeleteUserSuccess" xml:space="preserve">
+    <value>User deleted successfully</value>
+  </data>
+  <data name="DeleteUserWarning_Line1" xml:space="preserve">
+    <value>Deleting the User will also delete ALL records associated with the User (for example - sales transactions, bid/purchase history, user feedback, invoices, messages, listings created, etc.)</value>
+  </data>
+  <data name="DeleteUserWarning_Line2" xml:space="preserve">
+    <value>This operation cannot be undone.</value>
+  </data>
+  <data name="DeleteUserWarning_Line3" xml:space="preserve">
+    <value>Alternatively, to keep the associated User records for further use or reporting purposes, you may Deactivate the User.  A Deactivated User will not be able to sign in, and will not appear in default User Management views.</value>
+  </data>
+  <data name="ReactivateUser" xml:space="preserve">
+    <value>Re-Activate User</value>
+  </data>
+  <data name="SetUserActiveFailure" xml:space="preserve">
+    <value>Set User Active Failed</value>
+  </data>
+  <data name="SetUserActiveSuccess" xml:space="preserve">
+    <value>User updated successfully</value>
+  </data>
+  <data name="UserDeletionConfirmation_Title" xml:space="preserve">
+    <value>User Delete Confirmation</value>
+  </data>
+  <data name="ColumnSpecification" xml:space="preserve">
+    <value>Column Specification</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="ExportCSV" xml:space="preserve">
+    <value>Export CSV</value>
+  </data>
+  <data name="ExportUserCSVSuccess" xml:space="preserve">
+    <value>Your export has started, you will be emailed when it's complete.</value>
+  </data>
+  <data name="ExtendedInfoWHeader" xml:space="preserve">
+    <value>Extended Information (with Header)</value>
+  </data>
+  <data name="ExtendedInfoWOHeader" xml:space="preserve">
+    <value>Extended Information (without Header)</value>
+  </data>
+  <data name="FirstLastEmailWHeader" xml:space="preserve">
+    <value>First Name, Last Name &amp; Email Address (with Header)</value>
+  </data>
+  <data name="FirstLastEmailWOHeader" xml:space="preserve">
+    <value>First Name, Last Name &amp; Email Address (without Header)</value>
+  </data>
+  <data name="IncludeHeaderQuestion" xml:space="preserve">
+    <value>Include Header?</value>
+  </data>
+  <data name="AccountInfo" xml:space="preserve">
+    <value>Account Info</value>
+  </data>
+  <data name="ActiveListings" xml:space="preserve">
+    <value>Active Listings</value>
+  </data>
+  <data name="Addresses" xml:space="preserve">
+    <value>Addresses</value>
+  </data>
+  <data name="AllListings" xml:space="preserve">
+    <value>All Listings</value>
+  </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="CreditCards" xml:space="preserve">
+    <value>Credit Cards</value>
+  </data>
+  <data name="EditAddressFailure" xml:space="preserve">
+    <value>Edit Address Failed</value>
+  </data>
+  <data name="EditAddressSuccess" xml:space="preserve">
+    <value>Address updated</value>
+  </data>
+  <data name="Feedback" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="FeedbackRating" xml:space="preserve">
+    <value>Feedback Score</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="PrimaryAddress" xml:space="preserve">
+    <value>Primary Address</value>
+  </data>
+  <data name="Purchases" xml:space="preserve">
+    <value>Purchases</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="SetPrimaryAddressFailure" xml:space="preserve">
+    <value>Set Primary Address Failed</value>
+  </data>
+  <data name="SetPrimaryAddressSuccess" xml:space="preserve">
+    <value>Primary Address updated</value>
+  </data>
+  <data name="XhoursAgo" xml:space="preserve">
+    <value>{0} ago</value>
+  </data>
+  <data name="CustomSettings" xml:space="preserve">
+    <value>Custom Settings</value>
+  </data>
+  <data name="ExportUserCSVInstructions" xml:space="preserve">
+    <value>The search filters and sort options from the previous page will be applied to the exported CSV.</value>
+  </data>
+  <data name="PredefinedCSVSpecifications" xml:space="preserve">
+    <value>Predefined CSV Specifications</value>
+  </data>
+  <data name="AddCreditCardFailure" xml:space="preserve">
+    <value>Add Credit Card Failed</value>
+  </data>
+  <data name="AddCreditCardSuccess" xml:space="preserve">
+    <value>Credit Card added</value>
+  </data>
+  <data name="DeleteCreditCardFailure" xml:space="preserve">
+    <value>Delete Credit Card Failed</value>
+  </data>
+  <data name="DeleteCreditCardSuccess" xml:space="preserve">
+    <value>Credit Card deleted</value>
+  </data>
+  <data name="SetDefaultCreditCardFailure" xml:space="preserve">
+    <value>Set Default Credit Card Failed</value>
+  </data>
+  <data name="SetDefaultCreditCardSuccess" xml:space="preserve">
+    <value>Primary Credit Card updated</value>
+  </data>
+  <data name="CardNumber" xml:space="preserve">
+    <value>Card Number</value>
+  </data>
+  <data name="CardType" xml:space="preserve">
+    <value>Card Type</value>
+  </data>
+  <data name="DeleteAddressFailure" xml:space="preserve">
+    <value>Delete Address Failed</value>
+  </data>
+  <data name="DeleteAddressSuccess" xml:space="preserve">
+    <value>Address deleted</value>
+  </data>
+  <data name="Expiration" xml:space="preserve">
+    <value>Expiration</value>
+  </data>
+  <data name="ExpirationMonth" xml:space="preserve">
+    <value>Expiration Month</value>
+  </data>
+  <data name="ExpirationYear" xml:space="preserve">
+    <value>Expiration Year</value>
+  </data>
+  <data name="SelectACreditCardType" xml:space="preserve">
+    <value>Select a Credit Card Type</value>
+  </data>
+  <data name="SelectAddress" xml:space="preserve">
+    <value>Select Address</value>
+  </data>
+  <data name="SetPrimary" xml:space="preserve">
+    <value>Set Primary</value>
+  </data>
+  <data name="FeedbackLeftForOthers" xml:space="preserve">
+    <value>Feedback left for others</value>
+  </data>
+  <data name="FeedbackReceivedFromOthers" xml:space="preserve">
+    <value>Feedback received from others</value>
+  </data>
+  <data name="DeleteFeedbackFailure" xml:space="preserve">
+    <value>Delete Feedback Failed</value>
+  </data>
+  <data name="DeleteFeedbackSuccess" xml:space="preserve">
+    <value>Feedback deleted</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="LockedOut" xml:space="preserve">
+    <value>Restricted</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="Verified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>Date/Time</value>
+  </data>
+  <data name="DemoFeatureDisabled" xml:space="preserve">
+    <value>This cannot be changed while the system is in demo mode.</value>
+  </data>
+  <data name="DemoFeatureSettingsDisabled" xml:space="preserve">
+    <value>These settings cannot be changed while the system is in demo mode.</value>
+  </data>
+  <data name="LeftBy" xml:space="preserve">
+    <value>Left By</value>
+  </data>
+  <data name="LeftFor" xml:space="preserve">
+    <value>Left For</value>
+  </data>
+  <data name="Listing" xml:space="preserve">
+    <value>Listing</value>
+  </data>
+  <data name="Past_1_Month" xml:space="preserve">
+    <value>Past 1 month</value>
+  </data>
+  <data name="Past_X_Months" xml:space="preserve">
+    <value>Past {0} months</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="SaveChangesWarning1" xml:space="preserve">
+    <value>There are errors on this page.</value>
+  </data>
+  <data name="SaveChangesWarning2" xml:space="preserve">
+    <value>Please make the indicated corrections and try again.</value>
+  </data>
+  <data name="UploadLogo" xml:space="preserve">
+    <value>Select Logo Image File</value>
+  </data>
+  <data name="AddAddressFailure" xml:space="preserve">
+    <value>Add Address Failed</value>
+  </data>
+  <data name="AddAddressSuccess" xml:space="preserve">
+    <value>Address added</value>
+  </data>
+  <data name="AdminEditUserDeactivateUser_Help" xml:space="preserve">
+    <value>A Deactivated User will not be able to sign in, and will not appear in default User Management views.  Deactivating a user account instead of deleting it also has the benefit of preventing a user from re-registering using the same email and/or username in the future.</value>
+  </data>
+  <data name="AdminEditUserDeleteUser_Help" xml:space="preserve">
+    <value>Deleting the User will also delete ALL records associated with the User (Example: sales transactions, bid/purchase history, user feedback, invoices, messages, listings created, etc.)</value>
+  </data>
+  <data name="AdminEditUserStatusApproved_Help" xml:space="preserve">
+    <value>All new user registrations are automatically approved by default.  If the “User Approval Required” system preference is enabled, then new users will not be automatically approved and an administrator will need to manually approve user accounts.</value>
+  </data>
+  <data name="CancelChangesWarning" xml:space="preserve">
+    <value>All changes on this page will be lost, continue?</value>
+  </data>
+  <data name="AdminEditUserReactivateUser_Help" xml:space="preserve">
+    <value>Removes the -Deactivated- flag from the account.</value>
+  </data>
+  <data name="AdminEditUserStatusNewsletter_Help" xml:space="preserve">
+    <value>If checked, the user has opted-in to receive promotional emails.</value>
+  </data>
+  <data name="AdminEditUserStatusRestricted_Help" xml:space="preserve">
+    <value>“Restricted” status prevents a user from signing in and accessing the account.</value>
+  </data>
+  <data name="AdminEditUserStatusVerified_Help" xml:space="preserve">
+    <value>When the “Verify User Email” system preference is enabled (by default), new users will not be able to sign in until they verify their email address.  Verification requires entering a randomly generated verification code which is delivered via email. Check this box to manually override the email verification requirement.</value>
+  </data>
+  <data name="PrimaryCreditCard" xml:space="preserve">
+    <value>Primary Credit Card</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="Records" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="AdminEditUserComments_Help" xml:space="preserve">
+    <value>Visible to Administration Only.  (500 character limit)</value>
+  </data>
+  <data name="AdminRole_Help" xml:space="preserve">
+    <value>Grant full administration privileges. Including the ability to access this administration control panel,editing listings, and editing user details.  The affected user must log out and log back in for changes to this setting to take effect.</value>
+  </data>
+  <data name="BuyerRole_Help" xml:space="preserve">
+    <value>User can place bids and make purchases.  Applicable menu options will appear within “My Account.”  The affected user must log out and log back in for changes to this setting to take effect.</value>
+  </data>
+  <data name="DemoFieldDisabledForThisUser" xml:space="preserve">
+    <value>This field cannot be changed for this user while the system is in demo mode.</value>
+  </data>
+  <data name="SellerRole_Help" xml:space="preserve">
+    <value>User can create listings.  Applicable menu options will appear within “My Account.”  The affected user must log out and log back in for changes to this setting to take effect.</value>
+  </data>
+  <data name="Username_Help" xml:space="preserve">
+    <value>Username must be unique.</value>
+  </data>
+  <data name="InvoiceTotalMustNotBeNegative" xml:space="preserve">
+    <value>Invoice total must not be negative</value>
+  </data>
+  <data name="UpdateDisplayOrderSuccess" xml:space="preserve">
+    <value>Display order has been updated successfully.</value>
+  </data>
+  <data name="MarkNotPaid" xml:space="preserve">
+    <value>Mark Not Paid</value>
+  </data>
+  <data name="VerifyEmail" xml:space="preserve">
+    <value>Verify Email</value>
+  </data>
+  <data name="SendVerificationEmailSuccess" xml:space="preserve">
+    <value>Email Verification Sent</value>
+  </data>
+  <data name="ForceEmailVerification" xml:space="preserve">
+    <value>Send Verification Email</value>
+  </data>
+  <data name="ForceEmailVerification_Help" xml:space="preserve">
+    <value>Sends a verification email to the user and sets “Verified” status to false.</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Payee" xml:space="preserve">
+    <value>Payee</value>
+  </data>
+  <data name="Payer" xml:space="preserve">
+    <value>Payer</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Unpaid" xml:space="preserve">
+    <value>Unpaid</value>
+  </data>
+  <data name="LineageString_SalesTransactionReport" xml:space="preserve">
+    <value>Reports &amp;gt; Sales Transactions</value>
+  </data>
+  <data name="CurrencyCode" xml:space="preserve">
+    <value>Currency Code</value>
+  </data>
+  <data name="CurrencyName" xml:space="preserve">
+    <value>Currency Name</value>
+  </data>
+  <data name="CurrencySymbol" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="DefaultQuestion" xml:space="preserve">
+    <value>Default?</value>
+  </data>
+  <data name="EnabledQuestion" xml:space="preserve">
+    <value>Enabled?</value>
+  </data>
+  <data name="OneUsdEquals" xml:space="preserve">
+    <value>1 USD =</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>Test Rate</value>
+  </data>
+  <data name="ResultLabel" xml:space="preserve">
+    <value>Result:</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="TryIt" xml:space="preserve">
+    <value>Try It</value>
+  </data>
+  <data name="LineageString_ListingFeesRevenueReport" xml:space="preserve">
+    <value>Reports &amp;gt; Listing Fees Revenue</value>
+  </data>
+  <data name="ListingFeesRevenue_csv" xml:space="preserve">
+    <value>ListingFeesRevenue.csv</value>
+  </data>
+  <data name="SalesTransactions_csv" xml:space="preserve">
+    <value>SalesTransactions.csv</value>
+  </data>
+  <data name="MetaDescription" xml:space="preserve">
+    <value>Meta Description</value>
+  </data>
+  <data name="MetaKeywords" xml:space="preserve">
+    <value>Meta Keywords</value>
+  </data>
+  <data name="SetCategoryMetaDataFailure" xml:space="preserve">
+    <value>Setting Category Meta Data Failed</value>
+  </data>
+  <data name="SetCategoryMetaDataSuccess" xml:space="preserve">
+    <value>Setting Category Meta Data Succeeded</value>
+  </data>
+  <data name="FinalSaleFeeStyle_NonAggregate_Help" xml:space="preserve">
+    <value>With the Seller Final Fee tiers set to the following values...&lt;br /&gt;
+&lt;br /&gt;
+$25.00 = 5%&lt;br /&gt;
+&lt;br /&gt;
+$100.00 = 2.5%&lt;br /&gt;
+&lt;br /&gt;
+$999,999,999,999.00 = 1.0%&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $125.00 the Seller Final fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($125.00 x 1.0%) = $1.25&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $99.00 the Seller Final fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($99.00 x 2.5%) = $2.48</value>
+  </data>
+  <data name="CheckForTrue" xml:space="preserve">
+    <value>Check for "yes", unchecked for "no."</value>
+  </data>
+  <data name="AssignFieldToOneOrMoreCategories" xml:space="preserve">
+    <value>Now assign the field to one or more categories...</value>
+  </data>
+  <data name="SaveMetaData" xml:space="preserve">
+    <value>Save Page Content &amp; Meta Data</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Category Name</value>
+  </data>
+  <data name="LineageString_RegionDetail" xml:space="preserve">
+    <value>Regions &amp;gt; Edit &amp;gt; Details</value>
+  </data>
+  <data name="RegionName" xml:space="preserve">
+    <value>Region Name</value>
+  </data>
+  <data name="RenameCategoryFailure" xml:space="preserve">
+    <value>Failed to Rename Category</value>
+  </data>
+  <data name="RenameCategorySuccess" xml:space="preserve">
+    <value>Successfully Renamed Category</value>
+  </data>
+  <data name="RenameRegionFailure" xml:space="preserve">
+    <value>Failed to Rename Region</value>
+  </data>
+  <data name="RenameRegionSuccess" xml:space="preserve">
+    <value>Successfully Renamed Region</value>
+  </data>
+  <data name="AssignToAllCategories" xml:space="preserve">
+    <value>Assign To All Categories</value>
+  </data>
+  <data name="AssignToAllCategoriesToolTip" xml:space="preserve">
+    <value>Checking this box will make sure all categories use this custom field.</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="PostListingFee_Help" xml:space="preserve">
+    <value>Example:  With the Post Listing fee tiers set to the following values...&lt;br /&gt;
+&lt;br /&gt;
+$10.00 = $.10&lt;br /&gt;
+&lt;br /&gt;
+$100.00 = $1.00&lt;br /&gt;
+&lt;br /&gt;
+$1000.00 = $10.00&lt;br /&gt;
+&lt;br /&gt;
+$999,999,999,999.00 = $100.00&lt;br /&gt;
+&lt;br /&gt;
+If an item is posted with a starting price of $125.00 the Post Listing fee is $10.00</value>
+  </data>
+  <data name="Accept_CCType" xml:space="preserve">
+    <value>Accept {0}</value>
+  </data>
+  <data name="ContactInformation" xml:space="preserve">
+    <value>Contact Information</value>
+  </data>
+  <data name="CreateUser" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="CreateUserSuccess" xml:space="preserve">
+    <value>Successfully Created User</value>
+  </data>
+  <data name="LineageString_CreateUser" xml:space="preserve">
+    <value>Users &gt; User Management &amp;gt; Create User</value>
+  </data>
+  <data name="NewUserNameHelpText" xml:space="preserve">
+    <value>Your username will be shown when you bid, buy, and sell.</value>
+  </data>
+  <data name="PasswordRequirements" xml:space="preserve">
+    <value>Password must be at least 6 characters long.</value>
+  </data>
+  <data name="BannerHTMLFormTitle" xml:space="preserve">
+    <value>New Banner - Custom Script</value>
+  </data>
+  <data name="BannerScriptHTML" xml:space="preserve">
+    <value>Banner Script/HTML</value>
+  </data>
+  <data name="BannerUploadFormTitle" xml:space="preserve">
+    <value>New Banner - Upload Image</value>
+  </data>
+  <data name="ExistingBanners" xml:space="preserve">
+    <value>Current Banners</value>
+  </data>
+  <data name="SelectBannerImage" xml:space="preserve">
+    <value>Select Banner Image File</value>
+  </data>
+  <data name="BatchProcessingQueued" xml:space="preserve">
+    <value>Payment Processing Queued</value>
+  </data>
+  <data name="Payment" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="ScheduledPaymentsSuccess" xml:space="preserve">
+    <value>Scheduled Payments Success</value>
+  </data>
+  <data name="CategoryPageSpecificSettings" xml:space="preserve">
+    <value>Category Specific Settings</value>
+  </data>
+  <data name="PageContent" xml:space="preserve">
+    <value>Page Content</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Page Title</value>
+  </data>
+  <data name="GoodUntilCanceled" xml:space="preserve">
+    <value>Good 'til Canceled</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>No Search Results</value>
+  </data>
+  <data name="OnlineHelp" xml:space="preserve">
+    <value>Online Help</value>
+  </data>
+  <data name="FavIconUploader_Help" xml:space="preserve">
+    <value>The recommended format is an .ico file with 256 colors and 16x16 pixels.</value>
+  </data>
+  <data name="LineageString_FavIconUploader" xml:space="preserve">
+    <value>Site Preferences &amp;gt; FavIcon</value>
+  </data>
+  <data name="UploadFavIcon" xml:space="preserve">
+    <value>Select FavIcon File</value>
+  </data>
+  <data name="UploadYourSiteFavIcon" xml:space="preserve">
+    <value>Upload your site favicon</value>
+  </data>
+  <data name="ExtendListing_AllListings_Help" xml:space="preserve">
+    <value>Check this box to add the specified number of minutes to the End Time of &lt;b&gt;ALL&lt;/b&gt; active listings.  &lt;b&gt;NOTE: If you extend ALL listings, End Date/Times will NOT be updated in real time.&lt;/b&gt;</value>
+  </data>
+  <data name="ExtendListing_ListingID_Help" xml:space="preserve">
+    <value>Enter the listing # of the active listing you want to extend (or leave this field blank for all active listings).</value>
+  </data>
+  <data name="ExtendListing_Minutes_Help" xml:space="preserve">
+    <value>Enter the number of minutes to extend the specified listings' End Time(s).</value>
+  </data>
+  <data name="LineageString_Attributes" xml:space="preserve">
+    <value>Advanced &amp;gt; Images</value>
+  </data>
+  <data name="LineageString_Banners" xml:space="preserve">
+    <value>CMS &amp;gt; Banners</value>
+  </data>
+  <data name="LineageString_CustomFields_Item" xml:space="preserve">
+    <value>Listings &amp;gt; Custom Fields</value>
+  </data>
+  <data name="LineageString_CustomFields_Site" xml:space="preserve">
+    <value>Site &amp;gt; Custom Fields</value>
+  </data>
+  <data name="LineageString_CustomFields_User" xml:space="preserve">
+    <value>Users &amp;gt; Custom Fields</value>
+  </data>
+  <data name="FinalSaleFeeStyle_Aggregate_Help" xml:space="preserve">
+    <value>With the Seller Final Fee tiers set to the following values...&lt;br /&gt;
+&lt;br /&gt;
+$25.00 = 5%&lt;br /&gt;
+&lt;br /&gt;
+$100.00 = 2.5%&lt;br /&gt;
+&lt;br /&gt;
+$999,999,999,999.00 = 1.0%&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $125.00 the Seller Final fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($25.00 x 5.0%) + ($75.00 x 2.5%) + ( $25.00 x 1.0%) = $3.38 Seller Final fee&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $99.00 the Seller Final fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($25.00 x 5.0%) + ($74.00 x 2.5%) = $3.10 Seller Final fee</value>
+  </data>
+  <data name="FinalSaleFeeStyle_Aggregate" xml:space="preserve">
+    <value>Aggregate %</value>
+  </data>
+  <data name="FinalSaleFeeStyle_Flat" xml:space="preserve">
+    <value>Flat Fee</value>
+  </data>
+  <data name="CSVImportTemplate_csv" xml:space="preserve">
+    <value>CSVImportTemplate.csv</value>
+  </data>
+  <data name="FinalSaleFeeStyle_Flat_Help" xml:space="preserve">
+    <value>With the Seller Final Fee tiers set to the following values...&lt;br /&gt;
+&lt;br /&gt;
+$25.00 = $1.00&lt;br /&gt;
+&lt;br /&gt;
+$100.00 = $5.00&lt;br /&gt;
+&lt;br /&gt;
+$999,999,999,999.00 = $10.00&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $125.00 the Seller Final fee is $10.00 &lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $99.00 the Seller Final fee is $5.00</value>
+  </data>
+  <data name="FinalSaleFeeStyle_NonAggregate" xml:space="preserve">
+    <value>Non-aggregate %</value>
+  </data>
+  <data name="ApplyFilters" xml:space="preserve">
+    <value>Apply Filters</value>
+  </data>
+  <data name="LineageString_Maintenance" xml:space="preserve">
+    <value>Advanced &amp;gt; Maintenance</value>
+  </data>
+  <data name="MaintenanceSuccess" xml:space="preserve">
+    <value>Successfully Saved Settings</value>
+  </data>
+  <data name="ContactUsSubmitted" xml:space="preserve">
+    <value>Contact Us Submitted</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="NoResultsToDisplay" xml:space="preserve">
+    <value>No results to display</value>
+  </data>
+  <data name="Actor" xml:space="preserve">
+    <value>Actor</value>
+  </data>
+  <data name="EventID" xml:space="preserve">
+    <value>Event ID</value>
+  </data>
+  <data name="Exception" xml:space="preserve">
+    <value>Exception</value>
+  </data>
+  <data name="FunctionalArea" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="LineageString_EventLog" xml:space="preserve">
+    <value>Advanced &gt; Event Log</value>
+  </data>
+  <data name="MachineName" xml:space="preserve">
+    <value>Machine Name</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Severity" xml:space="preserve">
+    <value>Severity</value>
+  </data>
+  <data name="SQLDateTime" xml:space="preserve">
+    <value>SQL Date/Time</value>
+  </data>
+  <data name="ClearEventLogNow" xml:space="preserve">
+    <value>Clear Event Log Now</value>
+  </data>
+  <data name="AutomaticallyClearLogEntriesOlderThan" xml:space="preserve">
+    <value>Automatically clear log entries older than</value>
+  </data>
+  <data name="days" xml:space="preserve">
+    <value>days.</value>
+  </data>
+  <data name="SecureURL_Help" xml:space="preserve">
+    <value>&lt;b&gt;Example:&lt;/b&gt;&lt;br /&gt;https://www.xyz.com
+&lt;p&gt;
+If you do not have an SSL certificate installed for your website, the secure URL should match the above URL.&lt;/p&gt;</value>
+  </data>
+  <data name="URL_Help" xml:space="preserve">
+    <value>&lt;b&gt;Example:&lt;/b&gt;&lt;br /&gt;http://www.xyz.com&lt;p&gt;
+The full URL, including http://, for use in generating the internal software links and links within the email templates.&lt;/p&gt;</value>
+  </data>
+  <data name="ListingTypesUnavailable" xml:space="preserve">
+    <value>Listing Types are unavailable because this Category has subcategories.</value>
+  </data>
+  <data name="CreateUserField" xml:space="preserve">
+    <value>Create User Field</value>
+  </data>
+  <data name="EditUserField" xml:space="preserve">
+    <value>Edit User Field</value>
+  </data>
+  <data name="BatchPaymentProviderCannotBeResolved" xml:space="preserve">
+    <value>Batch payment provider cannot be resolved.</value>
+  </data>
+  <data name="BatchPaymentProviderDisabled" xml:space="preserve">
+    <value>Batch payment provider is disabled.</value>
+  </data>
+  <data name="BatchPaymentValid" xml:space="preserve">
+    <value>If Scheduled Payments are enabled, this invoice will be automatically processed.</value>
+  </data>
+  <data name="BillingAddressMissing" xml:space="preserve">
+    <value>Payer's billing address is missing from the invoice.</value>
+  </data>
+  <data name="DemoModeOn" xml:space="preserve">
+    <value>Batch charges aren't allowed when Demo Mode is enabled.</value>
+  </data>
+  <data name="ManualChargeButtonText" xml:space="preserve">
+    <value>Process Payment(s)</value>
+  </data>
+  <data name="ManualChargeButton_Help" xml:space="preserve">
+    <value>Clicking this button will attempt to batch process all site fee invoices.</value>
+  </data>
+  <data name="MerchantLoginIdMissing" xml:space="preserve">
+    <value>Merchant LoginID is missing.</value>
+  </data>
+  <data name="NoBatchPaymentProviderDefined" xml:space="preserve">
+    <value>No batch payment provider defined.</value>
+  </data>
+  <data name="NoPrimaryCreditCard" xml:space="preserve">
+    <value>Payer does not have a primary credit card defined.</value>
+  </data>
+  <data name="NotFeeInvoice" xml:space="preserve">
+    <value>Invoice is not a Fee Invoice.</value>
+  </data>
+  <data name="PostUrlMissing" xml:space="preserve">
+    <value>Merchant's Post URL is missing.</value>
+  </data>
+  <data name="PrimaryCreditCardExpired" xml:space="preserve">
+    <value>Payer's primary credit card is expired.</value>
+  </data>
+  <data name="TransactionKeyMissing" xml:space="preserve">
+    <value>Merchant TransactionKey is missing.</value>
+  </data>
+  <data name="CreateField" xml:space="preserve">
+    <value>Create {0} Field</value>
+  </data>
+  <data name="template_ask_buyer_question" xml:space="preserve">
+    <value>Ask Listing Question</value>
+  </data>
+  <data name="template_ask_listing_question" xml:space="preserve">
+    <value>Ask Listing Question</value>
+  </data>
+  <data name="template_Bidder_Bid" xml:space="preserve">
+    <value>Bid Confirmation</value>
+  </data>
+  <data name="template_Bidder_Outbid" xml:space="preserve">
+    <value>Outbid Notification</value>
+  </data>
+  <data name="template_Buyer_Bought" xml:space="preserve">
+    <value>Purchase Confirmation</value>
+  </data>
+  <data name="template_Buyer_Bought_Not_Ended" xml:space="preserve">
+    <value>Purchase Confirmation, partial qty</value>
+  </data>
+  <data name="template_Contact_Us_Message" xml:space="preserve">
+    <value>Contact Us Message</value>
+  </data>
+  <data name="LineageString_EmailTemplates" xml:space="preserve">
+    <value>CMS &amp;gt; Email Templates</value>
+  </data>
+  <data name="template_NewUserRegistration_Approved" xml:space="preserve">
+    <value>Registration Approved</value>
+  </data>
+  <data name="template_NewUserRegistration_NeedsAdminApproval" xml:space="preserve">
+    <value>Registration Needs Approval</value>
+  </data>
+  <data name="template_Report_Generation_Failed" xml:space="preserve">
+    <value>Report Failed</value>
+  </data>
+  <data name="template_Report_Generation_Ready" xml:space="preserve">
+    <value>Report Ready</value>
+  </data>
+  <data name="template_report_messaging_abuse" xml:space="preserve">
+    <value>Messaging Abuse Reported</value>
+  </data>
+  <data name="template_Reset_Password" xml:space="preserve">
+    <value>Reset Password</value>
+  </data>
+  <data name="template_Seller_Bid" xml:space="preserve">
+    <value>Bid Received</value>
+  </data>
+  <data name="template_Seller_NewListing" xml:space="preserve">
+    <value>Listing Posted Confirmation</value>
+  </data>
+  <data name="template_Seller_NoSale" xml:space="preserve">
+    <value>Listing Ended Unsuccessfully</value>
+  </data>
+  <data name="template_Seller_SendFees" xml:space="preserve">
+    <value>Site Fee Invoice</value>
+  </data>
+  <data name="template_Seller_SendInvoice" xml:space="preserve">
+    <value>Sales Invoice</value>
+  </data>
+  <data name="template_Seller_Sold" xml:space="preserve">
+    <value>Sale Confirmation</value>
+  </data>
+  <data name="template_Seller_Sold_Not_Ended" xml:space="preserve">
+    <value>Sale Confirmation, partial qty</value>
+  </data>
+  <data name="template_usermessage_reply" xml:space="preserve">
+    <value>Listing Message Reply received</value>
+  </data>
+  <data name="template_usermessage_reply_general" xml:space="preserve">
+    <value>User Message Received</value>
+  </data>
+  <data name="template_User_ReceivedFeedback" xml:space="preserve">
+    <value>Feedback Received</value>
+  </data>
+  <data name="template_user_verification" xml:space="preserve">
+    <value>Email Verification Required</value>
+  </data>
+  <data name="SetEmailTemplateEnabledFailure" xml:space="preserve">
+    <value>Email Template Update Failed</value>
+  </data>
+  <data name="SetEmailTemplateEnabledSuccess" xml:space="preserve">
+    <value>Email Template Updated</value>
+  </data>
+  <data name="AdditionalImages_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller uploads each additional listing image beyond the first image.</value>
+  </data>
+  <data name="Bold_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller selects the 'Bold' listing enhancement.</value>
+  </data>
+  <data name="Featured_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller selects the 'Featured' listing enhancement.</value>
+  </data>
+  <data name="FirstImage_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller includes the first listing image.</value>
+  </data>
+  <data name="FlatFee_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller creates Classified Ad listing.</value>
+  </data>
+  <data name="Highlight_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller selects the 'Highlight' listing enhancement.</value>
+  </data>
+  <data name="Italic_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller selects the 'Italic' listing enhancement.</value>
+  </data>
+  <data name="PayToProceed_Help" xml:space="preserve">
+    <value>If Enabled: Fee payments from sellers will be required up front to post new listings or perform other actions which require a fee.</value>
+  </data>
+  <data name="Subtitle_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller enters a listing Subtitle.</value>
+  </data>
+  <data name="UploadYourSiteLogo_Help" xml:space="preserve">
+    <value>Click the [Upload Logo] button to select the logo image from your PC.  Uploaded image files are currently restricted to 3MB.</value>
+  </data>
+  <data name="YouTubeVideo_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller specifies a YouTube video URL.</value>
+  </data>
+  <data name="FinalBuyerFee" xml:space="preserve">
+    <value>Buyer Final Fee</value>
+  </data>
+  <data name="FinalBuyerFeeStyle_Aggregate" xml:space="preserve">
+    <value>Aggregate %</value>
+  </data>
+  <data name="FinalBuyerFeeStyle_Aggregate_Help" xml:space="preserve">
+    <value>With the Buyer Final Fee tiers set to the following values...&lt;br /&gt;
+&lt;br /&gt;
+$25.00 = 5%&lt;br /&gt;
+&lt;br /&gt;
+$100.00 = 2.5%&lt;br /&gt;
+&lt;br /&gt;
+$999,999,999,999.00 = 1.0%&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $125.00 the Buyer Final Fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($25.00 x 5.0%) + ($75.00 x 2.5%) + ( $25.00 x 1.0%) = $3.38 Buyer Final Fee&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $99.00 the Buyer Final Fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($25.00 x 5.0%) + ($74.00 x 2.5%) = $3.10 Buyer Final Fee</value>
+  </data>
+  <data name="FinalbuyerFeeStyle_Flat" xml:space="preserve">
+    <value>Flat Fee</value>
+  </data>
+  <data name="FinalBuyerFeeStyle_Flat_Help" xml:space="preserve">
+    <value>With the Buyer Final Fee tiers set to the following values...&lt;br /&gt;
+&lt;br /&gt;
+$25.00 = $1.00&lt;br /&gt;
+&lt;br /&gt;
+$100.00 = $5.00&lt;br /&gt;
+&lt;br /&gt;
+$999,999,999,999.00 = $10.00&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $125.00 the Buyer Final Fee is $10.00 &lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $99.00 the Buyer Final Fee is $5.00</value>
+  </data>
+  <data name="FinalBuyerFeeStyle_NonAggregate" xml:space="preserve">
+    <value>Non-aggregate %</value>
+  </data>
+  <data name="FinalBuyerFeeStyle_NonAggregate_Help" xml:space="preserve">
+    <value>With the Buyer Final Fee tiers set to the following values...&lt;br /&gt;
+&lt;br /&gt;
+$25.00 = 5%&lt;br /&gt;
+&lt;br /&gt;
+$100.00 = 2.5%&lt;br /&gt;
+&lt;br /&gt;
+$999,999,999,999.00 = 1.0%&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $125.00 the Buyer Final Fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($125.00 x 1.0%) = $1.25&lt;br /&gt;
+&lt;br /&gt;
+If an item sells with a final price of $99.00 the Buyer Final Fee is calculated as follows: &lt;br /&gt;
+&lt;br /&gt;
+($99.00 x 2.5%) = $2.48</value>
+  </data>
+  <data name="FinalBuyerFee_Help" xml:space="preserve">
+    <value>Unlike most other site fees, this fee will be added to the &lt;i&gt;buyer's&lt;/i&gt; "Site Fee Invoice" instead of the &lt;i&gt;seller's&lt;/i&gt; "Site Fee Invoice".&lt;br /&gt;
+&lt;br /&gt;
+Note: This fee can be used independently from the "Buyer's Premium" feature, which allows the seller to specify a % to be added to the &lt;i&gt;Sale Invoice&lt;/i&gt; for each sale.&lt;br /&gt;
+&lt;br /&gt;
+To disable 'Buyer Final Fee' set all tiers to $0 or 0%.</value>
+  </data>
+  <data name="CannotDeletePrimaryAdmin" xml:space="preserve">
+    <value>Cannot delete primary user/site owner.</value>
+  </data>
+  <data name="ServiceAuthorizationToken" xml:space="preserve">
+    <value>API Authentication Token</value>
+  </data>
+  <data name="AdminEditUserStatusWebAPI_Help" xml:space="preserve">
+    <value>If checked, the user may access the Web API.</value>
+  </data>
+  <data name="WebAPI" xml:space="preserve">
+    <value>Web API</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="CSVImportHelp" xml:space="preserve">
+    <value>CSV Import Help</value>
+  </data>
+  <data name="CsvStatus" xml:space="preserve">
+    <value>CSV Status</value>
+  </data>
+  <data name="DataFile" xml:space="preserve">
+    <value>Data File</value>
+  </data>
+  <data name="DownloadBlankCSVTemplate" xml:space="preserve">
+    <value>Download Blank CSV Template</value>
+  </data>
+  <data name="ImportCSVColumnSpecifications" xml:space="preserve">
+    <value>Import CSV Column Specifications</value>
+  </data>
+  <data name="NoActionHasBeenTaken" xml:space="preserve">
+    <value>NO ACTION HAS BEEN TAKEN</value>
+  </data>
+  <data name="ReportEmailAddress" xml:space="preserve">
+    <value>Report Email Address</value>
+  </data>
+  <data name="RowStatus" xml:space="preserve">
+    <value>Row Status</value>
+  </data>
+  <data name="SetInvoiceShippedSuccess" xml:space="preserve">
+    <value>Setting Invoice Shipped Status Succeeded</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="UploadCSV" xml:space="preserve">
+    <value>Upload CSV</value>
+  </data>
+  <data name="ValidateDataOnly" xml:space="preserve">
+    <value>Validate Data ONLY</value>
+  </data>
+  <data name="GenerateAuthToken" xml:space="preserve">
+    <value>Generate</value>
+  </data>
+  <data name="GenerateAuthToken_Help" xml:space="preserve">
+    <value>Generates a new Web API Authentication Token for the user.</value>
+  </data>
+  <data name="WebAPIAuthenticationToken" xml:space="preserve">
+    <value>Web API Authentication Token</value>
+  </data>
+  <data name="Mutability" xml:space="preserve">
+    <value>Editability</value>
+  </data>
+  <data name="Visibility" xml:space="preserve">
+    <value>Visibility</value>
+  </data>
+  <data name="LineageString_MobileLogoUploader" xml:space="preserve">
+    <value>Site Preferences &amp;gt; Mobile Logo</value>
+  </data>
+  <data name="UploadYourMobileLogo" xml:space="preserve">
+    <value>Upload your mobile logo</value>
+  </data>
+  <data name="Sunburst_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller specifies the "sale badge" listing enhancement</value>
+  </data>
+  <data name="AddContentLanguageFailure" xml:space="preserve">
+    <value>The specified language could not be added</value>
+  </data>
+  <data name="AddContentLanguageSuccess" xml:space="preserve">
+    <value>The specified language has been added</value>
+  </data>
+  <data name="EmailFooter" xml:space="preserve">
+    <value>An Email Subject or Body Footer (EmailFooter)</value>
+  </data>
+  <data name="EmailHeader" xml:space="preserve">
+    <value>An Email Subject or Body Header (EmailHeader)</value>
+  </data>
+  <data name="Boolean" xml:space="preserve">
+    <value>Yes/No</value>
+  </data>
+  <data name="Decimal" xml:space="preserve">
+    <value>Decimal Number</value>
+  </data>
+  <data name="Enum" xml:space="preserve">
+    <value>Option List</value>
+  </data>
+  <data name="False" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Int" xml:space="preserve">
+    <value>Whole Number</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="True" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="CountryManagementFailure" xml:space="preserve">
+    <value>Country Management Failed</value>
+  </data>
+  <data name="CountryManagementSuccess" xml:space="preserve">
+    <value>Countries Updated</value>
+  </data>
+  <data name="LineageString_CountryManagement" xml:space="preserve">
+    <value>International &amp;gt; Countries</value>
+  </data>
+  <data name="AddEmailTemplateLanguageFailture" xml:space="preserve">
+    <value>Adding Email Template Language Failed</value>
+  </data>
+  <data name="AddEmailTemplateLanguageSuccess" xml:space="preserve">
+    <value>Email Template Language Added</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>Message Body</value>
+  </data>
+  <data name="EmailTemplateEditorFailure" xml:space="preserve">
+    <value>Updating Email Template Failed</value>
+  </data>
+  <data name="EmailTemplateEditorSuccess" xml:space="preserve">
+    <value>Email Template Updated</value>
+  </data>
+  <data name="EmailTemplateHelp" xml:space="preserve">
+    <value>Email Template Help</value>
+  </data>
+  <data name="LineageString_EmailTemplateEditor" xml:space="preserve">
+    <value>CMS &amp;gt; Email Templates &amp;gt; Details</value>
+  </data>
+  <data name="RemoveEmailTemplateLanguageFailure" xml:space="preserve">
+    <value>Removing Email Template Language Failed</value>
+  </data>
+  <data name="RemoveEmailTemplateLanguageSuccess" xml:space="preserve">
+    <value>Email Template Language Removed</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="template_ask_buyer_question_Help" xml:space="preserve">
+    <value>Ask buyer a question</value>
+  </data>
+  <data name="template_ask_listing_question_Help" xml:space="preserve">
+    <value>Ask seller a listing question</value>
+  </data>
+  <data name="template_Bidder_Bid_Help" xml:space="preserve">
+    <value>Notify bidder they placed a bid</value>
+  </data>
+  <data name="template_Bidder_Outbid_Help" xml:space="preserve">
+    <value>Notify bidder they were outbid</value>
+  </data>
+  <data name="template_Buyer_Bought_Help" xml:space="preserve">
+    <value>Notify buyer they purchased an item</value>
+  </data>
+  <data name="template_Buyer_Bought_Not_Ended_Help" xml:space="preserve">
+    <value>Notify buyer they purchased an item, the item hasn't yet ended</value>
+  </data>
+  <data name="template_Contact_Us_Message_Help" xml:space="preserve">
+    <value>Send Contact Us message to administrator</value>
+  </data>
+  <data name="template_EmailFooter" xml:space="preserve">
+    <value>Email Footer (all emails)</value>
+  </data>
+  <data name="template_EmailFooter_Help" xml:space="preserve">
+    <value>Content is substituted wherever [#EmailFooter] is used in an email template body</value>
+  </data>
+  <data name="template_EmailHeader" xml:space="preserve">
+    <value>Email Header (all emails)</value>
+  </data>
+  <data name="template_EmailHeader_Help" xml:space="preserve">
+    <value>Content is substituted wherever [#EmailHeader] is used in an email template body</value>
+  </data>
+  <data name="template_NewUserRegistration_Approved_Help" xml:space="preserve">
+    <value>Notify new user their account has been approved</value>
+  </data>
+  <data name="template_NewUserRegistration_NeedsAdminApproval_Help" xml:space="preserve">
+    <value>Notify administrator that a new user account needs approval</value>
+  </data>
+  <data name="template_Report_Generation_Failed_Help" xml:space="preserve">
+    <value>Notify user executing a CSV export that the CSV report failed</value>
+  </data>
+  <data name="template_Report_Generation_Ready_Help" xml:space="preserve">
+    <value>Notify user executing a CSV export that the CSV report is ready</value>
+  </data>
+  <data name="template_report_messaging_abuse_Help" xml:space="preserve">
+    <value>Notify administrator of messaging abuse</value>
+  </data>
+  <data name="template_Reset_Password_Help" xml:space="preserve">
+    <value>Send user a password reset email</value>
+  </data>
+  <data name="template_Seller_Bid_Help" xml:space="preserve">
+    <value>Notify seller that a bidder placed a bid</value>
+  </data>
+  <data name="template_Seller_NewListing_Help" xml:space="preserve">
+    <value>Notify seller that they've created a new listing</value>
+  </data>
+  <data name="template_Seller_NoSale_Help" xml:space="preserve">
+    <value>Notify seller that their listing did not sell</value>
+  </data>
+  <data name="template_Seller_SendFees_Help" xml:space="preserve">
+    <value>Notify seller of fees they currently owe to the site</value>
+  </data>
+  <data name="template_Seller_SendInvoice_Help" xml:space="preserve">
+    <value>Notify buyers of pending invoices needing payment</value>
+  </data>
+  <data name="template_Seller_Sold_Help" xml:space="preserve">
+    <value>Notify seller that their listing sold</value>
+  </data>
+  <data name="template_Seller_Sold_Not_Ended_Help" xml:space="preserve">
+    <value>Notify seller that their listing sold, but the listing hasn't yet ended</value>
+  </data>
+  <data name="template_usermessage_reply_general_Help" xml:space="preserve">
+    <value>Notify user that they've received a general reply</value>
+  </data>
+  <data name="template_usermessage_reply_Help" xml:space="preserve">
+    <value>Notify user that they're received a reply to a message about a listing</value>
+  </data>
+  <data name="template_User_ReceivedFeedback_Help" xml:space="preserve">
+    <value>Notify user that they've received feedback</value>
+  </data>
+  <data name="template_user_verification_Help" xml:space="preserve">
+    <value>Send user an email verification email</value>
+  </data>
+  <data name="Mutability_Help" xml:space="preserve">
+    <value>&lt;strong&gt;Advanced Administration Setting&lt;/strong&gt;
+&lt;p &gt;Affects which users can edit this custom field content.  Please review administration documentation before using settings other than the default.&lt;/p&gt;</value>
+  </data>
+  <data name="Visibility_Help" xml:space="preserve">
+    <value>&lt;strong&gt;Advanced Administration Setting&lt;/strong&gt;
+&lt;p&gt;Affects which users will see this custom field content.  Please review administration documentation before using settings other than the default.&lt;/p&gt;</value>
+  </data>
+  <data name="CMS_Variable_Width_Help" xml:space="preserve">
+    <value>Due to the responsive design, we recommend using variable width custom content. Standard &lt;a href="http://getbootstrap.com/css/" target="_blank"&gt;Bootstrap 3&lt;/a&gt;CSS can be used to manage your custom content.
+&lt;p&gt;
+To show, or hide, content use the &lt;a href="http://getbootstrap.com/css/#responsive-utilities" target="_blank"&gt;responsive classes&lt;/a&gt;.  To hide content on x-small devices use the "hidden-xs" CSS class.
+&lt;/p&gt;
+&lt;p&gt;
+For &lt;a href="http://getbootstrap.com/css/#overview-responsive-images" target="_blank"&gt;responsive images&lt;/a&gt; be sure to add the "img-responsive" class to your image assets. (This will automatically resize images for smaller devices)
+&lt;/p&gt;</value>
+  </data>
+  <data name="LineageString_StatesRegionsManagement" xml:space="preserve">
+    <value>International &amp;gt; Countries &amp;gt; {0} &amp;gt; Edit States/Regions</value>
+  </data>
+  <data name="AddNewStatesRegionsFailure" xml:space="preserve">
+    <value>Add New States/Regions failed</value>
+  </data>
+  <data name="AddNewStatesRegionsSuccess" xml:space="preserve">
+    <value>States/Regions added/updated</value>
+  </data>
+  <data name="AddStatesRegions_Help" xml:space="preserve">
+    <value>&lt;p&gt;&lt;strong&gt;Enter one new State/Region per line.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Each line must contain the State/Region Code, followed by a comma, followed by the State/Region Name.&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;strong&gt;Example:&lt;/strong&gt;&lt;br&gt;&amp;nbsp;&lt;br&gt;AK,Alaska&lt;br&gt;AZ,Arizona&lt;br&gt;AR,Arkansas&lt;/em&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="DeleteStatesRegionsSuccess" xml:space="preserve">
+    <value>State(s) / Region(s) Deleted</value>
+  </data>
+  <data name="default_parens" xml:space="preserve">
+    <value>(default)</value>
+  </data>
+  <data name="EditStatesRegions" xml:space="preserve">
+    <value>Edit States/Regions</value>
+  </data>
+  <data name="SelectEnabledCountry" xml:space="preserve">
+    <value>Select Enabled Country</value>
+  </data>
+  <data name="SetDefault" xml:space="preserve">
+    <value>Set Default</value>
+  </data>
+  <data name="SetDefaultCountryFailure" xml:space="preserve">
+    <value>Set Default Country Failed</value>
+  </data>
+  <data name="SetDefaultCountrySuccess" xml:space="preserve">
+    <value>Default Country Updated</value>
+  </data>
+  <data name="DisplayOrder_Help" xml:space="preserve">
+    <value>This field is pre-populated to place the new field at the bottom of the list.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Loading_elipse" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="PreviewEmailTemplateFailure" xml:space="preserve">
+    <value>Preview Email Template Failed</value>
+  </data>
+  <data name="PreviewNotAvailable" xml:space="preserve">
+    <value>Preview is not available for this template.</value>
+  </data>
+  <data name="Recipient" xml:space="preserve">
+    <value>Recipient</value>
+  </data>
+  <data name="template_ask_buyer_question_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="template_ask_listing_question_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="template_Bidder_Bid_ToWhom" xml:space="preserve">
+    <value>bidder</value>
+  </data>
+  <data name="template_Bidder_Outbid_ToWhom" xml:space="preserve">
+    <value>bidder</value>
+  </data>
+  <data name="template_Buyer_Bought_Not_Ended_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="template_Buyer_Bought_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="template_Contact_Us_Message_ToWhom" xml:space="preserve">
+    <value>admin</value>
+  </data>
+  <data name="template_EmailFooter_ToWhom" xml:space="preserve">
+    <value />
+  </data>
+  <data name="template_EmailHeader_ToWhom" xml:space="preserve">
+    <value />
+  </data>
+  <data name="template_NewUserRegistration_Approved_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_NewUserRegistration_NeedsAdminApproval_ToWhom" xml:space="preserve">
+    <value>admin</value>
+  </data>
+  <data name="template_Report_Generation_Failed_ToWhom" xml:space="preserve">
+    <value>admin</value>
+  </data>
+  <data name="template_Report_Generation_Ready_ToWhom" xml:space="preserve">
+    <value>admin</value>
+  </data>
+  <data name="template_report_messaging_abuse_ToWhom" xml:space="preserve">
+    <value>admin</value>
+  </data>
+  <data name="template_Reset_Password_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_Seller_Bid_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="template_Seller_NewListing_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="template_Seller_NoSale_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="template_Seller_SendFees_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_Seller_SendInvoice_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="template_Seller_Sold_Not_Ended_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="template_Seller_Sold_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="template_usermessage_reply_general_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_usermessage_reply_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_User_ReceivedFeedback_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_user_verification_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="OnlyPaidInvoicesCanBeMarkedShipped" xml:space="preserve">
+    <value>Only paid invoices can be marked shipped</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="DuplicateUsernames" xml:space="preserve">
+    <value>Duplicate Usernames</value>
+  </data>
+  <data name="ImportProgress" xml:space="preserve">
+    <value>Import Progress</value>
+  </data>
+  <data name="ImportUsers" xml:space="preserve">
+    <value>Import Users</value>
+  </data>
+  <data name="ImportUsersMainBlurb" xml:space="preserve">
+    <value>Use this form to import rwAuction Pro v7.0 users from the database specified in web.config.  Choose whether to skip or overwrite existing users with the same username, then click "Import Users" to continue...</value>
+  </data>
+  <data name="LineageString_ImportUsers" xml:space="preserve">
+    <value>Users &gt; Import Users</value>
+  </data>
+  <data name="Overwrite" xml:space="preserve">
+    <value>Overwrite</value>
+  </data>
+  <data name="Skip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="UsersAdded" xml:space="preserve">
+    <value>Users Added</value>
+  </data>
+  <data name="UsersFound" xml:space="preserve">
+    <value>Users Found</value>
+  </data>
+  <data name="UsersSkipped" xml:space="preserve">
+    <value>Users Skipped</value>
+  </data>
+  <data name="UsersUpdated" xml:space="preserve">
+    <value>Users Updated</value>
+  </data>
+  <data name="HomePhoneCustomField" xml:space="preserve">
+    <value>Home Phone Custom Field</value>
+  </data>
+  <data name="VerboseOutput" xml:space="preserve">
+    <value>Verbose Output?</value>
+  </data>
+  <data name="WorkPhoneCustomField" xml:space="preserve">
+    <value>Work Phone Custom Field</value>
+  </data>
+  <data name="CompanyCustomField" xml:space="preserve">
+    <value>Company Custom Field</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="AddRegionalLanguageOption" xml:space="preserve">
+    <value>Add Regional Language Option</value>
+  </data>
+  <data name="RemoveRegionalLanguageOption" xml:space="preserve">
+    <value>Remove Regional Language Option</value>
+  </data>
+  <data name="NewAddress" xml:space="preserve">
+    <value>Add New Address</value>
+  </data>
+  <data name="SetBillingAddress" xml:space="preserve">
+    <value>Set Billing Address</value>
+  </data>
+  <data name="SetBillingAddressFailure" xml:space="preserve">
+    <value>Set Billing Address Failed</value>
+  </data>
+  <data name="SetBillingAddressSuccess" xml:space="preserve">
+    <value>Successfully set Billing Address</value>
+  </data>
+  <data name="SetShippingAddress" xml:space="preserve">
+    <value>Set Shipping Address</value>
+  </data>
+  <data name="SetShippingAddressFailure" xml:space="preserve">
+    <value>Set Shipping Address Failed</value>
+  </data>
+  <data name="SetShippingAddressSuccess" xml:space="preserve">
+    <value>Successfully set Shipping Address</value>
+  </data>
+  <data name="AutomaticallyRemoveOldData" xml:space="preserve">
+    <value>Automatically remove old data</value>
+  </data>
+  <data name="DataMaintenanceFailure" xml:space="preserve">
+    <value>Data Maintenance Settings Update Failed</value>
+  </data>
+  <data name="DataMaintenanceSuccess" xml:space="preserve">
+    <value>Data Maintenance Settings Updated</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>days ago at</value>
+  </data>
+  <data name="DeleteFeeInvoicesOlderThan" xml:space="preserve">
+    <value>Delete fee invoices older than</value>
+  </data>
+  <data name="DeleteListingsClosedMoreThan" xml:space="preserve">
+    <value>Delete listings closed more than</value>
+  </data>
+  <data name="DeleteSaleInvoicesOlderThan" xml:space="preserve">
+    <value>Delete sale invoices older than</value>
+  </data>
+  <data name="IncludeSuccessfulListings" xml:space="preserve">
+    <value>Include Successful Listing Data</value>
+  </data>
+  <data name="IncludeUnpaidInvoices" xml:space="preserve">
+    <value>Include Unpaid Invoices</value>
+  </data>
+  <data name="LineageString_DataManagement_Maintenance" xml:space="preserve">
+    <value>Data Management &amp;gt; Maintenance</value>
+  </data>
+  <data name="PaymentReceived" xml:space="preserve">
+    <value>PayPal Payment Received</value>
+  </data>
+  <data name="DeleteUserWithBidsWarning_Line1" xml:space="preserve">
+    <value>This user has bids on one or more listings.  Deleting these bids will most likely cause incorrect bidding results on these listings.</value>
+  </data>
+  <data name="DeleteUserWithBidsWarning_Line2" xml:space="preserve">
+    <value>This operation cannot be undone.</value>
+  </data>
+  <data name="DeleteUserWithBidsWarning_Line3" xml:space="preserve">
+    <value>Please click "Delete" again to proceed, regardless of potentially corrupting bidding results.</value>
+  </data>
+  <data name="DeleteListingsNow" xml:space="preserve">
+    <value>Delete Listings Now</value>
+  </data>
+  <data name="DeleteListingsNowSuccess" xml:space="preserve">
+    <value>Listing Cleanup has been successfully queued.  Please check the Event Log for details on the results.</value>
+  </data>
+  <data name="DeleteListingsNow_Help" xml:space="preserve">
+    <value>Permanently deletes closed listings and associated images older than {0} days</value>
+  </data>
+  <data name="DeleteListingsWarning_Line1" xml:space="preserve">
+    <value>You are about to delete all listings older than {0} days.</value>
+  </data>
+  <data name="DeleteListingsWarning_Line1_IncludingSuccessful" xml:space="preserve">
+    <value>You are about to delete all listings older than {0} days, including successful listings.</value>
+  </data>
+  <data name="DeleteListingsWarning_Line2" xml:space="preserve">
+    <value>This operation cannot be undone.</value>
+  </data>
+  <data name="DeleteListingsWarning_Line3" xml:space="preserve">
+    <value>This will permanently remove all bid and listing data for old listings from the database and will also permanently delete the associated listing images. These listings will no longer appear in any lists and will not be available to view or relist.</value>
+  </data>
+  <data name="ListingDeletionConfirmation_Title" xml:space="preserve">
+    <value>Listing Deletion Confirmation</value>
+  </data>
+  <data name="DeleteListingsWarning_Line1_Auto" xml:space="preserve">
+    <value>You are about to enable automatically deleting listings older than {0} days every day at {1}.</value>
+  </data>
+  <data name="xAppearsToBeInvalidPleaseEnterCorrectEmail" xml:space="preserve">
+    <value>{0} appears to be invalid.  Please enter a valid email address to continue.</value>
+  </data>
+  <data name="CreateEventField" xml:space="preserve">
+    <value>Create Event Field</value>
+  </data>
+  <data name="EditEventField" xml:space="preserve">
+    <value>Edit Event Field</value>
+  </data>
+  <data name="LineageString_CustomFields_Event" xml:space="preserve">
+    <value>Events &amp;gt; Event Custom Fields</value>
+  </data>
+  <data name="EmptyHomePage" xml:space="preserve">
+    <value>Empty Home Page Content</value>
+  </data>
+  <data name="IncludeOnInvoice" xml:space="preserve">
+    <value>Include On Invoice</value>
+  </data>
+  <data name="IncludeOnInvoice_Help" xml:space="preserve">
+    <value>If checked, this custom field will be included on sales invoices.</value>
+  </data>
+  <data name="DontShow" xml:space="preserve">
+    <value>Don't show this again.</value>
+  </data>
+  <data name="QuickStartHide" xml:space="preserve">
+    <value>Hide This List</value>
+  </data>
+  <data name="QuickStartList" xml:space="preserve">
+    <value>Quick Start List</value>
+  </data>
+  <data name="QuickStartNotes" xml:space="preserve">
+    <value>&lt;strong&gt;Remember:&lt;/strong&gt; Click the question mark buttons to display additional information about each setting.  </value>
+  </data>
+  <data name="QuickStartSiteContact" xml:space="preserve">
+    <value>Site Contact Information</value>
+  </data>
+  <data name="QuickStartSiteContactDesc" xml:space="preserve">
+    <value>Be sure to use an email address linked to your domain name to ensure emails get delivered.</value>
+  </data>
+  <data name="QuickStartTimeZone" xml:space="preserve">
+    <value>Your Time Zone</value>
+  </data>
+  <data name="QuickStartTimeZoneDesc" xml:space="preserve">
+    <value>Your operating time zone should be configured &lt;strong&gt;prior&lt;/strong&gt; to creating any listings.</value>
+  </data>
+  <data name="QuickStartUserInfo" xml:space="preserve">
+    <value>Your (Admin) User Information</value>
+  </data>
+  <data name="QuickStartUserInfoDesc" xml:space="preserve">
+    <value>This is your personal administration account.  You will want to update all fields to reflect your information.  It is important to change your email address and password from the default one provided.</value>
+  </data>
+  <data name="QuickStartWelcome" xml:space="preserve">
+    <value>&lt;strong&gt;Welcome to AuctionWorx.&lt;/strong&gt; Be sure to configure the following settings first!</value>
+  </data>
+  <data name="EnumOptionName_Help" xml:space="preserve">
+    <value>This value will be displayed to the user when selecting the option from the dropdown or radio buttons.</value>
+  </data>
+  <data name="EnumOptionValue_Help" xml:space="preserve">
+    <value>This value will be displayed on the listing detail page.&lt;br/&gt;Note:  Leave this field blank if it should *not* be displayed on the detail page if selected by the user.</value>
+  </data>
+  <data name="MaintenanceMode" xml:space="preserve">
+    <value>Under Construction Mode Content</value>
+  </data>
+  <data name="AuctionLotSettingsFailure" xml:space="preserve">
+    <value>Auction Lot  settings update failed</value>
+  </data>
+  <data name="AuctionLotSettingsSuccess" xml:space="preserve">
+    <value>Auction Lot  settings updated</value>
+  </data>
+  <data name="LineageString_AuctionLotSettings" xml:space="preserve">
+    <value>Listings &amp;gt; Auction Lots</value>
+  </data>
+  <data name="DuplicateContentName" xml:space="preserve">
+    <value>New content "Name" must be unique.</value>
+  </data>
+  <data name="Also" xml:space="preserve">
+    <value>Also</value>
+  </data>
+  <data name="BuyersPremiumAmount" xml:space="preserve">
+    <value>Buyer's Premium</value>
+  </data>
+  <data name="InvoiceTotal" xml:space="preserve">
+    <value>Invoice Total</value>
+  </data>
+  <data name="LineageString_SalesInvoicesReport" xml:space="preserve">
+    <value>Reports &amp;gt; Sales Invoices</value>
+  </data>
+  <data name="ListingLineItemCount" xml:space="preserve">
+    <value>Line Items</value>
+  </data>
+  <data name="SalesTax" xml:space="preserve">
+    <value>Tax</value>
+  </data>
+  <data name="ShippingAmount" xml:space="preserve">
+    <value>Shipping</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>Subtotal</value>
+  </data>
+  <data name="TotalAdjustments" xml:space="preserve">
+    <value>Adjustments</value>
+  </data>
+  <data name="TotalQty" xml:space="preserve">
+    <value>Total Qty</value>
+  </data>
+  <data name="CSVHelp" xml:space="preserve">
+    <value>&lt;strong&gt;Large data import files&lt;/strong&gt; may result in delayed receipt of confirmation email.  Check &lt;em&gt;Event Logs&lt;/em&gt; for current import status - each listing validation or import will be recorded.</value>
+  </data>
+  <data name="CSV_EmailSendErrorParserErrorEmail" xml:space="preserve">
+    <value>Email Send Error (Parser Error Email)</value>
+  </data>
+  <data name="CSV_EmailSendErrorResultsEmail" xml:space="preserve">
+    <value>Email Send Error (Results Email)</value>
+  </data>
+  <data name="CSV_ExceptionCount" xml:space="preserve">
+    <value>Exception Count</value>
+  </data>
+  <data name="CSV_Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="CSV_ExceptionsFromListingProvider" xml:space="preserve">
+    <value>Exceptions (from listing provider)</value>
+  </data>
+  <data name="CSV_FailedImportLinesAttachedInNewCsvFile" xml:space="preserve">
+    <value>All failed import lines from the original CSV are attached to this email as a NEW csv for correction and re-attempt.</value>
+  </data>
+  <data name="CSV_ImportExceptionsForXxx" xml:space="preserve">
+    <value>Import Exception for {0}</value>
+    <comment>{0} is a filename</comment>
+  </data>
+  <data name="CSV_ImportResults" xml:space="preserve">
+    <value>Import Results</value>
+  </data>
+  <data name="CSV_ImportResultsForXxxJobStartedAtYyy" xml:space="preserve">
+    <value>Import results for {0} job started at {1}</value>
+    <comment>{0} is a filename, {1} is a date/time</comment>
+  </data>
+  <data name="CSV_Line" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="CSV_NoteValidateOnlyNoActionTaken" xml:space="preserve">
+    <value>Note, since "Validate Only" was selected, NO ACTION HAS BEEN TAKEN</value>
+  </data>
+  <data name="CSV_ProcessingTime" xml:space="preserve">
+    <value>Processing Time</value>
+  </data>
+  <data name="CSV_seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="CSV_SuccessCount" xml:space="preserve">
+    <value>Success Count</value>
+  </data>
+  <data name="CSV_Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="CSV_ValidationErrorCount" xml:space="preserve">
+    <value>Validation Error Count</value>
+  </data>
+  <data name="CSV_ValidationErrors" xml:space="preserve">
+    <value>Validation Errors</value>
+  </data>
+  <data name="CSV_ValidationErrorsFromCsvPreValidator" xml:space="preserve">
+    <value>Validation Errors (from CSV pre-validator)</value>
+  </data>
+  <data name="CSV_ValidationErrorsFromListingProvider" xml:space="preserve">
+    <value>Validation Errors (from listing provider)</value>
+  </data>
+  <data name="CSV_YourFileFailedPreValidationNoActionHasBeenTaken" xml:space="preserve">
+    <value>Your File failed pre-validation.  No action has been taken.</value>
+  </data>
+  <data name="CSV_ListingImportStarted" xml:space="preserve">
+    <value>CSV listing import has started.  Import and validation results will be sent to the following email address once completed: {0}</value>
+  </data>
+  <data name="ImportAsDrafts" xml:space="preserve">
+    <value>Import as Drafts</value>
+  </data>
+  <data name="AdminSummaryCountRecentlySignedInUsers" xml:space="preserve">
+    <value>Recently Signed In Users</value>
+  </data>
+  <data name="CategoriesAdded" xml:space="preserve">
+    <value>Categories Added</value>
+  </data>
+  <data name="CategoriesFound" xml:space="preserve">
+    <value>Categories Found</value>
+  </data>
+  <data name="CategoriesSkipped" xml:space="preserve">
+    <value>Categories Skipped</value>
+  </data>
+  <data name="ErrorDetails" xml:space="preserve">
+    <value>Error Details</value>
+  </data>
+  <data name="ImageImportUriBase" xml:space="preserve">
+    <value>Image Import Uri Base</value>
+  </data>
+  <data name="ImportCancelled" xml:space="preserve">
+    <value>Import Cancelled</value>
+  </data>
+  <data name="ImportCategories" xml:space="preserve">
+    <value>Import Categories</value>
+  </data>
+  <data name="ImportCategoriesMainBlurb" xml:space="preserve">
+    <value>Use this form to import rwAuction Pro v7.0 listing categories from the database specified in web.config.  Click "Import Categories" to continue...</value>
+  </data>
+  <data name="ImportCompleted" xml:space="preserve">
+    <value>Import Completed</value>
+  </data>
+  <data name="ImportListingsMainBlurb" xml:space="preserve">
+    <value>Use this form to import rwAuction Pro v7.0 listings from the database specified in web.config.  Click "Import Listings" to continue...</value>
+  </data>
+  <data name="ImportStarted" xml:space="preserve">
+    <value>Import Started</value>
+  </data>
+  <data name="LineageString_ImportCategories" xml:space="preserve">
+    <value>Categories &gt; Import Categories</value>
+  </data>
+  <data name="LineageString_ImportListings" xml:space="preserve">
+    <value>Listings &gt; Import Listings</value>
+  </data>
+  <data name="ListingsAdded" xml:space="preserve">
+    <value>Listings Added</value>
+  </data>
+  <data name="ListingsFound" xml:space="preserve">
+    <value>Listings Found</value>
+  </data>
+  <data name="ListingsSkipped" xml:space="preserve">
+    <value>Listings Skipped</value>
+  </data>
+  <data name="ImportRegions" xml:space="preserve">
+    <value>Import Regions</value>
+  </data>
+  <data name="ImportRegionsMainBlurb" xml:space="preserve">
+    <value>Use this form to import rwAuction Pro v7.0 regions from the database specified in web.config.  Click "Import Regions" to continue...</value>
+  </data>
+  <data name="LineageString_ImportRegions" xml:space="preserve">
+    <value>Regions &gt; Import Regions</value>
+  </data>
+  <data name="RegionsAdded" xml:space="preserve">
+    <value>Regions Added</value>
+  </data>
+  <data name="RegionsFound" xml:space="preserve">
+    <value>Regions Found</value>
+  </data>
+  <data name="RegionsSkipped" xml:space="preserve">
+    <value>Regions Skipped</value>
+  </data>
+  <data name="LotNumber" xml:space="preserve">
+    <value>Lot Number</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="SalesInvoices_csv" xml:space="preserve">
+    <value>SalesInvoices.csv</value>
+  </data>
+  <data name="StateRegion" xml:space="preserve">
+    <value>State/Region</value>
+  </data>
+  <data name="Street1" xml:space="preserve">
+    <value>Street 1</value>
+  </data>
+  <data name="Street2" xml:space="preserve">
+    <value>Street 2</value>
+  </data>
+  <data name="ZipPostal" xml:space="preserve">
+    <value>Zip/Postal</value>
+  </data>
+  <data name="Literal_SubNavigation" xml:space="preserve">
+    <value>Sub-Navigation Links</value>
+  </data>
+  <data name="Sunburst" xml:space="preserve">
+    <value>Sale Badge</value>
+  </data>
+  <data name="CreateLotField" xml:space="preserve">
+    <value>Create Lot Field</value>
+  </data>
+  <data name="LineageString_AuctionLotSettings_Events" xml:space="preserve">
+    <value>Auctions &amp;gt; Auction Lots</value>
+  </data>
+  <data name="LineageString_CustomFields_Lot" xml:space="preserve">
+    <value>Auctions &gt; Lot Custom Fields</value>
+  </data>
+  <data name="LineageString_ImportCSV" xml:space="preserve">
+    <value>Listings &amp;gt; Import CSV</value>
+  </data>
+  <data name="LineageString_ImportCSV_Events" xml:space="preserve">
+    <value>Auctions &amp;gt; Import Lots CSV</value>
+  </data>
+  <data name="LineageString_ShippingMethods_Events" xml:space="preserve">
+    <value>Auctions &amp;gt; Shipping</value>
+  </data>
+  <data name="Voided" xml:space="preserve">
+    <value>Voided</value>
+  </data>
+  <data name="PageName" xml:space="preserve">
+    <value>Page Name</value>
+  </data>
+  <data name="QuickStartMobileLogo" xml:space="preserve">
+    <value>Mobile Logo</value>
+  </data>
+  <data name="QuickStartMobileLogoDesc" xml:space="preserve">
+    <value>This logo is displayed in the header of every page when the user is browsing from a mobile device.</value>
+  </data>
+  <data name="QuickStartShow" xml:space="preserve">
+    <value>Show Quick Start List</value>
+  </data>
+  <data name="QuickStartSiteLogo" xml:space="preserve">
+    <value>Site Logo</value>
+  </data>
+  <data name="QuickStartSiteLogoDesc" xml:space="preserve">
+    <value>This is the logo displayed in the header of every page when the user's browser is full-width.</value>
+  </data>
+  <data name="QuickStartSiteName" xml:space="preserve">
+    <value>Site Name</value>
+  </data>
+  <data name="QuickStartSiteNameDesc" xml:space="preserve">
+    <value>"Legal Site Name", "Friendly Site Name" and "Site Title" should all be updated to reflect your website.</value>
+  </data>
+  <data name="QuickStartSiteUrl" xml:space="preserve">
+    <value>Site Url</value>
+  </data>
+  <data name="QuickStartSiteUrlDesc" xml:space="preserve">
+    <value>The "URL" and "Secure URL" are used for things such as email tags and secure login, and should be updated to match the intended address of your website, for example http://www.mywebsite.com and https://www.mywebsite.com, respectively.  If you do not have SSL set up then both should be set to "http://...".</value>
+  </data>
+  <data name="PublishEventFee" xml:space="preserve">
+    <value>Publish Event Fee</value>
+  </data>
+  <data name="PublishEventFee_Help" xml:space="preserve">
+    <value>A flat fee charged when a seller publishes an event.</value>
+  </data>
+  <data name="LineageString_Taxes" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Taxes</value>
+  </data>
+  <data name="TaxesSuccess" xml:space="preserve">
+    <value>Tax preferences updated</value>
+  </data>
+  <data name="UpdateInvoiceBuyersPremiumFailure" xml:space="preserve">
+    <value>Update Invoice Buyers Premium Failed</value>
+  </data>
+  <data name="UpdateInvoiceBuyersPremiumSuccess" xml:space="preserve">
+    <value>Buyer's Premium Updated</value>
+  </data>
+  <data name="UpdateInvoiceCommentsFailure" xml:space="preserve">
+    <value>Update Invoice Comments Failed</value>
+  </data>
+  <data name="UpdateInvoiceCommentsSuccess" xml:space="preserve">
+    <value>Successfully saved invoice comments</value>
+  </data>
+  <data name="UpdateInvoiceShippingFailure" xml:space="preserve">
+    <value>Update Invoice Shipping Failed</value>
+  </data>
+  <data name="UpdateInvoiceShippingSuccess" xml:space="preserve">
+    <value>Successfully Updated Invoice Shipping Option</value>
+  </data>
+  <data name="DisableThisFeeForSelectedCategories" xml:space="preserve">
+    <value>Disable this fee for the selected categories</value>
+  </data>
+  <data name="EnableThisFeeForSelectedCategories" xml:space="preserve">
+    <value>Enable this fee for the selected categories</value>
+  </data>
+  <data name="FeeCategoriesFailure" xml:space="preserve">
+    <value>Update Fee Category Settings Failed</value>
+  </data>
+  <data name="FeeCategoriesSuccess" xml:space="preserve">
+    <value>Fee Category Settings Updated</value>
+  </data>
+  <data name="LineageString_FeeCategories" xml:space="preserve">
+    <value>Billing &amp; Fees &amp;gt; Fee Categories</value>
+  </data>
+  <data name="NoCategoriesCurrentlySelected" xml:space="preserve">
+    <value>(No categories currently selected.)</value>
+  </data>
+  <data name="template_AnswerPublicListingQuestion" xml:space="preserve">
+    <value>Answer Public Listing Question</value>
+  </data>
+  <data name="template_AnswerPublicListingQuestion_Help" xml:space="preserve">
+    <value>Notify user that a  public listing question has been answered</value>
+  </data>
+  <data name="template_AnswerPublicListingQuestion_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_AskPublicListingQuestion" xml:space="preserve">
+    <value>Ask Public Listing Question</value>
+  </data>
+  <data name="template_AskPublicListingQuestion_Help" xml:space="preserve">
+    <value>Notify seller that a new public listing question has been posted</value>
+  </data>
+  <data name="template_AskPublicListingQuestion_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="AddNewContentPage" xml:space="preserve">
+    <value>Add New Content Page</value>
+  </data>
+  <data name="AssignedFields" xml:space="preserve">
+    <value>Assigned Fields</value>
+  </data>
+  <data name="AvailableFields" xml:space="preserve">
+    <value>Available Fields</value>
+  </data>
+  <data name="BackToCategoryList" xml:space="preserve">
+    <value>Back to All Categories</value>
+  </data>
+  <data name="CurrentFaviconFile" xml:space="preserve">
+    <value>Current Favicon File</value>
+  </data>
+  <data name="CurrentLogoFile" xml:space="preserve">
+    <value>Current Logo File</value>
+  </data>
+  <data name="SaveConfiguration" xml:space="preserve">
+    <value>Save Configuration</value>
+  </data>
+  <data name="SaveName" xml:space="preserve">
+    <value>Save Name</value>
+  </data>
+  <data name="AddNewStates" xml:space="preserve">
+    <value>Add New States/Regions</value>
+  </data>
+  <data name="SelectRegionalLanguage" xml:space="preserve">
+    <value>Select Regional Language</value>
+  </data>
+  <data name="EmailOptIn" xml:space="preserve">
+    <value>Email Opt-In \ Newsletter</value>
+  </data>
+  <data name="AdjustInvoice" xml:space="preserve">
+    <value>Adjust Invoice</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="AddNewContent" xml:space="preserve">
+    <value>Add New Content Page</value>
+  </data>
+  <data name="ApplyAddress" xml:space="preserve">
+    <value>Apply Address to Invoice</value>
+  </data>
+  <data name="BackgroundProcessing" xml:space="preserve">
+    <value>Background Processing</value>
+  </data>
+  <data name="BannerDisplayInfo" xml:space="preserve">
+    <value> (Banner display below may appear smaller than actual size.)</value>
+  </data>
+  <data name="BannerImage" xml:space="preserve">
+    <value>Banner Image</value>
+  </data>
+  <data name="EmailTemplateName" xml:space="preserve">
+    <value>Email Template Name</value>
+  </data>
+  <data name="ListingDeletion" xml:space="preserve">
+    <value>Listing Data Cleanup</value>
+  </data>
+  <data name="NoResults" xml:space="preserve">
+    <value>No Results</value>
+  </data>
+  <data name="OldListingDeletion" xml:space="preserve">
+    <value>Cleanup/Delete Processing</value>
+  </data>
+  <data name="PageName_Help" xml:space="preserve">
+    <value>Content Name may only contain alpha numeric characters, dashes, and underscores.</value>
+  </data>
+  <data name="QuickAccessMenu" xml:space="preserve">
+    <value>Quick Access</value>
+  </data>
+  <data name="SaveContent" xml:space="preserve">
+    <value>Save Content</value>
+  </data>
+  <data name="Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="AddStates" xml:space="preserve">
+    <value>Add States / Regions</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="DeleteSelected" xml:space="preserve">
+    <value>Delete Selected</value>
+  </data>
+  <data name="IncrementHelp" xml:space="preserve">
+    <value>&lt;p&gt;Bid increments determine the &lt;em&gt;minimum&lt;/em&gt; valid bid amount a user may enter when placing a bid on an auction.&lt;/p&gt;&lt;p&gt;A user may bid any amount equal to or greater than the (Current Price) + (Bid Increment).&lt;/p&gt;&lt;p&gt;Increments are applied at each 'price level' up to the next defined 'price level'.&lt;/p&gt;</value>
+  </data>
+  <data name="SaveAuctionSettings" xml:space="preserve">
+    <value>Save Auction Configuration</value>
+  </data>
+  <data name="SaveBidIncrements" xml:space="preserve">
+    <value>Save Bid Increments</value>
+  </data>
+  <data name="SaveTemplate" xml:space="preserve">
+    <value>Save Template</value>
+  </data>
+  <data name="SelectCultureToEdit" xml:space="preserve">
+    <value>Select Culture To Edit</value>
+  </data>
+  <data name="Template" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="AddShippingService_Help" xml:space="preserve">
+    <value>Clicking a link below will add additional shipping options for that provider.</value>
+  </data>
+  <data name="AvailableShippingMethods" xml:space="preserve">
+    <value>Enabled Shipping Services</value>
+  </data>
+  <data name="FullList" xml:space="preserve">
+    <value>Full List</value>
+  </data>
+  <data name="NewShippingService" xml:space="preserve">
+    <value>New Shipping Service</value>
+  </data>
+  <data name="SaveShippingMethods" xml:space="preserve">
+    <value>Save Shipping Methods</value>
+  </data>
+  <data name="SaveShippingOptions" xml:space="preserve">
+    <value>Save Shipping Options</value>
+  </data>
+  <data name="SaveShippingServices" xml:space="preserve">
+    <value>Save Shipping Services</value>
+  </data>
+  <data name="ShowFilterOptions" xml:space="preserve">
+    <value>Show Filters</value>
+  </data>
+  <data name="AddOption" xml:space="preserve">
+    <value>Add Option</value>
+  </data>
+  <data name="CharactersLeft" xml:space="preserve">
+    <value>characters left</value>
+  </data>
+  <data name="CurrentOptions" xml:space="preserve">
+    <value>Current Options</value>
+  </data>
+  <data name="AccountStatus" xml:space="preserve">
+    <value>Account Status</value>
+  </data>
+  <data name="FeePercent" xml:space="preserve">
+    <value>Fee Percent</value>
+  </data>
+  <data name="CreateCustomField" xml:space="preserve">
+    <value>Create Field</value>
+  </data>
+  <data name="Last4" xml:space="preserve">
+    <value>Last 4#</value>
+  </data>
+  <data name="BOTTOM" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="DomesticDHLOptions" xml:space="preserve">
+    <value>Domestic DHL Options</value>
+  </data>
+  <data name="DomesticFedexOptions" xml:space="preserve">
+    <value>Domestic Fedex Options</value>
+  </data>
+  <data name="DomesticUPSOptions" xml:space="preserve">
+    <value>Domestic UPS Options</value>
+  </data>
+  <data name="DomesticUSPSOptions" xml:space="preserve">
+    <value>Domestic USPS Options</value>
+  </data>
+  <data name="InternationalDHLOptions" xml:space="preserve">
+    <value>International DHL Options</value>
+  </data>
+  <data name="InternationalFedexOptions" xml:space="preserve">
+    <value>International Fedex Options</value>
+  </data>
+  <data name="InternationalUPSOptions" xml:space="preserve">
+    <value>International UPS Options</value>
+  </data>
+  <data name="InternationalUSPSOptions" xml:space="preserve">
+    <value>International USPS Options</value>
+  </data>
+  <data name="LEFT" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="NoBannersDisplay" xml:space="preserve">
+    <value>No Banners To Display</value>
+  </data>
+  <data name="SaveDisplayOptions" xml:space="preserve">
+    <value>Save Display Options</value>
+  </data>
+  <data name="TOP" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="FeeStatus" xml:space="preserve">
+    <value>Fee Status:</value>
+  </data>
+  <data name="OopsGoBack" xml:space="preserve">
+    <value>Oops, Go Back</value>
+  </data>
+  <data name="YesUndoChanges" xml:space="preserve">
+    <value>Yes, Undo Changes</value>
+  </data>
+  <data name="ChangeAddress" xml:space="preserve">
+    <value>Change Address</value>
+  </data>
+  <data name="SaleInvoice" xml:space="preserve">
+    <value>Sale Invoice</value>
+  </data>
+  <data name="ResetSignalR" xml:space="preserve">
+    <value>Reset SignalR</value>
+  </data>
+  <data name="ResetSignalRSuccess" xml:space="preserve">
+    <value>SignalR Conversations Successfully Reset</value>
+  </data>
+  <data name="ResetSignalR_Help" xml:space="preserve">
+    <value>Ends all SQL Service Broker conversations and re-initializes the GetCurrentTime Timer Service</value>
+  </data>
+  <data name="LastLineitemRemovedInvoiceDeleted" xml:space="preserve">
+    <value>Last line item removed: Invoice successfully deleted.</value>
+  </data>
+  <data name="CopySiteFeesStripeCredentialsFailure" xml:space="preserve">
+    <value>Copy Site Stripe Credentials failed</value>
+  </data>
+  <data name="CopySiteFeesStripeCredentialsSuccess" xml:space="preserve">
+    <value>Copied Site Stripe credentials for use with sales payments for this user</value>
+  </data>
+  <data name="DisconnectSiteFeesStripeCredentialsFailure" xml:space="preserve">
+    <value>Disconnect Site Stripe Credentials failed</value>
+  </data>
+  <data name="DisconnectSiteFeesStripeCredentialsSuccess" xml:space="preserve">
+    <value>Stripe Credentials Deleted</value>
+  </data>
+  <data name="UseSiteFeeStripeAccount" xml:space="preserve">
+    <value>Use Site Stripe Credentials</value>
+  </data>
+  <data name="toggleNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="toggleYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="fontSizeCharacter" xml:space="preserve">
+    <value>A</value>
+    <comment>text character applied to the font size buttons within the admin control panel reports</comment>
+  </data>
+  <data name="SystemCheck" xml:space="preserve">
+    <value>System Check</value>
+  </data>
+  <data name="CMSContent" xml:space="preserve">
+    <value>Custom Content Pages</value>
+  </data>
+  <data name="CreateAccount" xml:space="preserve">
+    <value>Create User Account</value>
+  </data>
+  <data name="CSVImport" xml:space="preserve">
+    <value>CSV Import</value>
+  </data>
+  <data name="EmailTemplates" xml:space="preserve">
+    <value>Email Templates</value>
+  </data>
+  <data name="ManageBanners" xml:space="preserve">
+    <value>Manage Banners</value>
+  </data>
+  <data name="PaidFees" xml:space="preserve">
+    <value>Paid Fee Invoices</value>
+  </data>
+  <data name="UnpaidFees" xml:space="preserve">
+    <value>Unpaid Site Fees</value>
+  </data>
+  <data name="IncludeInSalesReport" xml:space="preserve">
+    <value>Include in Sales Reports</value>
+  </data>
+  <data name="IncludeInSalesReport_Help" xml:space="preserve">
+    <value>If checked, this custom field will be included as a column in Sales Transaction Report CSV exports.&lt;br&gt;NOTE: This field will only be included in the "My Account" Sales Report CSV export if Visibility is also set to "Owner" or lower.</value>
+  </data>
+  <data name="ContentArea" xml:space="preserve">
+    <value>Content Area</value>
+  </data>
+  <data name="DefaultEventBidIncrements" xml:space="preserve">
+    <value>Default Event Bid Increments</value>
+  </data>
+  <data name="IncludeInSalesReportAsBuyer" xml:space="preserve">
+    <value>Include In Sales Reports (Buyer)</value>
+  </data>
+  <data name="IncludeInSalesReportAsBuyer_Help" xml:space="preserve">
+    <value>If checked, this custom field will be included as the buyer of a transaction in Sales Transaction Report CSV exports.&lt;br&gt;NOTE: This field will only be included in the "My Account" Sales Report CSV export if Visibility is also set to "Owner" or lower.</value>
+  </data>
+  <data name="IncludeInSalesReportAsSeller" xml:space="preserve">
+    <value>Include In Sales Reports (Seller)</value>
+  </data>
+  <data name="IncludeInSalesReportAsSeller_Help" xml:space="preserve">
+    <value>If checked, this custom field will be included as the seller of a transaction in Sales Transaction Report CSV exports.&lt;br&gt;NOTE: This field will not be included in the "My Account" Sales Report.</value>
+  </data>
+  <data name="IncludeOnInvoiceAsBuyer" xml:space="preserve">
+    <value>Include On Invoice (Buyer)</value>
+  </data>
+  <data name="IncludeOnInvoiceAsBuyer_Help" xml:space="preserve">
+    <value>If checked, this custom field will be included with other buyer information on sales invoices.</value>
+  </data>
+  <data name="IncludeOnInvoiceAsSeller" xml:space="preserve">
+    <value>Include On Invoice (Seller)</value>
+  </data>
+  <data name="IncludeOnInvoiceAsSeller_Help" xml:space="preserve">
+    <value>If checked, this custom field will be included with other seller information on sales invoices.</value>
+  </data>
+  <data name="EmailTemplatesSuccessfullyReset" xml:space="preserve">
+    <value>All email templates have been successfully reset to default values</value>
+  </data>
+  <data name="ResetEmailTemplates" xml:space="preserve">
+    <value>Reset Email Templates</value>
+  </data>
+  <data name="ResetEmailTemplatesWarning" xml:space="preserve">
+    <value>You are about to reset all email templates for all cultures.  Note: this will not affect the 'Email Header' or 'Email Footer' templates.</value>
+  </data>
+  <data name="ResetEmailTemplatesWarning_Title" xml:space="preserve">
+    <value>Reset Email Templates Confirmation</value>
+  </data>
+  <data name="ResetEmailTemplates_Help" xml:space="preserve">
+    <value>Deletes all email template content for all cultures and restores the default subject and body for each</value>
+  </data>
+  <data name="EventAdminSummaryCountActiveListings" xml:space="preserve">
+    <value>Active Lots</value>
+  </data>
+  <data name="EventAdminSummaryCountAllListings" xml:space="preserve">
+    <value>Total Lots</value>
+  </data>
+  <data name="EventAdminSummaryCountListingsWithTransactions" xml:space="preserve">
+    <value>Lots with Bids/Purchases</value>
+  </data>
+  <data name="EventAdminSummaryCountRecentlySignedInUsers" xml:space="preserve">
+    <value>Recently Signed In Users</value>
+  </data>
+  <data name="EventAdminSummaryCountRegisteredUsers" xml:space="preserve">
+    <value>Registered Users</value>
+  </data>
+  <data name="template_CounterOfferAccepted_Seller" xml:space="preserve">
+    <value>Counteroffer Accepted</value>
+  </data>
+  <data name="template_CounterOfferAccepted_Seller_Help" xml:space="preserve">
+    <value>Notify the author of a counteroffer that it has been accepted</value>
+  </data>
+  <data name="template_CounterOfferAccepted_Seller_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_CounterOfferConfirmation_Seller" xml:space="preserve">
+    <value>Counteroffer Confirmation</value>
+  </data>
+  <data name="template_CounterOfferConfirmation_Seller_Help" xml:space="preserve">
+    <value>Notify the author of a counteroffer that it has been sent</value>
+  </data>
+  <data name="template_CounterOfferConfirmation_Seller_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_CounterOfferReceived_Buyer" xml:space="preserve">
+    <value>Counteroffer Received</value>
+  </data>
+  <data name="template_CounterOfferReceived_Buyer_Help" xml:space="preserve">
+    <value>Notify a user that they have received a counteroffer</value>
+  </data>
+  <data name="template_CounterOfferReceived_Buyer_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_CounterOfferRejected_Seller" xml:space="preserve">
+    <value>Counteroffer Rejected</value>
+  </data>
+  <data name="template_CounterOfferRejected_Seller_Help" xml:space="preserve">
+    <value>Notify the author of a counteroffer that it has been declined</value>
+  </data>
+  <data name="template_CounterOfferRejected_Seller_ToWhom" xml:space="preserve">
+    <value>user</value>
+  </data>
+  <data name="template_OfferAccepted_Buyer" xml:space="preserve">
+    <value>Offer Accepted</value>
+  </data>
+  <data name="template_OfferAccepted_Buyer_Help" xml:space="preserve">
+    <value>Notify buyer their offer has been accepted</value>
+  </data>
+  <data name="template_OfferAccepted_Buyer_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="template_OfferConfirmation_Buyer" xml:space="preserve">
+    <value>Offer Confirmation</value>
+  </data>
+  <data name="template_OfferConfirmation_Buyer_Help" xml:space="preserve">
+    <value>Notify buyer their offer has been sent</value>
+  </data>
+  <data name="template_OfferConfirmation_Buyer_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="template_OfferReceived_Seller" xml:space="preserve">
+    <value>Offer Received</value>
+  </data>
+  <data name="template_OfferReceived_Seller_Help" xml:space="preserve">
+    <value>Notify seller they have received an offer</value>
+  </data>
+  <data name="template_OfferReceived_Seller_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="template_OfferRejected_Buyer" xml:space="preserve">
+    <value>Offer Rejected</value>
+  </data>
+  <data name="template_OfferRejected_Buyer_Help" xml:space="preserve">
+    <value>Notify buyer their offer has been declined</value>
+  </data>
+  <data name="template_OfferRejected_Buyer_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="OnlineHelpAndDocs" xml:space="preserve">
+    <value>Online Help and Admin Docs</value>
+  </data>
+  <data name="ClearCacheSuccess" xml:space="preserve">
+    <value>Cached Data Successfully Cleared</value>
+  </data>
+  <data name="template_RequestPublishEvent" xml:space="preserve">
+    <value>Request Publish Event</value>
+  </data>
+  <data name="template_RequestPublishEvent_Help" xml:space="preserve">
+    <value>Notify admin that a seller's event is ready to publish</value>
+  </data>
+  <data name="template_RequestPublishEvent_ToWhom" xml:space="preserve">
+    <value>admin</value>
+  </data>
+  <data name="AuthNetEnabled_CredentialsNeeded" xml:space="preserve">
+    <value>Authorize.Net was successfully enabled.  Please enter required values below.</value>
+  </data>
+  <data name="StripeEnabled_CredentialsNeeded" xml:space="preserve">
+    <value>Stripe was successfully enabled.  Please enter required values below.</value>
+  </data>
+  <data name="BuyerID" xml:space="preserve">
+    <value>Buyer ID</value>
+  </data>
+  <data name="ImportFeedbacks" xml:space="preserve">
+    <value>Import Feedback</value>
+  </data>
+  <data name="ImportFeedbacksMainBlurb" xml:space="preserve">
+    <value>Use this form to import rwAuction Pro v7.0 feedback from the database specified in web.config.&lt;br&gt;
+&lt;br&gt;
+Note 1: You must import Users before feedback can be imported.&lt;br&gt;
+Note 2: Using this function more than once will import duplicate feedback.&lt;br&gt;
+&lt;br&gt;
+Click "Import Feedback" to continue...</value>
+  </data>
+  <data name="LineageString_ImportFeedbacks" xml:space="preserve">
+    <value>Users &gt; Import Feedback</value>
+  </data>
+  <data name="FeedbacksAdded" xml:space="preserve">
+    <value>Records Added</value>
+  </data>
+  <data name="FeedbacksFound" xml:space="preserve">
+    <value>Records Found</value>
+  </data>
+  <data name="FeedbacksSkipped" xml:space="preserve">
+    <value>Records Skipped</value>
+  </data>
+  <data name="LineageString_EventActivityReport" xml:space="preserve">
+    <value>Reports &amp;gt; Event Activity</value>
+  </data>
+  <data name="ClickAnyEventToSelect" xml:space="preserve">
+    <value>Click Any Event To Select...</value>
+  </data>
+  <data name="EventActivity_X_csv" xml:space="preserve">
+    <value>EventActivity_{0}.csv</value>
+    <comment>{0} is an Event ID or "All"</comment>
+  </data>
+  <data name="SelectEventFromList" xml:space="preserve">
+    <value>Select Event From List</value>
+  </data>
+  <data name="template_InvoicePaid_Buyer" xml:space="preserve">
+    <value>Sales Invoice Paid</value>
+  </data>
+  <data name="template_InvoicePaid_Buyer_Help" xml:space="preserve">
+    <value>Notify buyer that payment has been received for the specified invoice</value>
+  </data>
+  <data name="template_InvoicePaid_Buyer_ToWhom" xml:space="preserve">
+    <value>buyer</value>
+  </data>
+  <data name="ActivityReportFinalStatus_NoBids" xml:space="preserve">
+    <value>Unsold - no bids</value>
+  </data>
+  <data name="ActivityReportFinalStatus_Successful" xml:space="preserve">
+    <value>Sold</value>
+  </data>
+  <data name="ActivityReportFinalStatus_Unsuccessful" xml:space="preserve">
+    <value>Unsold - reserve not met</value>
+  </data>
+  <data name="template_InvoicePaid_Seller" xml:space="preserve">
+    <value>Sales Invoice Paid</value>
+  </data>
+  <data name="template_InvoicePaid_Seller_Help" xml:space="preserve">
+    <value>Notify seller that payment has been received for the specified invoice</value>
+  </data>
+  <data name="template_InvoicePaid_Seller_ToWhom" xml:space="preserve">
+    <value>seller</value>
+  </data>
+  <data name="Last2Days" xml:space="preserve">
+    <value>Last 2 days</value>
+  </data>
+  <data name="Last2Hours" xml:space="preserve">
+    <value>Last 2 hours</value>
+  </data>
+  <data name="Last30Days" xml:space="preserve">
+    <value>Last 30 days</value>
+  </data>
+  <data name="Last7Days" xml:space="preserve">
+    <value>Last 7 days</value>
+  </data>
+  <data name="NowShowing" xml:space="preserve">
+    <value>Now Showing: {0}</value>
+    <comment>{0} is a date range string</comment>
+  </data>
+  <data name="ShowHideConfguration" xml:space="preserve">
+    <value>confguration</value>
+  </data>
+  <data name="ShowHideDateTimeFilters" xml:space="preserve">
+    <value>date range filters</value>
+  </data>
+  <data name="ShowHideHistogram" xml:space="preserve">
+    <value>histogram</value>
+  </data>
+  <data name="UseThisDateRange" xml:space="preserve">
+    <value>view entries in this date range</value>
+  </data>
+  <data name="Errors" xml:space="preserve">
+    <value>Errors</value>
+  </data>
+  <data name="Warnings" xml:space="preserve">
+    <value>Warnings</value>
+  </data>
+  <data name="ArchivedEventDataCleanup" xml:space="preserve">
+    <value>Archived Event Data Cleanup</value>
+  </data>
+  <data name="DataCleanup_DeleteArchivedEvents_Help" xml:space="preserve">
+    <value>If Enabled: Archived Events and associated lots older than the specified number of days will automatically be removed from the system.</value>
+  </data>
+  <data name="DeleteArchivedEventsNow_Help" xml:space="preserve">
+    <value>Permanently deletes archived events and associated lots and images older than {0} days</value>
+  </data>
+  <data name="DeleteEventsClosedMoreThan" xml:space="preserve">
+    <value>Delete events/listings closed more than</value>
+  </data>
+  <data name="DeleteEventsNow" xml:space="preserve">
+    <value>Delete Archived Events Now</value>
+  </data>
+  <data name="DeleteEventsWarning_Line1" xml:space="preserve">
+    <value>You are about to delete all archived events older than {0} days.</value>
+  </data>
+  <data name="DeleteEventsWarning_Line1_Auto" xml:space="preserve">
+    <value>You are about to enable automatically deleting archived events older than {0} days every day at {1}.</value>
+  </data>
+  <data name="DeleteEventsWarning_Line1_IncludingSuccessful" xml:space="preserve">
+    <value>You are about to delete all archived events older than {0} days, including all associated lots.</value>
+  </data>
+  <data name="DeleteEventsWarning_Line2" xml:space="preserve">
+    <value>This operation cannot be undone.</value>
+  </data>
+  <data name="DeleteEventsWarning_Line3" xml:space="preserve">
+    <value>This will permanently remove all old archived events, including bid and lot data, from the database and will also permanently delete the associated event and lot images. These events and lots will no longer appear in any lists and will not be available to view or relist.</value>
+  </data>
+  <data name="EventDeletionConfirmation_Title" xml:space="preserve">
+    <value>Archived Event Deletion Confirmation</value>
+  </data>
+  <data name="IncludeDraftListings" xml:space="preserve">
+    <value>Include Draft Listing Data</value>
+  </data>
+  <data name="IncludeDraftListingsAndLots" xml:space="preserve">
+    <value>Include Draft Listing/Lot Data</value>
+  </data>
+  <data name="IncludeSuccessfulLots" xml:space="preserve">
+    <value>Include Successful Listing/Lot Data</value>
+  </data>
+  <data name="ProcessSalePayments" xml:space="preserve">
+    <value>Process Payments</value>
+  </data>
+  <data name="ProcessSalePayments_Help" xml:space="preserve">
+    <value>Clicking this button will attempt to charge the card on file for all payable sales invoices.</value>
+  </data>
+  <data name="SalesPreferencesFailure" xml:space="preserve">
+    <value>Sales Payment Options Update Failed</value>
+  </data>
+  <data name="SalesPreferencesSuccess" xml:space="preserve">
+    <value>Sales Payment Options Successfully Updated</value>
+  </data>
+  <data name="ActivityReportFinalStatus_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="CustomReportLineageString" xml:space="preserve">
+    <value>Reports &gt; {0}</value>
+  </data>
+  <data name="GetRecentListings" xml:space="preserve">
+    <value>Recent Listings</value>
+  </data>
+  <data name="ForPricesAbove" xml:space="preserve">
+    <value>For prices at or above...</value>
+  </data>
+  <data name="BuyerEmail" xml:space="preserve">
+    <value>Buyer Email</value>
+  </data>
+</root>

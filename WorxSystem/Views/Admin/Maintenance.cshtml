@@ -1,0 +1,479 @@
+﻿@model List<CustomProperty>
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    var demoEnabled = SiteClient.DemoEnabled;
+    ViewBag.PageName = Html.AdminResource("LineageString_Maintenance");
+
+    bool usingSSB = false;
+    try
+    {
+        var _queueManager = RainWorx.FrameWorx.Unity.UnityResolver.Get<RainWorx.FrameWorx.Queueing.IQueueManager>();
+        usingSSB = _queueManager.GetType() == typeof(RainWorx.FrameWorx.Queueing.SQLServiceBroker) || _queueManager.GetType() == typeof(RainWorx.FrameWorx.Queueing.SimpleSSB);
+    }
+    catch (Exception)
+    {
+        //ignore this exception, just a test for SQL Service Broker usage
+    }
+}
+@section head {
+    <style>
+        .DaysInput {
+            width: 45px;
+            text-align: center;
+        }
+
+        .InputSection {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .InputGroup {
+            float: left;
+            margin-right: 10px;
+        }
+
+        .ToolTipGroup {
+            width: 25px;
+            float: left;
+        }
+
+        .DemoDisabledIcon {
+            float: left;
+        }
+
+        .InputSubSection {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .TimeInput {
+            width: 75px;
+        }
+
+        #DeleteListingsDialog {
+            text-align: left;
+            font-size: 80%;
+        }
+
+        #AutoDeleteListingsDialog {
+            text-align: left;
+            font-size: 80%;
+        }
+
+        #AdvancedMaintenanceFormInputs {
+            background: #f7f7f7;
+            padding: 5px;
+            border-top: 1px solid #ccc;
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+        }
+
+        .SaveButtonSection {
+            background: #e7e7e7;
+            padding: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+        }
+
+        #DeleteListingsNow {
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            @*function ToggleAllOtherInputs() {
+                if ($("#@SiteProperties.DataCleanup_Enabled").prop("checked")) {
+                    $("#AllOtherDataOptions").find("input").prop("disabled", false);
+                } else {
+                    $("#AllOtherDataOptions").find("input").prop("disabled", true);
+                }
+            }
+            $("#@SiteProperties.DataCleanup_Enabled").click(function () { ToggleAllOtherInputs(); });
+            ToggleAllOtherInputs();*@
+            $(".ToolTipGroup").on("mouseover", function () { $(this).addClass("ToolTip2_Hover").removeClass("ToolTip2"); });
+            $(".ToolTipGroup").on("mouseout", function () { $(this).addClass("ToolTip2").removeClass("ToolTip2_Hover"); });
+
+            if ($(".DemoDisabledIcon").length > 0) {
+                $("input").prop("disabled", true);
+                $("#Save").addClass("DisabledButton").removeClass("DefaultButton");
+                $("#DeleteListingsNow").addClass("DisabledButton").removeClass("DefaultButton").prop("disabled", true);
+            }
+
+
+            // [Delete Listings Now] button click
+            $("#DeleteListingsNow").click(function () {
+                var deleteUrl = "@Html.GetActionUrl(MVC.DeleteListingsNowAction).ToMvcHtmlString().ToJavascriptSafeString()";
+                @{
+                    HtmlString delWarningTitle;
+                    HtmlString delWarningLine1;
+                    HtmlString delWarningLine2;
+                    HtmlString delWarningLine3;
+                    if (SiteClient.EnableEvents)
+                    {
+                        delWarningTitle = Html.AdminResource("EventDeletionConfirmation_Title").ToJavascriptSafeString();
+                        if (SiteClient.BoolSetting(SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful))
+                        {
+                            delWarningLine1 = Html.AdminResource("DeleteEventsWarning_Line1_IncludingSuccessful",
+                                                SiteClient.IntSetting(SiteProperties.DataCleanup_DeleteListings_DaysOld)).ToJavascriptSafeString();
+                        }
+                        else
+                        {
+                            delWarningLine1 = Html.AdminResource("DeleteEventsWarning_Line1",
+                                                SiteClient.IntSetting(SiteProperties.DataCleanup_DeleteListings_DaysOld)).ToJavascriptSafeString();
+                        }
+                        delWarningLine2 = Html.AdminResource("DeleteEventsWarning_Line2").ToJavascriptSafeString();
+                        delWarningLine3 = Html.AdminResource("DeleteEventsWarning_Line3").ToJavascriptSafeString();
+                    }
+                    else // if (!SiteClient.EnableEvents)
+                    {
+                        delWarningTitle = Html.AdminResource("ListingDeletionConfirmation_Title").ToJavascriptSafeString();
+                        if (SiteClient.BoolSetting(SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful))
+                        {
+                            delWarningLine1 = Html.AdminResource("DeleteListingsWarning_Line1_IncludingSuccessful",
+                                                SiteClient.IntSetting(SiteProperties.DataCleanup_DeleteListings_DaysOld)).ToJavascriptSafeString();
+                        }
+                        else
+                        {
+                            delWarningLine1 = Html.AdminResource("DeleteListingsWarning_Line1",
+                                                SiteClient.IntSetting(SiteProperties.DataCleanup_DeleteListings_DaysOld)).ToJavascriptSafeString();
+                        }
+                        delWarningLine2 = Html.AdminResource("DeleteListingsWarning_Line2").ToJavascriptSafeString();
+                        delWarningLine3 = Html.AdminResource("DeleteListingsWarning_Line3").ToJavascriptSafeString();
+                    }
+                }
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    cssClass: 'acp-boot-dialog',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @delWarningTitle',
+                    message: ''
+                        + '@delWarningLine1'
+                        + '<br /><br />'
+                        + '<span style="color: #f00; font-weight: bold;">@delWarningLine2</span>'
+                        + '<br /><br />'
+                        + '@delWarningLine3'
+                    ,
+                    buttons: [
+                        {
+                            label: '@Html.AdminResourceString("Delete").ToJavascriptSafeString()',
+                            cssClass: 'btn-danger',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                                document.location = $.htmlDecode(deleteUrl);
+                            }
+                        }, {
+                            label: '@Html.AdminResourceString("Cancel").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            });
+
+            // [Save] button click
+            var saveConfirmed = false;
+            $("#AdvancedMaintenanceSettingsForm").submit(function () {
+                if (!saveConfirmed && $("#@(SiteProperties.DataCleanup_DeleteListings_Enabled):checked").length > 0) {
+
+                @{
+                    HtmlString delNowWarningTitle;
+                    HtmlString delNowWarningLine1;
+                    HtmlString delNowWarningLine2;
+                    HtmlString delNowWarningLine3;
+                    if (SiteClient.EnableEvents)
+                    {
+                        delNowWarningTitle = Html.AdminResource("EventDeletionConfirmation_Title").ToJavascriptSafeString();
+                        if (SiteClient.BoolSetting(SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful))
+                        {
+                            delNowWarningLine1 = Html.AdminResource("DeleteEventsWarning_Line1_Auto",
+                                "<span id=\"DelListingsNewDays\"></span>", "<span id=\"DelListingsNewTime\"></span>").ToJavascriptSafeString();
+                        }
+                        else
+                        {
+                            delNowWarningLine1 = Html.AdminResource("DeleteEventsWarning_Line1_Auto",
+                                "<span id=\"DelListingsNewDays\"></span>", "<span id=\"DelListingsNewTime\"></span>").ToJavascriptSafeString();
+                        }
+                        delNowWarningLine2 = Html.AdminResource("DeleteEventsWarning_Line2").ToJavascriptSafeString();
+                        delNowWarningLine3 = Html.AdminResource("DeleteEventsWarning_Line3").ToJavascriptSafeString();
+                    }
+                    else // if (!SiteClient.EnableEvents)
+                    {
+                        delNowWarningTitle = Html.AdminResource("ListingDeletionConfirmation_Title").ToJavascriptSafeString();
+                        if (SiteClient.BoolSetting(SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful))
+                        {
+                            delNowWarningLine1 = Html.AdminResource("DeleteListingsWarning_Line1_Auto",
+                                "<span id=\"DelListingsNewDays\"></span>", "<span id=\"DelListingsNewTime\"></span>").ToJavascriptSafeString();
+                        }
+                        else
+                        {
+                            delNowWarningLine1 = Html.AdminResource("DeleteListingsWarning_Line1_Auto",
+                                "<span id=\"DelListingsNewDays\"></span>", "<span id=\"DelListingsNewTime\"></span>").ToJavascriptSafeString();
+                        }
+                        delNowWarningLine2 = Html.AdminResource("DeleteListingsWarning_Line2").ToJavascriptSafeString();
+                        delNowWarningLine3 = Html.AdminResource("DeleteListingsWarning_Line3").ToJavascriptSafeString();
+                    }
+                }
+
+                    var saveConfDialog = new BootstrapDialog({
+                        type: 'type-danger',
+                        cssClass: 'acp-boot-dialog',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @delNowWarningTitle',
+                        message: ''
+                            + '@delNowWarningLine1'
+                            + '<br /><br />'
+                            + '<span style="color: #f00; font-weight: bold;">@delNowWarningLine2</span>'
+                            + '<br /><br />'
+                            + '@delNowWarningLine3'
+                        ,
+                        buttons: [
+                            {
+                                label: '@Html.AdminResourceString("Save").ToJavascriptSafeString()',
+                                cssClass: 'btn-danger',
+                                action: function (dialogItself) {
+                                    saveConfirmed = true;
+                                    $("#AdvancedMaintenanceSettingsForm").submit();
+                                }
+                            }, {
+                                label: '@Html.AdminResourceString("Cancel").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                    saveConfDialog.realize();
+                    var saveConfBody = saveConfDialog.getModalBody();
+                    saveConfBody.find("#DelListingsNewDays").html($("#@(SiteProperties.DataCleanup_DeleteListings_DaysOld)").val());
+                    saveConfBody.find("#DelListingsNewTime").html($("#@(SiteProperties.DataCleanup_DeleteListings_DeleteTime)").val());
+                    saveConfDialog.open();
+                    return false;
+                }
+                return true;
+            });
+
+            //Reset Email Templates
+            $("#ResetEmailTemplates").on("click", function (e) {
+                e.preventDefault();
+                var resetUrl = "@Html.GetActionUrl(MVC.ResetAllEmailTemplatesAction).ToMvcHtmlString().ToJavascriptSafeString()";
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    cssClass: 'acp-boot-dialog',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.AdminResourceString("ResetEmailTemplatesWarning_Title").ToJavascriptSafeString()',
+                    message: '@Html.AdminResource("ResetEmailTemplatesWarning").ToJavascriptSafeString()' +
+                            '<br /><br />' +
+                            '@Html.AdminResource("DeleteWarning_CantBeUndone").ToJavascriptSafeString()'
+                    ,
+                    buttons: [
+                        {
+                            label: '@Html.AdminResourceString("Reset").ToJavascriptSafeString()',
+                            cssClass: 'btn-danger',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                                //document.location = $.htmlDecode(resetUrl);
+                                $.post(resetUrl, function (data) {
+                                    if (!data.errors) {
+                                        //$("#alert-placeholder").html('')
+                                        $(".page-header").before(
+                                            '<div class="alert alert-success"><a class="close" onclick="$(this).parents(\'div\').first().slideUp();">×</a>' +
+                                            '@Html.AdminResource("EmailTemplatesSuccessfullyReset")' +
+                                            '</div>');
+                                    } else {
+                                        $("#alert-placeholder").html('<ul class="validation-summary-errors"><li>' + data.errors + '</li></ul>');
+                                    }
+                                });
+                            }
+                        }, {
+                            label: '@Html.AdminResourceString("Cancel").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+            })
+
+        });
+    </script>
+}
+@using (Html.BeginForm(MVC.MaintenanceAction, MVC.AdminController, FormMethod.Post, new { @id = "AdvancedMaintenanceSettingsForm", @class = "form-horizontal" }))
+{
+    <div class="form-group">
+        <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("BackgroundProcessing")</label>
+        <div class="col-xs-10 col-sm-6">
+            @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.ProcessingEnabled).Field);}
+        </div>
+        <div class="col-xs-2">
+            @Html.ToolTipButton(SiteProperties.ProcessingEnabled)
+            @if (demoEnabled)
+            {
+                <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+            }
+        </div>
+        <div class="col-xs-12">@Html.ToolTipContent(SiteProperties.ProcessingEnabled, Html.CustomFieldResource("ProcessingEnabled_Help"))</div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("ClearCache")</label>
+        <div class="col-xs-10 col-sm-6">
+            @Html.ButtonLink(Html.AdminResource("ClearCache"), "ClearCache", null, null, new { @class = "btn btn-default btn-sm" })
+        </div>
+        <div class="col-xs-2">
+            @Html.ToolTipButton("ClearCache_Help")
+        </div>
+        <div class="col-xs-12">@Html.ToolTipContent("ClearCache_Help", Html.AdminResource("ClearCache_Help"))</div>
+    </div>
+    if (usingSSB)
+    {
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("ResetSignalR")</label>
+            <div class="col-xs-10 col-sm-6">
+                @Html.ButtonLink(Html.AdminResource("ResetSignalR"), "ResetSignalR", null, null, new { @class = "btn btn-default btn-sm" })
+            </div>
+            <div class="col-xs-2">
+                @Html.ToolTipButton("ResetSignalR_Help")
+            </div>
+            <div class="col-xs-12">@Html.ToolTipContent("ResetSignalR_Help", Html.AdminResource("ResetSignalR_Help"))</div>
+        </div>
+    }
+    <div class="form-group">
+        <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("ResetEmailTemplates")</label>
+        <div class="col-xs-10 col-sm-6">
+            <a href="#ResetEmailTemplates" class="btn btn-default btn-sm" id="ResetEmailTemplates">@Html.AdminResource("ResetEmailTemplates")</a>
+        </div>
+        <div class="col-xs-2">
+            @Html.ToolTipButton("ResetEmailTemplates_Help")
+        </div>
+        <div class="col-xs-12">@Html.ToolTipContent("ResetEmailTemplates_Help", Html.AdminResource("ResetEmailTemplates_Help"))</div>
+    </div>
+    if (!SiteClient.EnableEvents)
+    {
+        <div class="sub-header">@Html.AdminResource("ListingDeletion")</div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("OldListingDeletion")
+            </label>
+            <div class="col-xs-10 col-sm-6">
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_Enabled).Field);}
+            </div>
+            <div class="col-xs-2">
+                @Html.ToolTipButton(SiteProperties.DataCleanup_DeleteListings_Enabled)
+                @if (demoEnabled)
+                {
+                    <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+            </div>
+            <div class="col-xs-12">@Html.ToolTipContent(SiteProperties.DataCleanup_DeleteListings_Enabled, Html.CustomFieldResource("DataCleanup_DeleteListings_Enabled_Help"))</div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("IncludeSuccessfulListings")
+            </label>
+            <div class="col-xs-10 col-sm-6">
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful).Field);}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("IncludeDraftListings")
+            </label>
+            <div class="col-xs-10 col-sm-6">
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_IncludeDrafts).Field);}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("Schedule")
+            </label>
+            <div class="col-xs-12 col-sm-8">
+                @Html.AdminResource("DeleteListingsClosedMoreThan")
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_DaysOld).Field, new { @class = "form-control input-sm inline-input" });}
+                @Html.AdminResource("DaysAgo")
+                @Html.TextBox(SiteProperties.DataCleanup_DeleteListings_DeleteTime, null, new { @class = "form-control input-sm inline-input" })
+
+                @if (demoEnabled)
+                {
+                    <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+
+                <hr />
+                <small>@Html.AdminResource("DeleteListingsNow_Help", SiteClient.IntSetting(SiteProperties.DataCleanup_DeleteListings_DaysOld)) &nbsp;</small>
+                <p>
+                    <button id="DeleteListingsNow" class="btn btn-default btn-xs">@Html.AdminResource("DeleteListingsNow")</button>
+                    @if (demoEnabled)
+                    {
+                        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                    }
+                </p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="sub-header">@Html.AdminResource("ArchivedEventDataCleanup")</div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("OldListingDeletion")
+            </label>
+            <div class="col-xs-10 col-sm-6">
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_Enabled).Field);}
+            </div>
+            <div class="col-xs-2">
+                @Html.ToolTipButton(SiteProperties.DataCleanup_DeleteListings_Enabled)
+                @if (demoEnabled)
+                {
+                    <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+            </div>
+            <div class="col-xs-12">@Html.ToolTipContent(SiteProperties.DataCleanup_DeleteListings_Enabled, Html.CustomFieldResource("DataCleanup_DeleteArchivedEvents_Help"))</div>
+        </div>
+        @*<div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("IncludeSuccessfulLots")
+            </label>
+            <div class="col-xs-10 col-sm-6">
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful).Field);}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("IncludeDraftListingsAndLots")
+            </label>
+            <div class="col-xs-10 col-sm-6">
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_IncludeDrafts).Field);}
+            </div>
+        </div>*@
+        @Html.Hidden(SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful, SiteClient.BoolSetting(SiteProperties.DataCleanup_DeleteListings_IncludeSuccessful).ToString())
+        @Html.Hidden(SiteProperties.DataCleanup_DeleteListings_IncludeDrafts, SiteClient.BoolSetting(SiteProperties.DataCleanup_DeleteListings_IncludeDrafts).ToString())
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-4 control-label">
+                @Html.AdminResource("Schedule")
+            </label>
+            <div class="col-xs-12 col-sm-8">
+                @Html.AdminResource("DeleteEventsClosedMoreThan")
+                @{Html.RenderCustomField_Admin(Model.First(p => p.Field.Name == SiteProperties.DataCleanup_DeleteListings_DaysOld).Field, new { @class = "form-control input-sm inline-input" });}
+                @Html.AdminResource("DaysAgo")
+                @Html.TextBox(SiteProperties.DataCleanup_DeleteListings_DeleteTime, null, new { @class = "form-control input-sm inline-input" })
+
+                @if (demoEnabled)
+                {
+                    <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                }
+
+                <hr />
+                <small>@Html.AdminResource("DeleteArchivedEventsNow_Help", SiteClient.IntSetting(SiteProperties.DataCleanup_DeleteListings_DaysOld)) &nbsp;</small>
+                <p>
+                    <button id="DeleteListingsNow" class="btn btn-default btn-xs">@Html.AdminResource("DeleteEventsNow")</button>
+                    @if (demoEnabled)
+                    {
+                        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+                    }
+                </p>
+            </div>
+        </div>
+    }
+    <div class="action-panel">
+        <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+    </div>
+}

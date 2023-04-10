@@ -1,0 +1,34 @@
+﻿
+<script>
+    function addFile_PDF(fileName, fileSize, fileType, guid, uri, title) {
+        var container = $("div#filescontainer");
+
+        var newDiv = $('<div class="filecontainer"/>').appendTo(container);
+        $("<input type='hidden' name='media_guid_" + guid + "'/>").appendTo(newDiv).attr("value", guid).attr("class", "pdf-id");
+        $("<input type='hidden' name='media_ordr_" + guid + "'/>").appendTo(newDiv).attr("class", "order");
+        var inlineForm = $('<div class="form-inline"/>').appendTo(newDiv);
+        $('<hr />' +
+            '<div class="form-group col-sm-5">' +
+                '<div class="input-group">' +
+                    '<div class="input-group-btn">' +
+                        '<a href="#" class="btn btn-danger deletefile"><span class="glyphicon glyphicon-remove"></span></a>' +
+                    '</div>' +
+                    '<label class="form-control">' +
+                    '<img src="Content/images/Icons/pdf_icon_24x24.png" height="18" width="18" alt="PDF"/>' + fileName + '</label>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group  col-sm-7">' +
+                '<div class="input-group">' +
+                    '<div class="input-group-addon">@Html.GlobalResource("DisplayName")</div>' +
+                    '<input class="form-control" type="text" id="media_title_' + guid + '" name="media_title_' + guid + '" value="' + title + '" maxlength="50" />' +
+                '</div>' +
+            '</div>').appendTo(inlineForm);
+        $('<div class="clearfix"></div>').appendTo(inlineForm);
+        @*$("<div style='display:inline;'><img style='margin-right:10px;vertical-align:middle;' src='Content/images/Icons/pdf_icon_24x24.png' height='24' width='24' alt='PDF'/>" + fileName + "</div>").appendTo(newDiv);
+            $("<input type='hidden' name='media_guid_" + guid + "'/>").appendTo(newDiv).attr("value", guid).attr("class", "pdf-id");
+            $("<input type='hidden' name='media_ordr_" + guid + "'/>").appendTo(newDiv).attr("class", "order");
+            $("<span>&nbsp;Title:&nbsp;</span>").appendTo(newDiv);
+            $("<input type='text' id='media_title_" + guid + "' name='media_title_" + guid + "' value='" + title + "'/>&nbsp;").appendTo(newDiv).attr("class", "title");
+            $("<a href='#' style='padding-left:10px;' class='deletefile'><img style='vertical-align:middle;' src='Content/images/General/Delete.png' alt='@Html.GlobalResource("Delete")' /></a>").appendTo(newDiv);*@
+    }
+</script>

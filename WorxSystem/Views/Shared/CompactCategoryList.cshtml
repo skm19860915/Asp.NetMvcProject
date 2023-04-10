@@ -1,0 +1,9 @@
+﻿@model List<Category>
+
+@foreach (Category category in Model)
+{
+    @Html.GlobalResource(category.Name)<br />
+}
+
+
+

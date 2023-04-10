@@ -1,0 +1,62 @@
+﻿@model Page<Listing>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Bidding_NotWon")
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+    });
+</script>
+<div class="panel panel-default">
+    @using (Html.BeginForm(new { page = 0 }))
+    {
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-8 form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">@Html.GlobalResource("Sort")</div>
+                    @Html.DropDownList(RainWorx.FrameWorx.Strings.MVC.SortFilterOptions, null, new { @class = "form-control" })
+                    </div>
+                    <input type="submit" id="submitDropDown" class="awe-hidden" />
+                </div>
+        </div>
+    }
+    <div class="heading">
+        <div class="row">
+            <div class="col-sm-2 hidden-xs">
+                <!-- Image container -->
+            </div>
+            <div class="col-sm-7">
+                @Html.GlobalResource("Title") <em>(@Html.GlobalResource("ListingID"))</em>
+                <br />
+                @Html.GlobalResource("FinalPrice") &nbsp;<small><em>(@Html.GlobalResource("StartingPrice"))</em></small>
+            </div>
+            <div class="col-sm-3">
+                @Html.GlobalResource("MyBid")
+                <br />
+                @Html.GlobalResource("EndingDateTime")
+            </div>
+        </div>
+    </div>
+    @foreach (Listing listing in Model.List)
+    {
+        @Html.Partial("Listing_BuyerNoSaleRow", listing)
+    }
+    @if (Model.TotalItemCount == 0)
+    {
+        <p class="no-history">
+            @Html.GlobalResource("NoBiddingHistory")
+        </p>
+    }
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

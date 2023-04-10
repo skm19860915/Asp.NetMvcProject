@@ -1,0 +1,237 @@
+﻿@using System.Configuration
+@model Listing
+
+@{
+    var currentAction = (string)ViewContext.RouteData.Values["action"];
+    var currentController = (string)ViewContext.RouteData.Values["controller"];
+    
+    string visibilityClass = string.Empty;
+
+    if (Model.Status != ListingStatuses.Active)
+    {
+        visibilityClass = "awe-hidden";
+    }
+   @* if (User.Identity.IsAuthenticated)
+    {
+        switch (Model.Status)
+        {
+            case ListingStatuses.Active:
+               if (User.IsInRole("Buyer") && !Model.OwnerUserName.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    //A Buyer...
+                    visibilityClass = string.Empty;
+              }
+                else
+                {
+                    visibilityClass = "awe-hidden";
+                }
+                break;
+            default:
+                visibilityClass = "awe-hidden";
+                break;
+                
+        }
+    }
+    else
+    {
+        if (Model.Status != ListingStatuses.Active)
+        {
+            visibilityClass = "awe-hidden";
+        }
+    }*@ 
+}
+
+<div class="awe-rt-BuyBox @visibilityClass">
+    @Html.LocalizedValidationSummary()
+    @using (Html.BeginForm("ConfirmAction", "Listing", FormMethod.Get, new { id = "actionForm" }))
+    {
+        @Html.Hidden("ListingID", Model.ID)
+        @Html.Hidden("ListingType", Model.Type.Name)
+        @Html.Partial(Model.Type.Name + "ActionBox", Model)
+    }
+</div>
+
+@if (SiteClient.BoolSetting(SiteProperties.AsyncActionProcessing))
+{
+    <script>
+        var failsafe_reload_after_bid_delay_ms = 10000; //default: 10000 = 10 seconds
+        var actionsSubmittedCount = 0;
+        var actionResponsesCount = 0;
+        var confirmationDialog;
+        $(document).ready(function () {
+
+            confirmationDialog = new BootstrapDialog({
+                title: '@Model.Title.ToJavascriptSafeString() &nbsp;<em>(@(Model.Lot != null ? Model.Lot.ID : Model.ID))</em>',
+                message: '<img src="Content/Images/progress-wheel.gif" />',
+                autodestroy: false,
+                closable: false
+            });
+
+            confirmationDialog.realize();
+            confirmationDialog.getModalFooter().hide();
+
+            $(document).on('click', '#modalCancelButton', function (event) {
+                event.preventDefault();
+                $("#BidAmount").val("");//clear bid amount input
+                $('input[name="large-bid-confirmed"]').remove();
+                confirmationDialog.close();
+            });
+
+            $(document).on('click', '#modalConfirmLargeBidButton', function (event) {
+                event.preventDefault();
+                var confBidAmt = $('input[name="ConfBidAmt"]:checked').val();
+                if (confBidAmt) {
+                    //update bid amount if necessary, and re-sumbit
+                    $("#BidAmount").val(confBidAmt);
+                    $("#actionForm")
+                        .append('<input type="hidden" name="large-bid-confirmed" value="1" />')
+                        .submit();
+                }
+            });
+
+            $(document).on('click', '#modalSubmitButton', function (event) {
+                event.preventDefault();
+                var fullurl = "@Html.GetActionUrl("Action", "Listing")" + "?" + $("#actionForm").serialize();
+                confirmationDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+                @if (bool.Parse(ConfigurationManager.AppSettings["ForceAsyncBidWaitForTesting"]))
+                {
+                <text>
+                window.location.replace(fullurl);
+                </text>
+                }
+                else
+                {
+                <text>
+
+                //if a listing action response is not received after 10 seconds for whatever reason, reload the page
+                actionsSubmittedCount++;
+                var expectedResponseCount = actionsSubmittedCount;
+                setTimeout(function () {
+                    //console.log("actionsSubmittedCount, expectedResponseCount, actionResponsesCount: ", actionsSubmittedCount, expectedResponseCount, actionResponsesCount);
+                    if (expectedResponseCount > actionResponsesCount) {
+                    
+                        var connectionStatus = $("#SignalRStatus").children("div").first().attr("title");
+                        write_log({
+                            title: "Bid response too slow",
+                            message: "detail page reloaded"
+                            , "Listing ID": "@Model.ID"
+                            , "URL": document.location.href
+                            , "Timeout MS": failsafe_reload_after_bid_delay_ms
+                            , "UserAgent": navigator.userAgent
+                            , "Actions Submitted": actionsSubmittedCount
+                            , "Action Responses": actionResponsesCount
+                            , "Conneciton Status": connectionStatus
+                        });
+                        //console.log("page reload triggered.");
+                        window.location.reload(true);
+                    }
+                }, failsafe_reload_after_bid_delay_ms);
+
+                $.ajax({
+                    url: fullurl,
+                    cache: false
+                });
+                </text>
+                }
+            });
+
+            $(document).on("SignalR_ListingActionResponse", function (event, data) {
+                if ($.inArray(data.Action_ListingID, interestingListings) < 0) return;
+
+                actionResponsesCount++;
+
+                //clear out all all visible inputs since this action has now been processed
+                $("input[type=number]:visible").val("");
+                $("input[type=text]:visible").val("");
+                $("textarea:visible").val("");
+                $('input[name="large-bid-confirmed"]').remove();
+
+                confirmationDialog.close();
+            });
+
+            $(document).on("SignalR_UpdateListingStatus", function (event, data) {
+                if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+                confirmationDialog.close();
+            });
+
+            $("#actionForm").submit(function (event) {
+                event.preventDefault();
+                var fullurl = $(this).attr("action") + "Modal";
+                confirmationDialog.open();
+                confirmationDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+                $.ajax({
+                    url: fullurl,
+                    type: "get",
+                    cache: false,
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        if (data.indexOf("LOGON_NEEDED") >= 0) {
+                            //not logged in -- redirect
+                            $.cookie("continueActionData", $("#actionForm").serialize(), { path: "/", expires: 1 });
+                            var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                            var logonUrl = "@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController)" + "?returnUrl=" + encodeURIComponent(retUrl);
+                            window.location.replace(logonUrl);
+                        } else if (data.indexOf("CC_NEEDED") >= 0) {
+                            //cedit card req'd -- redirect
+                            $.cookie("continueActionData", $("#actionForm").serialize(), { path: "/", expires: 1 });
+                            var retUrl = "@Html.GetActionUrl(currentAction, currentController)";
+                            var addCardUrl = "@Html.GetActionUrl(MVC.AddCardAction, MVC.AccountController, new { SellerID = Model.Owner.ID })" + "&returnUrl=" + encodeURIComponent(retUrl);
+                            window.location.replace(addCardUrl);
+                        } else {
+                            //proceed with bidding modal
+                            confirmationDialog.getModalBody().html(data).each(function () { AssignModalFormToAjax(); });
+                        }
+                    }
+                });
+            });
+            function AssignModalFormToAjax() {
+                var resultForm = confirmationDialog.getModalBody().find("form");
+                resultForm.submit(function (event) {
+                    event.preventDefault();
+                    confirmationDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+                    $.ajax({
+                        url: resultForm.attr("action"),
+                        type: "post",
+                        async: true,
+                        data: resultForm.serialize(),
+                        success: function (data) {
+                            confirmationDialog.getModalBody().html(data);
+                            AssignModalFormToAjax();
+                        }
+                    });
+                });
+            }
+
+            $(document).on("SignalR_Started", function () {
+                var serializedActionData = $.cookie("continueActionData");
+                if (!(serializedActionData == null || serializedActionData == "")) {
+                    var continueActionData = ParseActionData(serializedActionData.toString());
+                    for (var qiKey in continueActionData) {
+                        var qiValue = continueActionData[qiKey];
+                        $("#actionForm").find("#" + qiKey).val(qiValue);
+                    }
+                    $.cookie('continueActionData', "", { path: '/', expires: 0 });
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                    <text>
+                    $("#actionForm").submit();
+                    </text>
+                    }
+                }
+            });
+
+            function ParseActionData(serializedActionData) {
+                var result = new Array();
+                var kvPairs = serializedActionData.split('&');
+                for (var i = 0; i < kvPairs.length; i++) {
+                    var kvPair = kvPairs[i].split('=');
+                    result[kvPair[0]] = decodeURIComponent(replaceAll(kvPair[1], "+", " "));
+                }
+                return result;
+            }
+
+        });
+
+    </script>
+}

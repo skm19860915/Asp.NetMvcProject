@@ -1,0 +1,546 @@
+﻿@model Page<ReportRow>
+@using RainWorx.FrameWorx.MVC.Models
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+    ViewBag.PageName = Html.AdminResource("LineageString_EventActivityReport");
+    var columnList = (List<ReportColumn>)ViewData["ReportColumns"];
+    const int colsPerRow = 7;
+    int rowsPerRecord = columnList.Sum(rr => rr.ColSpan) / colsPerRow;
+    if (rowsPerRecord * colsPerRow < columnList.Count)
+    {
+        rowsPerRecord++;
+    }
+}
+@section head {
+    <script src="~/Scripts/jquery.doubleScroll.js"></script>
+    <script>
+        var eventNavPageSize = 9;
+        var isSubmitting = false;
+        var eventSelectDialog;
+        $(document).ready(function () {
+            eventSelectDialog = new BootstrapDialog({
+                title: '<span class="glyphicon glyphicon-list-alt"></span>&nbsp; @Html.AdminResourceString("ClickAnyEventToSelect").ToJavascriptSafeString()',
+                message: '<img src="Content/Images/progress-wheel.gif" />',
+                autodestroy: false,
+                closable: true,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+
+            eventSelectDialog.realize();
+            //eventSelectDialog.getModalFooter().hide();
+
+            //run once...
+            $(".hideable-filter").each(function () {
+                //if ($(this).val() != "") {
+                    $(this).show();
+                //}
+            });
+            $("#ShowFilterOptions").addClass("btn-info").removeClass("btn-default");
+
+            //when any filter input is changed, submit the form
+            $(".SubmitOnChange").change(function () {
+                //submit container form
+                if (!isSubmitting) {
+                    isSubmitting = true;
+                    $("#Report1").submit();
+                    return true;
+                }
+                return false;
+            });
+
+            $("#ShowFilterOptions").click(function () {
+                if ($(this).hasClass("btn-default")) {
+                    $(this).removeClass("btn-default").addClass("btn-info");
+                    //$(".hideable-filter").each(function () {
+                    //    if ($(this).val() == "") {
+                    //        $(this).hide();
+                    //    }
+                    //});
+                    $(".hideable-filter").show();
+                }
+                else if ($(this).hasClass("btn-info")) {
+                    $(this).addClass("btn-default").removeClass("btn-info");
+                    //$(".hideable-filter").show();
+                    $(".hideable-filter").each(function () {
+                        if ($(this).val() == "") {
+                            $(this).hide();
+                        }
+                    });
+                }
+            });
+
+            $("#ApplyFilters").show().click(function () {
+                if (!isSubmitting) {
+                    isSubmitting = true;
+                    $("#Report1").submit();
+                }
+                return false;
+            });
+            @{
+                string exportURL = Html.GetActionUrl(MVC.EventActivityReportCSVAction);
+                exportURL += "?" + HttpContext.Current.Request.QueryString;
+            }
+            $("#ExportCSV").show().click(function () {
+                document.location = $.htmlDecode("@exportURL");
+                return false;
+            });
+
+            $(".double-scroll").doubleScroll({ resetOnWindowResize: true });
+
+            $(".re-sort-link").on("click", function (event) {
+                event.preventDefault();
+                var currentSortValue = $("#sort").val();
+                var targetSortValue = $(this).data("columnName");
+                if (currentSortValue == targetSortValue) {
+                    //same column as previous sort, toggle direction
+                    $("#descending").val($("#descending").val() == "True" ? "False" : "True");
+                } else {
+                    $("#sort").val(targetSortValue);
+                    $("#descending").val("False");
+                }
+                $("#Report1").submit();
+            });
+
+            $("#LookUpEvent").on("click", function (event) {
+                event.preventDefault();
+                LoadPageOfEvents(0, eventNavPageSize);
+                eventSelectDialog.open();
+                eventSelectDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+            });
+        });
+
+        function LoadPageOfEvents(pageIndex, pageSize) {
+            $.post("RealTime/GetAllEvents", { page: pageIndex, pageSize: pageSize }, function (data) {
+                var dataArea = eventSelectDialog.getModalBody();
+                if (data.Error) {
+                    dataArea.html('<div class="alert alert-danger">' + data.Error + '</div>');
+                } else {
+                    var eventTable = $('<table class="table" />');
+                    eventTable.append('<tr>'
+                        + '<th>@Html.AdminResourceString("EventID").ToJavascriptSafeString()</th>'
+                        + '<th>@Html.AdminResourceString("Title").ToJavascriptSafeString()</th>'
+                        + '<th>@Html.AdminResourceString("Status").ToJavascriptSafeString()</th></tr>');
+                    for (var i = 0; i < data.Items.length; i++) {
+                        var newRow = $('<tr />');
+                        if (i % 2 == 0) {
+                            newRow.css("background-color", "#f5f5f5");
+                        }
+                        newRow.append(
+                            $('<td />').append($('<a href="#EventSelectionLink" class="EventSelectionLink" onclick="SelectThisEvent(this);return false;" />')
+                                .html(data.Items[i].EventID)
+                                .attr("data-event-id", data.Items[i].EventID)));
+                        newRow.append(
+                            $('<td />').append($('<a href="#EventSelectionLink" class="EventSelectionLink" onclick="SelectThisEvent(this);return false;" />')
+                                .html(data.Items[i].EventTitle)
+                                .attr("data-event-id", data.Items[i].EventID)));
+                        newRow.append(
+                            $('<td />').append($('<a href="#EventSelectionLink" class="EventSelectionLink" onclick="SelectThisEvent(this);return false;" />')
+                                .html(data.Items[i].Status)
+                                .attr("data-event-id", data.Items[i].EventID)));
+                        eventTable.append(newRow);
+                    }
+                    dataArea.html(eventTable);
+                    dataArea.append(GeneratePageLinkElements(new Number(pageIndex), new Number(data.PageCount)))
+
+                }
+            });
+        }
+
+        function GeneratePageLinkElements(currentPage, totalPages) {
+            var pagerlinks = $('<ul class="pagination" />');
+
+            if (totalPages <= 1) {
+                return "";
+            }
+
+            //Start
+            if (currentPage > 0) {
+                pagerlinks.append(EnabledPagerButton(currentPage - 1, "&laquo;"));
+            }
+            else {
+                pagerlinks.append(DisabledPagerButton("&laquo;"));
+            }
+
+            //First 2 Pages
+            if (currentPage >= 2) {
+                pagerlinks.append(EnabledPagerButton(0, "1"));
+                pagerlinks.append(EnabledPagerButton(1, "2"));
+            }
+
+            //Left Partition
+            if (currentPage >= 4) {
+                if (currentPage == 4) {
+                    pagerlinks.append(EnabledPagerButton(Math.floor(currentPage / 2), (Math.floor(currentPage / 2) + 1)));
+                }
+                else if (currentPage == 5) {
+                    pagerlinks.append(EnabledPagerButton(Math.floor(currentPage / 2), (Math.floor(currentPage / 2) + 1)));
+                    pagerlinks.append(EnabledPagerButton(Math.floor(currentPage / 2) + 1, (Math.floor(currentPage / 2) + 2)));
+                }
+                else {
+                    pagerlinks.append(DisabledPagerButton("..."));
+                    pagerlinks.append(EnabledPagerButton(Math.floor(currentPage / 2), (Math.floor(currentPage / 2) + 1)));
+                    pagerlinks.append(DisabledPagerButton("..."));
+                }
+            }
+
+            //Current Page                              
+            if (currentPage != 2 && currentPage != 0) {
+                pagerlinks.append(EnabledPagerButton(currentPage - 1, currentPage));
+            }
+            pagerlinks.append(ActivePagerButton((currentPage + 1)));
+            if (currentPage != (totalPages - 3) && currentPage != (totalPages - 1)) {
+                pagerlinks.append(EnabledPagerButton(currentPage + 1, (currentPage + 2)));
+            }
+
+            //Right Partition
+            if (currentPage <= (totalPages - 5)) {
+                if (totalPages - currentPage == 5) {
+                    pagerlinks.append(EnabledPagerButton(Math.floor((totalPages - currentPage) / 2) + currentPage, (Math.floor((totalPages - currentPage) / 2) + currentPage + 1)));
+                }
+                else if (totalPages - currentPage == 6) {
+                    pagerlinks.append(EnabledPagerButton(Math.floor((totalPages - currentPage) / 2) + currentPage - 1, (Math.floor((totalPages - currentPage) / 2) + currentPage)));
+                    pagerlinks.append(EnabledPagerButton(Math.floor((totalPages - currentPage) / 2) + currentPage, (Math.floor((totalPages - currentPage) / 2) + currentPage + 1)));
+                }
+                else {
+                    pagerlinks.append(DisabledPagerButton("..."));
+                    pagerlinks.append(EnabledPagerButton(Math.floor((totalPages - currentPage) / 2) + currentPage, (Math.floor((totalPages - currentPage) / 2) + currentPage + 1)));
+                    pagerlinks.append(DisabledPagerButton("..."));
+                }
+            }
+
+            //Last 2 Pages
+            if (currentPage < totalPages - 2) {
+                pagerlinks.append(EnabledPagerButton(totalPages - 2, (totalPages - 1)));
+                pagerlinks.append(EnabledPagerButton((totalPages - 1), totalPages));
+            }
+
+            //End
+            if (currentPage < (totalPages - 1)) {
+                pagerlinks.append(EnabledPagerButton(currentPage + 1, "&raquo;"));
+            }
+            else {
+                pagerlinks.append(DisabledPagerButton("&raquo;"));
+            }
+
+            return pagerlinks;
+        }
+
+        function EnabledPagerButton(pageNumber, linkText) {
+            return $('<li />')
+                .append($('<a href="#GoToPage_' + pageNumber + '" data-target-page="' + pageNumber + '" onclick="NavigateToPage(this);return false;" />').html(linkText));
+        }
+
+        function DisabledPagerButton(linkText) {
+            return $('<li />').addClass("disabled")
+                .append($('<a />').html(linkText));
+        }
+
+        function ActivePagerButton(linkText) {
+            return $('<li />').addClass("active")
+                .append($('<a />').html(linkText));
+        }
+
+        function SelectThisEvent(thisLink) {
+            var selectedEventId = $(thisLink).attr("data-event-id");
+            console.log("selectedEventId: ", selectedEventId);
+            $("#EventID").val(selectedEventId);
+            eventSelectDialog.close();
+            if (!isSubmitting) {
+                isSubmitting = true;
+                $("#Report1").submit();
+            }
+            return false;
+        }
+        function NavigateToPage(thisLink) {
+            var targetPage = $(thisLink).attr("data-target-page");
+            console.log("targetPage: ", targetPage);
+            LoadPageOfEvents(targetPage, eventNavPageSize);
+            return false;
+        }
+    </script>
+}
+@section scripts {
+    <script>
+        function resizeText(px) {
+            var reportText = document.getElementById("report");
+            if (reportText.style.fontSize == "") {
+                reportText.style.fontSize = "12px";
+            }
+            reportText.style.fontSize = (px) + "px";
+        }
+</script>
+}
+@{
+    using (Html.BeginForm(MVC.EventActivityReportAction, MVC.AdminController, FormMethod.Get, new { @id = "Report1" }))
+    {
+        <input type="hidden" name="page" value="0" />
+        @Html.Hidden("sort")
+        @Html.Hidden("descending")
+
+        string columnHeaderClass;
+        <div class="group clearfix">
+            <div class="form-inline">
+                <div class="btn-group form-group">
+                    <button class="btn btn-default btn-sm" type="button" id="ShowFilterOptions"><span class="glyphicon glyphicon-filter"></span> @Html.AdminResource("ShowFilterOptions")</button>
+                    <button class="btn btn-default btn-sm" id="ApplyFilters">@Html.AdminResource("ApplyFilters")</button>
+                    @Html.ActionLink(Html.AdminResource("ResetFilters"), MVC.EventActivityReportAction, new { EventID = ViewData["EventID"] }, new { @class = "btn btn-default btn-sm" })
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">@Html.AdminResource("EventID")</span>
+                        @*@Html.DropDownList("isPaid", (SelectList)ViewData["PaidStatusSelectList"], new { @class = "SubmitOnChange form-control input-sm" })*@
+                        @Html.TextBox("EventID", null, new { @class = "form-control input-sm SubmitOnChange" })
+                        <span class="input-group-btn">
+                            <a href="LookUpEvent" id="LookUpEvent" title="@Html.AdminResource("SelectEventFromList")" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <button class="btn btn-default btn-sm" id="ExportCSV">@Html.AdminResource("ExportCSV")</button>
+                <div class="btn-group form-group pull-right" role="group">
+                    <button type="button" class="btn btn-sm btn-default" id="fontSize12" onclick="resizeText(12)">
+                        @Html.AdminResource("fontSizeCharacter")
+                    </button>
+                    <button type="button" class="btn btn-sm btn-default" id="fontSize14" onclick="resizeText(14)">
+                        @Html.AdminResource("fontSizeCharacter")
+                    </button>
+                    <button type="button" class="btn btn-sm btn-default" id="fontSize16" onclick="resizeText(16)">
+                        @Html.AdminResource("fontSizeCharacter")
+                    </button>
+                </div>
+             </div>
+        </div>
+        <div class="panel panel-default report double-scroll">
+            <table class="table table-condensed report report--event-activity" id="report">
+                <thead>
+                    @{
+                        int colListIndex = 0;
+                    }
+                    @for (int ri = 0; ri < rowsPerRecord; ri++)
+                    {
+                        <tr>
+                            @for (int ci = 0; ci < colsPerRow; ci++)
+                            {
+                                int thisReportColIndex = colListIndex++;// (ri * colsPerRow) + ci;
+                                if (thisReportColIndex < columnList.Count)
+                                {
+                                    var thisReportColumn = columnList[thisReportColIndex];
+                                    ci += (thisReportColumn.ColSpan - 1); // increment the col counter if this one is using more than 1 colspan slot
+                                    if (thisReportColumn.IsSortable)
+                                    {
+                                        if ((((string)ViewData["sort"] ?? "") == thisReportColumn.ColumnName))
+                                        {
+                                            columnHeaderClass = "SortableColumn SortHeaderColumn";
+                                        }
+                                        else
+                                        {
+                                            columnHeaderClass = "SortableColumn NonSortHeaderColumn";
+                                        }
+                                        string inputType = thisReportColumn.InputType;
+                                        <th class="@columnHeaderClass" colspan="@thisReportColumn.ColSpan">
+                                            <a class="re-sort-link" data-column-name="@thisReportColumn.ColumnName" href="#ReSortBy_@thisReportColumn.ColumnName">@thisReportColumn.DisplayName</a>
+                                            @if (!string.IsNullOrEmpty(thisReportColumn.InputKey1) && !string.IsNullOrEmpty(thisReportColumn.InputKey2))
+                                            {
+                                                <div class="dual-input clearfix">
+                                                    @if (inputType == ReportArgumentTypes.DateTimeValue)
+                                                    {
+                                                        Html.RenderDateInput(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" });
+                                                        Html.RenderDateInput(thisReportColumn.InputKey2, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" });
+                                                    }
+                                                    else if (inputType == ReportArgumentTypes.DecimalValue)
+                                                    {
+                                                        @Html.TextBox(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                        @Html.TextBox(thisReportColumn.InputKey2, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                    }
+                                                    else if (inputType == ReportArgumentTypes.IntegerValue)
+                                                    {
+                                                        @Html.TextBox(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                        @Html.TextBox(thisReportColumn.InputKey2, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                    }
+                                                </div>
+                                            }
+                                            else if (!string.IsNullOrEmpty(thisReportColumn.InputKey1))
+                                            {
+                                                if (thisReportColumn.InputKey1 == "EventID")
+                                                {
+                                                    @* this input will be rendered at the top instead of inline *@
+                                                }
+                                                else if (inputType == ReportArgumentTypes.BoolValue)
+                                                {
+                                                    @Html.TextBox(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                }
+                                                else if (inputType == ReportArgumentTypes.DateTimeValue)
+                                                {
+                                                    Html.RenderDateInput(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" });
+                                                }
+                                                else if (inputType == ReportArgumentTypes.DecimalValue)
+                                                {
+                                                    @Html.TextBox(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                }
+                                                else if (inputType == ReportArgumentTypes.IntegerValue)
+                                                {
+                                                    @Html.TextBox(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                }
+                                                else if (inputType == ReportArgumentTypes.StringValue)
+                                                {
+                                                    @Html.TextBox(thisReportColumn.InputKey1, null, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                }
+                                                else if (inputType.StartsWith(ReportArgumentTypes.EnumValue))
+                                                {
+                                                    string selectedValue = (string)ViewData[thisReportColumn.InputKey1];
+                                                    var rawEnumOpts = inputType.Split('|');
+                                                    var enumOpts = new List<SelectListItem>();
+                                                    enumOpts.Add(new SelectListItem() {
+                                                        Value = string.Empty,
+                                                        Text = Html.GlobalResourceString("Any"),
+                                                        Selected = string.IsNullOrEmpty(selectedValue)
+                                                    });
+                                                    for(int eoi = 1; eoi < rawEnumOpts.Length; eoi++)
+                                                    {
+                                                        enumOpts.Add(new SelectListItem() {
+                                                            Value = rawEnumOpts[eoi],
+                                                            Text = thisReportColumn.InputKey1 == "FinalStatus" ? Html.AdminResourceString("ActivityReportFinalStatus_" + rawEnumOpts[eoi]) :  rawEnumOpts[eoi],
+                                                            Selected = (rawEnumOpts[eoi] == selectedValue)
+                                                        });
+                                                    }
+                                                    @Html.DropDownList(thisReportColumn.InputKey1, enumOpts, new { @class = "form-control input-sm SubmitOnChange hideable-filter" })
+                                                }
+                                            }
+                                        </th>
+                                    }
+                                    else
+                                    {
+                                        <th colspan="@thisReportColumn.ColSpan">
+                                            @thisReportColumn.DisplayName
+                                        </th>
+                                    }
+                                }
+                                else
+                                {
+                                    <th>&nbsp;</th>
+                                }
+                            }
+                        </tr>
+                    }
+                </thead>
+                @if (Model != null && Model.TotalItemCount > 0)
+                {
+                    foreach (ReportRow reportRecord in Model.List)
+                    {
+                        var values = new Dictionary<string, string>();
+                        var types = new Dictionary<string, string>();
+                        for (int i = 0; i < reportRecord.Names.Count; i++)
+                        {
+                            values.Add(reportRecord.Names[i], reportRecord.Values[i]);
+                            types.Add(reportRecord.Names[i], reportRecord.Types[i]);
+                        }
+                        string currenyCode = values["CurrencyCode"];
+                        colListIndex = 0;
+                        <tbody>
+                            @for (int ri = 0; ri < rowsPerRecord; ri++)
+                            {
+                                <tr>
+                                    @for (int ci = 0; ci < colsPerRow; ci++)
+                                    {
+                                        int thisReportColIndex = colListIndex++;//(ri * colsPerRow) + ci;
+                                        if (thisReportColIndex < columnList.Count)
+                                        {
+                                            var thisReportColumn = columnList[thisReportColIndex];
+                                            string thisColumnType = null;
+                                            string thisColumnValue = null;
+                                            try
+                                            {
+                                                thisColumnType = types[thisReportColumn.ColumnName]; // reportRecord.Types[thisReportColIndex];
+                                                thisColumnValue = values[thisReportColumn.ColumnName]; // reportRecord.Values[thisReportColIndex];
+                                            }
+                                            catch (Exception)
+                                            {
+                                                @("ERROR Missing Key: " + thisReportColumn.ColumnName + "; ")
+                                            }
+
+                                            var thisColumnName = reportRecord.Names[thisReportColIndex];
+                                            ci += (thisReportColumn.ColSpan - 1); // increment the col counter if this one is using more than 1 colspan slot
+                                            <td colspan="@thisReportColumn.ColSpan">
+                                                @if (!string.IsNullOrEmpty(thisColumnValue))
+                                                {
+                                                    if (thisColumnType == ReportValueTypes.BoolValue)
+                                                    {
+                                                        bool boolValue;
+                                                        if (bool.TryParse(thisColumnValue, out boolValue))
+                                                        {
+                                                            @(boolValue ? Html.GlobalResource("Yes") : Html.GlobalResource("No"))
+                                                        }
+                                                    }
+                                                    else if (thisColumnType == ReportValueTypes.DateTimeValue)
+                                                    {
+                                                        DateTime dttmValue;
+                                                        if (DateTime.TryParse(thisColumnValue, out dttmValue))
+                                                        {
+                                                            @Html.LocalDTTM(dttmValue, "G")
+                                                        }
+                                                    }
+                                                    else if (thisColumnType == ReportValueTypes.DecimalValue)
+                                                    {
+                                                        decimal decimalValue;
+                                                        if (decimal.TryParse(thisColumnValue, out decimalValue))
+                                                        {
+                                                            @Html.LocalCurrency(decimalValue, currenyCode)
+                                                        }
+                                                    }
+                                                    else if (thisColumnType == ReportValueTypes.IntegerValue)
+                                                    {
+                                                        @thisColumnValue
+                                                    }
+                                                    else if (thisReportColumn.InputKey1 == "FinalStatus")
+                                                    {
+                                                        @Html.AdminResource("ActivityReportFinalStatus_" + thisColumnValue)
+                                                    }
+                                                    else if (thisColumnType == ReportValueTypes.StringValue)
+                                                    {
+                                                        @thisColumnValue
+                                                    }
+                                                    else if (thisColumnType == ReportValueTypes.UnknownType)
+                                                    {
+                                                        <span>[unkown type:</span>
+                                                        <span>@thisColumnType</span>
+                                                        <span>]</span>
+                                                        @thisColumnValue
+                                                    }
+
+                                                }
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                    }
+                                </tr>
+                            }
+
+                        </tbody>
+                    }
+                } // if (Model != null && Model.TotalItemCount > 0)
+                else
+                {
+                    <tr><td colspan="9" class="no-history">@Html.AdminResource("NoResultsToDisplay")</td></tr>
+                }
+            </table>
+        </div>
+    }
+
+    if (Model != null && Model.TotalPageCount > 1)
+    {
+        //var htmlAttribs = new Dictionary<string, object>
+        Html.RenderPageNumberLinks(Model);//, null, null, null, null, htmlAttribs );
+    }
+}

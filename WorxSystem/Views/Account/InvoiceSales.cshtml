@@ -1,0 +1,354 @@
+﻿@model Page<Invoice>
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string returnUrl = Request.Url.PathAndQuery;
+    string viewFilterOption = (string)((SelectList)ViewData[MVC.ViewFilterOption]).SelectedValue;
+    bool sellerTakesCreditCardPayments = Html.SellerTakesCreditCardPayments(Html.FBOUserName());
+    bool showProcessPaymentsLink = sellerTakesCreditCardPayments;
+}
+@section head {
+    <script>
+        $(document).ready(function () {
+            //when any filter input is changed, submit the form
+            $(".SubmitOnChange").change(function () {
+                //submit container form
+                $(this).parents("form").first().submit();
+                return true;
+            });
+
+            function AtLeastOneRowSelected() {
+                if ($(".row-selection-checkbox:checked").length == 0) {
+                    //alert('@Html.GlobalResourceString("YouMustSelectAtLeastOneListingToProceed")');
+                    BootstrapDialog.show({
+                        type: 'type-warning',
+                        title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                        message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneInvoiceToProceed").ToJavascriptSafeString()',
+                        buttons: [
+                            {
+                                label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                    return false;
+                }
+                return true;
+            }
+
+            $('.checkall').click(function () {
+                $(".row-selection-checkbox").prop("checked", this.checked);
+            });
+
+            // [Mark Paid] - click
+            $('.MarkPaid').click(function () {
+                if (AtLeastOneRowSelected()) {
+                    $('#invoiceSales').attr('action', '@Url.Action("MarkMultipleInvoicesPaid", "Account")');
+                    this.form.submit();
+                }
+                return false;
+            });
+
+            // [Mark Shipped] - click
+            $('.MarkShipped').click(function () {
+                if (AtLeastOneRowSelected()) {
+                    $('#invoiceSales').attr('action', '@Url.Action("MarkMultipleInvoicesShipped", "Account")');
+                    this.form.submit();
+                }
+                return false;
+            });
+
+            // [Archive] - click
+            $(".SetArchived").click(function () {
+                if (AtLeastOneRowSelected()) {
+                    $('#invoiceSales').attr('action', '@Url.Action("MarkMultipleInvoicesArchived", "Account")');
+                    this.form.submit();
+                }
+                return false;
+            });
+
+            //[Email] - click
+            $(".EmailSelected").click(function () {
+                if (AtLeastOneRowSelected()) {
+                    var returnUrl = '@returnUrl.ToJavascriptSafeString().ToMvcHtmlString()';
+                    $('#invoiceSales')
+                        .attr('action', '@Url.Action("EmailMultipleInvoices", "Account")')
+                        .append($('<input type="hidden" name="returnUrl" />').val(returnUrl));
+                    this.form.submit();
+                }
+                return false;
+            })
+
+            //[Print] - click
+            $(".PrintSelected").click(function (event) {
+                event.preventDefault();
+                if (AtLeastOneRowSelected()) {
+                    var printInvoicesUrl = '@Html.GetActionUrl("PrintMultipleInvoices", new { selectedObjects = "INVIDS" }).ToMvcHtmlString().ToJavascriptSafeString()';
+                    var selectedInvoiceIDs = "";
+                    var delim = "";
+                    $(".row-selection-checkbox:checked").each(function () {
+                        selectedInvoiceIDs += (delim + $(this).val());
+                        delim = ",";
+                    });
+                    var targetUrl = printInvoicesUrl.replace("INVIDS", selectedInvoiceIDs);
+                    //if (confirm("TARGET URL: " + targetUrl)) {
+                        window.open(targetUrl, '_blank', 'width=600,height=600,scrollbars=yes');
+                    //}
+                }
+                return false;
+            });
+
+            //[Process Payments] - click
+            $("#ProcessPayments").click(function () {
+                $(this).prop('disabled', true).fadeTo(0, 0.5);
+                window.location.replace("@Url.Action(MVC.PayAllInvoicesAction)");
+                return false;
+            });
+
+            //[Filter] - click
+            $("#ToggleFilterOptions").click(function (event) {
+                event.preventDefault();
+                if ($("#ToggleIcon").hasClass("glyphicon-plus-sign")) {
+                    //show filter opts
+                    $("#ToggleIcon").addClass("glyphicon-minus-sign").removeClass("glyphicon-plus-sign");
+
+                } else {
+                    //clear out input values
+                    $("#SearchTerm").val("");
+
+                    //hide filter opts
+                    $("#ToggleIcon").addClass("glyphicon-plus-sign").removeClass("glyphicon-minus-sign");
+
+                    if (filtersApplied) {
+                        //since one or more filters have been applied submit the form to unfilter the results
+                        $(this).parents("form").first().submit();
+                    }
+                }
+            });
+
+            //[Clear Filter] - click
+            $("#ClearFilter").click(function (event) {
+                event.preventDefault();
+                $("#SearchTerm").val("");
+                if (filtersApplied) {
+                    $(this).parents("form").first().submit();
+                }
+            });
+
+            //if any keywords have already been specified...
+            var filtersApplied = $("#SearchTerm").val() != "";
+            if (filtersApplied) {
+                //show filter opts
+                $("#ToggleFilterOptions").addClass("awe-hidden")
+                $("#ClearFilter").removeClass("awe-hidden");
+                $("#FilterOptions").show();
+            }
+
+        });
+    </script>
+}
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Listings_Invoices")
+    @if (showProcessPaymentsLink)
+    {
+        <button class="btn btn-default btn-xs pull-right" id="ProcessPayments">@Html.GlobalResource("ProcessPayments")</button>
+    }
+</div>
+@Html.LocalizedValidationSummary()
+<div class="panel panel-default">
+    @using (Html.BeginForm(MVC.InvoiceSalesAction, MVC.AccountController,
+        new { page = 0, sort = ViewData["sort"], descending = ViewData["descending"] }, FormMethod.Post, new { @id = "invoiceSales" }))
+    {
+        string baseReSortUrl = Html.GetActionUrl(MVC.InvoiceSalesAction, MVC.AccountController);
+        if (!baseReSortUrl.Contains("?"))
+        {
+            baseReSortUrl += "?";
+        }
+        else
+        {
+            baseReSortUrl += "&";
+        }
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-2">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">@Html.GlobalResource("View")</div>
+                        @Html.DropDownList(MVC.ViewFilterOption, null, new { @class = "form-control SubmitOnChange" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">@Html.GlobalResource("Sort")</div>
+                        @Html.DropDownList(MVC.SortFilterOptions, (SelectList)ViewData[MVC.SortFilterOptionList], new { @class = "form-control SubmitOnChange" })
+                    </div>
+                    <input type="submit" id="submitDropDown" class="awe-hidden" />
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a id="ToggleFilterOptions" href="#FilterOptions" class="btn btn-default pull-right" data-toggle="collapse">
+                    <span id="ToggleIcon" class="glyphicon text-default glyphicon-plus-sign"></span>
+                    &nbsp;@(Html.GlobalResource("Filter"))
+                </a>
+                <button id="ClearFilter" class="btn btn-default pull-right awe-hidden">
+                    <span id="ToggleIcon" class="glyphicon text-default glyphicon-remove"></span>
+                    &nbsp;@(Html.GlobalResource("ClearFilter"))
+                </button>
+            </div>
+            <div id="FilterOptions" class="col-xs-12 collapse">
+                <div class="form-inline filter">
+                    <label>@Html.GlobalResource("FilterBy")</label>
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SearchType, "User", true, new { @id = "SearchType_User" })
+                        </label>
+                    </div>
+                    <label for="SearchType_User">@Html.GlobalResource("User")</label>
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SearchType, "ListingTitle", false, new { @id = "SearchType_ListingTitle" })
+                        </label>
+                    </div>
+                    <label for="SearchType_ListingTitle">@Html.GlobalResource("Title")</label>
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SearchType, "ListingID", false, new { @id = "SearchType_ListingID" })
+                        </label>
+                    </div>
+                    <label for="SearchType_ListingID">@Html.GlobalResource("ListingNum")</label>
+                    <div class="radio">
+                        <label>
+                            @Html.RadioButton(Fields.SearchType, "InvoiceID", false, new { @id = "SearchType_InvoiceID" })
+                        </label>
+                    </div>
+                    <label for="SearchType_InvoiceID">@Html.GlobalResource("InvoiceNum")</label>
+                    @Html.TextBox(Fields.SearchTerm, null, new { @class = "form-control", @placeholder = Html.GlobalResourceString("EnterKeywords") })
+                    <button class="btn btn-info" id="ApplyFilter">@Html.GlobalResource("ApplyFilter")</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-default MarkPaid" id="MarkPaid1">@Html.GlobalResource("MarkPaid")</button>
+            <button class="btn btn-default MarkShipped" id="MarkShipped1">@Html.GlobalResource("MarkShipped")</button>
+            @if (viewFilterOption != "Archived")
+            {
+                @Html.Hidden("archived", true.ToString())
+                <button class="btn btn-default SetArchived" id="SetArchived1">@Html.GlobalResource("ArchiveInvoices")</button>
+            }
+            else
+            {
+                @Html.Hidden("archived", false.ToString())
+                <button class="btn btn-default SetArchived" id="SetArchived1">@Html.GlobalResource("RestoreInvoices")</button>
+            }
+            <button class="btn btn-default PrintSelected" id="PrintSelected1">@Html.GlobalResource("Print")</button>
+            <button class="btn btn-default EmailSelected" id="EmailSelected1">@Html.GlobalResource("Email")</button>
+        </div>
+        <div class="heading">
+            <div class="row">
+                <div class="col-sm-1">
+                    <input type="checkbox" class="checkall" />
+                </div>
+                <div class="col-sm-3">@Html.GlobalResource("CreatedDTTM")</div>
+                <div class="col-sm-1">@Html.GlobalResource("InvoiceID")</div>
+                <div class="col-sm-2">@Html.GlobalResource("Buyer")</div>
+                <div class="col-sm-3">@Html.GlobalResource("Status") : @Html.GlobalResource("Total")</div>
+            </div>
+        </div>
+
+        foreach (Invoice invoice in Model.List)
+        {
+            <div class="list clearfix">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <input type="checkbox" name="selectedObjects" value="@invoice.ID" class="row-selection-checkbox" />
+                    </div>
+                    <div class="col-sm-3">@Html.LocalDTTM(invoice.CreatedDTTM, "g")</div>
+                    <div class="col-sm-1">
+                        @Html.ActionLink(invoice.ID.ToString(), "InvoiceDetail", new { id = invoice.ID, returnUrl })
+                    </div>
+                    <div class="col-sm-2">@invoice.Payer.UserName</div>
+                    <div class="col-sm-3">
+                        @{
+                            string spanClass = string.Empty;
+                            MvcHtmlString labelText = MvcHtmlString.Empty;
+                            switch (invoice.Status)
+                            {
+                                case InvoiceStatuses.New:
+                                    if (invoice.PaymentHistory.Count > 0)
+                                    {
+                                        spanClass = "label label-danger";
+                                        labelText = Html.GlobalResource("Unpaid");
+                                    }
+                                    else if (sellerTakesCreditCardPayments && !invoice.HasUnexpiredCardOnFile())
+                                    {
+                                        spanClass = "label label-danger";
+                                        labelText = Html.GlobalResource("UnpaidNoCard");
+                                    }
+                                    else
+                                    {
+                                        spanClass = "label label-info";
+                                        labelText = Html.GlobalResource("New");
+                                    }
+                                    break;
+                                case InvoiceStatuses.Pending:
+                                    spanClass = "label label-warning";
+                                    labelText = Html.GlobalResource("PaymentPending");
+                                    break;
+                                case InvoiceStatuses.Paid:
+                                    if (invoice.Shipped)
+                                    {
+                                        spanClass = "label label-success";
+                                        labelText = Html.GlobalResource("Shipped");
+                                    }
+                                    else
+                                    {
+                                        spanClass = "label label-success";
+                                        labelText = Html.GlobalResource("Paid");
+                                    }
+                                    break;
+                                default:
+                                    spanClass = string.Empty;
+                                    labelText = Html.GlobalResource(invoice.Status);
+                                    break;
+                            }
+                        }
+                        <span class="@spanClass">@labelText</span>
+                        <span>@Html.LocalCurrency(invoice.Total, invoice.Currency)</span>
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.ButtonLink(Html.GlobalResource("ViewInvoice"), "InvoiceDetail", new { id = invoice.ID, returnUrl }, new { @class = "btn btn-default btn-xs invoice" })
+                    </div>
+                </div>
+            </div>
+        }
+        if (Model.TotalItemCount == 0)
+        {
+            <p class="no-history">
+                @Html.GlobalResource("NoSalesInvoices")
+            </p>
+        }
+        <button class="btn btn-default MarkPaid" id="MarkPaid2">@Html.GlobalResource("MarkPaid")</button>
+        <button class="btn btn-default MarkShipped" id="MarkShipped2">@Html.GlobalResource("MarkShipped")</button>
+        if (viewFilterOption != "Archived")
+        {
+            @Html.Hidden("archived", true.ToString())
+            <button class="btn btn-default SetArchived" id="SetArchived2">@Html.GlobalResource("ArchiveInvoices")</button>
+        }
+        else
+        {
+            @Html.Hidden("archived", false.ToString())
+            <button class="btn btn-default SetArchived" id="SetArchived2">@Html.GlobalResource("RestoreInvoices")</button>
+        }
+        <button class="btn btn-default PrintSelected" id="PrintSelected2">@Html.GlobalResource("Print")</button>
+        <button class="btn btn-default EmailSelected" id="EmailSelected2">@Html.GlobalResource("Email")</button>
+
+        @((Model.PageIndex > 0) ? Html.Hidden("page", Model.PageIndex) : MvcHtmlString.Empty)
+    }
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

@@ -1,0 +1,108 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">RainWorx AuctionWorx ASP.NET Web API</a></p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <div id="TestResults"></div>
+</div>
+@section scripts
+{
+    <script>
+        function DisplayTestResult(testName, disposition, status, detail) {
+            var now = new Date();
+            var testResults = $("#TestResults");
+            var testResult = $("<div class='testresult'></div>").appendTo(testResults);
+            $("<span>" + testName + " @@ " + now + ": </span>").appendTo(testResult);
+            if (disposition == "SUCCESS") {
+                $("<span class='successResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            } else {
+                $("<span class='failureResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            }
+            $("<div class='detailResult'>" + JSON.stringify(detail) + "</div>").appendTo(testResult);
+        }
+
+        function Test(testName, url, method, expectation) {
+            $.ajax({
+                url: url,
+                type: method,
+                //data: JSON.stringify(newTitle),
+                contentType: "application/json",
+                processData: false,
+                async: false
+            }).always(function (data) {
+                if (expectation == data.status) {
+                    DisplayTestResult(testName, "SUCCESS", data.status, data.detail);
+                } else {
+                    DisplayTestResult(testName, "FAIL", data.status, data.detail);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            //Upload files    
+            Test('Upload file with No Auth', 'TestMedia/UploadFile', 'POST', 401);
+            Test('Upload file with User that doesn\'t exist', 'TestMedia/UploadFile?auth=nouser', 'POST', 401);
+            Test('Upload file with Existing User, but bad key', 'TestMedia/UploadFile?auth=badkey', 'POST', 401);
+            Test('Upload file with ANY User', 'TestMedia/UploadFile?auth=admin', 'POST', 201);
+
+            //Upload files with URI
+            Test('Post via URI with No Auth', 'TestMedia/UploadFileURI', 'POST', 401);
+            Test('Post via URI with User that doesn\'t exist', 'TestMedia/UploadFileURI?auth=nouser', 'POST', 401);
+            Test('Post via URI with Existing User, but bad key', 'TestMedia/UploadFileURI?auth=badkey', 'POST', 401);
+            Test('Post via URI with ANY User', 'TestMedia/UploadFileURI?auth=admin', 'POST', 201);
+
+            //Upload String
+            Test('Post via String with No Auth', 'TestMedia/UploadString', 'POST', 401);
+            Test('Post via String with User that doesn\'t exist', 'TestMedia/UploadString?auth=nouser', 'POST', 401);
+            Test('Post via String with Existing User, but bad key', 'TestMedia/UploadString?auth=badkey', 'POST', 401);
+            Test('Post via String with ANY User', 'TestMedia/UploadString?auth=admin', 'POST', 201);
+
+            //Get Media By ID
+            Test('Media Get by ID with No Auth', 'TestMedia/GetMedia?id=1', 'POST', 401);
+            Test('Media Get by ID with User that doesn\'t exist', 'TestMedia/GetMedia?id=1&auth=nouser', 'POST', 401);
+            Test('Media Get by ID with Existing User, but bad key', 'TestMedia/GetMedia?id=1&auth=badkey', 'POST', 401);
+            Test('Media Get by ID with Any User', 'TestMedia/GetMedia?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&auth=nonadmin', 'POST', 200);
+            Test('Media Get by ID that doesn\'t exist with any user', 'TestMedia/GetMedia?id=0&auth=nonadmin', 'POST', 404);
+
+            //Get Media By GUID
+            Test('Media Get by GUID with No Auth', 'TestMedia/GetMediaByGuid?guid=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid', 'POST', 401);
+            Test('Media Get by GUID with User that doesn\'t exist', 'TestMedia/GetMediaByGuid?guid=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=nouser', 'POST', 401);
+            Test('Media Get by GUID with Existing User, but bad key', 'TestMedia/GetMediaByGuid?guid=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=badkey', 'POST', 401);
+            Test('Media Get by GUID with Any User', 'TestMedia/GetMediaByGuid?guid=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=nonadmin', 'POST', 200);
+            Test('Media Get by GUID that doesn\'t exist with any user', 'TestMedia/GetMediaByGuid?guid=7bb9542b-cc8b-4889-abc6-45fbebc8623e&auth=nonadmin', 'POST', 404);
+
+            //Load Media By ID
+            Test('Media Load by ID with No Auth', 'TestMedia/LoadMedia?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID', 'POST', 401);
+            Test('Media Load by ID with User that doesn\'t exist', 'TestMedia/LoadMedia?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&auth=nouser', 'POST', 401);
+            Test('Media Load by ID with Existing User, but bad key', 'TestMedia/LoadMedia?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&auth=badkey', 'POST', 401);
+            Test('Media Load by ID with Any User', 'TestMedia/LoadMedia?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&auth=nonadmin', 'POST', 200);
+            Test('Media Load by ID that doesn\'t exist with any user', 'TestMedia/LoadMedia?id=0&auth=nonadmin', 'POST', 404);
+
+            //Load Media By ID with variation
+            Test('Media Load by ID with variation with No Auth', 'TestMedia/LoadMediaWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&variation=ThumbCrop', 'POST', 401);
+            Test('Media Load by ID with variation with User that doesn\'t exist', 'TestMedia/LoadMediaWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&auth=nouser&variation=ThumbCrop', 'POST', 401);
+            Test('Media Load by ID with variation with Existing User, but bad key', 'TestMedia/LoadMediaWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&auth=badke&variation=ThumbCrop', 'POST', 401);
+            Test('Media Load by ID with variation with Any User', 'TestMedia/LoadMediaWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaID&auth=nonadmin&variation=ThumbCrop', 'POST', 200);
+            Test('Media Load by ID with variation that doesn\'t exist with any user', 'TestMedia/LoadMediaWithVariation?id=0&auth=nonadmin&variation=ThumbCrop', 'POST', 404);
+
+            //Load Media By GUID
+            Test('Media Load by GUID with No Auth', 'TestMedia/LoadMediaByGuid?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid', 'POST', 401);
+            Test('Media Load by GUID with User that doesn\'t exist', 'TestMedia/LoadMediaByGuid?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=nouser', 'POST', 401);
+            Test('Media Load by GUID with Existing User, but bad key', 'TestMedia/LoadMediaByGuid?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=badkey', 'POST', 401);
+            Test('Media Load by GUID with Any User', 'TestMedia/LoadMediaByGuid?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=nonadmin', 'POST', 200);
+            Test('Media Load by GUID that doesn\'t exist with any user', 'TestMedia/LoadMediaByGuid?id=7bb9542b-cb8b-4889-abc6-45fbebc8623f&auth=nonadmin', 'POST', 404);
+
+            //Load Media By GUID with variation
+            Test('Media Load by GUID with variation with No Auth', 'TestMedia/LoadMediaByGuidWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&variation=ThumbCrop', 'POST', 401);
+            Test('Media Load by GUID with variation with User that doesn\'t exist', 'TestMedia/LoadMediaByGuidWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=nouser&variation=ThumbCrop', 'POST', 401);
+            Test('Media Load by GUID with variation with Existing User, but bad key', 'TestMedia/LoadMediaByGuidWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=badkey&variation=ThumbCrop', 'POST', 401);
+            Test('Media Load by GUID with variation with Any User', 'TestMedia/LoadMediaByGuidWithVariation?id=@RainWorx.FrameWorx.MVC.Areas.API.Controllers.Base.TestControllerBase.MediaGuid&auth=nonadmin&variation=ThumbCrop', 'POST', 200);
+            Test('Media Load by GUID with variation that doesn\'t exist with any user', 'TestMedia/LoadMediaByGuidWithVariation?id=7bb9542b-aa8b-4889-abc6-45fbebc8623f&auth=nonadmin&variation=ThumbCrop', 'POST', 404);
+        });                
+        
+    </script>
+}

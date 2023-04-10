@@ -1,0 +1,143 @@
+﻿@model List<RainWorx.FrameWorx.MVC.Models.TaxRate>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+@* Changes to this view should also be applied to SalesTaxManagement_Inline.cshtml *@
+<script>
+    function GetStates(countryID) {
+        var retVal = null;
+        Proxy.invoke("GetStates", { countryID: countryID },
+        function (result) {
+            $("select[name='StateRegion']").empty();
+            if (result == "NOSTATES") {
+                $("div#countrySelected").hide();
+                $("span#noStates").show();
+            } else if (result.length > 0) {
+                for (state in result) {
+                    $("select[name='StateRegion']").append("<option value='" + result[state].ID + "'>" + result[state].Name + "</option>");
+                }
+                $("div#countrySelected").show();
+                $("span#noStates").hide();
+            } else if (result.length == 0) {
+                $("div#countrySelected").hide();
+                $("span#noStates").show();
+            }
+        },
+        function (error) { window.alert(error); });
+        return retVal;
+    }
+
+    $(document).ready(function () {
+        $("select[name='Country']").change(function () {
+            if ($(this).val() != "") {
+                GetStates($(this).val());
+            } else {
+                $("div#countrySelected").hide();
+                $("span#noStates").hide();
+            }
+        });
+        //if ($("select[name='Country']").val() != "") GetStates($("select[name='Country']").val());
+    });
+</script>
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_ListingPreferences_Taxes")
+</div>
+<div class="row">
+    @{
+        using (Html.BeginForm(MVC.UpdateSalesTaxRatesAction, MVC.AccountController))
+        {
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Html.GlobalResource("AddNewSalesTaxRate")</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            @Html.DropDownList("Country", null, Html.GlobalResourceString("SelectACountry"), new { @class = "form-control" })
+                        </div>
+                        <div id="countrySelected" class="awe-hidden">
+                            <div class="form-group">
+                                <select name="StateRegion" class="form-control"></select>
+                            </div>
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-xs-4 control-label">@Html.GlobalResource("Rate") </label>
+                                    <div class="col-xs-7 col-sm-8">
+                                        <div class="input-group awe-inline-width">
+                                            @Html.TextBox("Rate", null, new { @class = "form-control" })
+                                            <span class="input-group-addon">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-4 control-label">@Html.GlobalResource("ShippingIs") </label>
+                                    <div class="col-xs-8 col-sm-7">
+                                        @Html.DropDownList("taxShipping", new SelectList((List<KeyValuePair<string, string>>)ViewData["TaxableShippingOptions"], "value", "key", "NotTaxable"), new { @class = "form-control" })
+                                    </div>
+                                    <div class="pull-left hidden-xs">
+                                        @Html.ToolTipButton("SalesTaxShippingOption_Help")
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.ToolTipContent("SalesTaxShippingOption_Help", Html.GlobalResource("SalesTaxShippingOption_Help"))
+                        </div>
+                        <div class="form-group">
+                            <span id="noStates" class="awe-hidden">@Html.GlobalResource("NoStatesDefinedForCountry")</span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-default" value="@Html.GlobalResource("Add")" name="Save" id="Save1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+    <div class="col-sm-6">
+        @foreach (RainWorx.FrameWorx.MVC.Models.TaxRate taxRate in Model)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @taxRate.Country
+                    -> @taxRate.State
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">@Html.GlobalResource("Rate")</label>
+                            <div class="col-xs-7 col-sm-8">
+                                <div class="input-group awe-inline-width">
+                                    @Html.TextBox("str_Rate_" + taxRate.ID, taxRate.Rate.ToString("F2"), new { @class = "form-control" })
+                                    <span class="input-group-addon">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">@Html.GlobalResource("ShippingIs")</label>
+                            <div class="col-xs-8 col-sm-8">
+                                @Html.DropDownList("str_TaxShipping_" + taxRate.ID, new SelectList((List<KeyValuePair<string, string>>)ViewData["TaxableShippingOptions"], "value", "key", taxRate.TaxableShipping), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox text-right">
+                            <label>
+                                <input type="checkbox" name="deleteRate" value="@taxRate.ID" />
+                                @Html.GlobalResource("Delete")
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+        @if (Model.Count != 0)
+        {
+        <div class="form-group well well-sm text-right">
+            <input type="submit" class="btn btn-default" value="@Html.GlobalResource("Save")" name="Save" id="Save2" />&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        }
+       
+    </div>
+        }
+
+}
+</div>

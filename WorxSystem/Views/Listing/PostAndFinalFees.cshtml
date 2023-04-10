@@ -1,0 +1,175 @@
+﻿@using System.Configuration
+@{
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+    bool allowMinMaxFinalSellerFee = false;
+    bool.TryParse(ConfigurationManager.AppSettings["AllowMinMaxFinalSellerFee"], out allowMinMaxFinalSellerFee);
+}
+@model dynamic
+
+<div id="Results">
+    @{
+        string listingTypeName = (string)ViewData[MVC.ViewData_ListingType];
+        decimal minPostFee = (decimal)ViewData[MVC.ViewData_MinPostFee];
+        decimal maxPostFee = (decimal)ViewData[MVC.ViewData_MaxPostFee];
+        List<Tier> postFeeTiers = (List<Tier>)ViewData[MVC.ViewData_PostFeeTiers];
+        decimal minFinalFee = (decimal)ViewData[MVC.ViewData_MinFinalFee];
+        decimal maxFinalFee = (decimal)ViewData[MVC.ViewData_MaxFinalFee];
+        List<Tier> finalFeeTiers = (List<Tier>)ViewData[MVC.ViewData_FinalFeeTiers];
+        decimal postFeeAmount = (decimal)ViewData[MVC.ViewData_PostFeeAmount];
+        decimal finalFeeAmount = (decimal)ViewData[MVC.ViewData_FinalFeeAmount];
+
+        if (postFeeAmount > 0.0M || maxFinalFee > 0.0M)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    @Html.GlobalResource("AdditionalFees")
+                </div>
+                <ul class="list-group">
+                    @if (postFeeAmount > 0.0M)
+                    { // single tier post fee
+                        <li class="list-group-item">
+                            <strong>@Html.GlobalResource("PostListingFee"):</strong>
+                            &nbsp;
+                            @Html.SiteCurrencyOrFree(postFeeAmount)
+                            &nbsp;
+                            @if (postFeeTiers.Count > 1)
+                            { // multi-tier post fee
+                                <button type="button" class="btn btn-default btn-xs" onclick="$('.PostListingFeeIsBasedOnXxx').show()"><strong>?</strong></button>
+                                <div class="help-tip PostListingFeeIsBasedOnXxx alert alert-info awe-hidden">
+                                    <a class="close" onclick="$('.PostListingFeeIsBasedOnXxx').hide()">&times;</a>
+                                    <strong> @Html.Resource(listingTypeName + "Listing, PostListingFeeIsBasedOnXxx")</strong>
+                                    <ul>
+                                        @{
+                                            decimal prevTierUpperBound = 0;
+                                            for (int i = 0; i < postFeeTiers.Count; i++)
+                                            {
+                                                Tier t = postFeeTiers[i];
+                                                if (i < postFeeTiers.Count - 1)
+                                                {
+                                                    prevTierUpperBound = t.UpperBoundExclusive;
+
+                                                    <li>
+                                                        @(Html.GlobalResource("UpTo_X_Y_Fee",
+                                                            SiteClient.FormatCurrency(t.UpperBoundExclusive, SiteClient.SiteCurrency, Html.GetCurrentCultureInfo().Name),
+                                                            SiteClient.FormatCurrency(t.Value, SiteClient.SiteCurrency, Html.GetCurrentCultureInfo().Name)))
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        @(Html.GlobalResource("X_AndOver_Y_Fee",
+                                                            SiteClient.FormatCurrency(prevTierUpperBound, SiteClient.SiteCurrency, Html.GetCurrentCultureInfo().Name),
+                                                            SiteClient.FormatCurrency(t.Value, SiteClient.SiteCurrency, Html.GetCurrentCultureInfo().Name)))
+                                                    </li>
+                                                }
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </li>
+                    }
+
+                    @if (finalFeeTiers.Count == 1 && finalFeeAmount > 0.0M)
+                    { // single tier final fee
+                        string formattedMaxFeeAmount = SiteClient.BoolSetting(SiteProperties.UseFlatFinalFees)
+                            ? Html.SiteCurrencyOrFree(maxFinalFee)
+                            : maxFinalFee.ToString("P", Html.GetCultureInfo());
+
+                        <li class="list-group-item">
+                            <strong>@Html.GlobalResource("FinalSaleFee"):</strong>
+                            &nbsp;
+                            @formattedMaxFeeAmount
+                            @{ 
+                                if (allowMinMaxFinalSellerFee)
+                                {
+                                    <span>
+                                    &nbsp;
+                                    (@(Html.GlobalResourceString("Minimum")
+                                        + ": " + Html.SiteCurrency(SiteClient.Properties.GetPropertyValue(SiteProperties.MinSellerFinalFee, 0.0M))
+                                        + (SiteClient.Properties.GetPropertyValue(SiteProperties.MaxSellerFinalFee, 0.0M) > 0
+                                            ? ", " + Html.GlobalResourceString("Maximum") + ": " + Html.SiteCurrency(SiteClient.Properties.GetPropertyValue(SiteProperties.MaxSellerFinalFee, 0.0M))
+                                            : string.Empty)))
+                                    </span>
+                                }
+                            }
+                            <button type="button" class="btn btn-default btn-xs" onclick="$('.FinalFeeDescriptionNoTiers').show()"><strong>?</strong></button>
+                            <div class="help-tip FinalFeeDescriptionNoTiers alert alert-info awe-hidden">
+                                <a class="close" onclick="$('.FinalFeeDescriptionNoTiers').hide()">&times;</a>
+                                <strong>@Html.Resource(listingTypeName + "Listing, FinalFeeDescriptionNoTiers")</strong>
+                            </div>
+                        </li>
+                    }
+                    else if (finalFeeTiers.Count > 1 && finalFeeAmount > 0.0M)
+                    { // multi-tier final fee
+                        string formattedMinFeeAmount = SiteClient.BoolSetting(SiteProperties.UseFlatFinalFees)
+                            ? Html.SiteCurrencyOrFree(minFinalFee)
+                            : minFinalFee.ToString("P", Html.GetCultureInfo());
+                        string formattedMaxFeeAmount = SiteClient.BoolSetting(SiteProperties.UseFlatFinalFees)
+                            ? Html.SiteCurrencyOrFree(maxFinalFee)
+                            : maxFinalFee.ToString("P", Html.GetCultureInfo());
+
+                        <li class="list-group-item">
+                            <strong>@Html.GlobalResource("FinalSaleFee"):</strong>
+                            &nbsp;
+                            @formattedMinFeeAmount
+                            @Html.GlobalResource("to")
+                            @formattedMaxFeeAmount
+                            &nbsp;
+                            @{
+                                if (allowMinMaxFinalSellerFee)
+                                {
+                                    <span>
+                                        &nbsp;
+                                        (@(Html.GlobalResourceString("Minimum")
+                                            + ": " + Html.SiteCurrency(SiteClient.Properties.GetPropertyValue(SiteProperties.MinSellerFinalFee, 0.0M))
+                                            + (SiteClient.Properties.GetPropertyValue(SiteProperties.MaxSellerFinalFee, 0.0M) > 0
+                                                ? ", " + Html.GlobalResourceString("Maximum") + ": " + Html.SiteCurrency(SiteClient.Properties.GetPropertyValue(SiteProperties.MaxSellerFinalFee, 0.0M))
+                                                : string.Empty)))
+                                    </span>
+                                }
+                            }
+                            <button type="button" class="btn btn-default btn-xs" onclick="$('.FinalFeeDescriptionWithTiers').show()"><strong>?</strong></button>
+                            <div class="help-tip FinalFeeDescriptionWithTiers alert alert-info awe-hidden">
+                                <a class="close" onclick="$('.FinalFeeDescriptionWithTiers').hide()">&times;</a>
+                                <strong>@Html.Resource(listingTypeName + "Listing, FinalFeeDescriptionWithTiers")</strong>
+                                <ul>
+                                    @{
+                                        decimal prevTierUpperBound = 0;
+                                        for (int i = 0; i < finalFeeTiers.Count; i++)
+                                        {
+                                            Tier t = finalFeeTiers[i];
+
+                                            string formattedTierFeeAmount = SiteClient.BoolSetting(SiteProperties.UseFlatFinalFees)
+                                                ? Html.SiteCurrencyOrFree(t.Value)
+                                                : t.Value.ToString("P", Html.GetCultureInfo());
+
+                                            if (i < finalFeeTiers.Count - 1)
+                                            {
+                                                prevTierUpperBound = t.UpperBoundExclusive;
+
+                                                <li>
+                                                    @(Html.GlobalResource("UpTo_X_Y_Fee",
+                                                                                        SiteClient.FormatCurrency(t.UpperBoundExclusive, SiteClient.SiteCurrency, Html.GetCurrentCultureInfo().Name),
+                                                                                        formattedTierFeeAmount))
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li>
+                                                    @(Html.GlobalResource("X_AndOver_Y_Fee",
+                                                                                        SiteClient.FormatCurrency(prevTierUpperBound, SiteClient.SiteCurrency, Html.GetCurrentCultureInfo().Name),
+                                                                                        formattedTierFeeAmount))
+                                                </li>
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>

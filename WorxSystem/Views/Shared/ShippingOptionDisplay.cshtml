@@ -1,0 +1,88 @@
+﻿@model Listing
+@if ((bool)ViewData[SiteProperties.EnableShipping] && Model.ShippingOptions.Count > 0)
+{
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table shipping-table">
+                <thead>
+                    <tr>
+                        <th>@Html.GlobalResource("ShippingOptions")</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        const int maxToDisplay = 2;
+                        int displayedCount = 0;
+                    }
+                    @foreach (ShippingOption option in Model.ShippingOptions)
+                {
+                    if (displayedCount >= maxToDisplay)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        displayedCount++;
+                    }
+                    <tr>
+                        <td>@option.Method.Name</td>
+                        <td>
+                            @Html.LocalCurrency(option.FirstItemAmount, Model.Currency.Code)
+                            @if (option.AdditionalItemAmount.HasValue)
+                            {
+                                <span class="small">(@Html.GlobalResource("XxxAsAdditionalItem", Html.LocalCurrency(option.AdditionalItemAmount.Value, Model.Currency.Code)))</span>
+                            }
+                        </td>
+                    </tr>
+                    }
+
+                    @if (displayedCount < Model.ShippingOptions.Count)
+                {
+                        <tr>
+                            <td colspan="2" class="text-right">
+                                <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#@Model.ID">@Html.GlobalResource("ViewAllShippingOptsLink")</button>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+                        if (displayedCount < Model.ShippingOptions.Count)
+                        {
+                            string pageTitle = Html.GlobalResource("ShippingOptionsFor") + ": " + Model.Title;
+                            <div class="modal fade" id="@Model.ID" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title">@pageTitle</h4>
+                                        </div>
+                                        <table class="table table-striped shipping-modal" title="@pageTitle">
+                                            @foreach (ShippingOption option in Model.ShippingOptions)
+                                            {
+                                                <tr>
+                                                    <td><strong>@option.Method.Name</strong></td>
+                                                    <td>
+                                                        @Html.LocalCurrency(option.FirstItemAmount, Model.Currency.Code)
+                                                        @if (option.AdditionalItemAmount.HasValue)
+                                                        {
+                                                            <span class="small">(@Html.GlobalResource("XxxAsAdditionalItem", Html.LocalCurrency(option.AdditionalItemAmount.Value, Model.Currency.Code)))</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </table>
+                                        <div class="modal-footer shipping-modal">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">@Html.GlobalResource("Close")</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                            }
+
+                        }

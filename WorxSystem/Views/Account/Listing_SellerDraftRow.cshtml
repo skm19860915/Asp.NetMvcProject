@@ -1,0 +1,46 @@
+﻿@model Listing
+<div class="list clearfix">
+    <div class="row">
+        <div class="col-sm-1">
+                <input class="row-selection-checkbox" type="checkbox" name="ListingIDs" value="@Model.ID" />
+        </div>
+        <div class="col-sm-2">
+            @{
+                if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                {
+                    @Html.Partial("NoPhotoThumbnail")
+                }
+                else
+                {
+                    string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                    @Model.BeginDetailLink()
+                    <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                    @Model.EndDetailLink()
+                }
+            }
+        </div>
+        <div class="col-sm-9">
+            <p>
+                <strong>
+                    @Model.BeginDetailLink()
+                    @Model.Title <em>(@Model.ID)</em>
+                    @Model.EndDetailLink()
+                </strong>
+            </p>
+            <p>
+                @(Model.EndDTTM.HasValue ? Html.LocalDTTM(Model.EndDTTM.Value, "G") : MvcHtmlString.Empty)
+            </p>
+            <p>
+                @if (Model.CurrentPrice.HasValue)
+                {
+                    @Html.LocalCurrency(Model.CurrentPrice.Value, Model.Currency.Code)
+                }
+                else
+                {
+                    @Html.GlobalResource("PriceNotSet")
+                }
+            </p>
+        </div>
+    </div>
+    @Html.Partial("Action_SellerDraft")
+</div>

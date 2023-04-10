@@ -1,0 +1,66 @@
+﻿@model List<ListItem>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_CreditCards");
+}
+
+@section head {
+    <script>
+        $(document).ready(function () {
+
+            $("#SaveCreditCardSettings").click(function () {
+                $(this).parents("form").first().submit();
+                return false;
+            });
+
+        });
+    </script>
+}
+
+@using (Html.BeginForm())//MVC.UpdateCreditCardPropertiesAction, MVC.AdminController))
+{
+    <div class="form-horizontal">
+        @*@foreach (CustomProperty property in (List<CustomProperty>)ViewData[MVC.ViewData_CreditCardProperties])
+        {
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.CustomFieldResource(property.Field.Name):
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @{ Html.RenderCustomField_Admin(property.Field); }
+                    @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                    {
+                        <b class="Required">*</b>
+                    }
+                </div>
+                <div class="col-xs-2">
+                    @{
+                        MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+                        if (!MvcHtmlString.IsNullOrEmpty(helpText))
+                        {
+                            @Html.ToolTipButton(property.Field.Name + "_Help")
+
+                        }
+                    }
+                </div>
+                <div class="col-xs-12">@Html.ToolTipContent(property.Field.Name + "_Help", helpText)</div>
+            </div>
+        }*@
+
+        @foreach (ListItem creditCard in Model)
+        {
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.AdminResource("Accept_CCType", creditCard.Name)
+                </label>
+                <div class="col-xs-10 col-sm-6">
+                    @Html.CheckBox("enable_CC_ID_" + creditCard.ID, creditCard.Enabled)
+                </div>
+            </div>
+        }
+    </div>
+    <div class="action-panel">
+        <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveConfiguration")" name="Save" id="Save" />
+    </div>
+}

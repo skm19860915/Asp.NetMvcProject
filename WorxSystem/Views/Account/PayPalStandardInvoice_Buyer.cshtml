@@ -1,0 +1,97 @@
+﻿@model RainWorx.FrameWorx.DTO.Invoice
+@* This view exists in both the Account and Admin view folders, be sure you're editing the correct one *@
+
+@{
+    string postURL;
+    if (Convert.ToBoolean(SiteClient.Settings[SiteProperties.DemoEnabled]))
+    {
+        postURL = "https://www.sandbox.paypal.com/cgi-bin/webscr";
+    }
+    else
+    {
+        postURL = SiteClient.Settings[SiteProperties.PayPal_PostURL];
+    }
+}
+
+<div class="col-xs-12 col-sm-6">
+    <div class="payment-method clearfix">
+        <form action="@postURL" method="post">
+
+            @if (Model.Type == InvoiceTypes.Fee)
+            {
+                @Html.Hidden("business", SiteClient.Settings[SiteProperties.PayPal_FeesEmail])
+            }
+            else
+            {
+                @Html.Hidden("business", Model.Owner.PayPalEmail())
+            }
+            @Html.Hidden("cmd", "_xclick")
+            @Html.Hidden("item_name", SiteClient.Settings[SiteProperties.FriendlySiteName] + " " + Html.GlobalResourceString("Invoice") + " " + Model.ID)
+            @{
+                string payPalCurrency = Model.Currency;
+                decimal payPalPaymentAmount = Model.Total;
+                if (!Html.IsPayPalCurrency(payPalCurrency) && !string.IsNullOrEmpty(SiteClient.TextSetting(SiteProperties.PayPal_BackupPaymentCurrency)))
+                {
+                    payPalCurrency = SiteClient.TextSetting(SiteProperties.PayPal_BackupPaymentCurrency);
+                    payPalPaymentAmount = payPalPaymentAmount.ConvertAmount(Model.Currency, payPalCurrency);
+                }
+                string payPalMoneyFormat = "0.00";
+                System.Globalization.CultureInfo payPalMoneyCulture = new System.Globalization.CultureInfo("en-US");
+            }
+            @Html.Hidden("amount", payPalPaymentAmount.ToString(payPalMoneyFormat, payPalMoneyCulture))
+            @Html.Hidden("shipping", 0)
+            @Html.Hidden("no_shipping", 1)
+            @Html.Hidden("tax", 0)
+            @Html.Hidden("currency_code", payPalCurrency)
+            @Html.Hidden("notify_url", SiteClient.Settings[SiteProperties.SecureURL] + SiteClient.Settings[SiteProperties.PayPal_IPNURL])
+            @Html.Hidden("rm", "2")
+            @{
+                string successReturnUrl = SiteClient.Settings[SiteProperties.SecureURL] + SiteClient.Settings[SiteProperties.PayPal_SuccessReturnURL];
+                successReturnUrl += (successReturnUrl.Contains("?") ? "&" : "?") + "invoiceId=" + Model.ID.ToString();
+            }
+            @Html.Hidden("return", successReturnUrl)
+            @{
+                string cancelReturnUrl = SiteClient.Settings[SiteProperties.SecureURL] + SiteClient.Settings[SiteProperties.PayPal_CancelReturnURL];
+                cancelReturnUrl += (cancelReturnUrl.Contains("?") ? "&" : "?") + "invoiceId=" + Model.ID.ToString();
+            }
+            @Html.Hidden("cancel_return", cancelReturnUrl)
+            @Html.Hidden("cbt", SiteClient.Settings[SiteProperties.PayPal_ReturnToMerchantText])
+            @Html.Hidden("invoice", Model.ID)
+            @if (Model.Type == InvoiceTypes.Shipping)
+            {
+                @Html.Hidden("address1", Model.ShippingStreet1)
+                @Html.Hidden("address2", Model.ShippingStreet2)
+                @Html.Hidden("city", Model.ShippingCity)
+                @Html.Hidden("country", Model.ShippingCountry)
+                @Html.Hidden("first_name", Model.ShippingFirstName)
+                @Html.Hidden("last_name", Model.ShippingLastName)
+                @Html.Hidden("state", Model.ShippingStateRegion)
+                @Html.Hidden("zip", Model.ShippingZipPostal)
+            }
+            else
+            {
+                @Html.Hidden("address1", Model.BillingStreet1)
+                @Html.Hidden("address2", Model.BillingStreet2)
+                @Html.Hidden("city", Model.BillingCity)
+                @Html.Hidden("country", Model.BillingCountry)
+                @Html.Hidden("first_name", Model.BillingFirstName)
+                @Html.Hidden("last_name", Model.BillingLastName)
+                @Html.Hidden("state", Model.BillingStateRegion)
+                @Html.Hidden("zip", Model.BillingZipPostal)
+            }
+            @Html.Hidden("address_override", "1")
+            @Html.Hidden("bn", MVC.BuildNotationCode)
+            <script>
+                $(document).ready(function () {
+                    $("#SubmitPayPal").click(function () {
+                        $(this).parents("form").submit();
+                        return false;
+                    });
+                });
+            </script>
+
+            <button class="btn btn-info btn-block" id="SubmitPayPal">@Html.GlobalResource("PayWithPayPal") <span class="glyphicon glyphicon-chevron-right"></span> </button>
+
+        </form>
+    </div>
+</div>

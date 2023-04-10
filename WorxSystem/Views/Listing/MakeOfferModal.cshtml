@@ -1,0 +1,66 @@
+﻿@model Listing
+
+@{
+    Layout = "~/Views/Shared/_NoLayout.cshtml";
+    bool CCRequired = ((bool?)ViewData["CCRequired"]) ?? false;
+}
+
+@if (!Context.User.Identity.IsAuthenticated)
+{
+    <text>LOGON_NEEDED</text>
+}
+else if (CCRequired)
+{
+    <text>CC_NEEDED</text>
+}
+else if (Model == null)
+{
+    @Html.LocalizedValidationSummary()
+    <button id="modalCancelOfferButton" class="btn btn-default">@Html.GlobalResource("Cancel")</button>
+}
+else
+{
+    using (Html.BeginForm(MVC.ConfirmOfferModalAction, MVC.ListingController, FormMethod.Post, new { id = "MakeOfferForm" }))
+    {
+        @Html.LocalizedValidationSummary()
+        @Html.Hidden("ListingID", Model.ID)
+        <div class="form-group">
+            <label for="@Fields.Amount">@Html.Resource(Model.Type.Name + "Listing, YourOffer")</label>
+            @if (Model.CurrentQuantity > 1)
+            {
+                @Html.CurrencyBox(Fields.Amount, null, Model.Currency.Code, null, Html.ResourceString("FixedPriceListing, PerItem"))
+            }
+            else
+            {
+                @Html.CurrencyBox(Fields.Amount, null, Model.Currency.Code, null)
+            }
+        </div>
+        if (Model.CurrentQuantity > 1)
+        {
+            <div class="form-group">
+                <label for="@Fields.Quantity">@Html.Resource(Model.Type.Name + "Listing, Quantity")</label>
+                @Html.TextBox(Fields.Quantity, null, new { @class = "form-control" })
+                <small>
+                    @Html.Resource("FixedPriceListing, QuantityAvailable")
+                    <span class="awe-rt-Quantity">@Html.LocalInteger(Model.CurrentQuantity)</span>
+                </small>
+            </div>
+        }
+        else
+        {
+            @Html.Hidden(Fields.Quantity, "1")
+        }
+        <div class="form-group">
+            <label for="@Fields.OfferMessage">@Html.Resource(Model.Type.Name + "Listing, OfferMessage")</label>
+            @Html.TextArea(Fields.OfferMessage, new { @class = "form-control" })
+            <small>
+                <span id="RemainingChars_OfferMessage"></span>
+                <span>@Html.GlobalResource("RemainingCharacters")</span>
+            </small>
+        </div>
+        <div class="modal-footer">
+            <button id="modalCancelOfferButton" class="btn btn-link">@Html.GlobalResource("Cancel")</button>
+            <button id="modalMakeOfferConfirmButton" class="btn btn-success">@Html.Resource(Model.Type.Name + "Listing, ReviewOffer")</button>
+        </div>
+    }
+}

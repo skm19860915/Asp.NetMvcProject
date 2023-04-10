@@ -1,0 +1,60 @@
+﻿@model List<RainWorx.FrameWorx.MVC.Models.EventFee>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h3 class="h3row">@Html.AdminResource("LineageString_EventFeeManagement")</h3>
+
+<table>
+    <tr>
+        <th>@Html.AdminResource("Description")</th>
+        <th>@Html.AdminResource("ListingType")</th>
+        <th>@Html.AdminResource("Event")</th>
+        <th>@Html.AdminResource("PayToProceed")</th>
+        <th>&nbsp;</th>
+    </tr>
+
+    @foreach (RainWorx.FrameWorx.MVC.Models.EventFee fee in Model.OrderBy(m => m.ListingType).OrderBy(m => m.Event))
+        {
+        <tr>
+            <td>@Html.ActionLink(fee.Description, "EditEventFees", new { id = fee.ID })</td>
+            <td>@fee.ListingType</td>
+            <td>@fee.Event</td>
+            <td>@fee.PayToProceed</td>
+            <td>@Html.ActionLink(Html.AdminResource("Delete"), "DeleteEventFee", new { id = fee.ID })</td>
+        </tr>
+        }
+</table>
+
+<h4 class="h4row">@Html.AdminResource("AddNewListingFee")</h4>
+@using (Html.BeginForm("AddEventFee", "Admin"))
+{
+    <table>
+        <tr>
+            <td>@Html.AdminResource("Name"):</td>
+            <td>@Html.TextBox("Name")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("FeeDescription"):</td>
+            <td>@Html.TextBox("Description")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("SelectListingType"):</td>
+            <td>@Html.DropDownList("ListingType")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("SelectEvent"):</td>
+            <td>@Html.DropDownList("Event")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("PayToProceed")?</td>
+            <td>@Html.CheckBox("PayToProceed")</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right;">
+                <input type="submit" class="DefaultButton" value="@Html.AdminResource("Add")" name="Add" id="Add" />
+            </td>
+        </tr>
+    </table>
+}

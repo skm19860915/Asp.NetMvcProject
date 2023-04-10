@@ -1,0 +1,13 @@
+﻿@model User
+
+@if (SiteClient.FeedbackEnabled)
+    {
+        FeedbackRating rating = UserClient.GetFeedbackRating(Context.User.Identity.Name, Model.UserName, true);
+
+    @Html.ActionLink(rating.TotalCount.ToString(), MVC.UserFeedbackAction, MVC.AdminController, new { @id = Model.ID, backUrl = ViewData["backUrl"] }, null)
+    @:&nbsp;&nbsp;
+    
+        <div class="stars-off" style="width:80px;"><div class="stars-on" style="width:@Math.Round(rating.AverageTotal * 16,0)px"></div></div>
+    
+        }
+

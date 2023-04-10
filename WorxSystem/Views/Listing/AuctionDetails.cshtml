@@ -1,0 +1,256 @@
+﻿@model Listing
+@{
+    var allOffers = (List<Offer>)ViewData["AllOffers"];
+    var acceptedOffer = allOffers.FirstOrDefault(o => o.Status == OfferStatuses.Accepted);
+}
+<script>
+    $(document).ready(function () {
+        if ($.cookie('currency') == '@Model.Currency.Code') {
+            $("#convertedprice").hide();
+        } else {
+            $("#convertedprice").show();
+        }
+    });
+</script>
+@if ((Model.Status == ListingStatuses.Successful) || (Model.Status == ListingStatuses.Unsuccessful))
+{
+    <div class="panel panel-default closed-details">
+        <ul class="list-group">
+            <li class="list-group-item">
+                @if (Model.Status == ListingStatuses.Successful)
+                {
+                    <span class="sold pull-right">@Html.GlobalResource("Sold")</span>
+                    if (acceptedOffer == null)
+                    {
+                        @Html.Resource("AuctionListing, FinalPriceXSuccessful", Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code))
+                    }
+                    else
+                    {
+                        @Html.Resource("AuctionListing, FinalPriceX", Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code))
+                    }
+                }
+                else if (Model.AcceptedListingActionCount() == 0)
+                {
+                    @Html.Resource("AuctionListing, StartingBidX", Html.LocalCurrencyWithNumberTags(Model.OriginalPrice.Value, Model.Currency.Code))
+                }
+                else
+                {
+                    @Html.Resource("AuctionListing, FinalPriceXUnsuccessful", Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code))
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Properties.Where(p => p.Field.Name.Equals(Fields.ReservePrice)).Single().Value))
+                {
+                    <span class="reserve-not-met awe-rt-ReserveStatus">@Html.Resource("AuctionListing, " + (string)ViewData["ReserveStatus"])</span>
+                }
+            </li>
+            @if ((Model.CurrentListingAction != null) || (Model.Status == ListingStatuses.Successful))
+            {
+                <li class="list-group-item">
+                    @Html.Resource("AuctionListing, XBids", Model.AcceptedListingActionCount())
+                   <a href="@Url.Action(MVC.HistoryAction, "Listing", new { id = Model.ID, currency = Model.Currency.Code})" class="pull-right">
+                        @Html.Resource("AuctionListing, ViewHistory")
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="list-group-item">
+                    @Html.Resource("AuctionListing, XBids", Model.AcceptedListingActionCount())
+                </li>
+            }
+            @{
+                var showUserNames = bool.Parse(SiteClient.Settings["ShowBidHistoryUserNames"]);
+                bool anAdmin = User.IsInRole("Admin");
+                if (anAdmin && User.Identity.Name == Html.FBOUserName())
+                {
+                    showUserNames = true;
+                }
+                if (Model.CurrentListingAction != null && showUserNames && acceptedOffer == null)
+                {
+                    <li class="list-group-item">
+                        @Html.Resource("AuctionListing, HighBidderX", Model.CurrentListingAction.UserName)
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+}
+@{
+    bool showSellerData = bool.Parse(SiteClient.Settings["SellerUsernameDetailPage"]);
+    bool paymentsEnabled = (Model.Owner.CreditCardAccepted() && SiteClient.BoolSetting(SiteProperties.AuthorizeNet_Enabled)) ||
+        (Model.Owner.BoolProperty(StdUserProps.StripeConnect_SellerAccountConnected) && SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled)) ||
+        (Model.OwnerAcceptsPayPal() && SiteClient.BoolSetting(SiteProperties.PayPal_Enabled));
+    bool hasShipping = Model.ShippingOptions.Count > 0;
+    bool hasPaymentInstructions = !string.IsNullOrEmpty(Model.PaymentInstructions());
+
+    if (showSellerData || paymentsEnabled || hasShipping || hasPaymentInstructions)
+    {
+        string sellerPaymentData = "seller-data__payment";
+        if (!showSellerData)
+        {
+            sellerPaymentData += "  seller-data__fullwidth";
+        }
+        <div class="detail__seller-data">
+            <div class="seller-data__container">
+                @{
+                    if (showSellerData)
+                    {
+                        <div class="seller-data__summary">
+                            @Html.Partial("ListingDetail_SellerUserSummary")
+                        </div>
+                    }
+                }
+                <div class="@sellerPaymentData">
+                    @Html.Partial("AuctionPaymentOptions")
+                </div>
+            </div>
+            @Html.Partial("ShippingOptionDisplay")
+        </div>
+    }
+}
+
+<script>
+    var reserveStatus = {};
+    var buyNowPriceForJS = "";
+    @if (User.Identity.IsAuthenticated && Model.ListingActions.Any(la => la.UserName == Html.FBOUserName() && la.Status == "Accepted"))
+    {
+        <text>var anyActivity = true;</text>
+    }
+    else
+    {
+        <text>var anyActivity = false;</text>
+    }
+
+    $(document).ready(function () {
+        $(document).on("SignalR_ListingActionResponse", function (event, data) {
+            if ($.inArray(data.Action_ListingID, interestingListings) >= 0) {
+                if (data.Accepted) {
+                    anyActivity = true;
+                }
+            }
+        });
+
+        //when this auction's price changes
+        $(document).on("SignalR_UpdateListingAction", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            //handle Custom Updates Status Changes
+            var buyNowAvailable = data.Properties["BuyNowStatus"] == "true";
+            var buyNowPrice = data.Properties["BuyNowPrice"];
+            var reserveDefined = data.Properties["ReserveDefined"] == "true";
+            var reserveMet = data.Properties["ReserveMet"] == "true";
+            var makeOfferAvailable = data.Properties["MakeOfferStatus"] == "true";
+
+            //update reserve status
+            if (reserveDefined) {
+                if (reserveMet) {
+                    $(".awe-rt-ReserveStatus").html(reserveStatus["ReserveMet"]);
+                } else {
+                    $(".awe-rt-ReserveStatus").html(reserveStatus["ReserveNotMet"]);
+                }
+            } else {
+                $(".awe-rt-ReserveStatus").html(reserveStatus["NoReserve"]);
+            }
+            $(".awe-rt-ReserveStatus").pulse();
+
+            //update Buy Now Status
+            if (buyNowAvailable) {
+                $(".awe-rt-BuyItNowContainer").show();
+                $(".awe-rt-BuyItNowAvailable").pulse();
+                $(".awe-rt-BuyNowPrice").pulse();
+            } else {
+                $(".awe-rt-BuyItNowContainer").hide();
+            }
+
+            //update Make Offer Status
+            if (makeOfferAvailable) {
+                $(".awe-rt-MakeOfferContainer").show();
+               // $("#MakeOffer").pulse();
+            } else {
+                $(".awe-rt-MakeOfferContainer").hide();
+            }
+
+            //update Buy Now Price
+            $('.awe-rt-BuyNowPrice span.NumberPart').each(function () {
+                buyNowPriceForJS = Globalize.formatNumber(parseFloat(buyNowPrice), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                $(this).html(buyNowPriceForJS);
+                $(this).pulse();
+            });
+
+            //if # of bids is > 0
+            if (data.AcceptedActionCount > 0) {
+                //show bid history button and high bidder
+                $(".BidHistoryButton").removeClass("awe-hidden");
+                $(".HighBidder").html(data.CurrentListingActionUserName);
+                $(".HighBidderRow").removeClass("awe-hidden");
+                $(".HighBidder").pulse();
+            }
+
+            //if the current user is logged in
+            @if (User.Identity.IsAuthenticated)
+                {
+                <text>
+            //if the price update was not from an edit, and the logged in user ever placed an accepted bid, is not the high bidder or the seller (and didn't initiate the action)...
+            if (anyActivity && data.Source != "UPDATE_ORIGIN" && data.UserName != "@Html.FBOUserName()" && ("@Html.FBOUserName()" != data.CurrentListingActionUserName && "@Model.OwnerUserName" != "@Html.FBOUserName()")) {
+                //show generic "not winning" context alert
+                var message = contextMessageDictionary["NOTCURRENTLISTINGACTIONUSER"];
+                var cssClass = "alert alert-danger";
+                $(".ContextualStatus").each(function () {
+                    $(this).html("<div class='" + cssClass + "'>" + message + "</div>");
+                    if (!$(this).is(":visible")) {
+                        $(this).fadeTo(1000, 1, function () {
+                            $(this).slideDown(500);
+                        });
+                    }
+                });
+            }
+
+            </text>
+                }
+        });
+
+        //if End DTTM is updated because of sniper protection, show Extended
+        $(document).on("SignalR_UpdateListingDTTM", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            if (data.Epoch == "ending" && (data.Source == "SOFT_ORIGIN") || data.Source == "EXTENDSINGLE_ORIGIN") {
+                $(".awe-rt-Extended").show();
+                $(".awe-rt-Extended").pulse();
+            }
+        });
+
+        //auction specific context messages
+        contextMessageDictionary["UNKNOWN"] = "@Html.Resource("AuctionListing, UNKNOWN").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_NOT_STARTED"] = "@Html.Resource("AuctionListing, LISTING_NOT_STARTED").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_DELETED"] = "@Html.Resource("AuctionListing, LISTING_DELETED").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_AWAITING_PAYMENT"] = "@Html.Resource("AuctionListing, LISTING_AWAITING_PAYMENT").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_NOT_STARTED"] = "@Html.Resource("AuctionListing, LISTING_NOT_STARTED").ToJavascriptSafeString()";
+        contextMessageDictionary["WINNING"] = "@Html.Resource("AuctionListing, WINNING").ToJavascriptSafeString()";
+        contextMessageDictionary["CURRENT_HIGH_BIDDER_RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, CURRENT_HIGH_BIDDER_RESERVE_NOT_MET").ToJavascriptSafeString()";
+        contextMessageDictionary["LOSING"] = "@Html.Resource("AuctionListing, LOSING").ToJavascriptSafeString()";
+        contextMessageDictionary["NO_ACTIVITY_AS_BUYER"] = "@Html.Resource("AuctionListing, NO_ACTIVITY_AS_BUYER").ToJavascriptSafeString()";
+        contextMessageDictionary["WON"] = "@Html.Resource("AuctionListing, WON").ToJavascriptSafeString()";
+        contextMessageDictionary["LOST_RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, LOST_RESERVE_NOT_MET").ToJavascriptSafeString()";
+        contextMessageDictionary["LOST"] = "@Html.Resource("AuctionListing, LOST").ToJavascriptSafeString()";
+        contextMessageDictionary["NO_ACTIVITY"] = "@Html.Resource("AuctionListing, NO_ACTIVITY").ToJavascriptSafeString()";
+        contextMessageDictionary["NOSALE"] = "@Html.Resource("AuctionListing, NOSALE").ToJavascriptSafeString()";
+        contextMessageDictionary["SOLD"] = "@Html.Resource("AuctionListing, SOLD").ToJavascriptSafeString()";
+        contextMessageDictionary["NO_ACTIVITY_AS_SELLER"] = "@Html.Resource("AuctionListing, NO_ACTIVITY_AS_SELLER").ToJavascriptSafeString()";
+        contextMessageDictionary["RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, RESERVE_NOT_MET").ToJavascriptSafeString()";
+        contextMessageDictionary["RESERVE_NOT_MET_AS_SELLER"] = "@Html.Resource("AuctionListing, RESERVE_NOT_MET_AS_SELLER").ToJavascriptSafeString()";
+        contextMessageDictionary["WOULD_SELL"] = "@Html.Resource("AuctionListing, WOULD_SELL").ToJavascriptSafeString()";
+        contextMessageDictionary["NOTCURRENTLISTINGACTIONUSER"] = "@Html.Resource("AuctionListing, NOTCURRENTLISTINGACTIONUSER").ToJavascriptSafeString()";
+
+        contextMessageDictionary["ActionSuccess"] = "@Html.Resource("AuctionListing, ActionSuccess").ToJavascriptSafeString()";
+
+        //offer messages
+        contextMessageDictionary["ENDED_WITH_OFFER_ACCEPTED"] = "@Html.Resource("AuctionListing, ENDED_WITH_OFFER_ACCEPTED").ToJavascriptSafeString()";
+        contextMessageDictionary["YOUR_OFFER_ACCEPTED"] = "@Html.Resource("AuctionListing, YOUR_OFFER_ACCEPTED").ToJavascriptSafeString()";
+        contextMessageDictionary["YOUR_OFFER_DECLINED"] = "@Html.Resource("AuctionListing, YOUR_OFFER_DECLINED").ToJavascriptSafeString()";
+        contextMessageDictionary["YOU_HAVE_PENDING_OFFER"] = "@Html.Resource("AuctionListing, YOU_HAVE_PENDING_OFFER").ToJavascriptSafeString()";
+
+        //auction specific reserve messages
+        reserveStatus["NoReserve"] = "@Html.Resource("AuctionListing, NoReserve").ToJavascriptSafeString()";
+        reserveStatus["ReserveNotMet"] = "@Html.Resource("AuctionListing, ReserveNotMet").ToJavascriptSafeString()";
+        reserveStatus["ReserveMet"] = "@Html.Resource("AuctionListing, ReserveMet").ToJavascriptSafeString()";
+    });
+</script>

@@ -1,0 +1,698 @@
+﻿@model User
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_UserManagement");
+}
+@section PageName {
+    &gt; @Model.UserName (@Model.ID)
+}
+
+@section head {
+    @{
+
+        string backUrl = string.IsNullOrEmpty((string)ViewData["backUrl"])
+            ? Html.GetActionUrl(MVC.UserManagementAction)
+            : (string)ViewData["backUrl"];
+        string impersonateUrl = Html.GetActionUrl(MVC.ImpersonateAction, new { id = Model.ID, backUrl });
+    }
+    <script>
+        $(document).ready(function () {
+
+            $("#@Fields.Password").focus(function () { $(this).attr("type", "password"); });
+            $("#@Fields.ConfirmPassword").focus(function () { $(this).attr("type", "password"); });
+
+            if ($("#@Fields.Password").val() != "" || $("#@Fields.ConfirmPassword").val() != "")
+            {
+                $("#@Fields.Password").attr("type", "password");
+                $("#@Fields.ConfirmPassword").attr("type", "password");
+            }
+
+            // [Deactivate User] button click
+            $("#DeactivateUser").click(function () {
+                var deactivateUrl = "@Html.GetActionUrl(MVC.SetUserActiveAction, new { id = Model.ID, active = false }).ToMvcHtmlString().ToJavascriptSafeString()";
+                document.location = $.htmlDecode(deactivateUrl);
+                return false;
+            });
+
+            // [Re-Activate User] button click
+            $("#ReactivateUser").click(function () {
+                var reactivateUrl = "@Html.GetActionUrl(MVC.SetUserActiveAction, new { id = Model.ID, active = true }).ToMvcHtmlString().ToJavascriptSafeString()";
+                document.location = $.htmlDecode(reactivateUrl);
+                return false;
+            });
+
+            // [Delete User] button click
+            $("#DeleteUser").click(function () {
+                var userHasBids = @(((int)ViewData["AcceptedListingActionCount"] > 0).ToString().ToLower());
+                var deleteUrl = "@Html.GetActionUrl(MVC.DeleteUserAction, new { id = Model.ID }).ToMvcHtmlString().ToJavascriptSafeString()";
+                var deactivateUrl = "@Html.GetActionUrl(MVC.SetUserActiveAction, new { id = Model.ID, active = false }).ToMvcHtmlString().ToJavascriptSafeString()";
+                BootstrapDialog.show({
+                    type: 'type-danger',
+                    cssClass: 'acp-boot-dialog',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.AdminResourceString("UserDeletionConfirmation_Title").ToJavascriptSafeString()',
+                    message: ''
+                        + '@Html.AdminResource("DeleteUserWarning_Line1").ToJavascriptSafeString()'
+                        + '<br /><br />'
+                        + '<span style="color: #f00; font-weight: bold;">@Html.AdminResource("DeleteUserWarning_Line2").ToJavascriptSafeString()</span>'
+                        + '<br /><br />'
+                        + '@Html.AdminResource("DeleteUserWarning_Line3").ToJavascriptSafeString()'
+                    ,
+                    buttons: [
+                        {
+                            label: '@Html.AdminResourceString("Deactivate_Button").ToJavascriptSafeString()',
+                            cssClass: 'btn-primary',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                                document.location = $.htmlDecode(deactivateUrl);
+                            }
+                        }, {
+                            label: '@Html.AdminResourceString("Delete").ToJavascriptSafeString()',
+                            cssClass: 'btn-danger',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                                if (userHasBids) {
+                                    //title: '@Html.AdminResourceString("UserDeletionConfirmation_Title").ToJavascriptSafeString()',
+                                    BootstrapDialog.show({
+                                        type: 'type-danger',
+                                        cssClass: 'acp-boot-dialog',
+                                        title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.AdminResourceString("UserDeletionConfirmation_Title").ToJavascriptSafeString()',
+                                        message: ''
+                                            + '@Html.AdminResource("DeleteUserWithBidsWarning_Line1").ToJavascriptSafeString()'
+                                            + '<br /><br />'
+                                            + '<span style="color: #f00; font-weight: bold;">@Html.AdminResource("DeleteUserWithBidsWarning_Line2").ToJavascriptSafeString()</span>'
+                                            + '<br /><br />'
+                                            + '@Html.AdminResource("DeleteUserWithBidsWarning_Line3").ToJavascriptSafeString()'
+                                        ,
+                                        buttons: [
+                                            {
+                                                label: '@Html.AdminResourceString("Delete").ToJavascriptSafeString()',
+                                                cssClass: 'btn-danger',
+                                                action: function (innerDialogItself) {
+                                                    innerDialogItself.close();
+                                                    document.location = $.htmlDecode(deleteUrl);
+                                                }
+                                            } , {
+                                                label: '@Html.AdminResourceString("Cancel").ToJavascriptSafeString()',
+                                                action: function (innerDialogItself) {
+                                                    innerDialogItself.close();
+                                                }
+                                            }
+                                        ]
+                                    });
+                                } else {
+                                    document.location = $.htmlDecode(deleteUrl);
+                                }
+                            }
+                        }, {
+                            label: '@Html.AdminResourceString("Cancel").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            });
+
+            // [GenerateAuthToken] button click
+            $("#GenerateAuthToken").click(function () {
+                var generateAuthURL = "@Html.GetActionUrl(MVC.GenerateServiceAuthorizationToken, MVC.RealTimeController).ToMvcHtmlString()";
+                $.ajax({
+                    url: $.url(generateAuthURL),  //server script to process data
+                    type: 'POST',
+                    //Ajax events
+                    //beforeSend: beforeSendHandler,
+                    //success: successHandler,
+                    //error: errorHandler,
+                    //Options to tell JQuery not to process data or worry about content-type
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                }).success(function (results) {
+                    $("#ServiceAuthorizationToken").val(results);
+                });
+                return false;
+            });
+
+            //Restricted - click
+            $("#IsLockedOut").click(function () {
+                if ($(this).prop("checked")) {
+                    //un-check all role checkboxes automatically --
+                    //  note this is a UI nicety, all roles are also automatically removed in the BLL logic if a user is set to restricted
+                    $("#Role_Admin").prop("checked", false);
+                    $("#Role_Seller").prop("checked", false);
+                    $("#Role_Buyer").prop("checked", false);
+                }
+            });
+
+
+            $('#accountComment').keypress(function (event) {
+                var max = 500;
+                var len = $(this).val().length;
+
+                if (event.which < 0x20) {
+                    // e.which < 0x20, then it's not a printable character
+                    // e.which === 0 - Not a character
+                    return; // Do nothing
+                }
+
+                if (len >= max) {
+                    event.preventDefault();
+                }
+
+            });
+            $('#accountComment').keyup(function (event) {
+                var max = 500;
+                var len = $(this).val().length;
+                var char = max - len;
+
+                $('#charLeft').text(char);
+
+            });
+        });
+    </script>
+    <style>
+        #DeleteDialog {
+            text-align: left;
+            font-size: 80%;
+        }
+
+        #DeleteWithBidsDialog {
+            text-align: left;
+            font-size: 80%;
+        }
+    </style>
+}
+
+@Html.Partial("UserManagementTopNav", "accountinfo")
+<div class="user-details panel panel-default form-horizontal">
+    <div class="panel-body">
+        @{
+            string[] demoUsers = { "admin", "JohnBuyer", "JoeSeller", "Admin", "AuctionBob", "BidderBill", "SusanSales", "WallyAPI",
+                                   "SpringfieldEstates", "DeLongWarehouse", "OnlyMusic", "SurplusMachines", "JCassisAntiques",
+                                   "CollectArt", "Gallery9", "TheKarolFamily", "CollectCards", "XLMachines", "Seller1" };
+            bool isDemoRestrictedUser = SiteClient.DemoEnabled && demoUsers.Contains(Model.UserName);
+        }
+        @using (Html.BeginForm())
+        {
+            @Html.Hidden(Fields.Id)
+
+            if (!isDemoRestrictedUser)
+            {
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">
+                        @Html.AdminResource("UserName") <strong class="Required">*</strong>
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.TextBox(Fields.UserName, null, new { @class = "form-control input-sm" })
+                        <p class="help-block">@Html.AdminResource("Username_Help")</p>
+                    </div>
+                    <div class="col-xs-2"></div>
+                </div>
+            }
+            else // when in demo mode, don't allow changes to this field for built-in users
+            {
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">
+                        @Html.AdminResource("UserName") <strong class="Required">*</strong>
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.TextBox(Fields.UserName, null, new { @disabled = "disabled", @class = "form-control input-sm" })
+                        <p class="help-block">@Html.AdminResource("Username_Help")</p>
+                    </div>
+                    <div class="col-xs-2">
+                        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFieldDisabledForThisUser")" title="@Html.AdminResource("DemoFieldDisabledForThisUser")" />
+                    </div>
+                </div>
+            }
+
+            if (!isDemoRestrictedUser && !SiteClient.BoolSetting(SiteProperties.ActiveDirectoryEnabled))
+            {
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">
+                        @Html.AdminResource("Password")
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.TextBox(Fields.Password, string.Empty, new { @autocomplete = "off", @class = "form-control input-sm" })
+                        <p class="help-block">@Html.AdminResource("AdminEditUserPassword_Help")</p>
+                    </div>
+                    <div class="col-xs-2"></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">
+                        @Html.AdminResource("ConfirmPassword")
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.TextBox(Fields.ConfirmPassword, string.Empty, new { @autocomplete = "off", @class = "form-control input-sm" })
+                    </div>
+                    <div class="col-xs-2"></div>
+                </div>
+            }
+            else if (isDemoRestrictedUser) // when in demo mode, don't allow changes to this field for built-in users
+            {
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">
+                        @Html.AdminResource("Password")
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.Password(Fields.Password, string.Empty, new { @disabled = "disabled", @autocomplete = "off", @class = "form-control input-sm" })
+                        <p class="help-block">@Html.AdminResource("AdminEditUserPassword_Help")</p>
+                    </div>
+                    <div class="col-xs-2">
+                        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFieldDisabledForThisUser")" title="@Html.AdminResource("DemoFieldDisabledForThisUser")" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">
+                        @Html.AdminResource("ConfirmPassword")
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.Password(Fields.ConfirmPassword, string.Empty, new { @disabled = "disabled", @autocomplete = "off", @class = "form-control input-sm" })
+                    </div>
+                    <div class="col-xs-2">
+                        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFieldDisabledForThisUser")" title="@Html.AdminResource("DemoFieldDisabledForThisUser")" />
+                    </div>
+                </div>
+
+            }
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-4 control-label">
+                    @Html.AdminResource("Email")
+                </label>
+                <div class="col-xs-12 col-sm-6">
+                    @Html.TextBox(Fields.Email, Model.Email, new { @class = "form-control input-sm" })
+                </div>
+            </div>
+
+            if (SiteClient.BoolSetting("EnableWebAPI") && (bool)ViewData["WebAPIEnabled"])
+            {
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-4 control-label">
+                        @Html.AdminResource("WebAPIAuthenticationToken")
+                    </label>
+                    <div class="col-xs-10 col-sm-6">
+                        @Html.TextBox(Fields.ServiceAuthorizationToken, Model.ServiceAuthorizationToken, new { @class = "form-control input-sm" })
+                        <br />
+                        <button class="btn btn-default" id="GenerateAuthToken">@Html.AdminResource("GenerateAuthToken")</button>
+                        <p class="help-block">@Html.AdminResource("GenerateAuthToken_Help")</p>
+                    </div>
+                    <div class="col-xs-2"></div>
+                </div>
+            }
+            <div class="row">
+                <div class="col-md-6 yesNoToggle">
+                    <div class="sub-header">
+                        @Html.AdminResource("Roles")
+                        @if (isDemoRestrictedUser) // when in demo mode, don't allow changes to this field for built-in users
+                {
+                            <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFieldDisabledForThisUser")" title="@Html.AdminResource("DemoFieldDisabledForThisUser")" />
+                        }
+                    </div>
+
+
+                    @foreach (Role userRole in UserClient.GetRoles(Context.User.Identity.Name))
+                    {
+                        string roleName = userRole.Name;
+                        string fieldName = Fields.RoleInputPrefix + roleName;
+                        <div class="form-group">
+                            @if (isDemoRestrictedUser) // when in demo mode, don't allow changes to this field for built-in users
+                            {
+                                bool isChecked;
+                                string hiddenValue;
+                                isChecked = ((bool)ViewData[fieldName]);
+                                hiddenValue = (isChecked) ? MVC.TrueFormValue : MVC.FalseValue;
+                                <label class="col-xs-12 col-sm-4 control-label">
+                                    @Html.AdminResource(roleName)
+                                </label>
+                                <div class="col-xs-10 col-sm-6">
+                                    <input type="checkbox" checked="@isChecked" disabled="disabled" />
+                                    <input type="hidden" id="@fieldName" name="@fieldName" value="@hiddenValue" />
+                                </div>
+                                <!--<span style="width: 25px; margin-left: 3px; margin-bottom: 5px;" class="ToolTip" onmouseover="javascript:this.className='ToolTip2_Hover'" onmouseout="javascript:this.className='ToolTip2'">
+                                    <img src="Content/images/General/HelpTip.png" />
+                                    <span>@Html.AdminResource(roleName + "Role_Help")</span>
+                                </span>-->
+                            }
+                            else if (User.Identity.Name == Model.UserName && roleName == RainWorx.FrameWorx.Strings.Roles.Admin)
+                            {
+                                //never let an admin remove themselves from the admin role...
+
+                                <label class="col-xs-12 col-sm-4 control-label">
+                                    @Html.AdminResource(roleName)
+                                </label>
+                                <div class="col-xs-10 col-sm-6">
+                                    <input type="checkbox" checked="checked" disabled="disabled" />
+                                    <input type="hidden" id="@fieldName" name="@fieldName" value="@MVC.TrueFormValue" />
+
+                                    <!-- <span style="width: 25px; margin-left: 3px; margin-bottom: 5px;" class="ToolTip" onmouseover="javascript:this.className='ToolTip2_Hover'" onmouseout="javascript:this.className='ToolTip2'">
+                                        <img src="Content/images/General/HelpTip.png" />
+                                        <span>@Html.AdminResource(roleName + "Role_Help")</span>
+                                    </span> -->
+                                </div>
+                            }
+                            else
+                            {
+
+
+                                <label class="col-xs-12 col-sm-4 control-label">
+                                    @Html.AdminResource(roleName)
+                                </label>
+                                <div class="col-xs-10 col-sm-6">
+                                    @Html.CheckBox(fieldName)
+                                    @if (isDemoRestrictedUser)
+                                    {
+                                        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFieldDisabledForThisUser")" title="@Html.AdminResource("DemoFieldDisabledForThisUser")" />
+
+                                    }
+                                </div>
+                                <!--  <div class="col-xs-12 clearfix">
+                                   @Html.AdminResource(roleName + "Role_Help")
+                                </div>-->
+                            }
+                        </div>
+
+                    }
+                </div>
+                <div class="col-md-6 yesNoToggle">
+                    <div class="sub-header">
+                        @Html.AdminResource("AccountStatus")
+                    </div>
+
+                    @if (isDemoRestrictedUser) // when in demo mode, don't allow changes to this field for built-in users
+                    {
+                        string fieldName;
+                        bool isChecked;
+                        string hiddenValue;
+
+                        {
+                            fieldName = Fields.IsApproved;
+                            isChecked = (bool)ViewData[fieldName];
+                            hiddenValue = (isChecked) ? MVC.TrueFormValue : MVC.FalseValue;
+                        }
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("Approved")</label>
+                            <div class="col-xs-10 col-sm-6">
+                                <input type="checkbox" checked="@isChecked" disabled="disabled" />
+                                <input type="hidden" id="@fieldName" name="@fieldName" value="@hiddenValue" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusApproved_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusApproved_Help", Html.AdminResource("AdminEditUserStatusApproved_Help"))
+                            </div>
+                        </div>
+                        {
+                            fieldName = Fields.IsLockedOut;
+                            isChecked = (bool)ViewData[fieldName];
+                            hiddenValue = (isChecked) ? MVC.TrueFormValue : MVC.FalseValue;
+                        }
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("LockedOut")</label>
+                            <div class="col-xs-10 col-sm-6">
+                                <input type="checkbox" checked="@isChecked" disabled="disabled" />
+                                <input type="hidden" id="@fieldName" name="@fieldName" value="@hiddenValue" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusRestricted_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusRestricted_Help", Html.AdminResource("AdminEditUserStatusRestricted_Help"))
+                            </div>
+                        </div>
+                        {
+                            fieldName = Fields.IsVerified;
+                            isChecked = (bool)ViewData[fieldName];
+                            hiddenValue = (isChecked) ? MVC.TrueFormValue : MVC.FalseValue;
+                        }
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("Verified")</label>
+                            <div class="col-xs-10 col-sm-6">
+                                <input type="checkbox" checked="@isChecked" disabled="disabled" />
+                                <input type="hidden" id="@fieldName" name="@fieldName" value="@hiddenValue" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusVerified_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusVerified_Help", Html.AdminResource("AdminEditUserStatusVerified_Help"))
+                            </div>
+                        </div>
+                        {
+                            fieldName = Fields.Newsletter;
+                            isChecked = (bool)ViewData[fieldName];
+                            hiddenValue = (isChecked) ? MVC.TrueFormValue : MVC.FalseValue;
+                        }
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("Newsletter")</label>
+                            <div class="col-xs-10 col-sm-6">
+                                <input type="checkbox" checked="@isChecked" disabled="disabled" />
+                                <input type="hidden" id="@fieldName" name="@fieldName" value="@hiddenValue" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusNewsletter_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusNewsletter_Help", Html.AdminResource("AdminEditUserStatusNewsletter_Help"))
+                            </div>
+                        </div>
+                        {
+                            fieldName = Fields.WebAPIEnabled;
+                            isChecked = (bool)ViewData[fieldName];
+                            hiddenValue = (isChecked) ? MVC.TrueFormValue : MVC.FalseValue;
+                        }
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("WebAPI")</label>
+                            <div class="col-xs-10 col-sm-6">
+                                <input type="checkbox" checked="@isChecked" disabled="disabled" />
+                                <input type="hidden" id="@fieldName" name="@fieldName" value="@hiddenValue" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusWebAPI_Help")
+                                <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFieldDisabledForThisUser")" title="@Html.AdminResource("DemoFieldDisabledForThisUser")" />
+
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusWebAPI_Help", Html.AdminResource("AdminEditUserStatusWebAPI_Help"))
+                            </div>
+                        </div>
+                    }
+                    else if (User.Identity.Name != Model.UserName)
+                    {
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("Approved")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.CheckBox(Fields.IsApproved)
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusApproved_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusApproved_Help", Html.AdminResource("AdminEditUserStatusApproved_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("LockedOut")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.CheckBox(Fields.IsLockedOut)
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusRestricted_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusRestricted_Help", Html.AdminResource("AdminEditUserStatusRestricted_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("Verified")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.CheckBox(Fields.IsVerified)
+                               
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusVerified_Help")
+                            </div>
+                            <div class="col-xs-12 col-sm-8 col-sm-offset-4" style="padding-top: 10px;">
+                                @if (!isDemoRestrictedUser)
+                                {
+                                    @Html.ActionLink(Html.AdminResource("ForceEmailVerification"), MVC.SendVerificationEmailAction,
+                                        new { id = Model.ID, active = true }, new { @class = "btn btn-default btn-xs" })
+                                }
+                                else
+                                {
+                                    <a href="#SendVerificationEmail_DisabledForDemoUser" class="btn btn-default btn-xs" disabled onclick="return false;">@Html.AdminResource("ForceEmailVerification")</a>
+                                }
+                                <p class="help-block">@Html.AdminResource("ForceEmailVerification_Help")</p>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusVerified_Help", Html.AdminResource("AdminEditUserStatusVerified_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("Newsletter")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.CheckBox(Fields.Newsletter)
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusNewsletter_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusNewsletter_Help", Html.AdminResource("AdminEditUserStatusNewsletter_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("WebAPI")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.CheckBox(Fields.WebAPIEnabled)
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusWebAPI_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusWebAPI_Help", Html.AdminResource("AdminEditUserStatusWebAPI_Help"))
+                            </div>
+                        </div>
+                    }
+                    else //can't modify own attributes!
+                    {
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("Approved")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.Hidden(Fields.IsApproved, MVC.TrueFormValue)
+                                <input type="checkbox" checked="checked" disabled="disabled" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusApproved_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusApproved_Help", Html.AdminResource("AdminEditUserStatusApproved_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("LockedOut")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.Hidden(Fields.IsLockedOut, MVC.FalseValue)
+                                <input type="checkbox" disabled="disabled" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusRestricted_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusRestricted_Help", Html.AdminResource("AdminEditUserStatusRestricted_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("Verified")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.Hidden(Fields.IsVerified, MVC.TrueFormValue)
+                                <input type="checkbox" checked="checked" disabled="disabled" />
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusVerified_Help")
+                            </div>
+                            <div class="col-xs-12 col-sm-8 col-sm-offset-4" style="padding-top: 10px;">
+                                @if (!isDemoRestrictedUser)
+                                {
+                                    @Html.ActionLink(Html.AdminResource("ForceEmailVerification"), MVC.SendVerificationEmailAction,
+                                        new { id = Model.ID, active = true }, new { @class = "btn btn-default btn-xs" })
+                                }
+                                else
+                                {
+                                    <a href="#SendVerificationEmail_DisabledForDemoUser" class="btn btn-default btn-xs" disabled onclick="return false;">@Html.AdminResource("ForceEmailVerification")</a>
+                                }
+                                <p class="help-block">@Html.AdminResource("ForceEmailVerification_Help")</p>
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusVerified_Help", Html.AdminResource("AdminEditUserStatusVerified_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("Newsletter")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.CheckBox(Fields.Newsletter)
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusNewsletter_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusNewsletter_Help", Html.AdminResource("AdminEditUserStatusNewsletter_Help"))
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">
+                                @Html.AdminResource("WebAPI")
+                            </label>
+                            <div class="col-xs-10 col-sm-6">
+                                @Html.CheckBox(Fields.WebAPIEnabled)
+                            </div>
+                            <div class="col-xs-2">
+                                @Html.ToolTipButton("AdminEditUserStatusWebAPI_Help")
+                            </div>
+                            <div class="col-xs-12">
+                                @Html.ToolTipContent("AdminEditUserStatusWebAPI_Help", Html.AdminResource("AdminEditUserStatusWebAPI_Help"))
+                            </div>
+                        </div>
+                    }
+                   
+                </div>
+            </div>
+            <div class="sub-header">
+                @Html.AdminResource("Details")
+            </div>
+                @Html.Partial("PropertyGroup", ViewData["Properties"])
+
+                <div class="sub-header">
+                    @Html.AdminResource("Comments") 
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        @Html.TextArea(Fields.Comment, Model.Comment, new { @rows = 4, @class = "form-control", id = "accountComment", maxlength = "500" })
+                        <small>@Html.AdminResource("AdminEditUserComments_Help") (<span id="charLeft"></span> @Html.AdminResource("CharactersLeft"))</small>
+                    </div>
+                </div>
+
+
+                <div class="action-panel">
+                    @if (User.Identity.Name != Model.UserName && !isDemoRestrictedUser)
+                {
+
+                    if (Model.IsActive)
+                    {
+                            <a href="#Deactivate" id="DeactivateUser" data-placement="top" class="btn btn-default" data-toggle="popover" data-content="@Html.AdminResource("AdminEditUserDeactivateUser_Help")">@Html.AdminResource("DeactivateUser")</a>
+                        }
+                        else
+                        {
+                            <a href="#Reactivate" id="ReactivateUser" data-placement="top" class="btn btn-default" data-toggle="popover" data-content="@Html.AdminResource("AdminEditUserReactivateUser_Help")">@Html.AdminResource("ReactivateUser")</a>
+
+                        }
+
+                        <a href="#Delete" id="DeleteUser" data-placement="top" class="btn btn-default" data-toggle="popover" data-content="@Html.AdminResource("AdminEditUserDeleteUser_Help")">@Html.AdminResource("DeleteUser")</a>
+
+                    }
+                    <input type="submit" class="btn btn-success confirm-before-leaving" value="@Html.AdminResource("SaveChanges")" name="Save" id="Save1" />
+
+                </div>
+        }
+    </div>
+
+</div>

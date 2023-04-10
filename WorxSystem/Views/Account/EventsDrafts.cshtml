@@ -1,0 +1,204 @@
+﻿@model Page<Event>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+    string publishUrl = (User.IsInRole("Admin") || !SiteClient.BoolSetting(SiteProperties.RequireAdminToPublishEvent))
+        ? Html.GetActionUrl(MVC.PublishEventAction, MVC.EventController, new { id = "[TARGET_EVENT_ID]" })
+        : Html.GetActionUrl(MVC.RequestPublishEventAction, MVC.EventController, new { id = "[TARGET_EVENT_ID]" });
+}
+
+<script>
+    $(document).ready(function () {
+
+        $(".awe-delete-link").click(function () {
+            var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("DeleteEventWarning_Really").ToJavascriptSafeString()' + '\n'
+                    + '@Html.GlobalResourceString("DeleteWarning_CantBeUndone").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("DeleteConfirmationTitle").ToJavascriptSafeString()',
+                message: jsDeleteConfirmMsg,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("Delete").ToJavascriptSafeString()',
+                        cssClass: 'btn-danger',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $(".awe-confirm-publish").on("click", function () {
+            var jsPublishEventMessage = //"Really publish his event?\nTHIS ACTION CANNOT BE UNDONE"
+                '@Html.GlobalResourceString("PublishEvent_Really").ToJavascriptSafeString()' + '\n'
+                + '@Html.GlobalResourceString("PublishEvent_CantBeUndone").ToJavascriptSafeString()';
+            var jsPublishConfTitle = //
+                '@Html.GlobalResourceString("PublishEvent_ConfirmationTitle").ToJavascriptSafeString()';
+            var targetHref = $(this).attr("href");
+            BootstrapDialog.show({
+                type: 'type-primary',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; ' + jsPublishConfTitle,
+                message: jsPublishEventMessage,
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("PublishEvent").ToJavascriptSafeString()',
+                        cssClass: 'btn-primary',
+                        action: function () {
+                            window.location = $.htmlDecode(targetHref);
+                        }
+                    }, {
+                        label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+            return false;
+        });
+
+        $(".awe-cant-publish").click(function () {
+            var targetEventId = $(this).attr("data-target-event-id");
+            console.log("targetEventId", targetEventId);
+            var targetHref = $(this).attr("href");
+            $.post('RealTime/GetDraftLotCount', { eventId: targetEventId }).done(function (data) {
+                if (data.DraftLotCount > 0) {
+                    var jsDeleteConfirmMsg = //"Really delete this event?\nTHIS ACTION CANNOT BE UNDONE"
+                        '@MvcHtmlString.Create(Html.GlobalResourceString("CantPublishEventsWithDraftLotsMessage")).ToJavascriptSafeString()';
+                    BootstrapDialog.show({
+                        type: 'type-danger',
+                        title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.GlobalResourceString("CantPublishEventsWithDraftLotsTitle").ToJavascriptSafeString()',
+                        message: jsDeleteConfirmMsg,
+                        buttons: [
+                            {
+                                label: '@Html.GlobalResourceString("ViewDraftLots").ToJavascriptSafeString()',
+                                cssClass: 'btn-info',
+                                action: function () {
+                                    window.location = $.htmlDecode(targetHref);
+                                }
+                            }, {
+                                label: '@Html.GlobalResourceString("Cancel").ToJavascriptSafeString()',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }
+                        ]
+                    });
+                } else {
+                    //publish the event
+                    var publishUrl = "@publishUrl.ToJavascriptSafeString()";
+                    window.location = $.htmlDecode(publishUrl.replace("[TARGET_EVENT_ID]", targetEventId));
+                }
+            });
+            return false;
+        });
+
+        $("select#SortFilterOptions").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+        $("select#ViewFilterOption").change(function () {
+            $("input#submitDropDown").click();
+        });
+
+        $('.checkall').click(function () {
+            $(".row-selection-checkbox").prop("checked", this.checked);
+        });
+
+        $("#SetArchived").click(function () {
+            if ($(".row-selection-checkbox:checked").length == 0) {
+                //alert('@Html.GlobalResourceString("YouMustSelectAtLeastOneEventToProceed")');
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    title: '<span class="glyphicon glyphicon-info-sign"></span>',
+                    message: '@Html.GlobalResourceString("YouMustSelectAtLeastOneSaleToProceed").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }
+                    ]
+                });
+                return false;
+            }
+            $(this).parents("form").first().submit();
+            return false;
+        });
+
+    });
+</script>
+<div class="well well-sm section-title">
+    @Html.ButtonLink(Html.GlobalResource("CreateEvent"), MVC.CreateEventAction, MVC.EventController, null, new { @class = "btn btn-primary btn-xs pull-right" })
+    @Html.GlobalResource("LineageString_EventsDrafts")
+</div>
+@Html.LocalizedValidationSummary()
+<div class="panel panel-default">
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-8">
+
+            @using (Html.BeginForm(MVC.EventsDraftsAction, MVC.AccountController, new { page = 0 }, FormMethod.Get))
+            {
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-addon">@Html.GlobalResource("Sort")</label>
+                        @Html.DropDownList(MVC.SortFilterOptions, null, new { @class = "form-control SubmitOnChange" })
+                    </div>
+
+                    <input type="submit" id="submitDropDown" class="awe-hidden" />
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        @using (Html.BeginForm(MVC.SetEventsArchivedAction, MVC.AccountController, FormMethod.Post))
+        {
+
+
+            foreach (Event auctionEvent in Model.List)
+            {
+                @Html.Partial("Event_Row_Draft", auctionEvent)
+            }
+            if (Model.TotalItemCount == 0)
+            {
+                <p class="no-history">
+                    @Html.GlobalResource("NoEventsAvailable")
+                </p>
+            }
+
+            @*<div class="hidden-xs">
+                    @Html.Hidden(MVC.ViewFilterOption, ((SelectList)ViewData[MVC.ViewFilterOption]).SelectedValue)
+                    @Html.Hidden(MVC.SortFilterOptions, ((SelectList)ViewData[MVC.SortFilterOptions]).SelectedValue)
+                    @{
+                        string viewFilterOption = (string) ((SelectList) ViewData[MVC.ViewFilterOption]).SelectedValue;
+                        if (viewFilterOption != "Archived")
+                        {
+                            @Html.Hidden("archived", true.ToString())
+                            @((Model.PageIndex > 0) ? Html.Hidden("page", Model.PageIndex) : MvcHtmlString.Empty)
+                            <button class="btn btn-default" id="SetArchived">@Html.GlobalResource("ArchiveEvents")</button>
+                        }
+                        else
+                        {
+                            @Html.Hidden("archived", false.ToString())
+                            @((Model.PageIndex > 0) ? Html.Hidden("page", Model.PageIndex) : MvcHtmlString.Empty)
+                            <button class="btn btn-default" id="SetArchived">@Html.GlobalResource("RestoreEvents")</button>
+                        }
+                    }
+                </div>*@
+        }
+    </div>
+</div>
+@if (Model.TotalPageCount > 1)
+{
+    Html.RenderPageNumberLinks(Model);
+}

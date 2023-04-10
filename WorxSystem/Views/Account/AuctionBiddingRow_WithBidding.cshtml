@@ -1,0 +1,157 @@
+﻿@model Listing
+@{
+    decimal currentMinBidAmount = (Model.CurrentPrice ?? 0) + (Model.CurrentListingAction != null ? (Model.Increment ?? 0) : 0);
+
+    string contextMessage;
+    ContextDispositionType contextDisposition;
+    Html.GetConciseBiddingContext(Model, out contextMessage, out contextDisposition);
+}
+
+    <div class="active-bid clearfix">
+        <div class="row clearfix">
+            <div class="col-xs-12 col-md-9">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-3">
+
+                        <div class="img-container">
+                            @if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                            {
+                                @Html.Partial("NoPhotoThumbnail")
+                            }
+                            else
+                            {
+                                string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                                @Model.BeginDetailLink()
+                                <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                                @Model.EndDetailLink()
+                            }
+                        </div>
+                    </div>
+                    <div class="col-xs-12  col-sm-8 col-md-9">
+                        @Model.BeginDetailLink()
+                        @if (Model.Lot != null)
+                        {
+                            <span>@string.Format("{0} {1}", Html.GlobalResourceString("Lot"), Model.Lot.LotNumber) -&nbsp;</span>
+                        }
+                        @Model.Title
+                        @if (!SiteClient.EnableEvents)
+                        {
+                            <em>(@Model.ID)</em>
+                        }
+                        @Model.EndDetailLink()
+
+                        @if (SiteClient.EnableEvents)
+                        {
+                            <span class="awe-rt-ColoredStatus">@Html.Partial("Listing_StatusLabel")</span>
+                        }
+                        else if (SiteClient.DisplayListingType)
+                        {
+                            <span class="label label-primary">@Html.GlobalResource("AuctionBanner")</span>
+                        }
+
+                    </div>
+                    <div class="col-xs-12 col-sm-8 col-md-3">
+                        <div class="active-bid__label">
+                            @Html.Resource("AuctionListing , CurrentBid")
+                        </div>
+                        <strong>
+                            @{
+                                string spanClass = string.Empty;
+                                switch (Model.Context.Disposition)
+                                {
+                                    case ContextDispositionType.Positive:
+                                        spanClass = "winning key";
+                                        break;
+                                    case ContextDispositionType.Neutral:
+                                        spanClass = "winning-reserve key";
+                                        break;
+                                    case ContextDispositionType.Negative:
+                                        spanClass = "not-winning key";
+                                        break;
+                                }
+                            }
+                            @*<span class="@spanClass">@Html.LocalCurrency(Model.CurrentPrice.Value, Model.Currency.Code)</span>*@
+                            <span class="awe-rt-CurrentPrice @spanClass">
+                                @* do not remove this span, it gets populated via ajax *@
+                                @Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code)
+                            </span>
+                        </strong>
+                        <div class="active-bid__label">
+                            @Html.Resource("AuctionListing , myMaxBid")
+                        </div>
+                        <span class="awe-rt-MaxBid">
+                            @* do not remove this span, it gets populated via ajax *@
+                            @Html.LocalCurrencyWithNumberTags(Model.Context.UserListingAction.ProxyAmount.Value, Model.Currency.Code)
+                        </span>
+
+                    </div>
+                    <div class="col-xs-12 col-sm-8 col-md-6">
+                        <div class="active-bid__label">
+                            <span class="awe-rt-HideOnEnd">
+                                @Html.GlobalResource("EndsIn")
+                            </span>
+                            <span class="awe-hidden awe-rt-ShowOnEnd">
+                                @Html.GlobalResource("EndDateTime")
+                            </span>
+                            &nbsp;
+                        </div>
+                        <div class="active-bid__time awe-rt-HideOnEnd">
+                            <span data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)" data-end-value="">@*Leave Empty, autofilled by SignalR*@</span>
+                            &nbsp;
+                        </div>
+                        <div class="active-bid__date awe-hidden awe-rt-ShowOnEnd">
+                            <span class="awe-rt-endingDTTM awe-short-date" data-initial-dttm="@(Model.EndDTTM.HasValue ? Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value) : MvcHtmlString.Empty)"></span>
+                        </div>
+                        <div class="active-bid__shipping">
+                            @if (Model.ShippingOptions.Count > 0)
+                            {
+                            <div class="active-bid__label">
+                                @Html.GlobalResource("Shipping")
+                            </div>
+                                    <em>
+                                        <small>
+                                            @foreach (ShippingOption option in Model.ShippingOptions)
+                                            {
+                                                @option.Method.Name@:&nbsp;
+                                                @Html.LocalCurrency(option.FirstItemAmount, Model.Currency.Code) @:&nbsp;
+                                                
+                                            }
+                                        </small>
+                                    </em>
+                                    }
+                                </div>
+                            </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-sm-offset-4 col-md-offset-0 col-md-3 active-bid__cta">
+                @if (contextDisposition == ContextDispositionType.Positive && !string.IsNullOrWhiteSpace(contextMessage))
+                {
+                    <div class="awe-rt-HideOnEnd alert alert-success  InlineContextualStatus">@contextMessage</div>
+                }
+                else if (contextDisposition == ContextDispositionType.Negative && !string.IsNullOrWhiteSpace(contextMessage))
+                {
+                    <div class="awe-rt-HideOnEnd alert alert-danger  InlineContextualStatus">@contextMessage</div>
+                }
+                else
+                {
+                    <div class="awe-hidden awe-rt-HideOnEnd alert alert-default  InlineContextualStatus">@contextMessage</div>
+                }
+                <div class="awe-rt-HideOnEnd">
+                    <span class="awe-hidden bid-conf-title">@Model.Title &nbsp;<em>(@(Model.Lot != null ? Model.Lot.ID : Model.ID))</em></span>
+                    <span class="awe-hidden Bidding_Listing_MinPrice awe-rt-MinimumBid">
+                        @* do not remove this span, it gets populated via AJAX *@
+                        @Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code)
+                    </span>
+                    <a class="btn btn-danger btn-block awe-rt-MinimumBid InlineQuickBid">
+                        @Html.Resource("AuctionListing, QuickBid", Html.LocalCurrencyWithNumberTags(currentMinBidAmount, Model.Currency.Code))
+                    </a>
+                </div>
+
+                <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="btn btn-default btn-block">
+                    @Html.GlobalResource("ViewItem")
+                </a>
+            </div>
+        </div>
+    </div>
+
+

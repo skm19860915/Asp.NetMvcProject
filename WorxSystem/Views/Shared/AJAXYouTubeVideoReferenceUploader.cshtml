@@ -1,0 +1,130 @@
+﻿@model List<RainWorx.FrameWorx.DTO.Media.Media>
+<script>
+
+    //add video to page
+    function addYouTubeVideo(guid, embed) {
+        var videodiv = $("div#youtubeoutput");
+        $("<input type='hidden' />").appendTo(videodiv).attr("name", "media_guid_" + guid).val(guid);
+        $("<input type='hidden' />").appendTo(videodiv).attr("name", "media_ordr_" + guid).val("1");
+        $("<input type='submit' />").appendTo(videodiv).val('@Html.GlobalResource("Remove").ToJavascriptSafeString()')
+            .addClass("btn btn-default")
+            .addClass("RemoveVideoButton");
+        $("div#youtubeinput").hide();
+        $("div#youtubevideo").html(embed);
+        $("input#YouTubeRendererState").val($("div#youtube").html());
+        ReBindYoutubeClickFunctions();
+    }
+
+    function clearYouTubeVideo() {
+        $("input#youtubevideoid").val("");
+        $("div#youtubeinput").show();
+        $("div#youtubevideo").html("");
+        $("div#youtubeoutput").html("");
+        $("input#YouTubeRendererState").val("");
+    }
+
+    //AJAX upload video Id
+    function UploadYoutubeVideoId(videoId) {
+        //parse out the video id from the url entered, then append it to the clean youtube url
+        var videoIdentifierMatches = videoId.toString().match(/([\?\&]v\=|youtu.be\/)([a-zA-Z0-9\-_]*)/);
+        if (videoIdentifierMatches == null) {
+            $("input#youtubevideoid").addClass("input-validation-error");
+            //alert('@Html.GlobalResource("AJAX_InvalidYoutubeUrl").ToJavascriptSafeString()');
+            BootstrapDialog.show({
+                type: 'type-danger',
+                title: '<span class="glyphicon glyphicon-warning-sign"></span>',
+                message: '@Html.GlobalResourceString("AJAX_InvalidYoutubeUrl").ToJavascriptSafeString()',
+                buttons: [
+                    {
+                        label: '@Html.GlobalResourceString("OK").ToJavascriptSafeString()',
+                        action: function(dialogItself) {
+                            dialogItself.close();
+                        }
+                    }
+                ]
+            });
+        } else {
+            var safeYouTubeUrl = "https://www.youtube.com/watch?v=" + videoIdentifierMatches[2];
+            Proxy.invoke("AsyncUploadYouTubeVideoID", { videoId: safeYouTubeUrl },
+            function (result) {
+                var guid = result.toString().substring(0, 36);
+                var embed = result.toString().substring(36);
+                addYouTubeVideo(guid, embed);
+            },
+            function (error) { window.alert(error); });
+        }
+    }
+
+    //upload submit button was clicked
+    function uploadClicked() {
+        var videoId = $("input#youtubevideoid").val();
+        UploadYoutubeVideoId(videoId);
+        return false;
+    }
+
+    function ReBindYoutubeClickFunctions() {
+        $(".RemoveVideoButton").unbind("click");
+        $(".RemoveVideoButton").bind("click", function () {
+            clearYouTubeVideo();
+            //return false;
+        });
+
+        $(".AddVideoButton").unbind("click");
+        $(".AddVideoButton").bind("click", function () {
+            uploadClicked();
+            return false;
+        });
+    }
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        @if (Model != null) {
+        List<Media> mediaList = Model.Where(m => m.Type.Equals("RainWorx.FrameWorx.Providers.MediaAsset.YouTube")).ToList();
+
+        if (mediaList.Count > 0)
+        {
+
+            //Get Workflow
+            Dictionary<string, string> workflowParams =
+                CommonClient.GetAttributeData("MediaAsset.Workflow",
+                                                "UploadYouTubeVideoID");
+            //Load Media
+            IMediaLoader mediaLoader =
+                RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(workflowParams["Loader"]);
+            Dictionary<string, string> loaderProviderSettings =
+                CommonClient.GetAttributeData(mediaLoader.TypeName, "UploadYouTubeVideoID");
+
+            foreach (Media media in mediaList)
+            {
+            <text>addYouTubeVideo('@media.GUID', '@mediaLoader.Load(loaderProviderSettings, media, "Main").ToMvcHtmlString()');</text>
+            }
+        }
+    }
+
+        if ($("input#YouTubeRendererState").val() != "") {
+            $("div#youtube").html($("input#YouTubeRendererState").val());
+        }
+        ReBindYoutubeClickFunctions();
+    });
+</script>
+
+@Html.Hidden("YouTubeRendererState")
+<div id="youtube">
+    @if (SiteClient.BoolSetting(SiteProperties.EnableYoueTubeVideos))
+    {
+        <div id="youtubeinput">
+            <div class="form-inline">
+                <div class="form-group">
+                    <label class="sr-only">@Html.GlobalResource("YouTubeVideoURL")</label>
+                    <input type="text" id="youtubevideoid" class="form-control" placeholder="@Html.GlobalResource("YouTubeVideoURL")" />
+                </div>
+                <input type="submit" class="btn btn-default AddVideoButton" value="@Html.GlobalResource("AddVideo")" />
+                <button type="button" class="btn btn-default btn-xs" onclick="$('.YouTubeReferenceHelper').show()"><strong>?</strong></button>
+            </div>
+        </div>
+    }
+    <div id="youtubevideo"></div>
+    <div id="youtubeoutput"></div>
+</div>

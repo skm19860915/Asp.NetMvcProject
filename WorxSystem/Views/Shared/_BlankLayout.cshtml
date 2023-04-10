@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head prefix="og: http://ogp.me/ns#">
+    <base href="@Html.Base()" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@(string.IsNullOrEmpty(ViewBag.SiteTitle) ? SiteClient.Settings[SiteProperties.SiteTitle] : ViewBag.SiteTitle)</title>
+    @if (IsSectionDefined("metaContent"))
+    {
+        @RenderSection("metaContent")
+    }
+    else
+    {
+        <meta name="keywords" content="@SiteClient.Settings["MetaKeywords"]" />
+        <meta name="description" content="@SiteClient.Settings["MetaDescription"]" />
+    }
+    <meta name="robots" content="ALL" />
+    <meta name="rating" content="GENERAL" />
+    <meta name="dcterms.audience" content="Global" />
+    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    <link href="Content/themes/base/jquery-ui.min.css" rel="stylesheet" />@*Styles.Render("~/bundles/jqueryuicss")*@
+    @Scripts.Render("~/bundles/bootstrap_js")
+    @Styles.Render("~/bundles/bootstrap_css")
+    <link rel="stylesheet" type="text/css" href="Content/AWE_Bootstrap3.css?v=20191213">
+    @* @Styles.Render("~/bundles/social_buttons_css")*@
+    @if (!string.IsNullOrEmpty(SiteClient.TextSetting(SiteProperties.SiteFavIconFileName)))
+    {
+        if (!SiteClient.TextSetting(SiteProperties.SiteFavIconFileName).StartsWith("http"))
+        {
+            <link rel="shortcut icon" href="~/@SiteClient.TextSetting(SiteProperties.SiteFavIconFileName)" />
+        }
+        else
+        {
+            <link rel="shortcut icon" href="@SiteClient.TextSetting(SiteProperties.SiteFavIconFileName)" />
+        }
+    }
+    @if (SiteClient.DemoEnabled)
+    {
+        <link rel="stylesheet" type="text/css" href="Content/AWE-Demo.css">
+    }
+    @Styles.Render("~/bundles/scrollup_css")
+    @Scripts.Render("~/bundles/jquery_scrollUp")
+    <script>
+        $(function () {
+            $.scrollUp({
+                scrollName: 'scrollUp', // Element ID
+                scrollDistance: 300, // Distance from top/bottom before showing element (px)
+                scrollFrom: 'top', // 'top' or 'bottom'
+                scrollSpeed: 300, // Speed back to top (ms)
+                easingType: 'linear', // Scroll to top easing (see http://easings.net/)
+                animation: 'fade', // Fade, slide, none
+                animationInSpeed: 200, // Animation in speed (ms)
+                animationOutSpeed: 200, // Animation out speed (ms)
+                scrollText: '', // Text for element, can contain HTML (default: 'Scroll to top')
+                scrollTitle: '@Html.GlobalResource("ScrollToTop").ToJavascriptSafeString()', // Set a custom <a> title if required. Defaults to scrollText (default: false)
+                scrollImg: false, // Set true to use image
+                activeOverlay: false, // Set CSS color to display scrollUp active point, e.g '#00FFFF'
+                zIndex: 2147483647 // Z-Index for the overlay
+            });
+        });
+    </script>
+    @Styles.Render("~/bundles/bootstrap_dialog_css")
+    @RenderSection("head", required: false)
+    @*@Html.GetSiteContent("Literal_Header")*@
+
+    <style>
+        body {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body id="BlankLayout">
+    @RenderBody()
+    @*@Html.GetSiteContent("Literal_Footer")*@
+    @Scripts.Render("~/bundles/generalAJAX")
+    @if (!(Html.GetCultureInfo().Calendar is System.Globalization.GregorianCalendar))
+    {
+        <script>disableDatePicker = true;</script>
+    }
+    @if (SiteClient.DemoEnabled)
+    {
+        @Scripts.Render("~/bundles/demojs")
+    }
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+@{Html.LogPageRenderStats();}

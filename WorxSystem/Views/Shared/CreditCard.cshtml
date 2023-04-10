@@ -1,0 +1,26 @@
+﻿@model RainWorx.FrameWorx.DTO.CreditCard
+
+<table>
+    <tr>
+        <td colspan="2">@Model.Description</td>
+    </tr>
+    <tr>
+        <td>@Html.GlobalResource("CardType"):</td>
+        <td>@Model.CardType.Name</td>
+    </tr>
+    <tr>
+        <td>@Html.GlobalResource("CardNumber"):</td>
+        <td>
+            ********@Model.LastFourDigits
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.GlobalResource("Expiration"):</td>
+        <td>
+            @Model.ExpirationMonth.ToString("00")/@Model.ExpirationYear.ToString("00").Right(2)
+        </td>
+    </tr>
+</table>
+
+
+

@@ -1,0 +1,24 @@
+﻿@model Invoice
+@*This view exists in both the Account and Admin view folders, be sure you're editing the correct one*@
+@{
+    string returnUrl = (ViewData.ContainsKey(Fields.ReturnUrl)) ? (string)ViewData[Fields.ReturnUrl] : string.Empty;
+    if (!string.IsNullOrEmpty(returnUrl))
+    {
+        <button class="btn btn-default btn-xs" onclick="document.location='@returnUrl.ToJavascriptSafeString()'; return false;"><span class="glyphicon glyphicon-chevron-left"></span>@Html.GlobalResource("Back")</button>
+    }
+    else if (Model.Type != InvoiceTypes.Fee)
+    {
+        if (Model.Owner.UserName == Html.FBOUserName())
+        {
+            @Html.ButtonLink(Html.GlobalResource("Back"), MVC.InvoiceSalesAction, null, null, new { @class = "btn btn-default btn-xs" }) 
+        }
+        else
+        {
+            @Html.ButtonLink(Html.GlobalResource("Back"), MVC.InvoicePurchasesAction, null, null, new { @class = "btn btn-default btn-xs" })  
+        }
+    }
+    else
+    {
+        @Html.ButtonLink(Html.GlobalResource("Back"), MVC.HistoricalFeesAction, null, null, new { @class = "btn btn-default btn-xs" }) 
+    }
+}

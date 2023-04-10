@@ -1,0 +1,77 @@
+﻿@model IEnumerable<RainWorx.FrameWorx.MVC.Models.CreditCardWithBillingAddress>
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Account_CreditCards")
+</div>
+<div class="panel panel-default">
+    <table class="table table-striped">
+        <tr>
+            <th>@Html.GlobalResource("CreditCard")</th>
+            <th>@Html.GlobalResource("CardType")</th>
+            <th>@Html.GlobalResource("Expires")</th>
+            <th class="hidden-xs">@Html.GlobalResource("BillingAddress")</th>
+            <th>&nbsp;</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>x@(item.CreditCard.LastFourDigits)</td>
+                <td>@item.CreditCard.CardType.Name</td>
+                <td>@item.CreditCard.ExpirationMonth.ToString("00")/@item.CreditCard.ExpirationYear.ToString("00").Right(2)</td>
+                <td class="hidden-xs">
+                    @if (item.BillingAddress != null)
+                    {
+
+                        @Html.Partial("Address", item.BillingAddress)
+
+                    }
+
+                </td>
+                <td>
+                    <div class="hidden-xs text-right">
+                        <div class="btn-group-vertical">
+                            @if (!Object.Equals(ViewData[MVC.ViewData_BillingCreditCardId], item.CreditCard.ID))
+                            {
+                                @Html.ButtonLink(Html.GlobalResource("SetPrimary"), MVC.SetDefaultCreditCardAction, new { ID = item.CreditCard.ID }, new { @class = "btn btn-default" })
+                                @Html.ButtonLink(Html.GlobalResource("Delete"), MVC.DeleteCreditCardAction, new { ID = item.CreditCard.ID }, new { @class = "btn btn-default" })
+
+                            }
+                            else
+                            {
+                                <button class="btn btn-success" disabled="disabled">@Html.GlobalResource("PrimaryCreditCard")</button>
+                                if (!SiteClient.BoolSetting("RequireCreditCardOnRegistration"))
+                                {
+                                    @Html.ButtonLink(Html.GlobalResource("Delete"), MVC.DeleteCreditCardAction, new { ID = item.CreditCard.ID }, new { @class = "btn btn-default" });
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="visible-xs">
+                        <div class="btn-group-vertical">
+                            @if (!Object.Equals(ViewData[MVC.ViewData_BillingCreditCardId], item.CreditCard.ID))
+                            {
+                                @Html.ButtonLink(Html.GlobalResource("Primary"), MVC.SetDefaultCreditCardAction, new { ID = item.CreditCard.ID }, new { @class = "btn btn-default" })
+                                @Html.ButtonLink(Html.GlobalResource("Delete_small"), MVC.DeleteCreditCardAction, new { ID = item.CreditCard.ID }, new { @class = "btn btn-danger" })
+                            }
+                            else
+                            {
+                                <button class="btn btn-success" disabled="disabled">@Html.GlobalResource("Primary")</button>
+                                if (!SiteClient.BoolSetting("RequireCreditCardOnRegistration"))
+                                {
+                                    @Html.ButtonLink(Html.GlobalResource("Delete_small"), MVC.DeleteCreditCardAction, new { ID = item.CreditCard.ID }, new { @class = "btn btn-danger" });
+                                }
+                            }
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+    <div class="panel-footer">
+        @Html.ButtonLink(Html.GlobalResource("AddNew"), "AddCreditCard", null, null, new { @class = "btn btn-default" })
+    </div>
+</div>

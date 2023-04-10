@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.SiteTitle = SiteClient.Settings[SiteProperties.SiteTitle] + " - " + Html.GlobalResource("EventNotFound");
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="alert alert-danger">
+                    @Html.GlobalResource("EventNotFound")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

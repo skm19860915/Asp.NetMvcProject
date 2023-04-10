@@ -1,0 +1,63 @@
+﻿@model IEnumerable<RainWorx.FrameWorx.MVC.Models.CreditCardWithBillingAddress>
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    User targetUser = (User)ViewData["User"];
+    ViewBag.PageName = @Html.AdminResource("LineageString_UserManagement");
+}
+@section PageName {
+    &gt; @targetUser.UserName (@targetUser.ID)
+    }
+
+@Html.Partial("UserManagementTopNav", "creditcards")
+<div class="user-details panel panel-default">
+    <div class="panel-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><span class="hidden-xs">@Html.GlobalResource("Last4OnCard")</span><span class="visible-xs">@Html.AdminResource("Last4")</span></th>
+                        <th><span class="hidden-xs">@Html.GlobalResource("CardType")</span><span class="visble-xs">@Html.GlobalResource("Type")</span></th>
+                        <th><span class="hidden-xs">@Html.GlobalResource("ExpirationDate")</span><span class="visible-xs">@Html.GlobalResource("Date")</span></th>
+                        <th class="hidden-xs"><span class="hidden-xs">@Html.GlobalResource("BillingAddress")</span></th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+               
+                @foreach (var item in Model)
+                {
+
+                    <tr>
+                        <td>x@(item.CreditCard.LastFourDigits)</td>
+                        <td>@item.CreditCard.CardType.Name</td>
+                        <td>@item.CreditCard.ExpirationMonth.ToString("00")/@item.CreditCard.ExpirationYear.ToString("00").Right(2)</td>
+                        <td class="hidden-xs">
+                            @if (item.BillingAddress != null)
+                            { <small>
+                                @Html.Partial("Address", item.BillingAddress)
+                            </small>
+                            }
+                        </td>
+                        <td>
+                            @if (!Object.Equals(ViewData[MVC.ViewData_BillingCreditCardId], item.CreditCard.ID))
+                            {
+                                @Html.ButtonLink(Html.AdminResource("SetPrimary"), MVC.SetDefaultCreditCardAction,
+                                                new { @id = targetUser.ID, creditCardId = item.CreditCard.ID }, new { @class = "btn btn-default btn-sm" })@:&nbsp;
+                                @Html.ButtonLink(Html.AdminResource("Delete"), MVC.DeleteCreditCardAction,
+                                                new { @id = targetUser.ID, creditCardId = item.CreditCard.ID }, new { @class = "btn btn-default btn-sm" })
+                            }
+                            else
+                            {
+                                <button class="btn btn-info btn-sm" disabled>@Html.AdminResource("PrimaryCreditCard")</button>
+                                @Html.ButtonLink(Html.AdminResource("Delete"), MVC.DeleteCreditCardAction,
+                                                new { @id = targetUser.ID, creditCardId = item.CreditCard.ID }, new { @class = "btn btn-default btn-sm" })
+                              }
+                        </td>
+                    </tr>
+                }
+            </table>
+            <p>
+                @Html.ButtonLink(Html.AdminResource("AddNew"), MVC.AddCreditCardAction, new { id = targetUser.ID }, new { @class = "btn btn-default" })
+            </p>
+        </div>
+        </div>
+</div>

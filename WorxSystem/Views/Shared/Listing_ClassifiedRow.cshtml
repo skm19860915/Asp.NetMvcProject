@@ -1,0 +1,146 @@
+﻿@model Listing
+@{
+    string containerCssClasses = "panel panel-default clearfix listing";
+    if (Model.Decorations.Any(d => d.Name == DecorationNames.Highlight))
+    {
+        containerCssClasses += " highlight";
+    }
+    bool boldDecoration = Model.Decorations.Any(d => d.Name == DecorationNames.Bold);
+}
+<div class="@containerCssClasses">
+    @if (Model.Decorations.Any(d => d.Name == DecorationNames.Sunburst))
+    {
+        <div class="listing-badge"></div>
+    }
+    @if (SiteClient.DisplayListingType)
+    {
+        <span class="label label-primary status-type">@Html.GlobalResource("ClassifiedAdBanner")</span>
+    }
+    <div class="row">
+        <div class="col-xs-4 col-sm-3 col-lg-2 img-container">
+            @{
+                if (string.IsNullOrEmpty(Model.PrimaryImageURI))
+                {
+                    @Html.Partial("NoPhotoThumbnail")
+                }
+                else
+                {
+                    string uri = string.Format(Model.PrimaryImageURI, SiteClient.ThumbnailType.ToLower());
+                    @Model.BeginDetailLink()
+                    <img src="@uri" alt="@Html.GlobalResource("ListingImage")" class="img-responsive" />
+                    @Model.EndDetailLink()
+                }
+            }
+        </div>
+        <div class="col-xs-8 col-sm-9 col-lg-10">
+            @{
+                string title = Model.Title;
+                if (!Model.Title.Contains(" ") && Model.Title.Length >= 12)
+                {
+                    title = Model.Title.Ellipsize(12);
+                }
+            }
+            <h1 class="title">
+                @Model.BeginDetailLink()
+                @if (boldDecoration)
+                {
+                    <strong>@title</strong>
+                }
+                else
+                {
+                    @title
+                }
+                @Model.EndDetailLink()
+            </h1>
+            <h2 class="subtitle">
+                @Model.BeginDetailLink()
+                @{
+                    string subtitle = Model.Subtitle;
+                    if (!Model.Subtitle.Contains(" ") && Model.Subtitle.Length >= 27)
+                    {
+                        subtitle = Model.Subtitle.Ellipsize(27);
+                    }
+                }
+                @if (boldDecoration)
+                {
+                    <strong>@subtitle</strong>
+                }
+                else
+                {
+                    @subtitle
+                }
+                @Model.EndDetailLink()
+            </h2>
+            @{bool showSeller = bool.Parse(SiteClient.Settings["ShowSellerOnListingRow"]);}
+            @if (showSeller)
+            {
+                <div class="seller">
+                    @Html.GlobalResource("ListedBy"): <a href="Browse?Seller=@Model.OwnerUserName">@Model.OwnerUserName</a>
+                </div>
+            }
+            @if (Model.Status.Equals(ListingStatuses.Active))
+            {
+                @Html.Partial("Listing_Row_Shipping", Model)
+            }
+        </div>
+    </div>
+    <div class="cta">
+        @if (Model.Status.Equals(ListingStatuses.Active))
+        {
+            if (!Model.IsGoodTilCanceled())
+            {
+                <p class="time">
+                    <span data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)" data-end-value="@Html.GlobalResource("Ended")">@*Leave Empty, autofilled by SignalR*@</span>
+                    <span class="awe-rt-HideOnEnd remaining">@Html.GlobalResource("Remaining")</span>
+                </p>
+            }
+            <p class="bids">
+                @if (Model.CurrentPrice.HasValue)
+                {
+                    @: &nbsp;
+                    <span class="awe-rt-CurrentPrice price">@Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) </span>
+                    @: &nbsp;
+                }
+                <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="btn btn-primary awe-rt-ShowOnStart awe-rt-HideOnEnd">@Html.GlobalResource("View") <span class="glyphicon glyphicon-chevron-right"></span></a>
+            </p>
+        }
+        else if (Model.Status.Equals(ListingStatuses.Preview))
+        {
+            <p class="time">
+                <span class="awe-rt-HideOnStart">
+                    @Html.GlobalResource("StartsIn")
+                    <span data-epoch="starting" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnStart" data-end-show-selector="[data-listingid='@Model.ID'] .awe-rt-ShowOnStart" data-action-time="@Html.CultureInvariantLocalDTTM(Model.StartDTTM.Value)">@*Leave Empty, autofilled by SignalR*@</span>
+                </span>
+
+                @if (!Model.IsGoodTilCanceled())
+                {
+                    <span class="awe-rt-ShowOnStart awe-hidden">
+                        <span data-epoch="ending" data-end-hide-selector="[data-listingid='@Model.ID'] .awe-rt-HideOnEnd" data-action-time="@Html.CultureInvariantLocalDTTM(Model.EndDTTM.Value)" data-end-value="@Html.GlobalResource("Ended")">@*Leave Empty, autofilled by SignalR*@</span>
+                        <span class="awe-rt-HideOnEnd remaining">@Html.GlobalResource("Remaining")</span>
+                    </span>
+                }
+            </p>
+            <p class="bids">
+                @if (Model.CurrentPrice.HasValue)
+                {
+                    @: &nbsp;
+                    <span class="awe-rt-CurrentPrice price">@Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) </span>
+                    @: &nbsp;
+                }
+                <a href="@Url.Action("Details", "Listing", new { Model.ID })" class="btn btn-primary">
+                    <span class="awe-rt-HideOnStart">@Html.GlobalResource("Preview") </span>
+                    <span class="awe-rt-ShowOnStart awe-rt-HideOnEnd awe-hidden">@Html.GlobalResource("View") </span>
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </p>
+        }
+        else if (Model.Status.Equals(ListingStatuses.Ended) & Model.CurrentPrice.HasValue)
+        {
+            <p class="bids">
+                &nbsp;
+                <span class=" awe-rt-CurrentPrice price ended">@(Model.CurrentPrice.HasValue ? Html.LocalCurrencyWithNumberTags(Model.CurrentPrice.Value, Model.Currency.Code) : MvcHtmlString.Empty)</span>
+                &nbsp;
+            </p>
+        }
+    </div>
+</div>

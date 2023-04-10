@@ -1,0 +1,429 @@
+﻿@model Listing
+@{
+    string returnUrl = Request.Url.PathAndQuery;
+    bool theSeller = Html.FBOUserName() == Model.OwnerUserName;
+    bool anAdmin = User.IsInRole("Admin");
+    bool ppAccepted =
+        (Model.OwnerAcceptsPayPal() && SiteClient.BoolSetting(SiteProperties.PayPal_Enabled));
+    bool ccAccepted =
+        (Model.Owner.CreditCardAccepted() && SiteClient.BoolSetting(SiteProperties.AuthorizeNet_Enabled)) ||
+        (Model.Owner.BoolProperty(StdUserProps.StripeConnect_SellerAccountConnected) && SiteClient.BoolSetting(SiteProperties.StripeConnect_Enabled));
+}
+@if (User.Identity.IsAuthenticated)
+{
+    //when Auto Generate Invoices is enabled only render a checkout button for a lot after the entire event has ended
+    bool suppressCheckoutButton = false;
+    if (SiteClient.BoolSetting(SiteProperties.AutoGenerateInvoices) && Model.Lot != null && Model.Lot.Event != null &&
+        Model.Lot.Event.Status != AuctionEventStatuses.Closed && Model.Lot.Event.Status != AuctionEventStatuses.Archived)
+    {
+        suppressCheckoutButton = true;
+    }
+    <div class="detail__context__container detail__context-menu">
+        @* Checkout Button & Dropdown *@
+        @if (!suppressCheckoutButton && (ppAccepted || ccAccepted))
+        {
+
+            var uninvoicedPurchases = (List<LineItem>)ViewData["UninvoicedPurchases"];
+            LineItem purchaseLineItem = uninvoicedPurchases.FirstOrDefault();
+            if (purchaseLineItem != null)
+            {
+                string checkoutUrl = Html.GetActionUrl(MVC.CheckoutAction, MVC.AccountController, new { lineitemid = purchaseLineItem.ID, returnUrl });
+                <div class="detail__checkout">
+                    <a href="@checkoutUrl" class="btn__detail__checkout detail__option-menu__link">
+                        <span class="detail__option-menu__icon">
+                            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 0h24v24H0z" fill="none" />
+                                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                            </svg>
+                        </span>
+                        <span class="detail__option-menu__label">
+                            @Html.GlobalResource("Checkout")
+                        </span>
+                    </a>
+                </div>
+            }
+            else if (Model.Type.Name == ListingTypes.FixedPrice && (Model.AcceptedListingActionCount() > 0 || Model.OfferCount > 0))
+            {
+                var allInvoices = (List<Invoice>)ViewData["AllInvoices"];
+                IEnumerable<Invoice> invoicesToDisplay;
+                invoicesToDisplay = allInvoices.Where(i => i.Payer.UserName == Html.FBOUserName() && (i.Status == InvoiceStatuses.New));
+                if (invoicesToDisplay.Count() > 1)
+                {
+                    <div class="detail__checkout dropdown">
+                        <a href="#" type="button" id="checkout-dropdown" data-toggle="dropdown" class="btn__detail__checkout detail__option-menu__link dropdown-toggle">
+                            <span class="detail__option-menu__icon">
+                                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                                </svg>
+                            </span>
+                            <span class="detail__option-menu__label">
+                                @Html.GlobalResource("Checkout")
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @foreach (var invoice in invoicesToDisplay)
+                            {
+                                string linkText = Html.GlobalResourceString("CheckoutForInvoiceX", invoice.ID);
+                                string iconClass = "invoice__status__icon--unpaid glyphicon glyphicon-exclamation-sign";
+                                if (invoice.Status == InvoiceStatuses.New && invoice.Payer.UserName == Html.FBOUserName())
+                                {
+                                    linkText = Html.GlobalResourceString("CheckoutForInvoiceX", invoice.ID);
+                                    iconClass = "invoice__status__icon--unpaid glyphicon glyphicon-exclamation-sign";
+                                }
+                                <li class="dropdown__item--withicon">
+                                    @Html.ActionLink(linkText, MVC.InvoiceDetailAction, MVC.AccountController, new { @id = invoice.ID, returnUrl }, null)
+                                    <span class="@iconClass"></span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+                else if (invoicesToDisplay.Count() == 1)
+                {
+                    var newestUnpaidInvoice = ((List<Invoice>)ViewData["AllInvoices"]).FirstOrDefault(i => i.Payer.UserName == Html.FBOUserName() && i.Status == InvoiceStatuses.New);
+                    if (newestUnpaidInvoice != null)
+                    {
+                        <div class="detail__checkout">
+                            <a href="@Url.Action("InvoiceDetail", "Account", new { @id = newestUnpaidInvoice.ID, returnUrl })" class="btn__detail__checkout detail__option-menu__link">
+                                <span class="detail__option-menu__icon">
+                                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                                    </svg>
+                                </span>
+                                <span class="detail__option-menu__label">
+                                    @Html.GlobalResource("Checkout")
+                                </span>
+                            </a>
+                        </div>
+                    }
+                }
+            }
+            else if ((!theSeller) && (Model.Status.Equals(ListingStatuses.Successful)) && (Model.OriginalQuantity == 1))
+            {
+                var newestUnpaidInvoice = ((List<Invoice>)ViewData["AllInvoices"])
+                    .FirstOrDefault(i => i.Payer.UserName == Html.FBOUserName() && i.Status == InvoiceStatuses.New);
+                if (newestUnpaidInvoice != null)
+                {
+                    <div class="detail__checkout CheckoutButtonLocation">
+                        <a href="@Url.Action("InvoiceDetail", "Account", new { @id = newestUnpaidInvoice.ID, returnUrl })" class="btn__detail__checkout detail__option-menu__link">
+                            <span class="detail__option-menu__icon">
+                                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                                </svg>
+                            </span>
+                            <span class="detail__option-menu__label">
+                                @Html.GlobalResource("Checkout")
+                            </span>
+                        </a>
+                    </div>
+                }
+            }
+        }
+        @* Invoice Button & Dropdown *@
+        @if (Model.Status == ListingStatuses.Successful || (Model.Type.Name == ListingTypes.FixedPrice && Model.AcceptedListingActionCount() > 0))
+        {
+            var allInvoices = (List<Invoice>)ViewData["AllInvoices"];
+            IEnumerable<Invoice> invoicesToDisplay;
+            if (theSeller)
+            {
+                invoicesToDisplay = allInvoices;
+            }
+            else
+            {
+                invoicesToDisplay = allInvoices.Where(i => i.Payer.UserName == Html.FBOUserName());
+            }
+            if (invoicesToDisplay.Count() > 1)
+            {
+                <div class="detail__invoices dropdown">
+                    <a href="#" type="button" id="invoice-dropdown" data-toggle="dropdown" class="btn__detail__invoices detail__option-menu__link dropdown-toggle">
+                        <span class="detail__option-menu__icon">
+                            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+                                <path d="M0 0h24v24H0z" fill="none" />
+                            </svg>
+                        </span>
+                        <span class="detail__option-menu__label">
+                            @Html.GlobalResource("ViewInvoices")
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @foreach (var invoice in invoicesToDisplay)
+                        {
+                            string linkText = "";
+                            string iconClass = "";
+
+                            if (theSeller)
+                            {
+                                linkText = Html.GlobalResourceString("ViewInvoiceToX", invoice.ID, invoice.Payer.UserName);
+                            }
+                            else
+                            {
+                                linkText = Html.GlobalResourceString("ViewInvoiceX", invoice.ID);
+                            }
+                            if (invoice.Status == InvoiceStatuses.Paid)
+                            {
+                                iconClass = "invoice__status__icon--paid glyphicon glyphicon-ok-circle";
+                            }
+                            else
+                            {
+                                iconClass = "invoice__status__icon--unpaid glyphicon glyphicon-exclamation-sign";
+                            }
+                            <li class="dropdown__item--withicon">
+                                @Html.ActionLink(linkText, MVC.InvoiceDetailAction, MVC.AccountController, new { @id = invoice.ID, returnUrl }, null)
+                                <span class="@iconClass"></span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                foreach (var invoice in invoicesToDisplay)
+                {
+                    <div class="detail__invoices">
+                        <a href="@Url.Action("InvoiceDetail", "Account", new { @id = invoice.ID, returnUrl })" class="btn__detail__invoices detail__option-menu__link">
+                            <span class="detail__option-menu__icon">
+                                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+                                    <path d="M0 0h24v24H0z" fill="none" />
+                                </svg>
+                            </span>
+                            <span class="detail__option-menu__label">
+                                @Html.GlobalResource("ViewInvoice")
+                            </span>
+                        </a>
+                    </div>
+                }
+            }
+        }
+        @if ((SiteClient.UserMessagingEnabled) && ((Model.Status.Equals(ListingStatuses.Successful)) || ((Model.Type.Name == ListingTypes.FixedPrice) && (Model.AcceptedListingActionCount() > 0))))
+        {
+            List<LineItem> buyerList = AccountingClient.GetListingLineItemsBySeller(SystemActors.SystemUserName, Model.OwnerUserName, "All", Model.ID.ToString(), "ListingID", 0, 0, "DateStamp", true).List;
+            var contactButtonRendered = new Dictionary<string, string>();
+            if (!theSeller)
+            {
+                foreach (LineItem sale in buyerList)
+                {
+                    if (!contactButtonRendered.ContainsKey(sale.Payer.UserName) && Html.FBOUserName() == sale.Payer.UserName)
+                    {
+                        contactButtonRendered.Add(sale.Payer.UserName, "rendered");
+                        <div class="detail__contactuser">
+                            <a href="@Url.Action(MVC.SendListingMessageAction, MVC.AccountController, 
+                                    new { receiver = Model.OwnerUserName, template = Templates.AskListingQuestion, listingID = Model.ID, returnUrl = Model.GetDetailUrl() })" 
+                               class="btn__detail__contactuser detail__option-menu__link">
+                                <span class="detail__option-menu__icon">
+                                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                        <path d="M0 0h24v24H0z" fill="none" />
+                                    </svg>
+                                </span>
+                                <span class="detail__option-menu__label">
+                                    @Html.GlobalResource("MessageSeller")
+                                </span>
+                            </a>
+                        </div>
+                    }
+                }
+            }
+            else if (theSeller)
+            {
+                if (buyerList.Count == 1)
+                {
+                    foreach (LineItem sale in buyerList)
+                    {
+                        if (!contactButtonRendered.ContainsKey(sale.Payer.UserName))
+                        {
+                            contactButtonRendered.Add(sale.Payer.UserName, "rendered");
+                            <div class="detail__contactuser">
+                                <a href="@Url.Action(MVC.SendListingMessageAction, MVC.AccountController, new { receiver = sale.Payer.UserName, template = Templates.AskListingQuestion, listingID = Model.ID, returnUrl = Model.GetDetailUrl() })" class="btn__detail__contactuser detail__option-menu__link">
+                                    <span class="detail__option-menu__icon">
+                                        <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                            <path d="M0 0h24v24H0z" fill="none" />
+                                        </svg>
+                                    </span>
+                                    <span class="detail__option-menu__label">
+                                        @Html.GlobalResource("MessageBuyer")
+                                    </span>
+                                </a>
+                            </div>
+                        }
+                    }
+                }
+                else if (buyerList.Count > 1)
+                {
+                    <div class="detail__contactuser dropdown">
+                        <a href="#" type="button" id="contactuser-dropdown" data-toggle="dropdown" class="btn__detail__contactuser detail__option-menu__link dropdown-toggle">
+                            <span class="detail__option-menu__icon">
+                                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                    <path d="M0 0h24v24H0z" fill="none" />
+                                </svg>
+                            </span>
+                            <span class="detail__option-menu__label">
+                                @Html.GlobalResource("MessageBuyer")
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @foreach (LineItem sale in buyerList)
+                            {
+                                if (!contactButtonRendered.ContainsKey(sale.Payer.UserName))
+                                {
+                                    contactButtonRendered.Add(sale.Payer.UserName, "rendered");
+                                    <li>
+                                        @Html.ActionLink(Html.GlobalResource("SendMessage") + ": " + sale.Payer.UserName, MVC.SendListingMessageAction, MVC.AccountController,
+                                          new { receiver = sale.Payer.UserName, template = Templates.AskListingQuestion, listingID = Model.ID, returnUrl = Model.GetDetailUrl() }, null)
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+        }
+        @if (SiteClient.FeedbackEnabled)
+        {
+            List<LineItem>
+                feedbackList = AccountingClient.GetLineItemsNeedingFeedbackFor(Context.User.Identity.Name, Model.ID, Html.FBOUserName());
+            if (feedbackList.Count > 0)
+            {
+                if (Html.FBOUserName() == Model.OwnerUserName)
+                {
+                    Dictionary<string, string>
+                                fbButtonRendered = new Dictionary<string, string>
+                                    ();
+                    if (feedbackList.Count == 1)
+                    {
+                        foreach (LineItem sale in feedbackList)
+                        {
+                            if (!fbButtonRendered.ContainsKey(sale.Payer.UserName))
+                            {
+                                fbButtonRendered.Add(sale.Payer.UserName, "rendered");
+                                <div class="detail__feedback">
+                                    <a href="@Url.Action("SubmitFeedback", "Account", new { ListingID = Model.ID, Sender = Html.FBOUserName(), Receiver = sale.Payer.UserName })" class="btn__detail__feedback detail__option-menu__link">
+                                        <span class="detail__option-menu__icon">
+
+                                            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M0 0h24v24H0zm15.35 6.41l-1.77-1.77c-.2-.2-.51-.2-.71 0L6 11.53V14h2.47l6.88-6.88c.2-.19.2-.51 0-.71z" fill="none" />
+                                                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2.47l6.88-6.88c.2-.2.51-.2.71 0l1.77 1.77c.2.2.2.51 0 .71L8.47 14H6zm12 0h-7.5l2-2H18v2z" />
+                                            </svg>
+                                        </span>
+                                        <span class="detail__option-menu__label">
+                                            @Html.GlobalResource("Feedback")
+                                        </span>
+                                    </a>
+                                </div>
+                            }
+                        }
+                    }
+                    else if (feedbackList.Count > 1)
+                    {
+                        <div class="detail__feedback dropdown">
+                            <a href="#" type="button" id="feedback-dropdown" data-toggle="dropdown" class="btn__detail__feedback detail__option-menu__link dropdown-toggle">
+                                <span class="detail__option-menu__icon">
+                                    <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0 0h24v24H0zm15.35 6.41l-1.77-1.77c-.2-.2-.51-.2-.71 0L6 11.53V14h2.47l6.88-6.88c.2-.19.2-.51 0-.71z" fill="none" />
+                                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2.47l6.88-6.88c.2-.2.51-.2.71 0l1.77 1.77c.2.2.2.51 0 .71L8.47 14H6zm12 0h-7.5l2-2H18v2z" />
+                                    </svg>
+                                </span>
+                                <span class="detail__option-menu__label">
+                                    @Html.GlobalResource("Feedback")
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                @foreach (LineItem sale in feedbackList)
+                                {
+                                    if (!fbButtonRendered.ContainsKey(sale.Payer.UserName))
+                                    {
+                                        fbButtonRendered.Add(sale.Payer.UserName, "rendered");
+                                        <li>
+                                            @Html.ActionLink(Html.GlobalResource("SubmitFeedback") + ": " + sale.Payer.UserName, MVC.SubmitFeedbackAction, MVC.AccountController,
+                                                  new { ListingID = Model.ID, Sender = Html.FBOUserName(), Receiver = sale.Payer.UserName, returnUrl = Model.GetDetailUrl() }, null)
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="detail__feedback">
+                        <a href="@Url.Action("SubmitFeedback", "Account", new { ListingID = Model.ID, Sender = Html.FBOUserName(), Receiver = Model.OwnerUserName })" class="btn__detail__feedback detail__option-menu__link">
+                            <span class="detail__option-menu__icon">
+                                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0h24v24H0zm15.35 6.41l-1.77-1.77c-.2-.2-.51-.2-.71 0L6 11.53V14h2.47l6.88-6.88c.2-.19.2-.51 0-.71z" fill="none" />
+                                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 14v-2.47l6.88-6.88c.2-.2.51-.2.71 0l1.77 1.77c.2.2.2.51 0 .71L8.47 14H6zm12 0h-7.5l2-2H18v2z" />
+                                </svg>
+                            </span>
+                            <span class="detail__option-menu__label">
+                                @Html.GlobalResource("Feedback")
+                            </span>
+                        </a>
+                    </div>
+                }
+            }
+        }
+        @if (theSeller)
+        {
+            if (Model.Status.Equals(ListingStatuses.Draft) && Model.Lot == null)
+            {
+                <div class="detail__activate">
+                    <a href="@Url.Action("ActivateListings", "Account", new { ListingIDs = Model.ID, page = ViewData[MVC.PageIndex], SearchTerm = ViewData[Fields.SearchTerm], SearchType = ViewData[Fields.SearchType], SortFilterOptions = ViewData[MVC.SortFilterOptions], returnUrl })" class="detail__option-menu__link btn__detail__draft">
+                        <span class="detail__option-menu__icon ">
+                            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                <path d="M19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21M12,7L7,12H10V16H14V12H17L12,7Z" />
+                            </svg>
+                        </span>
+                        <span class="detail__option-menu__label">
+                            @Html.GlobalResource("ActivateListing")
+                        </span>
+                    </a>
+                </div>
+            }
+            else if (Model.Status.Equals(ListingStatuses.AwaitingPayment))
+            {
+                <div class="detail__payfees">
+                    <a href="@Url.Action("Fees", "Account")" class="detail__option-menu__link btn__detail__fees">
+                        <span class="detail__option-menu__icon">
+                            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.73 22.73L2.77 2.77 2 2l-.73-.73L0 2.54l4.39 4.39 2.21 4.66-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h7.46l1.38 1.38c-.5.36-.83.95-.83 1.62 0 1.1.89 2 1.99 2 .67 0 1.26-.33 1.62-.84L21.46 24l1.27-1.27zM7.42 15c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h2.36l2 2H7.42zm8.13-2c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H6.54l9.01 9zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2z" />
+                                <path d="M0 0h24v24H0z" fill="none" />
+                            </svg>
+                        </span>
+                        <span class="detail__option-menu__label">
+                            @Html.GlobalResource("PayFees")
+                        </span>
+                    </a>
+                </div>
+            }
+        }
+
+        @if (Model.OfferCount > 0)
+        {
+            var allOffers = (List<Offer>)ViewData["AllOffers"];
+            if (allOffers.Any(o => o.SendingUserName.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase) ||
+                                   o.ReceivingUserName.Equals(Html.FBOUserName(), StringComparison.OrdinalIgnoreCase)))
+            {
+                <div class="detail__manageoffers dropdown">
+                    <a href="@Html.GetActionUrl(MVC.ManageOffersAction, MVC.ListingController, new { ListingID = Model.ID })" type="button" id="invoice-dropdown" class="btn__detail__offers detail__option-menu__link">
+                        <span class="detail__option-menu__icon">
+                            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z" />
+                                <path d="M0 0h24v24H0z" fill="none" />
+                            </svg>
+                        </span>
+                        <span class="detail__option-menu__label">
+                            @Html.GlobalResource("ManageOffers")
+                        </span>
+                    </a>
+                </div>
+            }
+        }
+
+
+    </div>
+}

@@ -1,0 +1,9 @@
+﻿
+@model dynamic
+<div id="Results">
+    <label id="PreviewEmailSubjectLabel">@Html.AdminResource("Subject"): </label>
+    
+    <span id="PreviewEmailSubjectContainer">@ViewData[Fields.Subject]</span>
+    <hr />
+    <div id="PreviewEmailBodyContainer">@Html.Raw(ViewData[Fields.Body])</div>
+</div>

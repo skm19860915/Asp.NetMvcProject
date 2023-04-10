@@ -1,0 +1,21 @@
+﻿@model Media
+@{
+    //Load Media
+    IMediaLoader mediaLoader = RainWorx.FrameWorx.Unity.UnityResolver.Get<IMediaLoader>(Model.Loader);
+    Dictionary<string, string> loaderProviderSettings = CommonClient.GetAttributeData(mediaLoader.TypeName, Model.Context);
+    string loadResult = mediaLoader.Load(loaderProviderSettings, Model, "Main");
+    string resourceHref = "Media/" + Model.GUID;
+    if (loadResult.ToLower().StartsWith("http"))
+    {
+        resourceHref = loadResult;
+    }
+}
+@*
+    <a href="Media/<%:Model.GUID %>">
+        <img style="padding-right:10px;vertical-align:middle;" src="Content/images/Icons/pdf_icon_24x24.png" height="24" width="24" alt="PDF" />
+        <%:Model.Default.MetaData["OriginalFileName"] %>
+    </a>
+*@
+<a href="@resourceHref" class="detail__pdf">
+   <img class="pdficon" src="Content/images/Icons/pdf_icon_24x24.png" height="24" width="24" alt="PDF" />@Model.Default.MetaData["Title"]
+</a>

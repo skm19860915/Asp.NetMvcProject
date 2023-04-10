@@ -1,0 +1,55 @@
+﻿@using System.Globalization
+@model RainWorx.FrameWorx.DTO.Content
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_ContentEditor");
+}
+
+<script>
+    $(document).ready(function () {
+        @if (Model.UseHTMLEditor)
+        {
+            @:CKEDITOR.replace('Text');
+        }
+    });
+</script>
+
+<div class="sub-header">
+    @Html.AdminResource("Editing") : @Html.AdminResource(Model.Name)
+    @if (SiteClient.SupportedLanguageCultures.Count > 1)
+    {
+        @("(" + CultureInfo.GetCultureInfo(Model.Culture).NativeName + ")")
+    }
+</div>
+@using (Html.BeginForm())
+{
+    if (Model.UserDefined)
+    {
+        <div class="form-group">
+            <label class="control-label"> @Html.AdminResource("PageTitle")</label>
+        @Html.TextBox("PageTitle", Model.PageTitle, new { @class = "form-control" })
+    </div>
+    }
+    <textarea class="form-control" id="Text" name="Text" rows="30">@Model.Text.ToMvcHtmlString()</textarea>
+    <div class="action-panel">
+        @if (SiteClient.DemoEnabled)
+        {
+            @Html.ActionLink(Html.AdminResource("Cancel"), MVC.ContentManagementAction, null, new { @class = "btn btn-default" })
+        <button class="btn btn-success" disabled="disabled">@Html.AdminResource("SaveContent")</button>
+        <img src="Content/Images/Icon_Deactivated.png" alt="@Html.AdminResource("DemoFeatureDisabled")" title="@Html.AdminResource("DemoFeatureDisabled")" />
+        
+
+        }
+        else
+        {
+            @Html.ActionLink(Html.AdminResource("Cancel"), MVC.ContentManagementAction, null, new { @class = "btn btn-default" })
+        <input type = "submit" class="btn btn-success" id="Save" name="Save" value="@Html.AdminResource("SaveContent")" />
+
+        }
+    </div>
+}
+@* bundle for ckeditor disabled because of dynamic relative reference issues
+    @Scripts.Render("~/bundles/ckeditor")
+*@
+<script src="Scripts/ckeditor/ckeditor.js"></script>

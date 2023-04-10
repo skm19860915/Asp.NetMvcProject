@@ -1,0 +1,858 @@
+﻿@model RainWorx.FrameWorx.MVC.Models.SiteFeeAmounts
+@using System.Configuration
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.PageName = Html.AdminResource("LineageString_EditFees");
+
+    bool allowMinMaxFinalSellerFee = false;
+    bool.TryParse(ConfigurationManager.AppSettings["AllowMinMaxFinalSellerFee"], out allowMinMaxFinalSellerFee);
+}
+
+@section head {
+
+    <script>
+
+        $(document).ready(function () {
+
+            function ReplaceTierNumber(text, newNumber) {
+                /*
+                usage - ReplaceTierNumber(someText, 5)
+                replaces all instances of the string:   _Tier_123"
+                with the string:                        _Tier_5"
+                */
+                f = /\_Tier\_[0-9]*\"/g;
+                r = "_Tier_" + newNumber.toString() + "\"";
+                return text.toString().replace(f, r);
+            }
+
+            function ToNumber(textValue) {
+                //convert value to string
+                var temp = textValue.toString();
+                //strip out all group separator characters (i.e. remove commas from en-US style numbers)
+                temp = temp.replace(/\@Html.GetCurrencyGroupChar()/g, "");
+                //replace decimal character with '.' (i.e. replace ',' with '.' for es-ES style numbers)
+                temp = temp.replace(/\@Html.GetCurrencyDecimalChar()/g, ".");
+                if (!isNaN(temp)) return new Number(temp);
+                return NaN;
+            }
+
+            function IsNumeric(textValue) {
+                if (isNaN(ToNumber(textValue))) return false;
+                return true;
+            }
+
+            function IsBiggerNumber(valueA, valueB) {
+                //attempts to parse both values as numbers then returns true if valueA > valueB
+                var numberA = ToNumber(valueA);
+                var numberB = ToNumber(valueB);
+                if (isNaN(numberA) || isNaN(numberB)) return false;
+                if (numberA > numberB) return true;
+                return false;
+            }
+
+            //discover initial # tiers for each "Add" button
+            $(".AddTierButton").each(function (i) {
+                var tierCount = $(this).parent("div").parent("div").siblings().length + 1;
+                $(this).data("nextTierIndex", (tierCount));
+            });
+
+            $(".AddTierButton").click(function (i) {
+
+                var abort = false;
+                var newUboundInput = $(this).parents(".newsingleFee").find(".UboundInput");
+                var newAmountInput = $(this).parents(".newsingleFee").find("input").not(".UboundInput");
+
+                //validate values, if good - proceed, otherwise, add error class to input, as needed
+                var newAmountValue = newAmountInput.val();
+                if (!IsNumeric(newAmountValue)) {
+                    newAmountInput.addClass("input-validation-error");
+                    abort = true;
+                } else {
+                    newAmountInput.removeClass("input-validation-error");
+                }
+
+                //blank or "max" are acceptable ubound values
+                var newUboundValue = newUboundInput.val();
+                if (newUboundValue == "") {
+                    newUboundValue = "max";
+                    newUboundInput.val("max");
+                }
+                if (!(IsNumeric(newUboundValue) || newUboundValue == "max")) {
+                    newUboundInput.addClass("input-validation-error");
+                    abort = true;
+                } else {
+                    newUboundInput.removeClass("input-validation-error");
+                }
+
+                if (!abort) {
+                    //capture formatted amounts
+                    //newAmountInput.format({ format: "#,###,###,###,###.00", locale: "en" }).val();
+                    //newAmountInput.format({ format: "#,###,###,###,###.00" });
+                    newAmountInput.parseNumber({ format: "#,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                    newAmountInput.formatNumber({ format: "#,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                    newAmountValue = newAmountInput.val();
+                    if (newUboundValue != "max") {
+                        newUboundInput.parseNumber({ format: "#,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                        newUboundInput.formatNumber({ format: "#,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                        newUboundValue = newUboundInput.val();
+                    }
+
+                    //retrieve current "new tier index" value
+                    var newTierIndex = $(this).data("nextTierIndex");
+
+                    //increment "new tier index" value for use with the next add event
+                    $(this).data("nextTierIndex", (newTierIndex + 1));
+
+                    //update the input name and id attributes in the new tier #
+                    var origNodeContents =  $(this).parent().parent().prev(".singleFee").html();
+                    var newNodeContents = ReplaceTierNumber(origNodeContents, newTierIndex);
+
+                    //insert the new tier node directly after the first tier with a lower ubound value
+                    var lastLowerTier;
+
+                    if (newUboundValue == "max") {
+                        //add value - to end of list
+                        $(this).parents(".newsingleFee").before("<div class=\"row singleFee\">" + newNodeContents + "</div>");
+                        tierToUpdate = $(this).parents(".newsingleFee").prev(".singleFee");
+                    } else {
+                        //determine where to insert the tier
+                        $(this).parents(".tiers").children(".singleFee").each(function (i) {
+                            var thisUbndVal = $(this).find("input.UboundInput").val();
+                            if (IsBiggerNumber(newUboundValue, thisUbndVal))
+                                lastLowerTier = $(this);
+                        });
+                        var tierToUpdate;
+                        if (!lastLowerTier) {
+                            $(this).parents(".tiers").children(".heading").after("<div class=\"row singleFee\">" + newNodeContents + "</div>");
+                            tierToUpdate = $(this).parents(".tiers").children(".heading").next(".singleFee");
+                        } else {
+                            lastLowerTier.after("<div class=\"row singleFee\">" + newNodeContents + "</div>");
+                            tierToUpdate = lastLowerTier.next(".singleFee");
+                        }
+
+                    }
+
+                    //update newly added tier with values entered in the "Add" tier inputs
+                    tierToUpdate.find("input").each(function (i) {
+                        if (i == 0) $(this).val(newAmountValue);
+                        else if (i == 1) $(this).val(newUboundValue);
+                    });
+
+                    //clear values from the "Add" tier inputs
+                    newAmountInput.val("");
+                    newUboundInput.val("");
+
+                    //re-bind, show, hide delete buttons, as needed
+                    UpdateDeleteButtons();
+                }
+
+                return false;
+            });
+
+            function UpdateDeleteButtons() {
+                $(".DeleteTierButton").click(function () {
+
+                    //we're about to remove 2nd to last tier, hide the last delete button
+                    if ($(this).parents(".tiers").find("button.DeleteTierButton").length == 2)
+                        $(this).parents(".tiers").find("button.DeleteTierButton").hide();
+
+                    $(this).parent("div").parent("div").remove();
+                });
+
+                //un-hide any delete buttons if they're not the only tier in the row
+                $(".tiers").each(function () {
+                    if ($(this).find("button.DeleteTierButton").length > 1)
+                        $(this).find("button.DeleteTierButton").show();
+                });
+
+                //hide any delete buttons if they're the only tier in the row
+                $(".tiers").each(function () {
+                    if ($(this).find("button.DeleteTierButton").length == 1)
+                        $(this).find("button.DeleteTierButton").hide();
+                });
+
+                //also add the number formatter call to each number input
+                $("input.NumericFeeInput").on("change", function () {
+                    var origVal = $(this).val();
+                    if ($(this).hasClass("UboundInput")) {
+                        if (origVal == "")
+                            $(this).val("max");
+                        if ($(this).val() != "max") {
+                            $(this).parseNumber({ format: "#,###,###,###,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                            $(this).formatNumber({ format: "#,###,###,###,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                        }
+                    } else {
+                        $(this).parseNumber({ format: "#,###,###,###,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                        $(this).formatNumber({ format: "#,###,###,###,###.00", overrideGroupSep: "@Html.GetCurrencyGroupChar()", overrideDecSep: "@Html.GetCurrencyDecimalChar()" });
+                    }
+                    if ($(this).val() == "NaN@(Html.GetCurrencyDecimalChar())Na") {
+                        //invalid number
+                        $(this).val(origVal).addClass("input-validation-error");
+                    } else if (IsBiggerNumber(0, $(this).val())) {
+                        //negative values not allowed!
+                        $(this).val(origVal).addClass("input-validation-error");
+                    } else {
+                        $(this).removeClass("input-validation-error");
+                    }
+                });
+
+            }
+
+            UpdateDeleteButtons();
+
+            //when the form is submitted...
+            $("form#EditFees").submit(function () {
+
+                //disable save buttons to prevent duplicate submissions
+                $(".SaveEditFeesButton").prop("disabled", true);
+
+                //set the "SaveChanges" hidden field value to "1"
+                $("input#SaveChanges").val("1");
+
+                //change all "max" ubound values to "" (null/empty is interpreted by the controller as "max")
+                $("input.UboundInput").each(function (i) {
+                    if ($(this).val() == "max")
+                        $(this).val("");
+                });
+
+                //if there are any issues, do a pop-up and cancel submission
+                if ($(".input-validation-error").length > 0) {
+                    var popupMessage = //"There are errors on this page.\nPlease make the indicated corrections and try again."
+    '@Html.AdminResource("SaveChangesWarning1").ToJavascriptSafeString()\n'
+    + '@Html.AdminResource("SaveChangesWarning2").ToJavascriptSafeString()';
+                    alert(popupMessage);
+                    $(".input-validation-error").first().focus();
+
+                    //re-enable save buttons so form can be corrected and re-submitted
+                    $(".SaveEditFeesButton").prop("disabled", false);
+
+                    return false;
+                }
+            });
+
+            //[Cancel Changes] link click
+            $(".CancelChangesLink").click(function () {
+                var cancelUrl = '@Html.GetActionUrl("EditFees", "Admin").ToMvcHtmlString().ToJavascriptSafeString()';
+                BootstrapDialog.show({
+                    type: 'type-warning',
+                    cssClass: 'acp-boot-dialog',
+                    title: '<span class="glyphicon glyphicon-warning-sign"></span>&nbsp; @Html.AdminResourceString("CancelChangesWarning1").ToJavascriptSafeString()',
+                    message: '@Html.AdminResource("CancelChangesWarning2").ToJavascriptSafeString()',
+                    buttons: [
+                        {
+                            label: '@Html.AdminResourceString("OopsGoBack").ToJavascriptSafeString()',
+                            cssClass: 'btn-default',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                            }
+                        }, {
+                            label: '@Html.AdminResourceString("YesUndoChanges").ToJavascriptSafeString()',
+                            cssClass: 'btn-warning',
+                            action: function (dialogItself) {
+                                dialogItself.close();
+                                document.location = $.htmlDecode(cancelUrl);
+                            }
+                        }
+                    ]
+                });
+                return false;
+            });
+
+            //[Save Changes] button click
+            $(".SaveEditFeesButton").click(function () {
+                $(this).parents("form").submit();
+                return false;
+            });
+
+            $("#TogglePayToProceedMoreInfo").on("click", function (event) {
+                event.preventDefault();
+                $("#PayToProceedMoreInfo").toggle();
+            })
+        });
+    </script>
+}
+
+@using (Html.BeginForm("EditFees", "Admin", FormMethod.Post, new { id = "EditFees", @class = "form-horizontal" }))
+{
+    string rowClass = string.Empty;
+    int rowIndex = 0;
+
+    @Html.Hidden("SaveChanges")
+    <div class="form-group">
+        <label class="col-xs-12 col-sm-4 control-label">@Html.AdminResource("PayToProceed")</label>
+        <div class="col-xs-12 col-sm-8">
+            @Html.CheckBox("GlobalPayToProceed", Model.PayToProceed)
+            <small class="help-block">@Html.AdminResource("AdminHelpText_PayToProceed")</small>
+        </div>
+    </div>
+
+    foreach (RainWorx.FrameWorx.MVC.Models.SiteFee f in Model.Fees)
+    {
+        string helpKey = f.Name + "_Help";
+        rowIndex++;
+        bool showThisFee = true;
+        if (SiteClient.EnableEvents)
+        {
+            if (f.Name == "Featured")
+            {
+                showThisFee = false; // never show the "Featured" fee when events edition is enabled
+            }
+            else if (!SiteClient.BoolSetting(SiteProperties.EnableNonAuctionListingsForEvents))
+            {
+                // only show these fees, while events edition is enabled, when non-Auction listings are also enabled
+                if (f.Name == "FlatFee")
+                {
+                    showThisFee = false;
+                }
+                if (f.Name == "GoodUntilCanceled")
+                {
+                    showThisFee = false;
+                }
+            }
+        }
+        if (showThisFee)
+        {
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <label class="col-xs-12 col-sm-4 control-label">
+                            @Html.AdminResource(f.Name)
+                        </label>
+                        @Html.Hidden(string.Format("Row_{0}_FeeName", rowIndex), f.Name)
+                        @Html.Hidden(string.Format("Row_{0}_FeeType", rowIndex), f.FeeType)
+                        <div class="col-xs-10 col-sm-6">
+                            @Html.TextBox(string.Format("Row_{0}_FeeDesc", rowIndex), f.Description, new { @class = "form-control input-sm" })
+                        </div>
+                        <div class="col-xs-2">
+                            @if (helpKey != Html.AdminResourceString(helpKey))
+                            {
+                                @Html.ToolTipButton(helpKey)
+                            }
+                        </div>
+                        <div class="col-xs-12">
+                            @Html.ToolTipContent(helpKey, Html.AdminResource(helpKey))
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-sm-offset-4 tiers">
+                            @if (f.FeeType == "TieredFlatFee")
+                            {
+                                int tierIndex = 0;
+                                var tff = (RainWorx.FrameWorx.MVC.Models.TieredFlatFee)f;
+                                <div class="row heading">
+                                    <div class="col-xs-5">@Html.AdminResource("Amount")</div>
+                                    <div class="col-xs-5">@Html.AdminResource("ForValuesUnder")</div>
+                                </div>
+                                foreach (RainWorx.FrameWorx.MVC.Models.FlatFeeTier t in tff.FeeAmountTiers)
+                                {
+                                    tierIndex++;
+                                    string amountFieldName = string.Format("Row_{0}_TierFeeAmount_Tier_{1}", rowIndex, tierIndex);
+                                    string amountValue = Html.DecimalToPlainCurrencyString(t.FeeAmount);
+                                    string uBoundFieldName = string.Format("Row_{0}_TierUbound_Tier_{1}", rowIndex, tierIndex);
+                                    string uBoundValue;
+                                    if (t.UpperBound.HasValue)
+                                    {
+                                        if (t.UpperBound.Value < Utilities.MaxMoneyValue())
+                                        {
+                                            uBoundValue = Html.DecimalToPlainCurrencyString(t.UpperBound.Value);
+                                        }
+                                        else
+                                        {
+                                            uBoundValue = "max";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        uBoundValue = "max";
+                                    }
+                                    <div class="row singleFee">
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon AmountInputPrefix">@SiteClient.SiteCurrencySymbol</span>
+                                                @Html.TextBox(amountFieldName, amountValue, new { @class = "NumericFeeInput FlatAmountInput form-control input-sm" })
+                                                <span class="input-group-addon AmountInputPostfix awe-hidden">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    @SiteClient.SiteCurrencySymbol
+                                                </span>
+                                                @Html.TextBox(uBoundFieldName, uBoundValue, new { @class = "NumericFeeInput UboundInput form-control input-sm" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <button class="btn close btn-sm DeleteTierButton"><span class="glyphicon glyphicon-remove"></span></button>
+                                        </div>
+                                    </div>
+                                }
+                                if (tierIndex == 0)
+                                {
+                                    tierIndex++;
+                                    string amountFieldName = string.Format("Row_{0}_TierFeeAmount_Tier_{1}", rowIndex, tierIndex);
+                                    string amountValue = Html.DecimalToPlainCurrencyString(0.00M);
+                                    string uBoundFieldName = string.Format("Row_{0}_TierUbound_Tier_{1}", rowIndex, tierIndex);
+                                    string uBoundValue = "max";
+                                    <div class="row singleFee">
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon AmountInputPrefix">
+                                                    @SiteClient.SiteCurrencySymbol
+                                                </span>
+                                                @Html.TextBox(amountFieldName, amountValue, new { @class = "NumericFeeInput FlatAmountInput form-control input-sm" })
+                                                <span class="input-group-addon AmountInputPostfix awe-hidden">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    @SiteClient.SiteCurrencySymbol
+                                                </span>
+                                                @Html.TextBox(uBoundFieldName, uBoundValue, new { @class = "NumericFeeInput UboundInput form-control input-sm" })
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <button class="btn close btn-sm DeleteTierButton"><span class="glyphicon glyphicon-remove"></span></button>
+                                        </div>
+                                    </div>
+                                }
+                                string newAmountFieldName = "NewFlatTierAmount_Row_" + rowIndex.ToString();
+                                string newUBoundFieldName = "NewFlatTierUpperBound_Row_" + rowIndex.ToString();
+                                <div class="row newsingleFee">
+                                    <div class="col-xs-5">
+                                        <div class="input-group">
+                                            <span class="input-group-addon AmountInputPrefix">@SiteClient.SiteCurrencySymbol</span>
+                                            @Html.TextBox(newAmountFieldName, null, new { @class = "NumericFeeInput FlatAmountInput form-control input-sm" })
+                                            <span class="input-group-addon AmountInputPostfix awe-hidden">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-5">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                @SiteClient.SiteCurrencySymbol
+                                            </span>
+                                            @Html.TextBox(newUBoundFieldName, null, new { @class = "NumericFeeInput UboundInput form-control input-sm" })
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <button class="btn btn-default btn-sm AddTierButton">@Html.AdminResource("Add")</button>
+                                    </div>
+                                </div>
+                            
+
+                            }
+                            else if (f.FeeType == "TieredPercentFee")
+                            {
+                                <div class="row heading">
+                                    <div class="col-xs-5 flatfeelabel awe-hidden">@Html.AdminResource("Amount")</div>
+                                    <div class="col-xs-5 percentfeelabel">@Html.AdminResource("FeePercent")</div>
+                                    <div class="col-xs-5">@Html.AdminResource("ForValuesUnder")</div>
+                                </div>
+
+                                {
+                                    int tierIndex = 0;
+                                    var tpf = (RainWorx.FrameWorx.MVC.Models.TieredPercentFee)f;
+                                    foreach (RainWorx.FrameWorx.MVC.Models.PercentFeeTier t in tpf.FeePercentTiers)
+                                    {
+                                        tierIndex++;
+                                        string percentFieldName = string.Format("Row_{0}_TierFeeAmount_Tier_{1}", rowIndex, tierIndex);
+                                        string percentValue = Html.DecimalToPlainCurrencyString(t.FeePercent * 100);
+                                        string uBoundFieldName = string.Format("Row_{0}_TierUbound_Tier_{1}", rowIndex, tierIndex);
+                                        string uBoundValue;
+                                        if (t.UpperBound.HasValue)
+                                        {
+                                            if (t.UpperBound.Value < Utilities.MaxMoneyValue())
+                                            {
+                                                uBoundValue = Html.DecimalToPlainCurrencyString(t.UpperBound.Value);
+
+                                            }
+                                            else
+                                            {
+                                                uBoundValue = "max";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            uBoundValue = "max";
+                                        }
+
+                                        <div class="row singleFee">
+                                            <div class="col-xs-5">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon AmountInputPrefix awe-hidden">@SiteClient.SiteCurrencySymbol</span>
+                                                    @Html.TextBox(percentFieldName, percentValue, new { @class = "NumericFeeInput PercentAmountInput form-control input-sm" })
+                                                    <span class="input-group-addon AmountInputPostfix">%</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-5">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        @SiteClient.SiteCurrencySymbol
+                                                    </span>
+                                                    @Html.TextBox(uBoundFieldName, uBoundValue, new { @class = "NumericFeeInput UboundInput form-control input-sm" })
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <button class="btn close DeleteTierButton"><span class="glyphicon glyphicon-remove"></span></button>
+                                            </div>
+                                        </div>
+                                    }
+                                    if (tierIndex == 0)
+                                    {
+                                        tierIndex++;
+                                        string percentFieldName = string.Format("Row_{0}_TierFeeAmount_Tier_{1}", rowIndex, tierIndex);
+                                        string percentValue = Html.DecimalToPlainCurrencyString(0.00M);
+                                        string uBoundFieldName = string.Format("Row_{0}_TierUbound_Tier_{1}", rowIndex, tierIndex);
+                                        string uBoundValue = "max";
+                                        <div class="row singleFee">
+                                            <div class="col-xs-5">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon AmountInputPrefix awe-hidden">@SiteClient.SiteCurrencySymbol</span>
+                                                    @Html.TextBox(percentFieldName, percentValue, new { @class = "NumericFeeInput PercentAmountInput form-control input-sm" })
+                                                    <span class="input-group-addon AmountInputPostfix">%</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-5">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        @SiteClient.SiteCurrencySymbol
+                                                    </span>
+                                                    @Html.TextBox(uBoundFieldName, uBoundValue, new { @class = "NumericFeeInput UboundInput form-control input-sm" })
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <button class="btn close DeleteTierButton"><span class="glyphicon glyphicon-remove"></span></button>
+                                            </div>
+                                        </div>
+                                    }
+                                    string newPctTierFieldName = "NewPercentTierAmount_Row_" + rowIndex.ToString();
+                                    string newPctUboundFieldName = "NewPercentTierUpperBound_Row_" + rowIndex.ToString();
+                                    <div class="row newsingleFee">
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon AmountInputPrefix awe-hidden">@SiteClient.SiteCurrencySymbol</span>
+                                                @Html.TextBox(newPctTierFieldName, null, new { @class = "NumericFeeInput PercentAmountInput form-control input-sm" })
+                                                <span class="input-group-addon AmountInputPostfix">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    @SiteClient.SiteCurrencySymbol
+                                                </span>
+                                                @Html.TextBox(newPctUboundFieldName, null, new { @class = "NumericFeeInput UboundInput form-control input-sm" })
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <button class="btn btn-default btn-sm AddTierButton">@Html.AdminResource("Add")</button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else // if (f.FeeType == "FlatFee")
+                            {
+                                var ff = (RainWorx.FrameWorx.MVC.Models.FlatFee)f;
+                                string flatFeeFieldName = string.Format("Row_{0}_FeeAmount", rowIndex);
+                                string flatFeeAmount = Html.DecimalToPlainCurrencyString(ff.FeeAmount);
+                                <div class="row singleFee">
+                                    <div class="col-xs-5">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">@SiteClient.SiteCurrencySymbol</span>
+                                            @Html.TextBox(flatFeeFieldName, flatFeeAmount, new { @class = "NumericFeeInput FlatAmountInput form-control input-sm" })
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (f.Name == FeeNames.FinalSaleFee)
+                            {
+                                bool useFlatFinalFees =
+                                SiteClient.BoolSetting(SiteProperties.UseFlatFinalFees);
+                                bool useAggregatePercentFinalFees =
+                                SiteClient.BoolSetting(SiteProperties.UseAggregateFinalPercentageFees);
+                                bool flatFeesChecked = useFlatFinalFees;
+                                bool aggPercentFeesChecked = (!useFlatFinalFees && useAggregatePercentFinalFees);
+                                bool nonAggPercentFeesChecked = (!flatFeesChecked && !aggPercentFeesChecked);
+
+
+                                <script>
+                                    $(document).ready(function () {
+
+                                        $("input[name='FinalFeeStyle']").click(function () {
+                                            var finalFeeTypeInput = $("input[value='FinalSaleFee']").next();
+                                            var finalFeeTiersContainer = $("input[value='FinalSaleFee']").parent(".row");
+                                            switch ($(this).val()) {
+                                                case "flat":
+                                                    //change fee label
+                                                    finalFeeTiersContainer.find("div.flatfeelabel").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("div.percentfeelabel").addClass("awe-hidden");
+                                                    //show leading $ and hide trailing %
+                                                    finalFeeTiersContainer.find("span.AmountInputPrefix").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("span.AmountInputPostfix").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("input.PercentAmountInput").addClass("FlatAmountInput").removeClass("PercentAmountInput");
+                                                    //set fee type
+                                                    finalFeeTypeInput.val("TieredFlatFee"); // "TieredFlatFee" or "TieredPercentFee"
+                                                    //set appropriate admin prefs
+                                                    $("#@SiteProperties.UseAggregateFinalPercentageFees").val("False");
+                                                    $("#@SiteProperties.UseFlatFinalFees").val("True");
+                                                    break;
+                                                case "aggregate":
+                                                    //change fee label
+                                                    finalFeeTiersContainer.find("div.flatfeelabel").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("div.percentfeelabel").removeClass("awe-hidden");
+                                                    //hide leading $ and show trailing %
+                                                    finalFeeTiersContainer.find("span.AmountInputPrefix").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("span.AmountInputPostfix").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("input.PercentAmountInput").removeClass("FlatAmountInput").addClass("PercentAmountInput");
+                                                    //set fee type
+                                                    finalFeeTypeInput.val("TieredPercentFee"); // "TieredFlatFee" or "TieredPercentFee"
+                                                    //set appropriate admin prefs
+                                                    $("#@SiteProperties.UseAggregateFinalPercentageFees").val("True");
+                                                    $("#@SiteProperties.UseFlatFinalFees").val("False");
+                                                    break;
+                                                case "nonaggregate":
+                                                    //change fee label
+                                                    finalFeeTiersContainer.find("div.flatfeelabel").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("div.percentfeelabel").removeClass("awe-hidden");
+                                                    //hide leading $ and show trailing %
+                                                    finalFeeTiersContainer.find("span.AmountInputPrefix").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("span.AmountInputPostfix").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("input.PercentAmountInput").removeClass("FlatAmountInput").addClass("PercentAmountInput");
+                                                    //set fee type
+                                                    finalFeeTypeInput.val("TieredPercentFee");
+                                                    //set appropriate admin prefs
+                                                    $("#@SiteProperties.UseAggregateFinalPercentageFees").val("False");
+                                                    $("#@SiteProperties.UseFlatFinalFees").val("False");
+                                                    break;
+                                            }
+                                        });
+
+                                    });
+                                </script>
+                                <div class="row">
+                                    <div class="col-xs-10">
+
+                                        @Html.RadioButton("FinalFeeStyle", "aggregate", aggPercentFeesChecked, new { @id = "FinalFeeStyle_aggregate" })
+                                        <label for="FinalFeeStyle_aggregate">
+                                            @Html.AdminResource("FinalSaleFeeStyle_Aggregate")
+                                        </label>
+
+                                    </div>
+                                    <div class="col-xs-2">
+                                        @Html.ToolTipButton("FinalSaleFeeStyle_Aggregate_Help")
+                                    </div>
+                                    <div class="col-xs-12">
+                                        @Html.ToolTipContent("FinalSaleFeeStyle_Aggregate_Help", Html.AdminResource("FinalSaleFeeStyle_Aggregate_Help"))
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-10">
+                                        @Html.RadioButton("FinalFeeStyle", "nonaggregate", nonAggPercentFeesChecked, new { @id = "FinalFeeStyle_nonaggregate" })
+                                        <label for="FinalFeeStyle_nonaggregate">
+                                            @Html.AdminResource("FinalSaleFeeStyle_NonAggregate")
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        @Html.ToolTipButton("FinalSaleFeeStyle_NonAggregate_Help")
+                                    </div>
+                                    <div class="col-xs-12">
+                                        @Html.ToolTipContent("FinalSaleFeeStyle_NonAggregate_Help", Html.AdminResource("FinalSaleFeeStyle_NonAggregate_Help"))
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-10">
+                                        @Html.RadioButton("FinalFeeStyle", "flat", flatFeesChecked, new { @id = "FinalFeeStyle_flat" })
+                                        <label for="FinalFeeStyle_flat">
+                                            @Html.AdminResource("FinalSaleFeeStyle_Flat")
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        @Html.ToolTipButton("FinalSaleFeeStyle_Flat_Help")
+                                    </div>
+                                    <div class="col-xs-12">
+                                        @Html.ToolTipContent("FinalSaleFeeStyle_Flat_Help", Html.AdminResource("FinalSaleFeeStyle_Flat_Help"))
+                                    </div>
+                                </div>
+                                @Html.Hidden(SiteProperties.UseAggregateFinalPercentageFees, SiteClient.BoolSetting(SiteProperties.UseAggregateFinalPercentageFees))
+                                @Html.Hidden(SiteProperties.UseFlatFinalFees, SiteClient.BoolSetting(SiteProperties.UseFlatFinalFees))
+
+                                if (allowMinMaxFinalSellerFee)
+                                {
+                                    <div class="row singleFee">
+                                        <div class="col-xs-5">
+                                            @Html.CustomFieldResource(SiteProperties.MinSellerFinalFee):
+                                        </div>
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    @SiteClient.SiteCurrencySymbol
+                                                </span>
+                                                @Html.TextBox(SiteProperties.MinSellerFinalFee, null, new { @class = "NumericFeeInput form-control input-sm" })
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            @Html.ToolTipButton(SiteProperties.MinSellerFinalFee + "_Help")
+                                        </div>
+                                        <div class="col-xs-12">
+                                            @Html.ToolTipContent(SiteProperties.MinSellerFinalFee + "_Help", Html.CustomFieldResource(SiteProperties.MinSellerFinalFee + "_Help"))
+                                        </div>
+                                    </div>
+                                    <div class="row singleFee">
+                                        <div class="col-xs-5">
+                                            @Html.CustomFieldResource(SiteProperties.MaxSellerFinalFee):
+                                        </div>
+                                        <div class="col-xs-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    @SiteClient.SiteCurrencySymbol
+                                                </span>
+                                                @Html.TextBox(SiteProperties.MaxSellerFinalFee, null, new { @class = "NumericFeeInput form-control input-sm" })
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            @Html.ToolTipButton(SiteProperties.MaxSellerFinalFee + "_Help")
+                                        </div>
+                                        <div class="col-xs-12">
+                                            @Html.ToolTipContent(SiteProperties.MaxSellerFinalFee + "_Help", Html.CustomFieldResource(SiteProperties.MaxSellerFinalFee + "_Help"))
+                                        </div>
+                                    </div>
+                                }
+
+                            } // if (f.Name == FeeNames.FinalSaleFee)
+                            else if (f.Name == FeeNames.FinalBuyerFee)
+                            {
+                                bool useFlatFinalFees =
+                                SiteClient.BoolSetting(SiteProperties.UseFlatBuyerFinalFees);
+                                bool useAggregatePercentFinalFees =
+                                SiteClient.BoolSetting(SiteProperties.UseAggregateBuyerFinalPercentageFees);
+                                bool flatFeesChecked = useFlatFinalFees;
+                                bool aggPercentFeesChecked = (!useFlatFinalFees && useAggregatePercentFinalFees);
+                                bool nonAggPercentFeesChecked = (!flatFeesChecked && !aggPercentFeesChecked);
+
+
+
+                                <script>
+                                    $(document).ready(function () {
+
+                                        $("input[name='FinalBuyerFeeStyle']").click(function () {
+                                            var finalFeeTypeInput = $("input[value='FinalBuyerFee']").next();
+                                            var finalFeeTiersContainer = $("input[value='FinalBuyerFee']").parent(".row");
+                                            switch ($(this).val()) {
+                                                case "flat":
+                                                    //change fee label
+                                                    finalFeeTiersContainer.find("div.flatfeelabel").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("div.percentfeelabel").addClass("awe-hidden");
+                                                    //show leading $ and hide trailing %
+                                                    finalFeeTiersContainer.find("span.AmountInputPrefix").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("span.AmountInputPostfix").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("input.PercentAmountInput").addClass("FlatAmountInput").removeClass("PercentAmountInput");
+                                                    //set fee type
+                                                    finalFeeTypeInput.val("TieredFlatFee"); // "TieredFlatFee" or "TieredPercentFee"
+                                                    //set appropriate admin prefs
+                                                    $("#@SiteProperties.UseAggregateBuyerFinalPercentageFees").val("False");
+                                                    $("#@SiteProperties.UseFlatBuyerFinalFees").val("True");
+                                                    break;
+                                                case "aggregate":
+                                                    //change fee label
+                                                    finalFeeTiersContainer.find("div.flatfeelabel").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("div.percentfeelabel").removeClass("awe-hidden");
+                                                    //hide leading $ and show trailing %
+                                                    finalFeeTiersContainer.find("span.AmountInputPrefix").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("span.AmountInputPostfix").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("input.PercentAmountInput").removeClass("FlatAmountInput").addClass("PercentAmountInput");
+                                                    //set fee type
+                                                    finalFeeTypeInput.val("TieredPercentFee"); // "TieredFlatFee" or "TieredPercentFee"
+                                                    //set appropriate admin prefs
+                                                    $("#@SiteProperties.UseAggregateBuyerFinalPercentageFees").val("True");
+                                                    $("#@SiteProperties.UseFlatBuyerFinalFees").val("False");
+                                                    break;
+                                                case "nonaggregate":
+                                                    //change fee label
+                                                    finalFeeTiersContainer.find("div.flatfeelabel").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("div.percentfeelabel").removeClass("awe-hidden");
+                                                    //hide leading $ and show trailing %
+                                                    finalFeeTiersContainer.find("span.AmountInputPrefix").addClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("span.AmountInputPostfix").removeClass("awe-hidden");
+                                                    finalFeeTiersContainer.find("input.PercentAmountInput").removeClass("FlatAmountInput").addClass("PercentAmountInput");
+                                                    //set fee type
+                                                    finalFeeTypeInput.val("TieredPercentFee");
+                                                    //set appropriate admin prefs
+                                                    $("#@SiteProperties.UseAggregateBuyerFinalPercentageFees").val("False");
+                                                    $("#@SiteProperties.UseFlatBuyerFinalFees").val("False");
+                                                    break;
+                                            }
+                                        });
+
+                                        //frsauction.com - added to ensure the customized descriptions requirements are enforced
+                                        $("#Row_2_FeeDesc").removeClass("input-validation-error");
+                                        $("#Row_3_FeeDesc").removeClass("input-validation-error");
+                                    });
+                                </script>
+                                <div class="row">
+                                    <div class="col-xs-10">
+                                        @Html.RadioButton("FinalBuyerFeeStyle", "aggregate", aggPercentFeesChecked, new { @id = "FinalBuyerFeeStyle_aggregate" })
+                                        <label for="FinalBuyerFeeStyle_aggregate">
+                                            @Html.AdminResource("FinalBuyerFeeStyle_Aggregate")
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        @Html.ToolTipButton("FinalBuyerFeeStyle_Aggregate_Help")
+                                    </div>
+                                    <div class="col-xs-12">
+                                        @Html.ToolTipContent("FinalBuyerFeeStyle_Aggregate_Help", Html.AdminResource("FinalBuyerFeeStyle_Aggregate_Help"))
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-10">
+                                        @Html.RadioButton("FinalBuyerFeeStyle", "nonaggregate", nonAggPercentFeesChecked, new { @id = "FinalBuyerFeeStyle_nonaggregate" })
+                                        <label for="FinalBuyerFeeStyle_nonaggregate">
+                                            @Html.AdminResource("FinalBuyerFeeStyle_NonAggregate")
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        @Html.ToolTipButton("FinalBuyerFeeStyle_NonAggregate_Help")
+                                    </div>
+                                    <div class="col-xs-12">
+                                        @Html.ToolTipContent("FinalBuyerFeeStyle_NonAggregate_Help", Html.AdminResource("FinalBuyerFeeStyle_NonAggregate_Help"))
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-10">
+                                        @Html.RadioButton("FinalBuyerFeeStyle", "flat", flatFeesChecked, new { @id = "FinalBuyerFeeStyle_flat" })
+                                        <label for="FinalBuyerFeeStyle_flat">
+                                            @Html.AdminResource("FinalBuyerFeeStyle_Flat")
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        @Html.ToolTipButton("FinalBuyerFeeStyle_Flat_Help")
+                                    </div>
+                                    <div class="col-xs-12">
+                                        @Html.ToolTipContent("FinalBuyerFeeStyle_Flat_Help", Html.AdminResource("FinalBuyerFeeStyle_Flat_Help"))
+                                    </div>
+                                </div>
+                                @Html.Hidden(SiteProperties.UseAggregateBuyerFinalPercentageFees, SiteClient.BoolSetting(SiteProperties.UseAggregateBuyerFinalPercentageFees))
+                                @Html.Hidden(SiteProperties.UseFlatBuyerFinalFees, SiteClient.BoolSetting(SiteProperties.UseFlatBuyerFinalFees))
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            var ff = (RainWorx.FrameWorx.MVC.Models.FlatFee)f;
+            string flatFeeFieldName = string.Format("Row_{0}_FeeAmount", rowIndex);
+            string flatFeeAmount = Html.DecimalToPlainCurrencyString(ff.FeeAmount);
+            @Html.Hidden(flatFeeFieldName, flatFeeAmount)
+            @Html.Hidden(string.Format("Row_{0}_FeeDesc", rowIndex), f.Description)
+            @Html.Hidden(string.Format("Row_{0}_FeeName", rowIndex), f.Name)
+            @Html.Hidden(string.Format("Row_{0}_FeeType", rowIndex), f.FeeType)
+        }
+    }
+
+    <div class="action-panel">
+        @Html.ActionLink(Html.AdminResource("CancelChanges"), MVC.EditFeesAction, null, new { @class = "CancelChangesLink btn btn-link" })
+        <button class="btn btn-success SaveEditFeesButton confirm-before-leaving">@Html.AdminResource("SaveConfiguration")</button>
+    </div>
+
+}

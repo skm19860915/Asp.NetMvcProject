@@ -1,0 +1,81 @@
+﻿@model Page<Feedback>
+
+@{
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    User targetUser = (User)ViewData["User"];
+}
+<script>
+    $(document).ready(function () {
+        $("#FeedbackMonthsSelect").val($("#FeedbackMonthsValue").val());
+        $("#FeedbackMonthsSelect").change(function () {
+            var currentUrl = '@Html.GetActionUrl(currentAction, new {
+                             @userid = targetUser.ID,
+                             @forOthers = ((bool)ViewData["FeedbackForOthers"]),
+                             @sort = ViewData["Sort"],
+                             @descending = ((bool)ViewData["SortDescending"]),
+                             backUrl = ViewData["backUrl"] }).ToMvcHtmlString().ToJavascriptSafeString()';
+            var targetUrl = currentUrl + '&months=' + $(this).val();
+            document.location = $.htmlDecode(targetUrl);
+            return true;
+        });
+    });
+</script>
+<div class="row">
+    <div class="col-xs-12 col-sm-4">
+        <p></p>
+        <div class="input-group">
+            <span class="input-group-addon">@Html.AdminResource("Period")</span>
+            <select id="FeedbackMonthsSelect" class="form-control input-sm">
+                <option value="0">@Html.AdminResource("All")</option>
+                <option value="1">@Html.AdminResource("Past_1_Month")</option>
+                <option value="6">@Html.AdminResource("Past_X_Months", 6)</option>
+                <option value="12">@Html.AdminResource("Past_X_Months", 12)</option>
+            </select>
+        </div>
+        @Html.Hidden("FeedbackMonthsValue", ViewData["Months"])
+    </div>
+</div>
+<table class="table">
+    <thead>
+
+        <tr>
+            <th>@Html.ActionLink(Html.AdminResource("Rating"), currentAction, new { @sort = "Rating", @id = targetUser.ID, @forOthers = ViewData["FeedbackForOthers"], @months = ViewData["Months"], @descending = !((bool)ViewData["SortDescending"]), @backUrl = ViewData["backUrl"] })</th>
+            <th>@Html.AdminResource("Feedback")</th>
+            <th>@Html.AdminResource("LeftFor")</th>
+            <th>@Html.AdminResource("Listing")</th>
+            <th>@Html.ActionLink(Html.AdminResource("DateTime"), currentAction, new { sort = "DateStamp", @id = targetUser.ID, @forOthers = ViewData["FeedbackForOthers"], @months = ViewData["Months"], @descending = !((bool)ViewData["SortDescending"]), @backUrl = ViewData["backUrl"] })</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    @{
+        foreach (Feedback feedback in Model.List)
+        {
+            User otherUser = (targetUser.ID == feedback.Sender.ID) ? feedback.Receiver : feedback.Sender;
+            <tr>
+                <td><div class="stars-off" style="width:80px"><div class="stars-on" style="width:@(feedback.Rating * 16)px"></div></div></td>
+                <td><div style="max-width: 240px; overflow: hidden;">@feedback.Comment</div></td>
+                <td>
+                    @Html.ActionLink(otherUser.UserName, MVC.UserFeedbackAction, new { id = otherUser.ID })
+                </td>
+                <td>@Html.ActionLink(feedback.ListingID.ToString(), MVC.DetailsAction, MVC.ListingController, new { id = feedback.ListingID }, null)</td>
+                <td>@Html.LocalDTTM(feedback.DateStamp, "G")</td>
+                <td>@Html.ActionLink(HttpUtility.HtmlDecode("&times;"), MVC.DeleteFeedbackAction, new { feedbackId = feedback.ID, @sort = "Rating", @id = targetUser.ID, @forOthers = ViewData["FeedbackForOthers"], @months = ViewData["Months"], @descending = !((bool)ViewData["SortDescending"]), @backUrl = ViewData["backUrl"] }, new { @class = "close", alt = Html.AdminResource("Delete"), title = Html.AdminResource("Delete") })</td>
+            </tr>
+        }
+
+
+    }
+</table>
+@if (Model.TotalPageCount > 1)
+{
+
+    Html.RenderPageNumberLinks(Model, null, null, new
+    {
+        @id = targetUser.ID,
+        @forOthers = ViewData["FeedbackForOthers"],
+        @months = ViewData["Months"],
+        @sort = ViewData["Sort"],
+        @descending = ((bool)ViewData["SortDescending"]),
+        @backUrl = ViewData["backUrl"]
+    }, null);
+}

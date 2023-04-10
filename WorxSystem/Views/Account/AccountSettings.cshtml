@@ -1,0 +1,119 @@
+﻿@model User
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("LineageString_Account_Details")
+</div>
+@Html.LocalizedValidationSummary()
+<div class="panel panel-default">
+    <div class="panel-body">
+        @using (Html.BeginForm())
+        {
+            <div class="form-horizontal">
+                @Html.Hidden("id", Model.ID)
+                @foreach (CustomProperty property in (List<CustomProperty>)ViewData["UserAccountProperties"])
+                {
+                    <div class="form-group">
+                        @if (property.Field.Type != CustomFieldType.Boolean && property.Field.Required)
+                        {
+                            <label class="required col-sm-3 control-label">
+                                @Html.CustomFieldResource(property.Field.Name)
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="col-sm-3 control-label">
+                                @Html.CustomFieldResource(property.Field.Name)
+                            </label>
+                        }
+                        <div class="col-sm-8">
+                            @{ Html.RenderCustomField(property.Field, new { @class = "form-control" }); }
+                            @{
+                                MvcHtmlString helpText = Html.CustomFieldResourceOrDefault(string.Concat(property.Field.Name, "_Help"));
+                                if (helpText != null)
+                                {
+                                    @Html.ToolTipContent(property.Field.Name + "_Help", helpText)
+                                }
+                            }
+                        </div>
+                        @{
+                            if (helpText != null)
+                            {
+                                <div class="pull-left hidden-xs">
+                                    @Html.ToolTipButton(property.Field.Name + "_Help")
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label">@Html.GlobalResource("EmailAddress")</label>
+                    <div class="col-sm-8">
+                        @Html.TextBox("Email", Model.Email, new { @class = "form-control", @type = "email" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-8 col-xs-offset-3">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBox(Fields.Newsletter, Model.Newsletter) @Html.GlobalResource("newsletter") (@Html.GlobalResource("Optional"))
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-default" value="@Html.GlobalResource("Save")" name="Save" id="Save" />
+            </div>
+        }
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <strong>@Html.GlobalResource("CreationDate"):</strong> @Html.LocalDTTM(Model.CreationDate, "G") (@Html.GlobalResource("XhoursAgo", Html.TimeSince(Model.CreationDate)))<br />
+        </li>
+        <li class="list-group-item">
+            <strong>@Html.GlobalResource("LastLoginDate"):</strong> @Html.LocalDTTM(Model.LastLoginDate, "G") (@Html.GlobalResource("XhoursAgo", Html.TimeSince(Model.LastLoginDate)))<br />
+        </li>
+        <li class="list-group-item">
+            <strong>@Html.GlobalResource("Culture"):</strong>
+            @if (SiteClient.SupportedCultures.ContainsKey(Model.Culture))
+            {
+                @SiteClient.SupportedCultures.Where(c => c.Key == Model.Culture).SingleOrDefault().Value.NativeName
+            }
+        </li>
+        @foreach (CustomProperty property in (List<CustomProperty>)ViewData["UserAccountViewProperties"])
+        {
+            <li class="list-group-item">
+                <strong>@Html.CustomFieldResource(property.Field.Name):</strong>
+                @if (!string.IsNullOrEmpty(property.Value))
+                {
+                    switch (property.Field.Type)
+                    {
+                        case CustomFieldType.Boolean:
+                            @(bool.Parse(property.Value) ? Html.GlobalResource("Yes") : Html.GlobalResource("No"))
+                            break;
+                        case CustomFieldType.Decimal:
+                            <text>@decimal.Parse(property.Value).ToString(Formats.Decimal, Html.GetCurrentCultureInfo())</text>
+                            break;
+                        case CustomFieldType.Int:
+                            <text>@int.Parse(property.Value).ToString(Html.GetCurrentCultureInfo())</text>
+                            break;
+                        case CustomFieldType.DateTime:
+                            <text>@DateTime.Parse(property.Value).ToString(Html.GetCurrentCultureInfo())</text>
+                            break;
+                        case CustomFieldType.Enum:
+                            <text>@Html.CustomFieldResource(property.Value)</text>
+                            break;
+                        default:
+                            <text>@property.Value</text>
+                            break;
+                    }
+                }
+            </li>
+        }
+    </ul>
+</div>

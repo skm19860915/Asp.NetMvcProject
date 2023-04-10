@@ -1,0 +1,14 @@
+﻿@model Page<Listing>
+
+<section class="galleryContainer clearfix">
+    @foreach (Listing listing in Model.List)
+    {
+        <div class="col-xs-6 col-lg-4 galleryUnit" data-listingid="@listing.ID">
+                @Html.Partial(listing.Type.Name + "Thumbnail", listing)
+        </div>
+    }
+</section>
+    @if (Model.TotalPageCount > 1)
+    {
+        Html.RenderPageNumberLinks(Model);
+    }

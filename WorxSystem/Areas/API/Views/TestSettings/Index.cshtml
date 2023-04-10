@@ -1,0 +1,55 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">RainWorx AuctionWorx ASP.NET Web API</a>
+            </p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <div id="TestResults"></div>
+</div>
+@section scripts
+{
+    <script>
+        function DisplayTestResult(testName, disposition, status, detail) {
+            var now = new Date();
+            var testResults = $("#TestResults");
+            var testResult = $("<div class='testresult'></div>").appendTo(testResults);
+            $("<span>" + testName + " @@ " + now + ": </span>").appendTo(testResult);
+            if (disposition == "SUCCESS") {
+                $("<span class='successResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            } else {
+                $("<span class='failureResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            }
+            $("<div class='detailResult'>" + JSON.stringify(detail) + "</div>").appendTo(testResult);
+        }
+
+        function Test(testName, url, method, expectation) {
+            $.ajax({
+                url: url,
+                type: method,
+                //data: JSON.stringify(newTitle),
+                contentType: "application/json",
+                processData: false,
+                async: false
+            }).always(function (data) {
+                if (expectation == data.status) {
+                    DisplayTestResult(testName, "SUCCESS", data.status, data.detail);
+                } else {
+                    DisplayTestResult(testName, "FAIL", data.status, data.detail);
+                }
+            });
+        }
+
+        $(document).ready(function () {            
+            Test('Get Site Settings with No Auth', 'TestSettings/GetSiteSettings?name=Auction', 'POST', 401);
+            Test('Get Site Settings with User that doesn\'t exist', 'TestSettings/GetSiteSettings?auth=nouser', 'POST', 401);
+            Test('Get Site Settings with Existing User, but bad key', 'TestSettings/GetSiteSettings?auth=badkey', 'POST', 401);
+            Test('Get Site Settings with Any User', 'TestSettings/GetSiteSettings?auth=nonadmin', 'POST', 200);
+            Test('Get Site Settings with Admin User', 'TestSettings/GetSiteSettings?auth=admin', 'POST', 200);
+        });
+
+    </script>
+}

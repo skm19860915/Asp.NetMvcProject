@@ -1,0 +1,41 @@
+﻿@model RainWorx.FrameWorx.DTO.User
+
+@{
+    List<SalesTaxRate> salesTaxRates = UserClient.GetSalesTaxRatesByUser(Context.User.Identity.Name, Html.FBOUserName());
+    IEnumerable<State> states = SiteClient.States.Where(s => s.Enabled);
+    var countries = Html.Countries();
+    List<KeyValuePair<string, string>> taxableShippingOptions = new List<KeyValuePair<string, string>>(3);
+    taxableShippingOptions.Add(new KeyValuePair<string, string>(Html.GlobalResourceString("NotTaxable"), "NotTaxable"));
+    taxableShippingOptions.Add(new KeyValuePair<string, string>(Html.GlobalResourceString("PartiallyTaxable"), "PartiallyTaxable"));
+    taxableShippingOptions.Add(new KeyValuePair<string, string>(Html.GlobalResourceString("FullyTaxable"), "FullyTaxable"));
+
+    IEnumerable<RainWorx.FrameWorx.MVC.Models.TaxRate> rates = from s in states
+                                                               join c in countries on s.CountryID equals c.ID
+                                                               join r in salesTaxRates on s.ID equals r.StateID
+                                                               select new RainWorx.FrameWorx.MVC.Models.TaxRate()
+                                                                          {
+                                                                              Country = c.Code /*c.Name*/,
+                                                                              State = s.Name,
+                                                                              ID = r.ID,
+                                                                              Rate = r.TaxRate,
+                                                                              TaxableShipping = r.Shipping
+                                                                          };
+
+}
+@if (rates.Count() > 0)
+{
+    <li class="list-group-item" id="SellerTaxDetails">
+        <strong>@Html.GlobalResource("TaxRates"):</strong>&nbsp;&nbsp;
+        <ul>
+            @foreach (var r in rates)
+            {
+            <li>
+                @((r.Rate / 100).ToString("P", Html.GetCultureInfo()))
+                @Html.GlobalResource("ForBuyersIn") @r.State, @r.Country
+                (@Html.GlobalResource("ShippingIs") @Html.GlobalResource(r.TaxableShipping))
+            </li>
+            }
+
+        </ul>
+    </li>
+}

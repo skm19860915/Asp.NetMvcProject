@@ -1,0 +1,13 @@
+﻿@model List<Category>
+
+@foreach (Category cat in Model)
+{
+    <div>
+        <input type="hidden" name="@Fields.CategoryId" value="@cat.ID.ToString()" />
+        @cat.Name (<a class="RemoveCategoryLink" href="#RemoveCategory">@Html.AdminResource("Remove")</a>)
+    </div>
+}
+<div class="form-group text-right">
+    <a class="AddCategoryLink btn btn-xs btn-default" href="#AddCategory">@Html.AdminResource("AddCategory")</a>
+</div>
+

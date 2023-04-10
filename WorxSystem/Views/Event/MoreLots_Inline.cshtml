@@ -1,0 +1,31 @@
+﻿@model Page<Listing>
+@{
+    Layout = "~/Views/Shared/_NoLayout.cshtml";
+}
+@if (Model != null)
+{
+    if ((string)ViewData["ViewStyle"] == "grid")
+    {
+        bool showEventCategories = SiteClient.BoolSetting(SiteProperties.EventHomeCategories);
+        string galleryColumns = "col-xs-6 col-lg-4";
+        if (SiteClient.EnableEvents && !showEventCategories)
+        {
+            galleryColumns = "col-xs-6 col-md-4 col-lg-3";
+        }
+        foreach (Listing listing in Model.List)
+        {
+            <div class="@galleryColumns galleryUnit" data-listingid="@listing.ID" data-lot-order="@listing.Lot.LotOrder">
+                @Html.Partial(listing.Type.Name + "Thumbnail", listing)
+            </div>
+        }
+    }
+    else
+    {
+        foreach (Listing listing in Model.List)
+        {
+            <section data-listingid="@listing.ID" data-lot-order="@listing.Lot.LotOrder">
+                @Html.Partial("Listing_" + listing.Type.Name + "Row", listing)
+            </section>
+        }
+    }
+}

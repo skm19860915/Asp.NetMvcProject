@@ -1,0 +1,140 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">RainWorx AuctionWorx ASP.NET Web API</a></p>
+        </div>
+    </div>        
+</header>
+<div id="body">
+    <div id="TestResults"></div>    
+    <h2>Create Category</h2>
+    Category Name: <input type="text" id="CategoryName" />
+    <input type="button" id="CreateCategory" value="Create Category" />
+    New Category ID: <input type="text" id="CategoryID" />
+    <hr/>
+    <h2>Create Custom Field</h2>
+    Custom Field Name: <input type="text" id="CustomFieldName" />
+    <input type="button" id="CreateCustomField" value="Create Custom Field" />
+    New CustomField ID: <input type="text" id="CustomFieldID" />
+    <hr/>
+    <h2>Assign Custom Field to Category</h2>    
+    <p>"New Category ID" and "New CustomField ID" (above) <strong>MUST</strong> be populated with valid values, whether manually, or with "Create Category" and "Create Custom Field" respectively, <strong>BEFORE</strong>, you click "Assign"</p>
+    <input type="button" id="AssignCustomFieldToCategory" value="Assign" />    
+    <hr/>
+    <h2>Refresh Custom Fields Below</h2>    
+    <p>"New Category ID" (above) <strong>MUST</strong> be populated with a valid value, whether manually, or with "Create Category", <strong>BEFORE</strong>, you click "Refresh"</p>
+    <p>This updates the "Create Listing" form below to include fields for assigned CustomFields based on Category.</p>
+    <input type="button" id="RefreshCustomFields" value="Refresh" />    
+    <hr/>
+    <h2>Create Listing</h2>
+    Title: <input type="text" id="ListingTitle" /><br />
+    Subtitle: <input type="text" id="ListingSubtitle" /><br />
+    Description: <textarea id="ListingDescription" rows="10" cols="50"></textarea><br />
+    Price: <input type="text" id="ListingPrice" /><br />
+    Duration: <input type="text" id="ListingDuration" /><br />    
+    <div id="CustomFields"></div>    
+    <input type="button" id="CreateListing" value="Create Listing" />
+    New Listing ID: <input type="text" id="ListingID"/>    
+    <hr/>    
+    <h2>Submit Bid</h2> 
+    <p>"New Listing ID" above <strong>MUST</strong> bepopulated with a valid value, whether manually, or with "Create Listing", <strong>BEFORE</strong> you click "Submit Bid"</p>      
+    Bid Amount: <input type="text" id="BidAmount"/><br />
+    <input type="button" value="Submit Bid" id="SubmitBid"/>
+    <hr/>
+</div>
+@section scripts
+{
+    <script>
+        function DisplayTestResult(testName, disposition, status, detail) {
+            var now = new Date();                        
+            var testResults = $("#TestResults");
+            var testResult = $("<div class='testresult'></div>").appendTo(testResults);
+            $("<span>" + testName + " @@ " + now + ": </span>").appendTo(testResult);
+            if (disposition == "SUCCESS") {
+                $("<span class='successResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            } else {
+                $("<span class='failureResult'>" + disposition + " (" + status + ")</span>").appendTo(testResult);
+            }
+            $("<div class='detailResult'>" + JSON.stringify(detail) + "</div>").appendTo(testResult);
+        }
+        
+        function DisplayCustomFields(fields) {
+            var customFields = $("#CustomFields");
+            customFields.empty();
+            for (var i = 0; i < fields.length; i++) {
+                var cfName = $("<input type='text' class='cfname' value='" + fields[i].Name + "' readonly/>: <input type='text' class='cfvalue'/><br />").appendTo(customFields);
+            }
+        }
+
+        function Test(testName, url, method, expectation, callback) {
+            $.ajax({
+                url: url,
+                type: method,
+                //data: JSON.stringify(newTitle),
+                contentType: "application/json",
+                processData: false,
+                async: false
+            }).done(function (data) {
+                if (callback) callback(data);
+            }).always(function (data) {
+                if (expectation == data.status) {
+                    DisplayTestResult(testName, "SUCCESS", data.status, data.detail);
+                } else {
+                    DisplayTestResult(testName, "FAIL", data.status, data.detail);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#SubmitBid").click(function () {
+                //Create Listing Action                
+                Test('Create Listing Action with Buyer User', 'TestListingAction/CreateListingAction?auth=nonadmin&listingID=' + $("#ListingID").val() + '&bidAmount=' + $("#BidAmount").val(), 'POST', 201);
+            });
+
+            $("#CreateCategory").click(function () {
+                Test('Create Category with Admin User', 'TestUseCase/CreateCategory?name=' + $("#CategoryName").val(), 'POST', 201, function (data) {
+                    var catid = data.detail.split("/");
+                    $("#CategoryID").val(catid[catid.length - 1]);
+                });
+            });
+
+            $("#CreateCustomField").click(function () {
+                Test('Create Custom Field with Admin User', 'TestUseCase/CreateCustomField?name=' + $("#CustomFieldName").val(), 'POST', 201, function (data) {
+                    var catid = data.detail.split("/");
+                    $("#CustomFieldID").val(catid[catid.length - 1]);
+                    $("#CustomFieldNameLiteral").html($("#CustomFieldName").val());
+                });
+            });
+
+            $("#AssignCustomFieldToCategory").click(function () {
+                Test('Assign Custom Field to Category with Admin User', 'TestUseCase/AssignCustomFieldToCategory?customFieldID=' + $("#CustomFieldID").val() + "&categoryID=" + $("#CategoryID").val(), 'POST', 201, null);
+            });
+
+            $("#RefreshCustomFields").click(function () {
+                Test('Get CustomFields By Category with Any User', 'TestCustomField/GetCustomFieldByCategoryID?id=' + $("#CategoryID").val() + '&auth=nonadmin', 'POST', 200, function (data) {
+                    DisplayCustomFields(data.detail);
+                });
+            });
+
+            $("#CreateListing").click(function () {
+                var cfNames = [];
+                $(".cfname").each(function () {
+                    cfNames.push(this.value);
+                });
+                var cfValues = [];
+                $(".cfvalue").each(function () {
+                    cfValues.push(this.value);
+                });
+                //alert(cfNames);
+                //alert(cfValues);
+                Test('Create Listing with Admin User', 'TestUseCase/CreateListing?categoryID=' + $("#CategoryID").val() + "&title=" + $("#ListingTitle").val() + "&subtitle=" + $("#ListingSubtitle").val() + "&description=" + $("#ListingDescription").val() + "&price=" + $("#ListingPrice").val() + "&duration=" + $("#ListingDuration").val() + "&customFieldName=" + cfNames + "&customFieldValue=" + cfValues, 'POST', 201, function (data) {
+                    var catid = data.detail.split("/");
+                    $("#ListingID").val(catid[catid.length - 1]);
+                    Test('Get just created Listing with ANY User', 'TestListing/GetListing?id=' + $("#ListingID").val() + '&auth=nonadmin', 'POST', 200, null);
+                });
+            });
+        });                
+        
+    </script>
+}

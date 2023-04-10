@@ -1,0 +1,80 @@
+﻿@model Invoice
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        @Html.GlobalResource("PaymentHistory")
+    </div>
+    @if (Model.PaymentHistory.Count == 0)
+    {
+        <p class="no-history">
+            @Html.GlobalResource("NoPaymentHistory")
+        </p>
+    }
+    <table class="table">
+        @foreach (PaymentProviderResponse paymentResponse in Model.PaymentHistory.OrderByDescending(ph => ph.Timestamp))
+        {
+            <tr>
+            <td>
+                @Html.LocalDTTM(paymentResponse.Timestamp, "G")
+            </td>
+            <td>
+                @Html.GlobalResource(paymentResponse.ProviderIdentifier)
+                <div class="visible-xs">
+                    @if (paymentResponse.ProviderIdentifier == "PayPalStandard" && !Html.IsPayPalCurrency(Model.Currency))
+                    {
+                        @Html.LocalCurrency(paymentResponse.Amount, SiteClient.TextSetting(SiteProperties.PayPal_BackupPaymentCurrency))<br />
+                    }
+                    else
+                    {
+                        @Html.LocalCurrency(paymentResponse.Amount, Model.Currency)<br />
+                    }
+                    @if (paymentResponse.Approved)
+                    {
+                        <span class="label label-primary">
+                            @Html.GlobalResourceString("Approved")
+                        </span>
+                        if (!string.IsNullOrEmpty(paymentResponse.AuthorizationCode))
+                        {
+                            @:&nbsp;(@paymentResponse.AuthorizationCode)
+                    }
+                    }
+                    else
+                    {
+                        <span class="label label-warning">
+                            @Html.GlobalResourceString(paymentResponse.ResponseDescription)
+                        </span>
+                    }
+                </div>
+            </td>
+            <td class="hidden-xs">
+                @if (paymentResponse.Approved)
+                {
+                    <span class="label label-primary">
+                        @Html.GlobalResourceString("Approved")
+                    </span>
+                    if (!string.IsNullOrEmpty(paymentResponse.AuthorizationCode))
+                    {
+                        @:&nbsp;(@paymentResponse.AuthorizationCode)
+                    }
+                }
+                else
+                {
+                    <span class="label label-warning">
+                        @Html.GlobalResourceString(paymentResponse.ResponseDescription)
+                    </span>
+                }
+            </td>
+                <td class="hidden-xs">
+                    @if (paymentResponse.ProviderIdentifier == "PayPalStandard" && !Html.IsPayPalCurrency(Model.Currency))
+                    {
+                        @Html.LocalCurrency(paymentResponse.Amount, SiteClient.TextSetting(SiteProperties.PayPal_BackupPaymentCurrency))
+                    }
+                    else
+                    {
+                        @Html.LocalCurrency(paymentResponse.Amount, Model.Currency)
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>

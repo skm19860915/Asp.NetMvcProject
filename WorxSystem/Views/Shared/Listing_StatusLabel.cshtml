@@ -1,0 +1,34 @@
+﻿@model Listing
+
+@if (Model.Status == ListingStatuses.Validated)
+{
+    <span class="label label-success">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == ListingStatuses.Preview)
+{
+    <span class="label label-primary">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == ListingStatuses.Pending)
+{
+    <span class="label label-primary">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == ListingStatuses.Active)
+{
+    <span class="label label-info">@Html.GlobalResource(Model.Status)</span>
+}
+else if (Model.Status == ListingStatuses.Successful)
+{
+    <span class="label label-default">@Html.GlobalResource(ListingStatuses.Ended)</span>
+}
+else if (Model.Status == ListingStatuses.Unsuccessful)
+{
+    <span class="label label-default">@Html.GlobalResource(ListingStatuses.Ended)</span>
+}
+else if (Model.Status == ListingStatuses.AwaitingPayment)
+{
+    <span class="label label-warning">@Html.GlobalResource(Model.Status)</span>
+}
+else
+{
+    <span class="label label-default">@Html.GlobalResource(Model.Status)</span>
+}

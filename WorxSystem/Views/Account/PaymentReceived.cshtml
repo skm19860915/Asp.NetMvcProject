@@ -1,0 +1,12 @@
+﻿<div class="col-xs-12">
+    <div class="well well-sm section-title">
+        @Html.GlobalResource("PaymentReceived")
+    </div>
+            @Html.GetSiteContent("PaymentReceived")
+            @if (((int?)ViewData["invoice"]).HasValue)
+            {
+                <p class="text-center">
+                    @Html.ActionLink(Html.GlobalResource("ViewInvoice"), MVC.InvoiceDetailAction, new { @id = ViewData["invoice"] }, new { @class = "btn btn-info" })
+                </p>
+            }
+</div>

@@ -1,0 +1,110 @@
+﻿@model RainWorx.FrameWorx.DTO.CreditCard
+
+@{
+    Layout = "~/Views/Account/_MyAccountLayout.cshtml";
+}
+
+<div class="well well-sm section-title">
+    @Html.GlobalResource("CreditCardInformation")
+</div>
+@Html.LocalizedValidationSummary()
+@using (Html.BeginForm())
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label">@Html.GlobalResource("CardType")</label>
+                    <div class="col-sm-6">
+                        @Html.DropDownList("CardType", (IEnumerable<SelectListItem>)ViewData[Fields.CreditCardTypes],
+            Html.GlobalResourceString("SelectACreditCardType"), new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label">@Html.GlobalResource("CardNumber")</label>
+                    <div class="col-sm-6">
+                        @Html.TextBox("CardNumber", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="@Fields.ExpirationMonth" class="required col-sm-3 control-label">@Html.GlobalResource("ExpirationMonth")</label>
+                    <div class="col-sm-3">
+                        @*@Html.TextBox(Fields.ExpirationMonth, null, new { @class = "form-control", placeholder = @Html.GlobalResource("Month") })*@
+                        @Html.MonthDropDownList(Fields.ExpirationMonth, " ", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="@Fields.ExpirationYear" class="required col-sm-3 control-label">@Html.GlobalResource("Year")</label>
+                    <div class="col-sm-3">
+                        @*@Html.TextBox("ExpirationYear", null, new { @class = "form-control", placeholder = @Html.GlobalResource("Year") })*@
+                        @Html.YearDropDownList(Fields.ExpirationYear, " ", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label">@Html.GlobalResource("SelectAddress")</label>
+                    <div class="col-sm-8">
+                        @foreach (Address address in (IEnumerable<Address>)ViewData[MVC.ViewData_AddressList])
+                        {
+
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    @Html.RadioButton(Fields.AddressID,
+                                    address.ID, (address.ID == (int)ViewData["PrimaryAddressID"]),
+                                    new { @id = Fields.AddressID + "_" + address.ID, @class = "awe-addr-rdo" })
+                                </span>
+                                <button disabled="disabled" class="btn btn-default">
+                                    <p class="text-left">
+                                        @*@Html.Partial("Address", address)*@
+                                        <strong>
+                                            @address.Description
+                                        </strong><br />
+                                        @address.FirstName @address.LastName<br />
+                                        @address.Street1<br />
+                                        @if (!string.IsNullOrEmpty(address.Street2))
+                                        {
+                                            @address.Street2<br />
+                                        }
+                                        @address.City, @address.StateRegion @address.ZipPostal<br />
+                                        @Html.LocalizeCountry(address.Country.Name)
+                                    </p>
+                                </button>
+                            </div>
+                            <p></p>
+                        }
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                @Html.RadioButton(Fields.AddressID, "new",
+                                (((IEnumerable<Address>)ViewData[MVC.ViewData_AddressList]).Count() == 0),
+                                new { @id = "AddressID_new", @class = "awe-addr-rdo" })
+                            </span>
+                            <button disabled="disabled" class="btn btn-default text-left">
+                                <strong>@Html.GlobalResource("NewAddress")</strong>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="NewAddressFields" class="awe-hidden">
+                    @Html.Partial("AddressEditor", new Address())
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        $(".awe-addr-rdo").click(function () {
+                            if ($(this).attr("id") == "AddressID_new") {
+                                $("#NewAddressFields").show();
+                            } else {
+                                $("#NewAddressFields").hide();
+                            }
+                        });
+                        if ($("#AddressID_new").prop("checked") == true) {
+                            $("#NewAddressFields").show();
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <input type="submit" class="btn btn-default" id="Save" name="Save" value="@Html.GlobalResource("Save")" />
+            @Html.ButtonLink(Html.GlobalResource("Cancel"), MVC.CreditCardsAction, null, null, new { @class = "btn btn-link" })
+        </div>
+    </div>
+}

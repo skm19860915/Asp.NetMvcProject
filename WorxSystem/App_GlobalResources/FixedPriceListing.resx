@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BUYER_NO_ACTIVITY" xml:space="preserve">
+    <value>You have not purchased this item.</value>
+  </data>
+  <data name="BUYER_NO_QUANTITY_LEFT" xml:space="preserve">
+    <value>You cannot purchase this item.  It has sold out.</value>
+  </data>
+  <data name="BUYER_PURCHASED" xml:space="preserve">
+    <value>You previously ordered {0} of this item.</value>
+  </data>
+  <data name="BuyNow" xml:space="preserve">
+    <value>Buy Now</value>
+  </data>
+  <data name="FeedbackScore" xml:space="preserve">
+    <value>Feedback Score</value>
+  </data>
+  <data name="FixedPrice" xml:space="preserve">
+    <value>Fixed Price</value>
+  </data>
+  <data name="FixedPriceDisclaimer" xml:space="preserve">
+    <value>This item is available for direct purchase from the seller.   No bidding is required.  </value>
+  </data>
+  <data name="ListingEndDateTime" xml:space="preserve">
+    <value>Available Until</value>
+  </data>
+  <data name="ListingLocation" xml:space="preserve">
+    <value>Listing Location</value>
+  </data>
+  <data name="ListingPageViews" xml:space="preserve">
+    <value>Page Views</value>
+  </data>
+  <data name="ListingStartedDateTime" xml:space="preserve">
+    <value>Available Since</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="PerItem" xml:space="preserve">
+    <value>Per Item</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="PurchasePrice" xml:space="preserve">
+    <value>Purchase Price</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="QuantityAvailable" xml:space="preserve">
+    <value>Quantity Available</value>
+  </data>
+  <data name="SellerDetailsTitle" xml:space="preserve">
+    <value>About The Seller</value>
+  </data>
+  <data name="SellerUsername" xml:space="preserve">
+    <value>Listed By</value>
+  </data>
+  <data name="SELLER_ACTIVITY" xml:space="preserve">
+    <value>You have made at least one sale.</value>
+  </data>
+  <data name="SELLER_NO_ACTIVITY" xml:space="preserve">
+    <value>No sales at this time.</value>
+  </data>
+  <data name="SELLER_SUCCESSFUL" xml:space="preserve">
+    <value>You have made at least one sale.</value>
+  </data>
+  <data name="SELLER_UNSUCCESSFUL" xml:space="preserve">
+    <value>No sales.</value>
+  </data>
+  <data name="ConfirmPurchase" xml:space="preserve">
+    <value>Confirm your purchase of {0} item(s) for {1} per unit.</value>
+  </data>
+  <data name="BidderIsOwner" xml:space="preserve">
+    <value>The Buyer is the Owner</value>
+  </data>
+  <data name="ListingChangedDuringProcessing" xml:space="preserve">
+    <value>This listing changed during processing</value>
+  </data>
+  <data name="ListingNotActive" xml:space="preserve">
+    <value>Listing is Not Active</value>
+  </data>
+  <data name="QuantityTooHigh" xml:space="preserve">
+    <value>Quantity too high</value>
+  </data>
+  <data name="LISTING_AWAITING_PAYMENT" xml:space="preserve">
+    <value>This listing will not start until insertion fees are paid.</value>
+  </data>
+  <data name="LISTING_NOT_STARTED" xml:space="preserve">
+    <value>This listing has not started.</value>
+  </data>
+  <data name="BadListingActionValue" xml:space="preserve">
+    <value>Quantity must be a whole number greater than zero.</value>
+  </data>
+  <data name="PurchaseHistory" xml:space="preserve">
+    <value>Purchase History</value>
+  </data>
+  <data name="LISTING_DELETED" xml:space="preserve">
+    <value>This listing was deleted.</value>
+  </data>
+  <data name="ViewSellersOtherListings" xml:space="preserve">
+    <value>View Seller's Other Listings</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Purchase History</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="ActionSuccess" xml:space="preserve">
+    <value>Your purchase order has been submitted.</value>
+  </data>
+  <data name="CurrentQuantity" xml:space="preserve">
+    <value>Current Quantity</value>
+  </data>
+  <data name="ClosedMessage" xml:space="preserve">
+    <value>This item is no longer available for purchase.</value>
+  </data>
+  <data name="PostListingFeeIsBasedOnXxx" xml:space="preserve">
+    <value>The Post Listing Fee is based on the Price...</value>
+  </data>
+  <data name="FinalFeeDescriptionNoTiers" xml:space="preserve">
+    <value>The Seller Final Fee is a percentage of the Sale Price, charged only when a sale occurs.</value>
+  </data>
+  <data name="FinalFeeDescriptionWithTiers" xml:space="preserve">
+    <value>The Seller Final Fee is a percentage of the Sale Price, charged only when a sale occurs...</value>
+  </data>
+  <data name="ListingStartsDateTime" xml:space="preserve">
+    <value>Available At</value>
+  </data>
+  <data name="ScheduledListingStartsInX" xml:space="preserve">
+    <value>Available In: {0}</value>
+  </data>
+  <data name="ScheduledListingStartsOnX" xml:space="preserve">
+    <value>Available for purchase on {0}</value>
+  </data>
+  <data name="A_Xdollars_BuyerFeeDescr_WillBeAppliedToYourTotal" xml:space="preserve">
+    <value>A {0} {1} will be applied to your total.</value>
+  </data>
+  <data name="A_Xpct_BuyerFeeDescr_Of_Ydollars_WillBeAppliedToYourTotal" xml:space="preserve">
+    <value>A {0} {1} of {2} will be applied to your total.</value>
+  </data>
+  <data name="PriceIncluding_BuyerFeeDescr_Xdollars" xml:space="preserve">
+    <value>Price including {0}: {1}</value>
+  </data>
+  <data name="A_Xdollars_BuyerFeeDescr_WillBeAppliedToYourAccount" xml:space="preserve">
+    <value>A {0} {1} will be applied to your account.</value>
+  </data>
+  <data name="A_Xpct_BuyerFeeDescr_Of_Ydollars_WillBeAppliedToYourAccount" xml:space="preserve">
+    <value>A {0} {1} of {2} will be applied to your account.</value>
+  </data>
+  <data name="Quantity_small" xml:space="preserve">
+    <value>QTY</value>
+  </data>
+  <data name="Each" xml:space="preserve">
+    <value>each</value>
+  </data>
+  <data name="ActingUserIsNotAuthorized" xml:space="preserve">
+    <value>You are not currently authorized purchase</value>
+  </data>
+  <data name="UsersWatching" xml:space="preserve">
+    <value>Watching</value>
+  </data>
+  <data name="UNKNOWN" xml:space="preserve">
+    <value>UNKNOWN</value>
+  </data>
+  <data name="TypeIconAlt" xml:space="preserve">
+    <value>Buy Now Listing</value>
+  </data>
+  <data name="BuyerFeeNotice" xml:space="preserve">
+    <value>Purchasing this item will incur a Buyer Fee of</value>
+  </data>
+  <data name="AcceptOffers" xml:space="preserve">
+    <value>Accept Offers</value>
+  </data>
+  <data name="MakeOffer" xml:space="preserve">
+    <value>Make Offer</value>
+  </data>
+  <data name="OfferMessage" xml:space="preserve">
+    <value>Offer Message</value>
+  </data>
+  <data name="ReviewAndConfirmOffer" xml:space="preserve">
+    <value>Review and Confirm Offer</value>
+  </data>
+  <data name="ReviewOffer" xml:space="preserve">
+    <value>Review Offer</value>
+  </data>
+  <data name="YourOffer" xml:space="preserve">
+    <value>Your Offer</value>
+  </data>
+  <data name="QtyAvailable" xml:space="preserve">
+    <value>Qty Available</value>
+  </data>
+  <data name="ListedPrice" xml:space="preserve">
+    <value>Listed Price: {0}</value>
+  </data>
+  <data name="ViewPurchaseHistory" xml:space="preserve">
+    <value>View Purchase History</value>
+  </data>
+  <data name="XUnsold" xml:space="preserve">
+    <value>{0} Unsold</value>
+  </data>
+  <data name="ENDED_WITH_OFFER_ACCEPTED" xml:space="preserve">
+    <value>Item ended with accepted offer</value>
+  </data>
+  <data name="YOUR_OFFER_ACCEPTED" xml:space="preserve">
+    <value>Your offer was accepted</value>
+  </data>
+  <data name="YOUR_OFFER_DECLINED" xml:space="preserve">
+    <value>Your offer was declined</value>
+  </data>
+  <data name="YOU_HAVE_PENDING_OFFER" xml:space="preserve">
+    <value>You have an offer awaiting your response</value>
+  </data>
+  <data name="AvailableFor" xml:space="preserve">
+    <value>Available For</value>
+  </data>
+  <data name="AvailableIn" xml:space="preserve">
+    <value>Available In</value>
+  </data>
+  <data name="IsTaxable" xml:space="preserve">
+    <value>This item is taxable</value>
+  </data>
+</root>

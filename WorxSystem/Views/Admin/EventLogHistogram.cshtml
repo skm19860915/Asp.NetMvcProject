@@ -1,0 +1,288 @@
+﻿@using RainWorx.FrameWorx.MVC.Models
+@model Dictionary<string, List<EventLogStat>>
+
+@{
+    Layout = "~/Views/Shared/_NoLayout.cshtml";
+
+    var cultureInfo = Html.GetCultureInfo();
+
+    double containerWidth = ((double)ViewData["DisplayWidth"]) - 100D;
+    double containerHeight = 300;
+    string dataPointWidth = "16px";
+    string dataPointHeight = "20px";
+    string DataIncrement = (string)ViewData["DataIncrement"];
+    DateTime FromDate = (DateTime)ViewData["utcFromDate"];
+    DateTime ToDate = (DateTime)ViewData["utcToDate"];
+    DateTime effectiveFromDate = ToDate;
+    DateTime effectiveToDate = FromDate;
+    double maxYaxis = 0;
+    foreach (string severity in Model.Keys)
+    {
+        if (Model[severity].Count > 0)
+        {
+            DateTime minDateforThisSeverity = Model[severity].Min(dp => dp.FromDate);
+            DateTime maxDateforThisSeverity = Model[severity].Max(dp => dp.FromDate);
+            if (minDateforThisSeverity < effectiveFromDate)
+            {
+                effectiveFromDate = minDateforThisSeverity;
+            }
+            if (maxDateforThisSeverity > effectiveToDate)
+            {
+                effectiveToDate = maxDateforThisSeverity;
+            }
+        }
+        int maxYforThisSeverity = Model[severity].Count > 0 ? Model[severity].Max(dp => dp.EntryCount) : 0;
+        maxYaxis = (maxYforThisSeverity > maxYaxis) ? maxYforThisSeverity : maxYaxis;
+    }
+    double maxXaxis;
+    DateTime midXval;
+    switch (DataIncrement)
+    {
+        case "MINUTE":
+            maxXaxis = (effectiveToDate - effectiveFromDate).TotalMinutes;
+            midXval = effectiveFromDate.AddMinutes(maxXaxis / 2);
+            break;
+        case "DAY":
+            maxXaxis = (effectiveToDate - effectiveFromDate).TotalDays;
+            midXval = effectiveFromDate.AddDays(maxXaxis / 2);
+            break;
+        default: //"HOUR"
+            maxXaxis = (effectiveToDate - effectiveFromDate).TotalHours;
+            midXval = effectiveFromDate.AddHours(maxXaxis / 2);
+            break;
+    }
+    if (maxXaxis < 1)
+    {
+        maxXaxis = 1;
+    }
+    double xScale = containerWidth / maxXaxis;
+    double yScale = containerHeight / (double)maxYaxis;
+
+    string topLabel;
+    string lowerXlabel;
+    string middleXlabel;
+    string upperXlabel;
+    switch (DataIncrement)
+    {
+        case "MINUTE":
+            topLabel = string.Format("{0} {1} - {2}", FromDate.ToLocalDTTM().ToShortDateString(), FromDate.ToLocalDTTM().ToShortTimeString(), ToDate.ToLocalDTTM().ToShortTimeString());
+            lowerXlabel = effectiveFromDate.ToLocalDTTM().ToShortTimeString() + " (" + effectiveFromDate.ToLocalDTTM().ToShortDateString() + ")";
+            middleXlabel = midXval.ToLocalDTTM().ToShortTimeString();
+            upperXlabel = effectiveToDate.ToLocalDTTM().ToShortTimeString();
+            break;
+        case "DAY":
+            topLabel = string.Format("{0} - {1}", FromDate.ToLocalDTTM().ToShortDateString(), ToDate.ToLocalDTTM().ToShortDateString());
+            lowerXlabel = effectiveFromDate.ToLocalDTTM().ToShortDateString();
+            middleXlabel = midXval.ToLocalDTTM().ToShortDateString();
+            upperXlabel = effectiveToDate.ToLocalDTTM().ToShortDateString();
+            break;
+        default: //"HOUR"
+            topLabel = string.Format("{0} {1} - {2} {3}", FromDate.ToLocalDTTM().ToShortDateString(), FromDate.ToLocalDTTM().ToShortTimeString(), ToDate.ToLocalDTTM().ToShortDateString(), ToDate.ToLocalDTTM().ToShortTimeString());
+            lowerXlabel = effectiveFromDate.ToLocalDTTM().ToShortDateString() + " " + effectiveFromDate.ToLocalDTTM().ToShortTimeString();
+            middleXlabel = midXval.ToLocalDTTM().ToShortDateString() + " " + midXval.ToLocalDTTM().ToShortTimeString();
+            upperXlabel = effectiveToDate.ToLocalDTTM().ToShortDateString() + " " + effectiveToDate.ToLocalDTTM().ToShortTimeString();
+            break;
+    }
+}
+@*<p>
+        maxXaxis: @maxXaxis<br />
+        maxYaxis: @maxYaxis<br />
+        xScale: @xScale<br />
+        yScale: @yScale<br />
+        effectiveFromDate: @effectiveFromDate<br />
+        effectiveToDate: @effectiveToDate<br />
+        requestedFromDate: @FromDate<br />
+        requestedToDate: @ToDate<br />
+    </p>*@
+<a class="close" id="CloseHistogram">x</a>
+
+<!-- CloseHistogram -->
+<p style="padding-left: 50px;">
+    @Html.AdminResource("NowShowing", topLabel)
+    &nbsp;<a href="@Html.GetActionUrl("EventLog", new {
+    FromDate = FromDate.ToLocalDTTM().ToString("g", cultureInfo),
+    ToDate = ToDate.ToLocalDTTM().ToString("g", cultureInfo) })">@Html.AdminResource("UseThisDateRange")</a>
+    <br />
+    <a href="@Html.GetActionUrl("EventLogHistogram", new {
+    DataIncrement = "MINUTE",
+    FromDate = DateTime.UtcNow.AddHours(-2).ToLocalDTTM().ToString("g", cultureInfo),
+    ToDate = DateTime.UtcNow.ToLocalDTTM().ToString("g", cultureInfo) })"
+        class="update-histogram">@Html.AdminResource("Last2Hours")</a>
+    &nbsp;|&nbsp;
+    <a href="@Html.GetActionUrl("EventLogHistogram", new {
+    DataIncrement = "HOUR",
+    FromDate = DateTime.UtcNow.AddHours(-48).ToLocalDTTM().ToString("g", cultureInfo),
+    ToDate = DateTime.UtcNow.ToLocalDTTM().ToString("g", cultureInfo) })"
+        class="update-histogram">@Html.AdminResource("Last2Days")</a>
+    &nbsp;|&nbsp;
+    <a href="@Html.GetActionUrl("EventLogHistogram", new {
+    DataIncrement = "DAY",
+    FromDate = DateTime.UtcNow.AddDays(-7).ToLocalDTTM().ToString("g", cultureInfo),
+    ToDate = DateTime.UtcNow.ToLocalDTTM().ToString("g", cultureInfo) })"
+        class="update-histogram">@Html.AdminResource("Last7Days")</a>
+    &nbsp;|&nbsp;
+    <a href="@Html.GetActionUrl("EventLogHistogram", new {
+    DataIncrement = "DAY",
+    FromDate = DateTime.UtcNow.AddDays(-30).ToLocalDTTM().ToString("g", cultureInfo),
+    ToDate = DateTime.UtcNow.ToLocalDTTM().ToString("g", cultureInfo) })"
+        class="update-histogram">@Html.AdminResource("Last30Days")</a>
+    &nbsp;|&nbsp;
+    <a href="@Html.GetActionUrl("EventLogHistogram", new {
+    DataIncrement = "DAY",
+    FromDate = DateTime.UtcNow.AddYears(-10).ToLocalDTTM().ToString("g", cultureInfo),
+    ToDate = DateTime.UtcNow.ToLocalDTTM().ToString("g", cultureInfo) })"
+        class="update-histogram">@Html.AdminResource("All")</a>
+</p>
+<div style="height: @(containerHeight + 25); width: 50px; float: left; text-align: right; padding-right: 5px;">
+    <div style="margin-top:15px; margin-bottom: @(containerHeight * .4)px;">@maxYaxis</div>
+    <div style="margin-bottom: @(15+ containerHeight * .4)px;">@((int)(maxYaxis / 2))</div>
+    <div style="">0</div>
+</div>
+<div style="width: @(containerWidth + 25)px; height: @(containerHeight + 25)px; position:relative; border: 1px solid black; float: left;">
+    @foreach (string severity in Model.Keys)//.Where(s => s != "Information"))
+    {
+        string bgColor = "green";
+        switch (severity)
+        {
+            case "Error":
+                bgColor = "red"; break;
+            case "Warning":
+                bgColor = "yellow"; break;
+        }
+        foreach (var dataPoint in Model[severity])
+        {
+            double thisXaxis;
+            string actionUrl;
+            string linkTitle;
+            string thisLinkClass = "";
+            DateTime localDataPointDttm = dataPoint.FromDate.ToLocalDTTM();
+            switch (DataIncrement)
+            {
+                case "MINUTE":
+                    thisXaxis = (dataPoint.FromDate - effectiveFromDate).TotalMinutes;
+                    actionUrl = Html.GetActionUrl("EventLog", new
+                    {
+                        Severity = dataPoint.Severity,
+                        FromDate = localDataPointDttm.AddSeconds(0).ToString("g", cultureInfo),
+                        ToDate = localDataPointDttm.AddSeconds(60).ToString("g", cultureInfo)
+                    });
+                    linkTitle = string.Format("{0} {1}s at {2}", dataPoint.EntryCount, dataPoint.Severity, localDataPointDttm.ToShortTimeString());
+                    thisLinkClass = "view-entries";
+                    break;
+                case "DAY":
+                    thisXaxis = (dataPoint.FromDate - effectiveFromDate).TotalDays;
+                    if (dataPoint.EntryCount < 10)
+                    {
+                        actionUrl = Html.GetActionUrl("EventLog", new
+                        {
+                            Severity = dataPoint.Severity,
+                            FromDate = localDataPointDttm.AddHours(-5).ToString("g", cultureInfo),
+                            ToDate = localDataPointDttm.AddHours(29).ToString("g", cultureInfo)
+                        });
+                        thisLinkClass = "view-entries";
+                    }
+                    else
+                    {
+                        actionUrl = Html.GetActionUrl("EventLogHistogram", new
+                        {
+                            DataIncrement = "HOUR",
+                            FromDate = localDataPointDttm.AddHours(-5).ToString("g", cultureInfo),
+                            ToDate = localDataPointDttm.AddHours(29).ToString("g", cultureInfo)
+                        });
+                        thisLinkClass = "update-histogram";
+                    }
+                    linkTitle = string.Format("{0} {1}s on {2}", dataPoint.EntryCount, dataPoint.Severity, localDataPointDttm.ToShortDateString());
+                    break;
+                default: //"HOUR"
+                    thisXaxis = (dataPoint.FromDate - effectiveFromDate).TotalHours;
+                    if (dataPoint.EntryCount < 10)
+                    {
+                        actionUrl = Html.GetActionUrl("EventLog", new
+                        {
+                            Severity = dataPoint.Severity,
+                            FromDate = localDataPointDttm.AddMinutes(-15).ToString("g", cultureInfo),
+                            ToDate = localDataPointDttm.AddMinutes(75).ToString("g", cultureInfo)
+                        });
+                        thisLinkClass = "view-entries";
+                    }
+                    else
+                    {
+                        actionUrl = Html.GetActionUrl("EventLogHistogram", new
+                        {
+                            DataIncrement = "MINUTE",
+                            FromDate = localDataPointDttm.AddMinutes(-15).ToString("g", cultureInfo),
+                            ToDate = localDataPointDttm.AddMinutes(75).ToString("g", cultureInfo)
+                        });
+                        thisLinkClass = "update-histogram";
+                    }
+                    linkTitle = string.Format("{0} {1}s on {2} at {3}", dataPoint.EntryCount, dataPoint.Severity, localDataPointDttm.ToShortDateString(), localDataPointDttm.ToShortTimeString());
+                    break;
+            }
+            double thisYaxis = dataPoint.EntryCount;
+            <a href="@actionUrl" class="@thisLinkClass"
+                style="position: absolute; left: @((int)(thisXaxis * xScale))px; bottom: @((int)(thisYaxis * yScale))px; "
+                title="@linkTitle">
+                <div style="width: @dataPointWidth; height: @dataPointHeight; background-color: @bgColor; border: 1px solid gray; font-weight: bold; color: #000; text-align: center;">
+                    @(dataPoint.RangeMinutes == 1 ? "M" : dataPoint.RangeMinutes == 60 ? "H" : "D")
+                </div>
+            </a>
+        }
+    }
+</div>
+<div style="clear:both"></div>
+<div style="height: 30px; width: @(containerWidth + 25)px; margin-left: 55px; position: relative;">
+    <span style="position:absolute; left: 5px; top: 5px;">@lowerXlabel</span>
+    <span style="position:absolute; left: @((maxXaxis * xScale / 2)-30)px; top: 5px;">@middleXlabel</span>
+    <span style="position:absolute; right: 5px; top: 5px;">@upperXlabel</span>
+</div>
+<p style="text-align: center;">
+    @Html.GlobalResource("Key"):
+    &nbsp;
+    &nbsp;
+    <a href="#NoAction" onclick="return false;">
+        <span style="width: @dataPointWidth; height: @dataPointHeight; background-color: #f1f1f1; border: 1px solid gray; font-weight: bold; color: #000; text-align: center; display: inline-block;">
+            D
+        </span>
+    </a>
+    @Html.GlobalResource("Day")
+    &nbsp;
+    &nbsp;
+    <a href="#NoAction" onclick="return false;">
+        <span style="width: @dataPointWidth; height: @dataPointHeight; background-color: #f1f1f1; border: 1px solid gray; font-weight: bold; color: #000; text-align: center; display: inline-block;">
+            H
+        </span>
+    </a>
+    @Html.GlobalResource("Hour")
+    &nbsp;
+    &nbsp;
+    <a href="#NoAction" onclick="return false;">
+        <span style="width: @dataPointWidth; height: @dataPointHeight; background-color: #f1f1f1; border: 1px solid gray; font-weight: bold; color: #000; text-align: center; display: inline-block;">
+            M
+        </span>
+    </a>
+    @Html.GlobalResource("Minute")
+    @*&nbsp;
+        &nbsp;
+        <a href="#NoAction" onclick="return false;">
+            <span style="width: @dataPointWidth; height: @dataPointHeight; background-color: green; border: 1px solid gray; font-weight: bold; color: #000; text-align: center; display: inline-block;">
+                &nbsp;
+            </span>
+        </a>
+    @Html.AdminResource("Information")*@
+    &nbsp;
+    &nbsp;
+    <a href="#NoAction" onclick="return false;">
+        <span style="width: @dataPointWidth; height: @dataPointHeight; background-color: yellow; border: 1px solid gray; font-weight: bold; color: #000; text-align: center; display: inline-block;">
+            &nbsp;
+        </span>
+    </a>
+    @Html.AdminResource("Warnings")
+    &nbsp;
+    &nbsp;
+    <a href="#NoAction" onclick="return false;">
+        <span style="width: @dataPointWidth; height: @dataPointHeight; background-color: red; border: 1px solid gray; font-weight: bold; color: #000; text-align: center; display: inline-block;">
+            &nbsp;
+        </span>
+    </a>
+    @Html.AdminResource("Errors")
+</p>

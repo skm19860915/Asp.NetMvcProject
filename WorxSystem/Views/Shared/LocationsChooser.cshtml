@@ -1,0 +1,24 @@
+﻿@foreach (Location location in SiteClient.Locations)
+{
+    if (SiteClient.BoolSetting("ListingOption_" + location.Name + "_Enabled"))
+    {
+        <li class="list-group-item">
+            <div class="form-inline">
+                <div class="form-group">
+                    <div class="checkbox">
+                        @Html.CheckBox(/*Strings.MVC.LocationPrefix*/"location_" + location.ID)
+                        <label for="@("location_" + location.ID)">
+                            @Html.GlobalResource(location.Name + "_Location")
+                            @if (location.Amount > 0.0M)
+                            {
+                                @:&nbsp;-&nbsp;
+                                @Html.SiteCurrencyOrFree(location.Amount);
+                            }
+                            &nbsp;-&nbsp;@Html.GlobalResource(location.Name + "_Description")
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
+}

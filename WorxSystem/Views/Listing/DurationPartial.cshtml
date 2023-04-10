@@ -1,0 +1,380 @@
+﻿@model Listing
+
+
+@{
+    string durationOpts = (string)ViewData[SiteProperties.ListingDurationOptions];
+    bool showTimePicker = bool.Parse(SiteClient.Settings["UsejQueryTimePicker"]);
+    if (durationOpts.Equals("StartDuration"))
+    {
+        <script>
+            $(document).ready(function () {
+                var startDateInput = $('#@Fields.StartDate');
+                var startDateHelpText = null
+                ApplyDatePicker(startDateInput, '@Html.GetCookie("culture")', '@SiteClient.SiteCulture');
+
+                //toggle textbox help text "Leave blank to start immediately" as needed
+                if (startDateInput.val() == '') {
+                    startDateInput.val(startDateHelpText);
+                    startDateInput.addClass("TextboxHelpText");
+                }
+                startDateInput.focus(function () {
+                    if ($(this).val() == startDateHelpText) {
+                        $(this).val('').removeClass("TextboxHelpText");
+                    }
+                    return true;
+                });
+                startDateInput.blur(function () {
+                    if ($(this).val() == '') {
+                        $(this).val(startDateHelpText).addClass("TextboxHelpText");
+                    }
+                    return true;
+                });
+                startDateInput.change(function () {
+                    if ($(this).val() == '') {
+                        $(this).val(startDateHelpText).addClass("TextboxHelpText");
+                    } else if ($(this).val() != startDateHelpText) {
+                        $(this).removeClass("TextboxHelpText");
+                    }
+                    return true;
+                });
+
+                @if(showTimePicker)
+                {
+                    <text>
+                $('#@Fields.StartTime').ptTimeSelect({
+                    hoursLabel: '@Html.GlobalResource("Hours")',
+                    minutesLabel: '@Html.GlobalResource("Minutes")',
+                    containerClass: 'TimeSelectClass'
+                });
+                    </text>
+                }
+
+                $("#" + "@Fields.Duration").change(function () {
+                    if ($(this).val() == "GTC") {
+                        $("#" + "@Fields.GoodTilCanceled").val("@true.ToString()");
+                    } else {
+                        $("#" + "@Fields.GoodTilCanceled").val("@false.ToString()");
+                    }
+                });
+            });
+        </script>
+        if ((bool)ViewData[MVC.ViewData_GtcAvailable])
+        {
+            @Html.Hidden(Fields.GoodTilCanceled)
+        }
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="@Fields.StartDate">@Html.GlobalResource("StartDTTM")</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        @Html.TextBox(Fields.StartDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        @Html.TextBox(Fields.StartTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <span class="help-block">@Html.GlobalResource("LeaveBlankToStartImmediately")</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="required col-sm-3 control-label" for="Duration">@Html.GlobalResource("Duration")</label>
+                <div class="col-sm-3">
+                    @Html.DropDownList(Fields.Duration, null, Html.GlobalResourceString("SelectAValue"), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    }
+    if (durationOpts.Equals("StartEnd"))
+    {
+        <script>
+            $(document).ready(function () {
+                var startDateInput = $('#@Fields.StartDate');
+                var startDateHelpText = null
+
+                ApplyDatePicker(startDateInput, '@Html.GetCookie("culture")', '@SiteClient.SiteCulture');
+
+                //toggle textbox help text "Leave blank to start immediately" as needed
+                if (startDateInput.val() == '') {
+                    startDateInput.val(startDateHelpText);
+                    startDateInput.addClass("TextboxHelpText");
+                }
+                startDateInput.focus(function () {
+                    if ($(this).val() == startDateHelpText) {
+                        $(this).val('').removeClass("TextboxHelpText");
+                    }
+                    return true;
+                });
+                startDateInput.blur(function () {
+                    if ($(this).val() == '') {
+                        $(this).val(startDateHelpText).addClass("TextboxHelpText");
+                    }
+                    return true;
+                });
+                startDateInput.change(function () {
+                    if ($(this).val() == '') {
+                        $(this).val(startDateHelpText).addClass("TextboxHelpText");
+                    } else if ($(this).val() != startDateHelpText) {
+                        $(this).removeClass("TextboxHelpText");
+                    }
+                    return true;
+                });
+
+                @if(showTimePicker)
+                {
+                    <text>
+                $('#@Fields.StartTime').ptTimeSelect({
+                    hoursLabel: '@Html.GlobalResource("Hours")',
+                    minutesLabel: '@Html.GlobalResource("Minutes")',
+                    containerClass: 'TimeSelectClass'
+                });
+                    </text>
+                }
+                ApplyDatePicker($('#@Fields.EndDate'), '@Html.GetCookie("culture")', '@SiteClient.SiteCulture');
+
+                @if(showTimePicker)
+                {
+                    <text>
+                $('#@Fields.EndTime').ptTimeSelect({
+                    hoursLabel: '@Html.GlobalResource("Hours")',
+                    minutesLabel: '@Html.GlobalResource("Minutes")',
+                    containerClass: 'TimeSelectClass'
+                });
+                    </text>
+                }
+
+                $("#GTC_No").click(function () {
+                    $("#" + "@Fields.EndDate").removeAttr("disabled");
+                    $("#" + "@Fields.EndTime").removeAttr("disabled");
+                });
+
+                $("#GTC_Yes").click(function () {
+                    $("#" + "@Fields.EndDate").attr("disabled", "disabled");
+                    $("#" + "@Fields.EndTime").attr("disabled", "disabled");
+                });
+
+            });
+        </script>
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="@Fields.StartDate">@Html.GlobalResource("StartDTTM")</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        @Html.TextBox(Fields.StartDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        @Html.TextBox(Fields.StartTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <span class="help-block">@Html.GlobalResource("LeaveBlankToStartImmediately")</span>
+                </div>
+            </div>
+        </div>
+        if ((bool)ViewData[MVC.ViewData_GtcAvailable])
+        {
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label" for="GTC_False">
+                        @Html.RadioButton(Fields.GoodTilCanceled, false.ToString(), new { @id = "GTC_False", @class = "pull-left" })
+                        @Html.GlobalResource("EndDTTM")
+                    </label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="GTC_True">
+                        @Html.RadioButton(Fields.GoodTilCanceled, true.ToString(), new { @id = "GTC_True", @class = "pull-left" })
+                        @Html.GlobalResource("GoodTilCanceled")
+                    </label>
+                    @{
+            decimal goodUntilCanceledCharge = AccountingClient.GetAllFeeProperties().Where(fp =>
+            fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.GoodUntilCanceled") &&
+            fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+            fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+            fp.Name.Equals(FeeNames.GoodUntilCanceled)).Single().Amount;
+            if (goodUntilCanceledCharge > 0)
+            {
+                @:&nbsp;-&nbsp;@Html.SiteCurrencyOrFree(goodUntilCanceledCharge)
+            }
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label" for="@Fields.EndDate">@Html.GlobalResource("EndDTTM")</label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    if (durationOpts.Equals("Duration"))
+    {
+        <script>
+            $(document).ready(function () {
+
+                $("#" + "@Fields.Duration").change(function () {
+                    if ($(this).val() == "GTC") {
+                        $("#" + "@Fields.GoodTilCanceled").val("@true.ToString()");
+                    } else {
+                        $("#" + "@Fields.GoodTilCanceled").val("@false.ToString()");
+                    }
+                });
+            });
+        </script>
+        if ((bool)ViewData[MVC.ViewData_GtcAvailable])
+        {
+            @Html.Hidden(Fields.GoodTilCanceled)
+        }
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="required col-sm-3 control-label" for="@Fields.Duration">@Html.GlobalResource("Duration")</label>
+                <div class="col-sm-3">
+                    @Html.DropDownList(Fields.Duration, null, Html.GlobalResourceString("SelectAValue"), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    }
+    if (durationOpts.Equals("End"))
+    {
+        <script>
+            $(document).ready(function () {
+                ApplyDatePicker($('#@Fields.EndDate'), '@Html.GetCookie("culture")', '@SiteClient.SiteCulture');
+
+                @if(showTimePicker)
+                {
+                    <text>
+                $('#@Fields.EndTime').ptTimeSelect({
+                    hoursLabel: '@Html.GlobalResource("Hours")',
+                    minutesLabel: '@Html.GlobalResource("Minutes")',
+                    containerClass: 'TimeSelectClass'
+                });
+                    </text>
+                }
+
+                $("#GTC_No").click(function () {
+                    $("#" + "@Fields.EndDate").removeAttr("disabled");
+                    $("#" + "@Fields.EndTime").removeAttr("disabled");
+                });
+
+                $("#GTC_Yes").click(function () {
+                    $("#@Fields.EndDate").attr("disabled", "disabled");
+                    $("#@Fields.EndTime").attr("disabled", "disabled");
+                });
+
+            });
+        </script>
+        if ((bool)ViewData[MVC.ViewData_GtcAvailable])
+        {
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label" for="GTC_False">
+                        @Html.RadioButton(Fields.GoodTilCanceled, false.ToString(), new { @id = "GTC_False", @class = "pull-left" })
+                        @Html.GlobalResource("EndDTTM")
+                    </label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="GTC_True" class="col-sm-3 control-label">
+                        @Html.RadioButton(Fields.GoodTilCanceled, true.ToString(), new { @id = "GTC_True", @class = "pull-left" })
+                        @Html.GlobalResource("GoodTilCanceled")
+                    </label>
+                    <div class="col-sm-3">
+                        @{
+            decimal goodUntilCanceledCharge = AccountingClient.GetAllFeeProperties().Where(fp =>
+            fp.Processor.Equals("RainWorx.FrameWorx.Providers.Fee.Standard.GoodUntilCanceled") &&
+            fp.Event.Name.Equals((string)ViewData[MVC.ViewData_Event]) &&
+            fp.ListingType.Name.Equals((string)ViewData[Fields.ListingType]) &&
+            fp.Name.Equals(FeeNames.GoodUntilCanceled)).Single().Amount;
+            if (goodUntilCanceledCharge > 0)
+            {
+                @:&nbsp;-&nbsp;@Html.SiteCurrencyOrFree(goodUntilCanceledCharge)
+            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="required col-sm-3 control-label" for="@Fields.EndDate">@Html.GlobalResource("EndDTTM")</label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndDate, null, new { @class = "ListingDateInput form-control", placeholder = @Html.GlobalResource("Date"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            @Html.TextBox(Fields.EndTime, null, new { @class = "ListingTimeInput form-control", placeholder = @Html.GlobalResource("Time"), autocomplete = "off" })
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    if (ViewData[Fields.AutoRelistMax] != null && (int)ViewData[Fields.AutoRelistMax] > 0)
+    {
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="@Fields.AutoRelist">@Html.GlobalResource("AutoRelist")</label>
+                <div class="col-sm-3">
+                    @Html.TextBox(Fields.AutoRelist, null, new { @class = "form-control" })
+                    <span>&nbsp;@Html.GlobalResource("Times") (@Html.GlobalResource("ANumberBetween0AndX", Html.LocalInteger((int)ViewData[Fields.AutoRelistMax])))</span>
+                </div>
+            </div>
+        </div>
+    }
+}

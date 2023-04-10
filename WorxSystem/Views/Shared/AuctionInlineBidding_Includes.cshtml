@@ -1,0 +1,415 @@
+﻿@{
+    string returnUrl = Request.Url.PathAndQuery;
+}
+
+@using (Html.BeginForm("ConfirmAction", "Listing", FormMethod.Get, new { id = "actionForm", @class = "awe-hidden" }))
+{
+    @Html.Hidden("ListingID", null)
+    @Html.Hidden("ListingType", "Auction")
+    @Html.Hidden("BidAmount", null)
+    @*@Html.Partial(Model.Type.Name + "ActionBox", Model)*@
+}
+
+<script>
+    var reserveStatus = {};
+    var failsafe_reload_after_bid_delay_ms = 10000; //default: 10000 = 10 seconds
+    var actionsSubmittedCount = 0;
+    var actionResponsesCount = 0;
+    var confirmationDialog;
+
+    $(document).ready(function () {
+        //global reasoncodes
+        contextMessageDictionary["Failure"] = "@Html.GlobalResource("Failure").ToJavascriptSafeString()";
+        contextMessageDictionary["ListingNotExist"] = "@Html.GlobalResource("ListingNotExist").ToJavascriptSafeString()";
+        contextMessageDictionary["ListingNotActive"] = "@Html.GlobalResource("ListingNotActive").ToJavascriptSafeString()";
+        contextMessageDictionary["ListerPerformingAction"] = "@Html.GlobalResource("ListerPerformingAction").ToJavascriptSafeString()";
+        contextMessageDictionary["Success"] = "@Html.GlobalResource("Success").ToJavascriptSafeString()";
+        contextMessageDictionary["BuyNowNotAvailable"] = "@Html.GlobalResource("BuyNowNotAvailable").ToJavascriptSafeString()";
+        contextMessageDictionary["ProxyBeatingNewBid"] = "@Html.GlobalResource("ProxyBeatingNewBid").ToJavascriptSafeString()";
+        contextMessageDictionary["CantLowerProxyBid"] = "@Html.GlobalResource("CantLowerProxyBid").ToJavascriptSafeString()";
+        contextMessageDictionary["BidAmountTooLow"] = "@Html.GlobalResource("BidAmountTooLow").ToJavascriptSafeString()";
+        contextMessageDictionary["ListingChangedDuringProcessing"] = "@Html.GlobalResource("ListingChangedDuringProcessing").ToJavascriptSafeString()";
+        contextMessageDictionary["QuantityTooHigh"] = "@Html.GlobalResource("QuantityTooHigh").ToJavascriptSafeString()";
+        contextMessageDictionary["LicenceInvalid"] = "@Html.ValidationResource("LicenceInvalid").ToJavascriptSafeString()";
+
+        //auction specific context messages
+        contextMessageDictionary["UNKNOWN"] = "@Html.Resource("AuctionListing, UNKNOWN").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_NOT_STARTED"] = "@Html.Resource("AuctionListing, LISTING_NOT_STARTED").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_DELETED"] = "@Html.Resource("AuctionListing, LISTING_DELETED").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_AWAITING_PAYMENT"] = "@Html.Resource("AuctionListing, LISTING_AWAITING_PAYMENT").ToJavascriptSafeString()";
+        contextMessageDictionary["LISTING_NOT_STARTED"] = "@Html.Resource("AuctionListing, LISTING_NOT_STARTED").ToJavascriptSafeString()";
+        contextMessageDictionary["WINNING"] = "@Html.Resource("AuctionListing, WINNING").ToJavascriptSafeString()";
+        contextMessageDictionary["CURRENT_HIGH_BIDDER_RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, CURRENT_HIGH_BIDDER_RESERVE_NOT_MET").ToJavascriptSafeString()";
+        contextMessageDictionary["LOSING"] = "@Html.Resource("AuctionListing, LOSING").ToJavascriptSafeString()";
+        contextMessageDictionary["NO_ACTIVITY_AS_BUYER"] = "@Html.Resource("AuctionListing, NO_ACTIVITY_AS_BUYER").ToJavascriptSafeString()";
+        contextMessageDictionary["WON"] = "@Html.Resource("AuctionListing, WON").ToJavascriptSafeString()";
+        contextMessageDictionary["LOST_RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, LOST_RESERVE_NOT_MET").ToJavascriptSafeString()";
+        contextMessageDictionary["LOST"] = "@Html.Resource("AuctionListing, LOST").ToJavascriptSafeString()";
+        contextMessageDictionary["NO_ACTIVITY"] = "@Html.Resource("AuctionListing, NO_ACTIVITY").ToJavascriptSafeString()";
+        contextMessageDictionary["NOSALE"] = "@Html.Resource("AuctionListing, NOSALE").ToJavascriptSafeString()";
+        contextMessageDictionary["SOLD"] = "@Html.Resource("AuctionListing, SOLD").ToJavascriptSafeString()";
+        contextMessageDictionary["NO_ACTIVITY_AS_SELLER"] = "@Html.Resource("AuctionListing, NO_ACTIVITY_AS_SELLER").ToJavascriptSafeString()";
+        contextMessageDictionary["RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, RESERVE_NOT_MET").ToJavascriptSafeString()";
+        contextMessageDictionary["RESERVE_NOT_MET_AS_SELLER"] = "@Html.Resource("AuctionListing, RESERVE_NOT_MET_AS_SELLER").ToJavascriptSafeString()";
+        contextMessageDictionary["WOULD_SELL"] = "@Html.Resource("AuctionListing, WOULD_SELL").ToJavascriptSafeString()";
+        contextMessageDictionary["NOTCURRENTLISTINGACTIONUSER"] = "@Html.Resource("AuctionListing, NOTCURRENTLISTINGACTIONUSER").ToJavascriptSafeString()";
+
+        contextMessageDictionary["ActionSuccess"] = "@Html.Resource("AuctionListing, ActionSuccess").ToJavascriptSafeString()";
+        contextMessageDictionary["IncreasedOwnMaxBid"] = "@Html.Resource("AuctionListing, IncreasedOwnMaxBid").ToJavascriptSafeString()";
+
+        //offer messages
+        contextMessageDictionary["ENDED_WITH_OFFER_ACCEPTED"] = "@Html.Resource("AuctionListing, ENDED_WITH_OFFER_ACCEPTED").ToJavascriptSafeString()";
+        contextMessageDictionary["YOUR_OFFER_ACCEPTED"] = "@Html.Resource("AuctionListing, YOUR_OFFER_ACCEPTED").ToJavascriptSafeString()";
+        contextMessageDictionary["YOUR_OFFER_DECLINED"] = "@Html.Resource("AuctionListing, YOUR_OFFER_DECLINED").ToJavascriptSafeString()";
+        contextMessageDictionary["YOU_HAVE_PENDING_OFFER"] = "@Html.Resource("AuctionListing, YOU_HAVE_PENDING_OFFER").ToJavascriptSafeString()";
+
+        //auction specific reserve messages
+        reserveStatus["NoReserve"] = "@Html.Resource("AuctionListing, NoReserve").ToJavascriptSafeString()";
+        reserveStatus["ReserveNotMet"] = "@Html.Resource("AuctionListing, ReserveNotMet").ToJavascriptSafeString()";
+        reserveStatus["ReserveMet"] = "@Html.Resource("AuctionListing, ReserveMet").ToJavascriptSafeString()";
+
+        shortContextMessages["UNKNOWN"] = "";
+        shortContextMessages["LISTING_NOT_STARTED"] = "";
+        shortContextMessages["LISTING_DELETED"] = "";
+        shortContextMessages["LISTING_AWAITING_PAYMENT"] = "";
+        shortContextMessages["LISTING_NOT_STARTED"] = "";
+        shortContextMessages["WINNING"] = "@Html.Resource("AuctionListing, Winning_Concise").ToJavascriptSafeString()";
+        shortContextMessages["CURRENT_HIGH_BIDDER_RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, NotWinning_Concise").ToJavascriptSafeString()";
+        shortContextMessages["LOSING"] = "@Html.Resource("AuctionListing, NotWinning_Concise").ToJavascriptSafeString()";
+        shortContextMessages["NO_ACTIVITY_AS_BUYER"] = "";
+        shortContextMessages["WON"] = "@Html.Resource("AuctionListing, Won_Concise").ToJavascriptSafeString()";
+        shortContextMessages["LOST_RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, Lost_Concise").ToJavascriptSafeString()";
+        shortContextMessages["LOST"] = "@Html.Resource("AuctionListing, Lost_Concise").ToJavascriptSafeString()";
+        shortContextMessages["NO_ACTIVITY"] = "";
+        shortContextMessages["NOSALE"] = "";
+        shortContextMessages["SOLD"] = "";
+        shortContextMessages["NO_ACTIVITY_AS_SELLER"] = "";
+        shortContextMessages["RESERVE_NOT_MET"] = "@Html.Resource("AuctionListing, NotWinning_Concise").ToJavascriptSafeString()";
+        shortContextMessages["RESERVE_NOT_MET_AS_SELLER"] = "";
+        shortContextMessages["WOULD_SELL"] = "";
+        shortContextMessages["NOTCURRENTLISTINGACTIONUSER"] = "@Html.Resource("AuctionListing, NotWinning_Concise").ToJavascriptSafeString()";
+
+        shortContextMessages["ActionSuccess"] = "";
+        shortContextMessages["IncreasedOwnMaxBid"] = "";
+
+        //offer messages
+        shortContextMessages["ENDED_WITH_OFFER_ACCEPTED"] = "";
+        shortContextMessages["YOUR_OFFER_ACCEPTED"] = "@Html.Resource("AuctionListing, Won_Concise").ToJavascriptSafeString()";
+        shortContextMessages["YOUR_OFFER_DECLINED"] = "@Html.Resource("AuctionListing, Lost_Concise").ToJavascriptSafeString()";
+        shortContextMessages["YOU_HAVE_PENDING_OFFER"] = "";
+
+        confirmationDialog = new BootstrapDialog({
+            title: 'LISTING_TITLE_AND_ID_GOES_HERE',
+            message: '<img src="Content/Images/progress-wheel.gif" />',
+            autodestroy: false,
+            closable: false
+        });
+
+        confirmationDialog.realize();
+        confirmationDialog.getModalFooter().hide();
+
+        var modalHeader = confirmationDialog.getModalHeader();
+        //console.log("modalHeader: ", modalHeader.html());
+
+        $(document).on('click', '.InlineQuickBid', function (event) {
+            event.preventDefault();
+
+            var listingId = $(this).closest("[data-listingid]").attr("data-listingid");
+            var minBidVal = $("[data-listingid=" + listingId + "] .awe-rt-MinimumBid span.NumberPart").first().html();
+            minBidVal = minBidVal.replace(/&nbsp;/g, ' ');//replace any '&nbsp;' characters with a space, to support numeric formats that use a space for the thousands separator
+            var listingTitle = $("[data-listingid=" + listingId + "] .bid-conf-title").html();
+            var modalHeaderTitleEl = modalHeader.find(".bootstrap-dialog-title");
+            //console.log("listingTitle, modalHeaderTitleEl: ", listingTitle, modalHeaderTitleEl);
+            modalHeaderTitleEl.html(listingTitle);
+            $("#ListingID").val(listingId);
+            $("#BidAmount").val(minBidVal);
+            $("#actionForm").submit();
+        });
+
+        $(document).on('click', '#modalCancelButton', function (event) {
+            event.preventDefault();
+            $("#BidAmount").val("");//clear bid amount input
+            $("#ListingID").val("");//clear listing id input
+            //$('input[name="large-bid-confirmed"]').remove();
+            confirmationDialog.close();
+        });
+
+        //$(document).on('click', '#modalConfirmLargeBidButton', function (event) {
+        //    event.preventDefault();
+        //    var confBidAmt = $('input[name="ConfBidAmt"]:checked').val();
+        //    if (confBidAmt) {
+        //        //update bid amount if necessary, and re-sumbit
+        //        $("#BidAmount").val(confBidAmt);
+        //        $("#actionForm")
+        //            .append('<input type="hidden" name="large-bid-confirmed" value="1" />')
+        //            .submit();
+        //    }
+        //});
+
+        $(document).on('click', '#modalSubmitButton', function (event) {
+            event.preventDefault();
+            var fullurl = "@Html.GetActionUrl("Action", "Listing")" + "?" + $("#actionForm").serialize();
+            confirmationDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+
+            //if a listing action response is not received after 10 seconds for whatever reason, reload the page
+            actionsSubmittedCount++;
+            setTimeout(function () {
+                if (actionsSubmittedCount > actionResponsesCount) {
+                    var connectionStatus = $("#SignalRStatus").children("div").first().attr("title");
+                    write_log({
+                        title: "Bid response too slow",
+                        message: "detail page reloaded"
+                        , "Listing ID": $("#ListingID").val()
+                        , "URL": document.location.href
+                        , "Timeout MS": failsafe_reload_after_bid_delay_ms
+                        , "UserAgent": navigator.userAgent
+                        , "Actions Submitted": actionsSubmittedCount
+                        , "Action Responses": actionResponsesCount
+                        , "Conneciton Status": connectionStatus
+                    });
+                    //console.log("page reload triggered.");
+                    window.location.reload(true);
+                }
+            }, failsafe_reload_after_bid_delay_ms);
+
+            $.ajax({
+                url: fullurl,
+                cache: false
+            });
+        });
+
+        $(document).on("SignalR_UpdateListingAction", function (event, data) {
+            if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+            RefreshListingContextualStatus(data.ListingID);
+
+            //Update Minimum Bid
+            $('[data-listingid="' + data.ListingID + '"] .awe-rt-MinimumBid span.NumberPart').each(function () {
+                if (data.AcceptedActionCount > 0) {
+                    $(this).html(Globalize.formatNumber(data.NextPrice, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                } else {
+                    $(this).html(Globalize.formatNumber(data.Price, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                }
+                $(this).pulse();
+            });
+
+        });
+
+        $(document).on("SignalR_ListingActionResponse", function (event, data) {
+            if ($.inArray(data.Action_ListingID, interestingListings) < 0) return;
+
+            //console.log("SignalR_ListingActionResponse data", data);
+
+            actionResponsesCount++;
+
+            //clear out all applicable hidden inputs since this action has now been processed
+            $("#ListingID").val("");
+            $("#BidAmount").val("");
+
+            confirmationDialog.close();
+
+            var thisListingContainer = $("[data-listingid=" + data.Action_ListingID + "]");
+            var thisActionMessage;
+            //if (thisListingContainer.hasClass("galleryUnit")) {
+            //    //grid view, bid response message is placed inside the container
+            //    thisActionMessage = $(thisListingContainer).find(".awe-rt-ListingActionMessage");
+            //    if (thisActionMessage.length == 0) {
+            //        thisListingContainer.prepend('<div class="awe-rt-ListingActionMessage" />');
+            //        thisActionMessage = $(thisListingContainer).find(".awe-rt-ListingActionMessage");
+            //    }
+            //} else {
+            //    //list view, bid response message is placed before the container
+            //    thisActionMessage = $(thisListingContainer).prev(".awe-rt-ListingActionMessage");
+            //    if (thisActionMessage.length == 0) {
+            //        thisListingContainer.before('<div class="awe-rt-ListingActionMessage" />');
+            //        thisActionMessage = $(thisListingContainer).prev(".awe-rt-ListingActionMessage");
+            //    }
+            //}
+
+            if (true) {
+                //bid response message is placed inside the container
+                thisActionMessage = $(thisListingContainer).find(".awe-rt-ListingActionMessage");
+                if (thisActionMessage.length == 0) {
+                    thisListingContainer.prepend('<div class="awe-rt-ListingActionMessage" />');
+                    thisActionMessage = $(thisListingContainer).find(".awe-rt-ListingActionMessage");
+                }
+            }
+
+            //console.log("listing response data: ", data);
+            var systemMessage = "";
+            if (data.Context_IsFilled) {
+                if (data.Accepted && data.Context_Disposition == 0) {
+                    //bid accepted, positive disposition, e.g. "Success, you're currently winning"
+
+                    //only hide previous message if visible, do not render new success message for inline bidding
+                    if (thisActionMessage.is(":visible")) {
+                        //thisActionMessage.fadeOut(200);
+                        thisActionMessage.slideUp();
+                    }
+
+                    if (data.ReasonCode == @((int)ReasonCode.IncreasedOwnMaxBid)) {
+
+                        //prepare success system message
+                        systemMessage = "<div class='alert alert-success'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + contextMessageDictionary["IncreasedOwnMaxBid"] + "</div>";
+                        if (!thisActionMessage.is(":visible") || thisActionMessage.html() == "") {
+                            thisActionMessage.hide();
+                            thisActionMessage.html(systemMessage);
+                            thisActionMessage.slideDown();
+                        } else {
+                            thisActionMessage.fadeOut(200, function () {
+                                $(this).html(systemMessage);
+                                $(this).fadeIn(200);
+                            });
+                        }
+                    }
+                } else if (data.Accepted && data.Context_Disposition == 1) {
+                    //bid accepted, neutral disposition, e.g. "Bid accepted but Reserve still not met"
+
+                    //ReasonString is populated, prepare a Negative System message
+                    if (contextMessageDictionary[data.Context_Status]) {
+                        systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + contextMessageDictionary[data.Context_Status] + "</div>";
+                    } else {
+                        systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + data.Context_Status + "</div>";
+                    }
+                    if (!thisActionMessage.is(":visible") || thisActionMessage.html() == "") {
+                        thisActionMessage.hide();
+                        thisActionMessage.html(systemMessage);
+                        thisActionMessage.slideDown();
+                    } else {
+                        thisActionMessage.fadeOut(200, function () {
+                            $(this).html(systemMessage);
+                            $(this).fadeIn(200);
+                        });
+                    }
+                } else {
+                    //bid not accepted, e.g. bid amount too low
+
+                    //ReasonString is populated, prepare a Negative System message
+                    if (contextMessageDictionary[data.ReasonString]) {
+                        systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + contextMessageDictionary[data.ReasonString] + "</div>";
+                    } else {
+                        systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + data.ReasonString + "</div>";
+                    }
+                    if (!thisActionMessage.is(":visible") || thisActionMessage.html() == "") {
+                        thisActionMessage.hide();
+                        thisActionMessage.html(systemMessage);
+                        thisActionMessage.slideDown();
+                    } else {
+                        thisActionMessage.fadeOut(200, function () {
+                            $(this).html(systemMessage);
+                            $(this).fadeIn(200);
+                        });
+                    }
+                }
+            } else {
+                //Context is null, but ReasonString is populated, prepare a Negative System message
+                if (contextMessageDictionary[data.ReasonString]) {
+                    systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + contextMessageDictionary[data.ReasonString] + "</div>";
+                } else {
+                    systemMessage = "<div class='alert alert-danger'><a class='close' onclick='$(this).parents(\"div\").first().slideUp();'>×</a>" + data.ReasonString + "</div>";
+                }
+                if (!thisActionMessage.is(":visible") || thisActionMessage.html() == "") {
+                    thisActionMessage.hide();
+                    thisActionMessage.html(systemMessage);
+                    thisActionMessage.slideDown();
+                } else {
+                    thisActionMessage.fadeOut(200, function () {
+                        $(this).html(systemMessage);
+                        $(this).fadeIn(200);
+                    });
+                }
+            }
+
+        });
+
+        //N/A for inline bidding
+        //$(document).on("SignalR_UpdateListingStatus", function (event, data) {
+        //    if ($.inArray(data.ListingID, interestingListings) < 0) return;
+
+        //    confirmationDialog.close();
+        //});
+
+        $("#actionForm").submit(function (event) {
+            event.preventDefault();
+            var fullurl = $(this).attr("action") + "Modal";
+            confirmationDialog.open();
+            confirmationDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+            $.ajax({
+                url: fullurl,
+                type: "get",
+                cache: false,
+                data: $(this).serialize(),
+                success: function (data) {
+                    if (data.indexOf("LOGON_NEEDED") >= 0) {
+                        //not logged in -- redirect
+                        $.cookie("continueActionData", $("#actionForm").serialize(), { path: "/", expires: 1 });
+                        var retUrl = "@returnUrl";
+                        var logonUrl = "@Html.GetActionUrl(MVC.LogOnAction, MVC.AccountController)" + "?returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(logonUrl);
+                    } else if (data.indexOf("CC_NEEDED") >= 0) {
+                        //cedit card req'd -- redirect
+                        //$.cookie("continueActionData", $("#actionForm").serialize(), { path: "/", expires: 1 });
+                        var retUrl = "@returnUrl";
+                        var addCardUrl = "@Html.GetActionUrl(MVC.AddCardAction, MVC.AccountController, new { ListingID = "[LISTING_ID]" })" + "&returnUrl=" + encodeURIComponent(retUrl);
+                        window.location.replace(replaceAll(addCardUrl, "%5BLISTING_ID%5D", $("#ListingID").val()));
+                    } else {
+                        //proceed with bidding modal
+                        confirmationDialog.getModalBody().html(data).each(function () { AssignModalFormToAjax(); });
+                    }
+                }
+            });
+        });
+
+        function AssignModalFormToAjax() {
+            var resultForm = confirmationDialog.getModalBody().find("form");
+            resultForm.submit(function (event) {
+                event.preventDefault();
+                confirmationDialog.getModalBody().html('<img src="Content/Images/progress-wheel.gif" />');
+                $.ajax({
+                    url: resultForm.attr("action"),
+                    type: "post",
+                    async: true,
+                    data: resultForm.serialize(),
+                    success: function (data) {
+                        confirmationDialog.getModalBody().html(data);
+                        AssignModalFormToAjax();
+                    }
+                });
+            });
+        }
+
+        $(document).on("SignalR_Started", function () {
+            var serializedActionData = $.cookie("continueActionData");
+            if (!(serializedActionData == null || serializedActionData == "")) {
+                var continueActionData = ParseActionData(serializedActionData.toString());
+                for (var qiKey in continueActionData) {
+                    var qiValue = continueActionData[qiKey];
+                    $("#actionForm").find("#" + qiKey).val(qiValue);
+                }
+                $.cookie('continueActionData', "", { path: '/', expires: 0 });
+                @if (User.Identity.IsAuthenticated)
+                {
+                <text>
+                var listingId = $("#ListingID").val();
+                var listingTitle = $("[data-listingid=" + listingId + "] .bid-conf-title").html();
+                var modalHeaderTitleEl = modalHeader.find(".bootstrap-dialog-title");
+                //console.log("listingTitle, modalHeaderTitleEl: ", listingTitle, modalHeaderTitleEl);
+                modalHeaderTitleEl.html(listingTitle);
+                $("#actionForm").submit();
+                </text>
+                }
+            }
+        });
+
+        function ParseActionData(serializedActionData) {
+            var result = new Array();
+            var kvPairs = serializedActionData.split('&');
+            for (var i = 0; i < kvPairs.length; i++) {
+                var kvPair = kvPairs[i].split('=');
+                result[kvPair[0]] = decodeURIComponent(replaceAll(kvPair[1], "+", " "));
+            }
+            return result;
+        }
+
+    });
+</script>

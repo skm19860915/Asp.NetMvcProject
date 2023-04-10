@@ -1,0 +1,90 @@
+﻿@model FeeSchedule
+
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<h3 class="h3row">@Html.AdminResource("LineageString_EditEventFeeManagement")</h3>
+
+<h4 class="h4row">@Html.AdminResource("EditEventFees")</h4>
+@using (Html.BeginForm("EditEventFees", "Admin", new { id = Model.ID }))
+{
+    <table>
+        <tr>
+            <td>@Html.AdminResource("Name"):</td>
+            <td>@Html.TextBox("Name", Model.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("FeeDescription"):</td>
+            <td>@Html.TextBox("Description", Model.Description)</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("SelectListingType"):</td>
+            <td>@Html.DropDownList("ListingType")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("SelectEvent"):</td>
+            <td>@Html.DropDownList("Event")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("PayToProceed")?</td>
+            <td>@Html.CheckBox("PayToProceed", Model.PayToProceed)</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right;">
+                <input type="submit" class="DefaultButton" value="@Html.AdminResource("Save")" name="Save" id="Save" />
+            </td>
+        </tr>
+    </table>
+}
+
+<h4 class="h4row">@Html.AdminResource("EditFeeTiers") - @Html.AdminResource("EditFeeTiers_HelpText")</h4>
+
+<table cellspacing="0" class="AdminDashTable">
+    <tr>
+        <th>@Html.AdminResource("LowerBoundInclusive")</th>
+        <th>@Html.AdminResource("UpperBoundExclusive")</th>
+        <th>@Html.AdminResource("FeeValue")</th>
+        <th>@Html.AdminResource("ValueType")</th>
+    </tr>
+
+    @foreach (Tier tier in Model.Tiers)
+        {
+        <tr>
+            <td>@tier.LowerBoundInclusive</td>
+            <td>@tier.UpperBoundExclusive</td>
+            <td>@Html.ActionLink(tier.Value.ToString(), "EditFeeTier", new { id = tier.ID })</td>
+            <td>@tier.ValueType</td>
+        </tr>
+        }
+</table>
+
+<h4 class="h4row">@Html.AdminResource("AddNewTier")</h4>
+
+@using (Html.BeginForm("AddFeeTier", "Admin", new { id = Model.ID }))
+{
+    @Html.Hidden("id", Model.ID)
+    <table>
+        <tr>
+            <td>@Html.AdminResource("LowerBoundInclusive"):</td>
+            <td>@Html.TextBox("LowerBoundInclusive")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("UpperBoundExclusive"):</td>
+            <td>@Html.TextBox("UpperBoundExclusive")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("FeeValue"):</td>
+            <td>@Html.TextBox("Value")</td>
+        </tr>
+        <tr>
+            <td>@Html.AdminResource("ValueType"):</td>
+            <td>@Html.DropDownList("ValueType")</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right;">
+                <input type="submit" class="DefaultButton" value="@Html.AdminResource("Add")" name="Add" id="Add" />
+            </td>
+        </tr>
+    </table>
+}
